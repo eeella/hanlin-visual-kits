@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>產品總覽｜翰林相信學習</title>
+<meta name="description" content="翰林數位教學產品總覽：課前備課、課中教學、作業測驗。">
+
+<!-- 網站頁簽 icon（§3.11 品牌標誌）－ H 標，深淺底皆可辨識 -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<!-- 字體：規範 §2.2 指定 Kumbh Sans，中文以 Noto Sans TC 承接 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- tokens 必須排在 styles 之前 -->
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">跳到主要內容</a>
+
+<!-- ══════════════ 頁首 ══════════════ -->
+<header class="site-header">
+  <div class="container">
+
+    <!-- §3.11：標誌以 inline SVG 內嵌，墨色綁定 --logo-ink。
+         標誌已含品牌字樣，旁邊不得再重複品牌文字。 -->
+    <a class="logo" href="./" aria-label="翰林相信學習 首頁">
+      <svg viewBox="3.2 -3.5 407 186.4" role="img" aria-label="翰林">
+        <path d="M36.4,78.4V61.9h33.8v16.5H36.4z M153.8,102.7c7.5,0,11.4-4.3,11.4-11.4s-3.9-11.4-11.4-11.4
+				s-11.2,4.5-11.2,11.4S146.4,102.7,153.8,102.7z M102.9,102.7c7.5,0,11.4-4.3,11.4-11.4s-3.9-11.4-11.4-11.4s-11.2,4.5-11.2,11.4
+				S95.6,102.7,102.9,102.7z M93.6,65.8h26.1v46c-8.1,8.1-18,15.2-29.4,19.9v18.8c11.8-6,25.9-15.9,29.4-20.1v24.2
+				c0,5.4-1.1,5.4-19.1,4.7l3.6,15.4c24.9,1.7,31.3-0.6,31.3-16.9V62c0-7.3-3.9-11.2-11.2-11.2H93.6L93.6,65.8L93.6,65.8z
+				 M142.7,65.8h28.5v45.6c-8.2,8.1-18.8,15.2-30.6,19.9V150c12.2-6,27-15.9,30.6-20.1v24.6c0,5.4-1.1,5.4-19.7,4.7l3.8,15.4
+				c25.7,1.7,32.1-0.6,32.1-16.9V62c0-7.3-3.9-11.2-11.2-11.2h-33.4L142.7,65.8L142.7,65.8z M179.6,46.3l10.1-14.1
+				c-13.1-7.5-27.4-16.1-41.4-25.9c-4.9-3.4-11.2-3.4-16.1,0c-14.1,9.8-28.3,18.4-41.4,25.9l10.1,14.1c11.4-6.8,22.9-14.6,33.8-22.5
+				c2.2-1.5,4.5-3.8,4.5-5.4h2.2c0,1.7,2.2,3.9,4.5,5.4C156.8,31.7,168.2,39.5,179.6,46.3z M53.2,110.2c-12.8,0-16.9-6.2-16.9-14.1
+				v-5.1h33.8v5.1C70.1,104.1,66,110.2,53.2,110.2L53.2,110.2z M19.1,32.6h25.7v15.8H21v47.8c0,13.5,7.9,24.2,23.8,26.8v13.1H19.1
+				v13.5h25.7v25.9h16.7v-25.9h23.8v-13.5H61.5v-12.9c16.1-2.8,24-13.5,24-27V48.4h-24V32.6h25.9V19.1H61.5V4.5H44.8v14.6H19.1V32.6
+				z"/>
+        <path d="M311.3,40.7h31.3v18.6c-19.3,2.6-30,15.7-30,39.4v76.9h16.3V95.2c0-13.7,5.2-19.7,14.6-21.2v101.5h16.9V73.9
+				c9.6,1.5,14.8,7.5,14.8,21.4v80.3h16.5V98.6c0-23.8-10.7-37-30.4-39.4V40.7h33V27.2h-33V4.5h-18.8v22.7h-31.3L311.3,40.7
+				L311.3,40.7z M227.8,98.6v76.9h15.9l0.2-80.3c0-13.1,4.5-19.1,13.1-21v101.3h16.5V74.1c8.8,1.9,13.7,7.7,13.7,21.2v80.3h15.9
+				V98.6c0-23.3-10.1-36.4-28.5-39.2V40.7h29.8V27.2h-29.8V4.5h-18.6v22.7h-30.9v13.5h30.9v18.8C237.8,62.2,227.8,75.4,227.8,98.6
+				L227.8,98.6z"/>
+      </svg>
+    </a>
+
+    <nav aria-label="主要導覽">
+      <ul class="site-nav">
+        <li><a href="#main" aria-current="page">產品總覽</a></li>
+        <li><a href="#categories">分類</a></li>
+        <li><a href="#faq">常見問題</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ══════════════ Hero ══════════════ -->
+  <section class="section section--subtle">
+    <div class="container stack">
+      <div class="prose stack--tight" style="display:flex;flex-direction:column;gap:var(--space-9)">
+        <h1>備課、教學、測驗，一套介面走完</h1>
+        <p class="lead">翰林數位教學產品依課前備課、課中教學、作業測驗三個階段整理，介面規則一致，鍵盤與螢幕閱讀器都走得通。</p>
+      </div>
+      <div class="row">
+        <a class="btn" href="#categories"><span class="btn__label">瀏覽全部分類</span></a>
+        <a class="btn btn--secondary" href="#faq"><span class="btn__label">查看常見問題</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ 篩選 + 卡片 ══════════════ -->
+  <section class="section" id="categories">
+    <div class="container stack--loose" style="display:flex;flex-direction:column;gap:var(--space-11)">
+
+      <div class="stack">
+        <h2>教學階段</h2>
+
+        <!-- §3.3：role="tablist"，左右方向鍵循環，結果數量以 live region 播報 -->
+        <div class="chip-group" role="tablist" aria-label="依教學階段篩選" data-chip-group="#filter-status">
+          <button class="chip" role="tab" type="button" aria-selected="true"  data-count="3">全部</button>
+          <button class="chip" role="tab" type="button" aria-selected="false" data-count="1">課前備課</button>
+          <button class="chip" role="tab" type="button" aria-selected="false" data-count="1">課中教學</button>
+          <button class="chip" role="tab" type="button" aria-selected="false" data-count="1">作業測驗</button>
+          <button class="chip" role="tab" type="button" aria-disabled="true">教師研習</button>
+        </div>
+        <p class="visually-hidden" id="filter-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <!-- §3.6：整張卡片可點，只有標題連結進入 Tab 順序 -->
+      <div class="card-grid">
+
+        <article class="card">
+          <div class="card__media" aria-hidden="true"></div>
+          <div class="card__body">
+            <span class="badge">課前備課</span>
+            <p class="card__meta">國小 · 國中 · 技高</p>
+            <h3 class="card__title"><a class="card__link" href="#main">備課資源中心</a></h3>
+            <p class="card__excerpt">教科書章節、教學簡報與學習單一次取得，對齊各版本進度。</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__media" aria-hidden="true"></div>
+          <div class="card__body">
+            <span class="badge">課中教學</span>
+            <p class="card__meta">國中 · 技高</p>
+            <h3 class="card__title"><a class="card__link" href="#main">互動教學工具</a></h3>
+            <p class="card__excerpt">課堂即時提問與作答統計，投影後全班一起看結果。</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__media" aria-hidden="true"></div>
+          <div class="card__body">
+            <span class="badge">作業測驗</span>
+            <p class="card__meta">國小 · 國中</p>
+            <h3 class="card__title"><a class="card__link" href="#main">診斷測驗系統</a></h3>
+            <p class="card__excerpt">每週一份診斷卷，作答完立刻標出還沒穩的觀念。</p>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- §3.8：空狀態必須說明原因並提供下一步，不得只寫「查無資料」 -->
+      <div class="empty-state" hidden>
+        <h3>此分類目前沒有產品</h3>
+        <p>試試其他教學階段，或直接搜尋產品名稱。</p>
+        <button class="btn btn--secondary" type="button"><span class="btn__label">瀏覽全部分類</span></button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════ 元件狀態速查 ══════════════ -->
+  <section class="section section--subtle">
+    <div class="container stack">
+      <h2>按鈕的七種狀態</h2>
+      <p>規範要求每個互動元件都必須定義 default、hover、focus-visible、active、disabled、loading、error 七種狀態。錯誤不由按鈕表達，而是顯示在關聯的表單訊息區。</p>
+      <div class="row">
+        <button class="btn" type="button"><span class="btn__label">訂閱</span></button>
+        <button class="btn btn--secondary" type="button"><span class="btn__label">搜尋產品</span></button>
+        <button class="btn btn--ghost" type="button"><span class="btn__label">瀏覽全部分類</span></button>
+        <button class="btn btn--sm" type="button"><span class="btn__label">小尺寸</span></button>
+        <button class="btn" type="button" disabled><span class="btn__label">停用</span></button>
+        <button class="btn" type="button" data-loading="true" aria-busy="true"><span class="btn__label">載入中</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ 表單 ══════════════ -->
+  <section class="section">
+    <div class="container">
+      <form class="stack" data-subscribe-form novalidate style="max-width:var(--layout-prose-width)">
+        <h2>訂閱教學資源電子報</h2>
+
+        <!-- §3.2：.field > .label + .input + .hint + .error-text -->
+        <div class="field">
+          <label class="label" for="email">電子信箱</label>
+          <input class="input" id="email" name="email" type="email"
+                 autocomplete="email" aria-invalid="false"
+                 aria-describedby="email-hint email-error" placeholder="name@example.com">
+          <p class="hint" id="email-hint">每月一封，整理當月新增的備課資源。</p>
+          <p class="error-text" id="email-error" role="alert"></p>
+        </div>
+
+        <div class="row">
+          <button class="btn" type="submit"><span class="btn__label">訂閱</span></button>
+        </div>
+
+        <p class="alert" data-form-result role="status" aria-live="polite" hidden></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ══════════════ Accordion ══════════════ -->
+  <section class="section section--subtle" id="faq">
+    <div class="container stack" style="max-width:var(--layout-prose-width)">
+      <h2>常見問題</h2>
+
+      <!-- §3.5：標題必須是 button 並包在符合階層的標題元素內 -->
+      <div class="accordion" data-single="true">
+
+        <div class="accordion__item">
+          <h3>
+            <button class="accordion__trigger" type="button" aria-expanded="true" aria-controls="faq-1">
+              這份範例包含哪些東西？
+              <span class="accordion__icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="accordion__panel" id="faq-1">
+            <p>設計 token、元件樣式、基本互動、品牌標誌與頁簽 icon。沒有建置流程也沒有相依套件，用瀏覽器開 <code>index.html</code> 就能看。</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <h3>
+            <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="faq-2">
+              可以直接改顏色嗎？
+              <span class="accordion__icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="accordion__panel" id="faq-2" hidden>
+            <p>可以，但只能改 <code>tokens.css</code>。元件層不得寫入色碼或一次性尺寸——這是規範的成功條件之一。改完請重新確認對比度仍達標。</p>
+          </div>
+        </div>
+
+        <div class="accordion__item">
+          <h3>
+            <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="faq-3">
+              裝飾黃為什麼不能當文字色？
+              <span class="accordion__icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="accordion__panel" id="faq-3" hidden>
+            <p>裝飾黃於白底只有 1.46:1，遠低於正文所需的 4.5:1。它只能用於 Hero 與插圖形狀，不得作為文字色、狀態色，也不得當承載文字的底色。徽章與標籤一律白底配藍字（7.97:1）。</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════════ 頁尾 ══════════════ -->
+<footer class="site-footer">
+  <div class="container stack">
+    <!-- 深色底：--logo-ink 已於 .site-footer 覆寫為 surface.muted -->
+    <a class="logo" href="./" aria-label="翰林相信學習 首頁">
+      <svg viewBox="3.2 -3.5 407 186.4" role="img" aria-label="翰林">
+        <path d="M36.4,78.4V61.9h33.8v16.5H36.4z M153.8,102.7c7.5,0,11.4-4.3,11.4-11.4s-3.9-11.4-11.4-11.4
+				s-11.2,4.5-11.2,11.4S146.4,102.7,153.8,102.7z M102.9,102.7c7.5,0,11.4-4.3,11.4-11.4s-3.9-11.4-11.4-11.4s-11.2,4.5-11.2,11.4
+				S95.6,102.7,102.9,102.7z M93.6,65.8h26.1v46c-8.1,8.1-18,15.2-29.4,19.9v18.8c11.8-6,25.9-15.9,29.4-20.1v24.2
+				c0,5.4-1.1,5.4-19.1,4.7l3.6,15.4c24.9,1.7,31.3-0.6,31.3-16.9V62c0-7.3-3.9-11.2-11.2-11.2H93.6L93.6,65.8L93.6,65.8z
+				 M142.7,65.8h28.5v45.6c-8.2,8.1-18.8,15.2-30.6,19.9V150c12.2-6,27-15.9,30.6-20.1v24.6c0,5.4-1.1,5.4-19.7,4.7l3.8,15.4
+				c25.7,1.7,32.1-0.6,32.1-16.9V62c0-7.3-3.9-11.2-11.2-11.2h-33.4L142.7,65.8L142.7,65.8z M179.6,46.3l10.1-14.1
+				c-13.1-7.5-27.4-16.1-41.4-25.9c-4.9-3.4-11.2-3.4-16.1,0c-14.1,9.8-28.3,18.4-41.4,25.9l10.1,14.1c11.4-6.8,22.9-14.6,33.8-22.5
+				c2.2-1.5,4.5-3.8,4.5-5.4h2.2c0,1.7,2.2,3.9,4.5,5.4C156.8,31.7,168.2,39.5,179.6,46.3z M53.2,110.2c-12.8,0-16.9-6.2-16.9-14.1
+				v-5.1h33.8v5.1C70.1,104.1,66,110.2,53.2,110.2L53.2,110.2z M19.1,32.6h25.7v15.8H21v47.8c0,13.5,7.9,24.2,23.8,26.8v13.1H19.1
+				v13.5h25.7v25.9h16.7v-25.9h23.8v-13.5H61.5v-12.9c16.1-2.8,24-13.5,24-27V48.4h-24V32.6h25.9V19.1H61.5V4.5H44.8v14.6H19.1V32.6
+				z"/>
+        <path d="M311.3,40.7h31.3v18.6c-19.3,2.6-30,15.7-30,39.4v76.9h16.3V95.2c0-13.7,5.2-19.7,14.6-21.2v101.5h16.9V73.9
+				c9.6,1.5,14.8,7.5,14.8,21.4v80.3h16.5V98.6c0-23.8-10.7-37-30.4-39.4V40.7h33V27.2h-33V4.5h-18.8v22.7h-31.3L311.3,40.7
+				L311.3,40.7z M227.8,98.6v76.9h15.9l0.2-80.3c0-13.1,4.5-19.1,13.1-21v101.3h16.5V74.1c8.8,1.9,13.7,7.7,13.7,21.2v80.3h15.9
+				V98.6c0-23.3-10.1-36.4-28.5-39.2V40.7h29.8V27.2h-29.8V4.5h-18.6v22.7h-30.9v13.5h30.9v18.8C237.8,62.2,227.8,75.4,227.8,98.6
+				L227.8,98.6z"/>
+      </svg>
+    </a>
+    <p>© 2026 翰林教學樞紐 Hanlin Hub　·　相信學習</p>
+    <p class="footer-note">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
+  </div>
+</footer>
+
+<button class="to-top" type="button" data-to-top aria-label="回到頂端" title="回到頂端" hidden>
+  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 19V6M5.5 12.5 12 6l6.5 6.5"/>
+  </svg>
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>

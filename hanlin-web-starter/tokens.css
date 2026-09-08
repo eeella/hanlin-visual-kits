@@ -1,0 +1,117 @@
+/* ============================================================
+   翰林相信學習 — 設計 token
+   唯一數值來源。元件層只准引用這裡的變數，不得自行寫色碼或尺寸。
+   對應規範：STYLEGUIDE.md §2
+   ============================================================ */
+
+:root {
+
+  /* ── 2.1 色彩 · Primary ───────────────────────────────── */
+  --color-surface-strong:   #064ea4;  /* 主要按鈕、連結、焦點框 */
+  --color-action-bg:        #064ea4;  /* ＝ surface.strong */
+  --color-action-bg-hover:  #05407f;  /* 主要按鈕 hover */
+  --color-action-bg-active: #03305f;  /* 主要按鈕按下 */
+  --color-action-fg:        #ffffff;  /* 白字於主色 7.97:1 */
+
+  /* ── 2.1 色彩 · Secondary ─────────────────────────────── */
+  --color-page-bg-subtle:   #f4f7fb;  /* Hero 與區塊底色 */
+  --color-decor-sun:        #f5d35b;  /* 僅限裝飾形狀 */
+  --color-decor-warm:       #ef9d78;  /* 僅限裝飾形狀 */
+  /* 裝飾色只能用於 Hero 與插圖形狀，不得作為文字色或狀態色，
+     也不得作為承載文字的底色。#f5d35b 於白底僅 1.46:1。
+     徽章、標籤、色塊一律白底配藍字（7.97:1）。 */
+
+  /* ── 2.1 色彩 · Neutral ───────────────────────────────── */
+  --color-surface-base:     #000000;  /* 最深底色 */
+  --color-surface-muted:    #ffffff;  /* 頁面與卡片底色 */
+  --color-text-secondary:   #1e3d60;  /* 標題、頁尾底色 */
+  --color-text-primary:     #62778f;  /* 正文（白底 4.61:1） */
+  --color-text-tertiary:    #becad7;  /* 深色底文字、分隔 */
+  --color-disabled-bg:      #eef2f7;  /* 停用底色 */
+
+  /* ── 2.1 色彩 · Semantic 與品牌 ───────────────────────── */
+  --color-danger:           #b3261e;  /* 錯誤訊息與邊框 */
+  --color-danger-bg:        #fdf1f0;  /* 錯誤底色（5.92:1） */
+  --color-success:          #146c43;  /* 成功訊息 */
+  --color-brand-ink:        #040000;  /* 僅供品牌標誌文字 */
+
+  /* ── 推導值 ───────────────────────────────────────────────
+     以下四個 token 在 STYLEGUIDE.md §3 被引用，但 §2.1 沒有給值。
+     這裡的數值是為了讓範例能跑而推導的，不是規範原文。
+     取得正式值之後請直接覆蓋，並刪掉這段註解。
+     ───────────────────────────────────────────────────────── */
+  --color-border:        #becad7;  /* ＝ text.tertiary，其用途已含「分隔」 */
+  --color-border-strong: #7690a8;  /* 白底 3.32:1，滿足 §4「元件邊界 ≥ 3:1」 */
+  --color-disabled-fg:   #8a9aab;  /* 於 disabled.bg 2.56:1，可辨識但明顯非啟用 */
+  --logo-ink:            var(--color-surface-strong);
+  /* 標誌墨色。§3.11 原文寫「淺色底使用 color.brand.ink」（近黑 #040000），
+     此處依指示改用主色藍 #064EA4（白底 7.97:1）。深色底仍覆寫為 surface.muted。
+     這是刻意偏離規範原文的一處，換回近黑只需改這一行。 */
+
+  /* ── 2.2 字體與字級 ───────────────────────────────────── */
+  --font-family-primary: "Kumbh Sans", "Noto Sans TC", sans-serif;
+
+  --font-size-display-lg: 56px;  /* H1 */
+  --font-size-display-md: 40px;  /* H2 */
+  --font-size-display-sm: 32px;  /* H3 */
+  --font-size-4xl:        24px;  /* H4 */
+  --font-size-3xl:        20px;  /* H5、Paragraph Large */
+  --font-size-2xl:        18px;  /* H6 */
+  --font-size-base:       18px;  /* 正文 */
+  --font-size-lg:         16px;  /* 導覽、按鈕、卡片說明 */
+  --font-size-md:         15px;  /* Paragraph Small */
+  --font-size-sm:         14px;  /* 提示、錯誤、麵包屑 */
+  --font-size-xs:         13px;  /* 標籤、日期、學制 */
+
+  --font-line-height-base: 30.006px;
+  --font-line-height-display: 1.25;
+  --font-line-height-loose: 1.7;
+  --font-weight-base: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  /* Display 三級是既有尺度的等比延伸，不得再新增中間值。 */
+
+  /* ── 2.3 間距 ─────────────────────────────────────────── */
+  --space-1:  6px;   --space-2:  8px;   --space-3: 10px;  --space-4: 12px;
+  --space-5: 14px;   --space-6: 15px;   --space-7: 16px;  --space-8: 17px;
+  --space-9: 24px;   --space-10: 32px;  --space-11: 48px;
+  --space-12: 64px;  --space-13: 96px;
+  /* 不得插入其他中間值。 */
+
+  /* ── 2.4 圓角 ─────────────────────────────────────────── */
+  --radius-xs:   12px;    /* 卡片、選單、面板 */
+  --radius-sm:   20px;    /* 大型區塊 */
+  --radius-md:   100px;   /* 按鈕、chip、輸入框 */
+  --radius-lg:   1000px;  /* 圓形裝飾 */
+
+  /* ── 2.4 陰影 ─────────────────────────────────────────── */
+  --shadow-1: rgba(30, 61, 96, .03) 0 5px 15px;                     /* hover 抬升 */
+  --shadow-2: rgba(30, 61, 96, .04) 0 1px 2px,
+              rgba(30, 61, 96, .04) 0 2px 8px;                      /* 卡片與面板預設 */
+
+  /* ── 2.4 動態 ─────────────────────────────────────────── */
+  --motion-duration-instant: 300ms;  /* 互動回饋 */
+  --motion-duration-fast:    350ms;  /* 轉場 */
+  --motion-duration-normal:  800ms;  /* 載入動畫 */
+  --motion-easing: cubic-bezier(.2, .6, .3, 1);
+
+  /* ── 2.5 版面 ─────────────────────────────────────────── */
+  --layout-max-width:   1180px;
+  --layout-gutter:      var(--space-9);
+  --layout-prose-width: 760px;   /* 長文最大寬度，約 65 字元 */
+  --layout-card-min:    320px;   /* grid minmax 下限 */
+
+  /* ── 焦點指示（§4：3px 外框，offset 2px，不得移除）────── */
+  --focus-ring-width:  3px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--color-surface-strong);
+}
+
+/* §2.4：prefers-reduced-motion 下所有動畫與轉場必須縮至 0.01ms */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-instant: 0.01ms;
+    --motion-duration-fast:    0.01ms;
+    --motion-duration-normal:  0.01ms;
+  }
+}

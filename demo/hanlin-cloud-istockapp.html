@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>國一線上課程｜翰林雲端學院</title>
+<meta name="description" content="剛上國中就跟上——翰林雲端國一線上課程。國英數自社全科到位，市面三大主流版本自由選，跟著學校進度走。三大數據讓家長看得見進度，24H AI 助教隨問隨答。免費試用 7 天。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand-blue:#064ea4; --brand-blue-dark:#05407f; --light-blue:#064ea4; --accent-orange:#ef9d55; --accent-orange-dark:#064ea4; --ink-navy:#1e3d60;
+  --gradient-brand:linear-gradient(135deg,#064ea4 0%,#05407f 62%,#03305f 100%);
+  --brand-blue-active:#03305f; --brand-soft:#f4f7fb; --accent-yellow:#fcd12e;
+  --accent-yellow-soft:#f4f7fb; --accent-orange-soft:#fcd12e; --disabled-bg:#eef2f7;
+  --border:#becad7; --text-title:#1e3d60; --text-body:#62778f;
+  --gray-900:#1e3d60; --gray-700:#1e3d60; --gray-600:#62778f; --gray-400:#62778f; --gray-200:#becad7; --gray-100:#f4f7fb; --white:#FFFFFF;
+  --success:#146c43; --warning:#1e3d60; --error:#b3261e;
+  --radius-xs:12px; --radius-sm:100px; --radius:12px; --radius-lg:12px;
+  --radius-block:20px; --radius-pill:100px; --radius-round:1000px;
+  --shadow-1:rgba(30,61,96,.03) 0 5px 15px;
+  --shadow-2:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px;
+  --shadow-sm:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px;
+  --shadow-md:rgba(30,61,96,.03) 0 5px 15px,rgba(30,61,96,.07) 0 2px 8px;
+  --shadow-lg:rgba(30,61,96,.06) 0 12px 32px,rgba(30,61,96,.05) 0 2px 8px;
+  --font-sans:"Kumbh Sans","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);color:var(--gray-900);background:var(--white);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{line-height:1.25;font-weight:700}
+img{max-width:100%;display:block}
+a{color:var(--brand-blue);text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+section{padding:72px 0}
+.eyebrow{display:inline-block;font-size:.875rem;font-weight:700;letter-spacing:.06em;color:var(--brand-blue);background:var(--gray-100);padding:.35rem .85rem;border-radius:999px;margin-bottom:1rem}
+.sec-head{text-align:center;max-width:760px;margin:0 auto 48px}
+.sec-head h2{font-size:2rem;color:var(--gray-900)}
+.sec-head p{margin-top:.75rem;color:var(--gray-600);font-size:1.0625rem}
+.hl{color:var(--brand-blue)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-family:inherit;font-size:1rem;font-weight:600;padding:.75rem 1.5rem;border-radius:var(--radius);border:none;cursor:pointer;transition:background .15s,transform .15s,box-shadow .15s;white-space:nowrap}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(6,78,164,.35)}
+.btn-primary{background:var(--brand-blue);color:#fff}
+.btn-primary:hover{background:var(--brand-blue-dark)}
+.btn-accent{background:var(--accent-orange);color:var(--ink-navy);font-weight:700}
+.btn-accent:hover{background:var(--accent-orange-dark)}
+.btn-accent:focus-visible{box-shadow:0 0 0 3px rgba(239,157,85,.4)}
+.btn-secondary{background:#fff;color:var(--brand-blue);border:1.5px solid var(--brand-blue)}
+.btn-secondary:hover{background:var(--gray-100)}
+.btn-ghost-light{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.6)}
+.btn-ghost-light:hover{background:rgba(255,255,255,.12)}
+.btn-lg{padding:.9rem 2rem;font-size:1.0625rem}
+
+/* promo */
+.promo{background:var(--accent-orange);color:var(--ink-navy);text-align:center;font-weight:700;font-size:.9rem;padding:.55rem 1rem}
+.promo .todo-inline{background:rgba(30,61,96,.12);border-radius:6px;padding:.05rem .5rem}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--gray-200)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+.logo{display:flex;align-items:center;gap:.6rem;font-weight:900;font-size:1.15rem;color:var(--ink-navy)}
+.logo .dot{width:12px;height:12px;border-radius:50%;background:var(--accent-orange);flex:none}
+.logo .arc{width:26px;height:26px;border-radius:50%;border:4px solid var(--brand-blue);border-right-color:transparent;border-top-color:transparent;transform:rotate(45deg)}
+.logo-img{height:38px;width:auto;display:block}
+.logo-img--foot{height:40px;filter:brightness(0) invert(1);margin-bottom:14px}
+.nav-links{display:flex;align-items:center;gap:1.75rem;list-style:none}
+.nav-links a{color:var(--gray-700);font-weight:500;font-size:.95rem}
+.nav-links a:hover{color:var(--brand-blue)}
+.nav-cta{display:flex;align-items:center;gap:.75rem}
+.countdown{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--gray-600);font-weight:500}
+.countdown b{color:var(--accent-orange);font-size:1.05rem;font-weight:700}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--ink-navy)}
+
+/* hero */
+.hero{background:var(--gradient-brand);color:#fff;padding:80px 0 88px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border:60px solid rgba(255,255,255,.08);border-radius:50%;pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative;z-index:1}
+.hero-single{max-width:780px;margin:0 auto;text-align:center;position:relative;z-index:1}
+.hero-single .sub{margin-left:auto;margin-right:auto}
+.hero-single .hero-price,.hero-single .hero-cta,.hero-single .trust-row{justify-content:center}
+.hero-single .trust-row{gap:2.5rem}
+.hero-single .hero-note{font-size:.78rem;color:rgba(255,255,255,.72);margin-top:1.5rem;line-height:1.6}
+.hero-single .hero-note .todo-date{background:rgba(255,255,255,.22);border-radius:4px;padding:0 .35rem}
+.hero-tag{display:inline-block;background:rgba(255,255,255,.16);padding:.4rem 1rem;border-radius:999px;font-weight:500;font-size:.9rem;margin-bottom:1.25rem}
+.hero h1{font-size:3rem;font-weight:900;line-height:1.15;letter-spacing:-.01em}
+.hero h1 .em{color:#fcd12e}
+.hero .sub{margin-top:1.25rem;font-size:1.15rem;color:rgba(255,255,255,.92);max-width:36ch}
+.hero-price{display:inline-flex;align-items:baseline;gap:.6rem;margin-top:1.5rem;background:#fff;border-radius:12px;padding:.7rem 1.15rem;box-shadow:var(--shadow-md);flex-wrap:wrap}
+.hero-price .pl{font-size:.85rem;color:var(--gray-600);font-weight:600}
+.hero-price .pv{font-size:1.6rem;font-weight:900;color:var(--ink-navy)}
+.hero-price .pv .todo-price{color:var(--accent-orange-dark);background:#fcd12e;border-radius:6px;padding:0 .35rem;font-size:1.15rem}
+.hero-price .pn{font-size:.85rem;color:var(--brand-blue);font-weight:600}
+.hero-cta{display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap}
+.trust-row{display:flex;gap:1.5rem;margin-top:2.25rem;flex-wrap:wrap}
+.trust-row .item{display:flex;flex-direction:column}
+.trust-row .num{font-size:1.5rem;font-weight:900;color:#fcd12e}
+.trust-row .lbl{font-size:.85rem;color:rgba(255,255,255,.85)}
+.dash{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);padding:22px;color:var(--gray-900)}
+.dash .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.dash .dash-top h4{font-size:1rem}
+.dash .tag{font-size:.72rem;background:var(--gray-100);color:var(--gray-600);padding:.2rem .6rem;border-radius:999px}
+.rings{display:flex;justify-content:space-around;gap:8px}
+.ring{text-align:center;flex:1}
+.ring .circle{width:76px;height:76px;border-radius:50%;margin:0 auto 8px;display:grid;place-items:center;font-weight:900;font-size:1.05rem;color:var(--ink-navy)}
+.ring .r1{background:conic-gradient(var(--brand-blue) 0 78%,var(--gray-200) 0)}
+.ring .r2{background:conic-gradient(var(--light-blue) 0 85%,var(--gray-200) 0)}
+.ring .r3{background:conic-gradient(var(--accent-orange) 0 64%,var(--gray-200) 0)}
+.ring .circle span{background:#fff;width:52px;height:52px;border-radius:50%;display:grid;place-items:center}
+.ring .cap{font-size:.78rem;color:var(--gray-600);font-weight:500}
+.dash .cal{margin-top:16px;border-top:1px solid var(--gray-200);padding-top:14px}
+.dash .cal .row{display:flex;align-items:center;gap:8px;font-size:.85rem;padding:.3rem 0}
+.dash .chk{width:16px;height:16px;border-radius:4px;flex:none}
+.chk.done{background:var(--success)}
+.chk.miss{background:var(--accent-orange)}
+.chk.plan{background:var(--gray-200)}
+.dash .miss-txt{color:var(--accent-orange);font-weight:700}
+
+/* pains → solutions */
+.solve-list{display:flex;flex-direction:column;gap:16px;max-width:980px;margin:0 auto}
+.solve{display:grid;grid-template-columns:1fr 44px 1.05fr;align-items:stretch;gap:0;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.solve .pain-side{display:flex;gap:14px;align-items:flex-start;padding:22px 24px}
+.solve .pain-side .ico{width:44px;height:44px;border-radius:12px;background:#fcd12e;color:var(--accent-orange);display:grid;place-items:center;flex:none}
+.solve .pain-side h3{font-size:1.05rem;color:var(--gray-900);margin-bottom:.3rem}
+.solve .pain-side p{font-size:.88rem;color:var(--gray-600)}
+.solve .arrow{display:grid;place-items:center;color:var(--brand-blue);background:var(--gray-100)}
+.solve .arrow svg{width:22px;height:22px}
+.solve .sol-side{display:flex;gap:14px;align-items:flex-start;padding:22px 24px;background:#f4f7fb}
+.solve .sol-side .fico{width:44px;height:44px;border-radius:12px;background:#fff;border:1px solid var(--gray-200);color:var(--brand-blue);display:grid;place-items:center;flex:none;overflow:hidden}
+.solve .sol-side .fico.emb svg{width:40px;height:40px}
+.solve .sol-side .fname{font-weight:700;color:var(--brand-blue);font-size:1.05rem;margin-bottom:.3rem}
+.solve .sol-side p{font-size:.88rem;color:var(--gray-700)}
+
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.feat-ico{width:52px;height:52px;border-radius:12px;background:var(--gray-100);display:grid;place-items:center;margin-bottom:16px;color:var(--brand-blue)}
+.feat-ico.accent{background:#fcd12e;color:var(--accent-orange)}
+.card h3{font-size:1.2rem;margin-bottom:.5rem;color:var(--gray-900)}
+.card .badge{display:inline-block;font-size:.72rem;font-weight:700;color:var(--accent-orange);background:#fcd12e;padding:.15rem .55rem;border-radius:999px;margin-left:.4rem;vertical-align:middle}
+.card p{color:var(--gray-600);font-size:.95rem}
+.card .cite{margin-top:.85rem;font-size:.8rem;color:var(--gray-400);border-top:1px dashed var(--gray-200);padding-top:.7rem}
+/* compact function strip */
+.func-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.func{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:16px 18px}
+.func .fi{width:40px;height:40px;border-radius:10px;background:var(--gray-100);color:var(--brand-blue);display:grid;place-items:center;flex:none}
+.func .fi.accent{background:#fcd12e;color:var(--accent-orange)}
+.func h3{font-size:1rem;margin-bottom:.15rem;color:var(--gray-900)}
+.func h3 .badge{display:inline-block;font-size:.68rem;font-weight:700;color:var(--accent-orange);background:#fcd12e;padding:.1rem .45rem;border-radius:999px;margin-left:.35rem;vertical-align:middle}
+.func p{font-size:.85rem;color:var(--gray-600)}
+/* 國一學習地圖 */
+.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mcard{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm)}
+.mcard .cimg{width:100%;border-radius:var(--radius);border:1px solid var(--gray-200);margin-bottom:12px;display:block}
+.mcard .mh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;border-bottom:none;padding-bottom:0}
+.mcard .mteacher{font-size:.9rem;color:var(--gray-600);margin-bottom:6px}
+.mcard .mprice{font-size:1.4rem;font-weight:900;color:var(--ink-navy);margin-bottom:12px}
+.mcard .mbuy{display:block;text-align:center;background:var(--brand-blue);color:#fff;font-weight:700;padding:.75rem 1rem;border-radius:var(--radius);margin-top:14px;transition:background .15s}
+.mcard .mbuy:hover{background:var(--brand-blue-dark)}
+/* 困擾（僅痛點）+ 11 大功能 */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1000px;margin:0 auto}
+.pain-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm)}
+.pain-card .ico{width:44px;height:44px;border-radius:12px;background:#fcd12e;color:var(--accent-orange);display:grid;place-items:center;margin-bottom:12px}
+.pain-card h3{font-size:1.05rem;color:var(--gray-900);margin-bottom:.35rem}
+.pain-card p{font-size:.9rem;color:var(--gray-600);line-height:1.6}
+.fn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.fn-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm);transition:box-shadow .18s,transform .18s}
+.fn-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.fn-card .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--brand-blue);color:#fff;font-weight:900;font-size:.9rem;margin-bottom:12px}
+.fn-card .fico{width:48px;height:48px;border-radius:12px;background:#f4f7fb;color:var(--brand-blue);display:grid;place-items:center;margin-bottom:14px}
+.fn-card h4{font-size:1.05rem;color:var(--gray-900);margin-bottom:.4rem}
+.fn-card p{font-size:.9rem;color:var(--gray-600);line-height:1.6}
+@media(max-width:991px){.pain-grid,.fn-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:767px){.pain-grid,.fn-grid{grid-template-columns:1fr}}
+/* 系統功能：介面示意圖卡 */
+.fn-shot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:1120px;margin:0 auto}
+.fn-shot{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column}
+.fn-shot .shot{background:#f4f7fb;padding:22px 20px;flex:1;display:flex;flex-direction:column;justify-content:center}
+.fn-shot .shot table{max-width:100%}
+.fn-shot .shot img{max-width:100%;height:auto}
+.fn-shot .cap{padding:18px 24px 24px}
+.fn-shot .cap .lbl{font-size:.78rem;font-weight:700;color:var(--accent-orange);letter-spacing:1px}
+.fn-shot .cap h4,.fn-shot .cap h3{font-size:1.2rem;color:var(--gray-900);margin:6px 0 6px}
+.fn-shot .cap p{font-size:.92rem;color:var(--gray-600);line-height:1.7}
+@media(max-width:900px){.fn-shot-grid{grid-template-columns:1fr;max-width:560px}}
+@media(max-width:600px){.fn-shot .stack{display:block!important;width:100%!important}.fn-shot .stack-gap{height:12px!important;line-height:12px!important}}
+.mcard .mh .s{font-size:1.2rem;font-weight:900;color:var(--brand-blue)}
+.mcard .mh .t{font-size:.8rem;color:var(--gray-600)}
+.mcard ul{list-style:none;margin:0}
+.mcard li{font-size:.9rem;color:var(--gray-700);padding:.28rem 0 .28rem 1.1rem;position:relative}
+.mcard li::before{content:"";position:absolute;left:0;top:.72rem;width:6px;height:6px;border-radius:50%;background:var(--light-blue)}
+.mcard .bridge{margin-top:12px;font-size:.82rem;color:var(--accent-orange-dark);background:#fcd12e;border-radius:8px;padding:.5rem .7rem;line-height:1.5}
+/* 官方課程販售圖／介紹圖 */
+.pkg-media{max-width:820px;margin:0 auto 36px;display:flex;flex-direction:column;gap:18px}
+.pkg-media>img{width:100%;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}
+.pkg-media .pkg-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pkg-media .pkg-row img{width:100%;border-radius:var(--radius);border:1px solid var(--gray-200);background:#fff}
+.pkg-media .pkg-card{max-width:460px;margin:0 auto}
+@media(max-width:767px){.pkg-media .pkg-row{grid-template-columns:repeat(3,1fr);gap:8px}}
+/* 國一各科下方購買區 */
+.buy-block{max-width:760px;margin:40px auto 0;text-align:center;background:#f4f7fb;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:26px 24px}
+.buy-block .buy-incl{color:var(--gray-700);font-size:.98rem;margin-bottom:18px;line-height:1.8}
+.buy-block .buy-incl b{color:var(--brand-blue)}
+/* 年段任務 */
+.stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.stage{background:var(--gray-100);border-radius:var(--radius-lg);padding:26px}
+.stage .n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--brand-blue);color:#fff;font-weight:900;margin-bottom:12px}
+.stage h3{font-size:1.1rem;color:var(--gray-900);margin-bottom:.5rem}
+.stage p{font-size:.92rem;color:var(--gray-600)}
+/* semester tabs */
+.sem-tabs{display:flex;justify-content:center;gap:10px;margin-bottom:28px}
+.stab{padding:.5rem 1.6rem;border-radius:999px;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);font-weight:600;cursor:pointer;font-family:inherit;font-size:.95rem;transition:all .15s}
+.stab:hover{border-color:var(--brand-blue);color:var(--brand-blue)}
+.stab.active{background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+.stab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(6,78,164,.3)}
+.sem-panel{display:none}
+.sem-panel.active{display:block}
+/* pricing */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto}
+.price-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:30px 24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;position:relative}
+.price-card.best{border:2px solid var(--brand-blue);box-shadow:var(--shadow-md)}
+.price-card .rec{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent-orange);color:var(--ink-navy);font-weight:700;font-size:.78rem;padding:.25rem .9rem;border-radius:999px;white-space:nowrap}
+.price-card .pname{font-size:1.2rem;font-weight:700;color:var(--gray-900)}
+.price-card .psub{font-size:.85rem;color:var(--gray-600);margin-top:.3rem;min-height:2.6em}
+.price-card .amt{margin:16px 0;font-size:1rem;color:var(--gray-900)}
+.price-card .amt b{font-size:2rem;font-weight:900;color:var(--brand-blue)}
+.price-card .amt .todo-price{font-size:1.15rem;font-weight:900;color:var(--accent-orange-dark);background:#fcd12e;border-radius:6px;padding:0 .4rem}
+.price-card ul{list-style:none;margin:0 0 22px;flex:1}
+.price-card li{font-size:.9rem;color:var(--gray-700);padding:.32rem 0 .32rem 1.5rem;position:relative}
+.price-card li::before{content:"✓";position:absolute;left:0;color:var(--success);font-weight:900}
+.price-card .btn{width:100%}
+/* EDM 介面圖 features */
+.edm-feats{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.edm-feats table{max-width:100%}
+.edm-feats img{max-width:100%;height:auto}
+/* 五大功能 tabs + 滑動 */
+.efeat-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.ftab{padding:.45rem 1.1rem;border-radius:999px;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);font-weight:600;cursor:pointer;font-family:inherit;font-size:.9rem;transition:all .15s}
+.ftab:hover{border-color:var(--brand-blue);color:var(--brand-blue)}
+.ftab.active{background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+.ftab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(6,78,164,.3)}
+.efeat-view{max-width:560px;margin:0 auto;overflow:hidden}
+.efeat-view table{max-width:100%}
+.efeat-view img{max-width:100%;height:auto}
+.efeat-panel{display:none}
+.efeat-panel.active{display:block;animation:efSlide .3s ease}
+@keyframes efSlide{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:translateX(0)}}
+
+/* courses */
+.courses{background:var(--gray-100)}
+.ver-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.ver-strip span{background:#fff;border:1px solid var(--gray-200);border-radius:999px;padding:.4rem 1rem;font-size:.9rem;font-weight:600;color:var(--gray-700)}
+.tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+.tab{padding:.6rem 1.4rem;border-radius:999px;border:1.5px solid var(--gray-200);background:#fff;color:var(--gray-700);font-weight:600;cursor:pointer;font-family:inherit;font-size:1rem;transition:all .15s}
+.tab:hover{border-color:var(--brand-blue);color:var(--brand-blue)}
+.tab.active{background:var(--brand-blue);border-color:var(--brand-blue);color:#fff}
+.tab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(6,78,164,.3)}
+.course-panel{display:none;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;grid-template-columns:1fr 1.4fr}
+.course-panel.active{display:grid}
+.course-side{background:var(--gradient-brand);color:#fff;padding:36px 32px;display:flex;flex-direction:column;justify-content:center}
+.course-side .subj{font-size:1.8rem;font-weight:900}
+.course-side .teacher{margin-top:.5rem;font-size:1.05rem;color:rgba(255,255,255,.9)}
+.course-side .ver{margin-top:1.25rem}
+.course-side .ver span{background:rgba(255,255,255,.18);padding:.3rem .8rem;border-radius:999px;font-size:.85rem;font-weight:500}
+.course-body{padding:36px 32px}
+.course-body .lead{font-size:1.05rem;color:var(--gray-900);font-weight:500;margin-bottom:18px}
+.res-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 20px}
+.res-grid .r{display:flex;align-items:center;gap:8px;font-size:.92rem;color:var(--gray-700)}
+.res-grid .r svg{color:var(--success);flex:none}
+/* unified course (不分科) */
+.uni-course{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:32px 28px;max-width:960px;margin:0 auto}
+.uni-course .uni-lead{text-align:center;font-size:1.1rem;color:var(--gray-900);margin-bottom:20px}
+.uni-course .uni-lead b{color:var(--brand-blue)}
+.subj-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.subj-chip{display:inline-flex;align-items:center;gap:.4rem;background:var(--gray-100);border-radius:999px;padding:.4rem 1rem;font-size:.88rem;color:var(--gray-600)}
+.subj-chip b{color:var(--brand-blue);font-size:.95rem}
+.incl-title{text-align:center;font-weight:700;color:var(--gray-900);font-size:1.05rem;margin-bottom:18px;position:relative}
+.incl-title::before,.incl-title::after{content:"";position:absolute;top:50%;width:60px;height:1px;background:var(--gray-200)}
+.incl-title::before{left:calc(50% - 120px)}.incl-title::after{right:calc(50% - 120px)}
+.incl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.incl{display:flex;gap:12px;align-items:flex-start;background:#f4f7fb;border-radius:var(--radius);padding:16px 18px}
+.incl .ic{font-size:1.4rem;line-height:1;flex:none}
+.incl b{color:var(--brand-blue);font-size:.98rem}
+.incl p{color:var(--gray-700);font-size:.85rem;margin-top:.2rem}
+@media(max-width:991px){.incl-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:767px){.incl-grid{grid-template-columns:1fr}.incl-title::before,.incl-title::after{display:none}}
+
+/* testimonials */
+.testi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.testi-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.testi-card .who{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--gradient-brand);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.testi-card .who .name{font-weight:700;font-size:.95rem}
+.testi-card .who .role{font-size:.8rem;color:var(--gray-600)}
+.testi-card .q{font-weight:700;color:var(--brand-blue);margin-bottom:.5rem;font-size:1.05rem}
+.testi-card .body{color:var(--gray-700);font-size:.92rem;flex:1}
+.tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:.72rem;color:var(--gray-600);background:var(--gray-100);padding:.2rem .55rem;border-radius:999px}
+.note{max-width:800px;margin:28px auto 0;background:#f4f7fb;border-radius:var(--radius);padding:14px 18px;color:var(--warning);font-size:.88rem;text-align:center}
+
+/* comparison (merged) */
+.cmp-wrap{overflow-x:auto;max-width:960px;margin:0 auto}
+.cmp{width:100%;border-collapse:collapse;min-width:640px;background:#fff;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}
+.cmp th,.cmp td{padding:14px 16px;text-align:center;border-bottom:1px solid var(--gray-200)}
+.cmp thead th{background:var(--ink-navy);color:#fff;font-weight:700;font-size:.95rem}
+.cmp thead th.us{background:var(--brand-blue)}
+.cmp td:first-child,.cmp th:first-child{text-align:left;font-weight:600;color:var(--gray-900)}
+.cmp td.us{background:#f4f7fb}
+.cmp .o{color:var(--brand-blue);font-weight:900;font-size:1.1rem}
+.cmp .x{color:var(--gray-400)}
+.cmp .p{color:var(--gray-600);font-size:.88rem}
+.cmp .feat-hl{color:var(--accent-orange)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.step{text-align:center}
+.step .num{width:48px;height:48px;border-radius:50%;background:var(--gradient-brand);color:#fff;font-weight:900;display:grid;place-items:center;margin:0 auto 12px;font-size:1.1rem}
+.step h4{font-size:1rem;margin-bottom:.3rem;color:var(--gray-900)}
+.step p{font-size:.85rem;color:var(--gray-600)}
+
+/* TODO placeholder */
+.todo{border:2px dashed var(--light-blue);border-radius:var(--radius-lg);background:#f4f7fb;padding:28px;max-width:900px;margin:0 auto}
+.todo .flag{display:inline-flex;align-items:center;gap:6px;background:var(--light-blue);color:var(--ink-navy);font-weight:700;font-size:.8rem;padding:.3rem .8rem;border-radius:999px;margin-bottom:14px}
+.todo>p{color:var(--gray-700);font-size:.95rem}
+.todo ul{margin:12px 0 0 1.2rem;color:var(--gray-700);font-size:.92rem}
+.todo ul li{margin-bottom:.4rem}
+
+/* FAQ */
+.faq-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.faq-col h3{font-size:1.15rem;color:var(--brand-blue);margin-bottom:14px}
+details{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+details summary{cursor:pointer;padding:14px 16px;font-weight:600;font-size:.95rem;color:var(--gray-900);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-size:1.3rem;color:var(--brand-blue);font-weight:400;flex:none}
+details[open] summary::after{content:"–"}
+details .ans{padding:0 16px 16px;color:var(--gray-600);font-size:.9rem}
+.faq-todo{max-width:none;margin-top:28px}
+
+/* CTA band */
+.cta-band{background:var(--ink-navy);color:#fff;text-align:center}
+.cta-band h2{font-size:2rem}
+.cta-band p{color:rgba(255,255,255,.8);margin:.75rem auto 0;max-width:52ch}
+.cta-band .btns{display:flex;gap:1rem;justify-content:center;margin-top:2rem;flex-wrap:wrap}
+.cta-band .fineprint{margin-top:1.25rem;font-size:.85rem;color:rgba(255,255,255,.6)}
+.contact-strip{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.15)}
+.contact-strip .ci .lbl{font-size:.8rem;color:rgba(255,255,255,.6)}
+.contact-strip .ci .val{font-weight:700;color:#fcd12e}
+
+/* footer */
+footer{background:#1e3d60;color:rgba(255,255,255,.75);padding:56px 0 28px;font-size:.9rem}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;margin-bottom:36px}
+.foot-grid h4,.foot-grid h3{color:#fff;font-size:1rem;margin-bottom:14px}
+.foot-grid ul{list-style:none}
+.foot-grid li{margin-bottom:.5rem}
+.foot-grid a{color:rgba(255,255,255,.75)}
+.foot-grid a:hover{color:#fff}
+.social{display:flex;gap:12px;margin-top:14px}
+.social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;color:#fff}
+.social a:hover{background:var(--brand-blue)}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:.82rem;color:rgba(255,255,255,.55)}
+.foot-bottom a{color:rgba(255,255,255,.55)}
+
+/* responsive */
+@media (max-width:991px){
+  .feat-grid,.func-strip,.map-grid,.stage-grid{grid-template-columns:repeat(2,1fr)}
+  .testi-grid{grid-template-columns:repeat(2,1fr)}
+  .faq-groups{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:2.5rem}
+}
+@media (max-width:767px){
+  section{padding:56px 0}
+  .nav-links,.countdown{display:none}
+  .menu-btn{display:block}
+  .hero-grid{grid-template-columns:1fr;gap:36px}
+  .hero{padding:56px 0 64px}
+  .hero h1{font-size:2.1rem}
+  .feat-grid,.func-strip,.map-grid,.stage-grid,.testi-grid,.steps,.price-grid{grid-template-columns:1fr}
+  .solve{grid-template-columns:1fr}
+  .solve .arrow{padding:8px 0}
+  .solve .arrow svg{transform:rotate(90deg)}
+  .course-panel.active{grid-template-columns:1fr}
+  .sec-head h2{font-size:1.6rem}
+  .cta-band h2,.hero h1{letter-spacing:0}
+}
+</style>
+
+<style id="hanlin-styleguide">
+/* ══════════════════════════════════════════════════════════════
+   istockapp-DESIGN.md — 明亮版套用層
+   參照 istockapp.cathaysec.com.tw 活動頁調性：
+   橘紅主色／天藍區塊／米黃暖底／白卡＋深藍粗邊＋硬陰影
+   僅覆寫 UI：色彩／字體／字級／間距／圓角／陰影／動態／狀態
+   HTML 結構、文案、版面骨架一律不動
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root{
+  --isk-strong:#ff5933;        /* color.surface.strong 主色 */
+  --isk-strong-deep:#e04425;
+  --isk-strong-soft:#ffe6dd;
+  --isk-raised:#2c89d8;        /* color.surface.raised 區塊藍 */
+  --isk-raised-deep:#1a6fb8;   /* 白字達 4.5:1 用 */
+  --isk-raised-soft:#e2f0fd;
+  --isk-mint:#04fdbc;          /* color.text.secondary 點綴 */
+  --isk-mint-soft:#d9fff5;
+  --isk-navy:#08284c;          /* color.border.strong 邊線／陰影／標題 */
+  --isk-ink:#333333;           /* color.text.inverse 內文 */
+  --isk-muted:#5a6b7c;
+  --isk-cream:#fff4e6;         /* 暖色底 */
+  --isk-cream-deep:#ffe8cc;
+  --isk-white:#ffffff;
+
+  --isk-font-stack:Arial,"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --isk-size-xs:13.08px; --isk-size-sm:14px;  --isk-size-md:14.71px; --isk-size-lg:17.98px;
+  --isk-size-xl:19.61px; --isk-size-2xl:22.88px; --isk-size-3xl:26.15px; --isk-size-4xl:29.42px;
+  --isk-size-display:49.0312px;
+
+  --isk-space-5:10.46px; --isk-space-6:14.71px; --isk-space-7:16.34px; --isk-space-8:19.61px;
+  --isk-space-9:26.15px; --isk-space-10:39.23px; --isk-space-11:58.84px; --isk-space-12:88.26px;
+
+  --isk-radius-xs:12.26px; --isk-radius-sm:22.88px; --isk-radius-md:39.23px; --isk-radius-lg:68.64px;
+  --isk-shadow-1:rgb(8,40,76) 0px 6.5375px 0px 0px;
+  --isk-shadow-2:rgb(8,40,76) 0px 8.17188px 0px 0px;
+  --isk-duration-instant:300ms; --isk-duration-fast:500ms;
+  --isk-ease:cubic-bezier(.22,.61,.36,1);
+
+  /* 既有骨架變數重新指向新語義色，讓第一層規則自動換色 */
+  --brand-blue:#1a6fb8; --brand-blue-dark:#125a9c; --brand-blue-active:#0e4881;
+  --light-blue:#2c89d8; --accent-orange:#ff5933; --accent-orange-dark:#08284c;
+  --ink-navy:#08284c;
+  --gradient-brand:linear-gradient(150deg,#ff7a5c 0%,#ff5933 55%,#e04425 100%);
+  --brand-soft:#fff4e6; --accent-yellow:#04fdbc; --accent-yellow-soft:#d9fff5;
+  --accent-orange-soft:#ffe6dd; --disabled-bg:#e9eef4;
+  --border:#08284c; --text-title:#08284c; --text-body:#5a6b7c;
+  --gray-900:#08284c; --gray-700:#333333; --gray-600:#5a6b7c; --gray-400:#7c8ea1;
+  --gray-200:#cfdbe7; --gray-100:#fff4e6; --white:#ffffff;
+  --success:#0e8f6f; --warning:#5a6b7c; --error:#e04425;
+  --radius-xs:12.26px; --radius-sm:999px; --radius:12.26px; --radius-lg:22.88px;
+  --radius-block:22.88px; --radius-pill:999px; --radius-round:999px;
+  --shadow-1:rgb(8,40,76) 0px 6.5375px 0px 0px;
+  --shadow-2:rgb(8,40,76) 0px 8.17188px 0px 0px;
+  --shadow-sm:rgb(8,40,76) 0px 6.5375px 0px 0px;
+  --shadow-md:rgb(8,40,76) 0px 8.17188px 0px 0px;
+  --shadow-lg:rgb(8,40,76) 0px 8.17188px 0px 0px;
+}
+
+/* ── 字體 ───────────────────────────────────────────────────── */
+body,body *:not(svg):not(path){font-family:var(--isk-font-stack)!important}
+body{font-size:var(--isk-size-lg)!important;line-height:1.75!important;
+  color:var(--isk-ink)!important;background:var(--isk-white)!important}
+
+/* 標題尺度 */
+.hero h1{font-size:var(--isk-size-display)!important;line-height:1.25!important;
+  color:var(--isk-white)!important;letter-spacing:-.02em!important;font-weight:700!important;
+  text-shadow:none!important}
+.sec-head h2,.cta-band h2{font-size:var(--isk-size-4xl)!important;line-height:1.25!important;font-weight:700!important}
+.sec-head h2{color:var(--isk-navy)!important}
+.faq-col h3,.incl-title,.uni-course .uni-lead{font-size:var(--isk-size-2xl)!important;line-height:1.25!important}
+.card h3,.pain-card h3,.solve .pain-side h3,.stage h3,.fn-shot .cap h4,.dash .dash-top h4,
+.foot-grid h4,.course-body .lead{font-size:var(--isk-size-xl)!important;line-height:1.25!important;
+  color:var(--isk-navy)!important;font-weight:700!important}
+.func h3,.fn-card h4,.step h4,.solve .sol-side .fname,.testi-card .q,.price-card .pname{
+  font-size:var(--isk-size-lg)!important;line-height:1.25!important;font-weight:700!important;color:var(--isk-navy)!important}
+.foot-grid h4,.foot-grid h3{color:var(--isk-white)!important}
+.course-body .lead{color:var(--isk-navy)!important}
+
+/* 段落尺度 */
+.sec-head p,.hero .sub{font-size:var(--isk-size-xl)!important;line-height:1.75!important;color:var(--isk-muted)!important}
+.card p,.fn-card p,.pain-card p,.func p,.stage p,.testi-card .body,.solve .pain-side p,
+.solve .sol-side p,.fn-shot .cap p,.mcard li,.price-card li,.mcard .mteacher,
+.buy-block .buy-incl,.todo>p,.todo ul,.incl p,.res-grid .r,.nav-links a,.btn,
+details summary,details .ans,.subj-chip,.ver-strip span{font-size:var(--isk-size-md)!important}
+.card .cite,.step p,.contact-strip .ci .lbl,.cmp .p,.mcard .bridge,.note,
+.countdown,.hero-price .pl,.hero-price .pn,.ring .cap,.trust-row .lbl,
+.testi-card .who .role,.dash .cal .row{font-size:var(--isk-size-sm)!important}
+.eyebrow,.tags span,.card .badge,.func h3 .badge,.price-card .rec,.dash .tag,
+.hero-tag,.fn-shot .cap .lbl,.foot-bottom{font-size:var(--isk-size-xs)!important}
+
+/* ── 版面與區塊底色（暖底／白／天藍交錯，避免整頁單調）────── */
+.wrap{max-width:1180px!important;padding:0 var(--isk-space-9)!important}
+section{padding:var(--isk-space-12) 0!important}
+.feat-grid,.fn-grid,.pain-grid,.map-grid,.stage-grid,.price-grid,.testi-grid,
+.func-strip,.incl-grid,.fn-shot-grid{gap:var(--isk-space-9)!important}
+.sec-head{margin-bottom:var(--isk-space-11)!important}
+#stage{background:var(--isk-cream)!important}
+#features{background:var(--isk-white)!important}
+#courses{background:var(--isk-raised-deep)!important}  /* 天藍加深一階，區塊內白字／薄荷字才達 AA */
+#testi{background:var(--isk-cream)!important}
+#compare{background:var(--isk-white)!important}
+#pricing{background:var(--isk-cream)!important}
+#faq{background:var(--isk-white)!important}
+
+/* ── 圓角 ───────────────────────────────────────────────────── */
+.btn,.mcard .mbuy,.tab,.stab,.ftab,.subj-chip,.eyebrow,.hero-tag,.tags span,
+.ver-strip span,.card .badge,.func h3 .badge,.price-card .rec,.dash .tag,
+.social a,input,select,textarea{border-radius:999px!important}
+.card,.fn-card,.pain-card,.mcard,.price-card,.testi-card,.solve,.func,.incl,
+.dash,.stage,details,.note,.hero-price,.feat-ico,.fn-card .fico,.pain-card .ico,
+.solve .pain-side .ico,.solve .sol-side .fico,.func .fi,.fn-card .n,.stage .n,
+.mcard .cimg,.pkg-media .pkg-row img,.promo .todo-inline,.hero-price .pv .todo-price,
+.price-card .amt .todo-price,.dash .chk{border-radius:var(--isk-radius-xs)!important}
+.uni-course,.todo,.buy-block,.fn-shot,.course-panel,.cmp,.efeat-view,
+.pkg-media>img{border-radius:var(--isk-radius-sm)!important}
+.avatar,.step .num,.ring .circle,.ring .circle span,.logo .dot,.logo .arc{border-radius:999px!important}
+
+/* ── 動態 ───────────────────────────────────────────────────── */
+.btn,.mcard .mbuy,.tab,.stab,.ftab,.card,.fn-card,.mcard,.testi-card,.pain-card,.solve,.func{
+  transition:transform var(--isk-duration-instant) var(--isk-ease),
+             box-shadow var(--isk-duration-instant) var(--isk-ease),
+             background-color var(--isk-duration-instant) var(--isk-ease),
+             border-color var(--isk-duration-instant) var(--isk-ease),
+             color var(--isk-duration-instant) var(--isk-ease)!important}
+.efeat-panel.active{animation-duration:var(--isk-duration-fast)!important}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* ── Promo bar ─────────────────────────────────────────────── */
+.promo{background:var(--isk-mint)!important;color:var(--isk-navy)!important;
+  font-weight:700!important;font-size:var(--isk-size-md)!important;
+  padding:var(--isk-space-5) var(--isk-space-7)!important;
+  border-bottom:2px solid var(--isk-navy)!important}
+.promo .todo-inline{background:var(--isk-navy)!important;color:var(--isk-mint)!important;
+  padding:1px var(--isk-space-5)!important}
+
+/* ── Header ────────────────────────────────────────────────── */
+header{background:rgba(255,255,255,.97)!important;border-bottom:2px solid var(--isk-navy)!important;
+  backdrop-filter:blur(10px)!important}
+.nav{height:72px!important}
+.nav-links a{color:var(--isk-navy)!important;font-weight:700!important}
+.nav-links a:hover{color:var(--isk-strong)!important}
+.countdown{color:var(--isk-muted)!important;font-weight:700!important}
+.countdown b{color:var(--isk-strong-deep)!important;font-size:var(--isk-size-xl)!important;font-weight:900!important}
+.menu-btn{color:var(--isk-navy)!important}
+
+/* ── Hero：主色橘紅大面積 ──────────────────────────────────── */
+.hero{background:var(--gradient-brand)!important;color:var(--isk-white)!important;
+  padding:var(--isk-space-12) 0!important;border-bottom:3px solid var(--isk-navy)!important}
+.hero::after{border-color:rgba(255,255,255,.22)!important}
+.hero-tag{background:var(--isk-white)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:700!important;box-shadow:var(--isk-shadow-1)!important}
+.hero h1 .em{color:var(--isk-navy)!important}
+.hero .sub{color:var(--isk-navy)!important;font-weight:400!important}
+.hero-price{background:var(--isk-white)!important;border:3px solid var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-2)!important;padding:var(--isk-space-7) var(--isk-space-9)!important}
+.hero-price .pl{color:var(--isk-ink)!important;font-weight:700!important}
+.hero-price .pv{color:var(--isk-navy)!important;font-size:var(--isk-size-4xl)!important;font-weight:900!important}
+.hero-price .pv span{color:var(--isk-strong-deep)!important}
+.hero-price .pn{color:var(--isk-raised-deep)!important;font-weight:700!important}
+.hero-price .pv .todo-price{background:var(--isk-mint)!important;color:var(--isk-navy)!important}
+/* 橘底上的 CTA 改藍色實心，維持足夠對比 */
+.hero .btn-accent{background:var(--isk-raised-deep)!important;color:var(--isk-white)!important}
+.hero .btn-accent:hover{background:var(--isk-raised)!important}
+.hero .btn-ghost-light{background:var(--isk-white)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;box-shadow:var(--isk-shadow-1)!important}
+.hero .btn-ghost-light:hover{background:var(--isk-cream)!important}
+.trust-row .num{color:var(--isk-navy)!important;font-size:var(--isk-size-3xl)!important;font-weight:900!important}
+.trust-row .lbl{color:var(--isk-navy)!important;font-weight:400!important}
+.hero-single .hero-note{color:var(--isk-navy)!important}
+.hero-single .hero-note .todo-date{background:var(--isk-white)!important;color:var(--isk-navy)!important;font-weight:700!important}
+
+/* ── 儀表板白卡 ────────────────────────────────────────────── */
+.dash{background:var(--isk-white)!important;color:var(--isk-ink)!important;
+  border:3px solid var(--isk-navy)!important;box-shadow:var(--isk-shadow-2)!important;
+  padding:var(--isk-space-9)!important}
+.dash .dash-top h4{color:var(--isk-navy)!important}
+.dash .tag{background:var(--isk-cream)!important;color:var(--isk-navy)!important;font-weight:700!important;
+  border:1px solid var(--isk-navy)!important}
+.ring .r1{background:conic-gradient(var(--isk-raised) 0 78%,#dbe6f0 0)!important}
+.ring .r2{background:conic-gradient(#04c79a 0 85%,#dbe6f0 0)!important}
+.ring .r3{background:conic-gradient(var(--isk-strong) 0 64%,#dbe6f0 0)!important}
+.ring .circle{color:var(--isk-navy)!important}
+.ring .circle span{background:var(--isk-white)!important}
+.ring .cap{color:var(--isk-muted)!important;font-weight:700!important}
+.dash .cal{border-top:2px solid var(--isk-navy)!important}
+.dash .cal .row{color:var(--isk-ink)!important}
+.chk.done{background:#0e8f6f!important}
+.chk.miss{background:var(--isk-strong)!important}
+.chk.plan{background:#c7d5e2!important}
+.dash .miss-txt{color:var(--isk-strong-deep)!important;font-weight:900!important}
+
+/* ── 按鈕：粗邊＋硬陰影 ────────────────────────────────────── */
+.btn,.mcard .mbuy{font-weight:900!important;border:2px solid var(--isk-navy)!important;
+  padding:var(--isk-space-6) var(--isk-space-10)!important;min-height:52px!important}
+.btn-lg{padding:var(--isk-space-7) var(--isk-space-11)!important;font-size:var(--isk-size-lg)!important}
+.btn-primary,.mcard .mbuy{background:var(--isk-raised-deep)!important;color:var(--isk-white)!important;
+  box-shadow:var(--isk-shadow-1)!important}
+.btn-primary:hover,.mcard .mbuy:hover{background:var(--isk-raised)!important;transform:translateY(-2px)!important;
+  box-shadow:var(--isk-shadow-2)!important}
+.btn-primary:active,.mcard .mbuy:active{transform:translateY(4px)!important;box-shadow:rgb(8,40,76) 0 2px 0 0!important}
+.btn-accent{background:var(--isk-strong)!important;color:var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-1)!important}
+.btn-accent:hover{background:#ff7051!important;transform:translateY(-2px)!important;box-shadow:var(--isk-shadow-2)!important}
+.btn-accent:active{transform:translateY(4px)!important;box-shadow:rgb(8,40,76) 0 2px 0 0!important}
+.btn-secondary{background:var(--isk-mint)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;box-shadow:var(--isk-shadow-1)!important}
+.btn-secondary:hover{background:#5cffdb!important;transform:translateY(-2px)!important;box-shadow:var(--isk-shadow-2)!important}
+.btn-ghost-light{background:var(--isk-white)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;box-shadow:var(--isk-shadow-1)!important}
+.btn-ghost-light:hover{background:var(--isk-cream)!important}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.45!important;cursor:not-allowed!important;
+  transform:none!important;box-shadow:none!important}
+
+/* ── 焦點指示 ──────────────────────────────────────────────── */
+a:focus-visible,button:focus-visible,summary:focus-visible,
+select:focus-visible,textarea:focus-visible,input:focus-visible,[tabindex]:focus-visible{
+  outline:3px solid var(--isk-navy)!important;outline-offset:3px!important;box-shadow:none!important}
+.hero :focus-visible,.course-side :focus-visible,#courses :focus-visible{
+  outline:3px solid var(--isk-white)!important;outline-offset:3px!important}
+
+/* ── 白卡系統：2px 深藍邊＋硬陰影 ──────────────────────────── */
+.card,.fn-card,.pain-card,.mcard,.price-card,.testi-card,.solve,.func,.stage,
+.uni-course,.fn-shot,.course-panel,.buy-block{
+  background:var(--isk-white)!important;border:2px solid var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-1)!important;color:var(--isk-ink)!important}
+.card:hover,.fn-card:hover,.mcard:hover,.testi-card:hover,.pain-card:hover,.func:hover,.solve:hover{
+  transform:translateY(-4px)!important;box-shadow:var(--isk-shadow-2)!important}
+.card p,.fn-card p,.pain-card p,.func p,.stage p,.testi-card .body,
+.solve .pain-side p,.solve .sol-side p,.fn-shot .cap p,.mcard li,.price-card li,
+.mcard .mteacher,.buy-block .buy-incl,.todo>p,.todo ul,.incl p,.res-grid .r{
+  color:var(--isk-muted)!important}
+.card .cite{color:#7c8ea1!important;border-top:1px dashed #cfdbe7!important}
+.solve .sol-side{background:var(--isk-mint-soft)!important;border-left:2px solid var(--isk-navy)!important}
+.solve .arrow{background:var(--isk-raised-soft)!important;color:var(--isk-navy)!important}
+.solve .sol-side .fname{color:var(--isk-raised-deep)!important}
+.solve .sol-side .fico{background:var(--isk-white)!important;border:2px solid var(--isk-navy)!important;
+  color:var(--isk-raised-deep)!important}
+.incl{background:var(--isk-cream)!important;border:2px solid var(--isk-navy)!important}
+.incl b{color:var(--isk-navy)!important}
+.buy-block .buy-incl b{color:var(--isk-strong-deep)!important}
+.uni-course .uni-lead{color:var(--isk-navy)!important}
+.uni-course .uni-lead b{color:var(--isk-strong-deep)!important}
+.incl-title{color:var(--isk-navy)!important}
+.incl-title::before,.incl-title::after{background:var(--isk-navy)!important}
+.subj-chip{background:var(--isk-mint-soft)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:700!important}
+.subj-chip b{color:var(--isk-navy)!important}
+.note{background:var(--isk-mint-soft)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:400!important}
+.todo{background:var(--isk-cream)!important;border:2px dashed var(--isk-navy)!important}
+.todo .flag{background:var(--isk-mint)!important;color:var(--isk-navy)!important;font-weight:900!important;
+  border:2px solid var(--isk-navy)!important}
+
+/* 圖示方塊：主色／藍／薄荷輪替 */
+.feat-ico,.fn-card .fico,.func .fi{background:var(--isk-mint)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important}
+.feat-ico.accent,.func .fi.accent,.pain-card .ico,.solve .pain-side .ico{
+  background:var(--isk-strong)!important;color:var(--isk-navy)!important;border:2px solid var(--isk-navy)!important}
+.fn-card .n{background:var(--isk-strong)!important;color:var(--isk-navy)!important;font-weight:900!important;
+  border:2px solid var(--isk-navy)!important}
+.stage .n{background:var(--isk-raised-deep)!important;color:var(--isk-white)!important;
+  border:2px solid var(--isk-navy)!important}
+.card .badge,.func h3 .badge{background:var(--isk-mint)!important;color:var(--isk-navy)!important;
+  font-weight:900!important;border:1px solid var(--isk-navy)!important}
+.eyebrow{background:var(--isk-mint)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:700!important;letter-spacing:.1em!important;
+  box-shadow:var(--isk-shadow-1)!important}
+
+/* ── 學習地圖卡 ────────────────────────────────────────────── */
+.mcard .mh .s{color:var(--isk-navy)!important;font-size:var(--isk-size-2xl)!important;font-weight:900!important}
+.mcard .mh .t{color:var(--isk-muted)!important}
+.mcard .mprice{color:var(--isk-strong-deep)!important;font-size:var(--isk-size-3xl)!important;font-weight:900!important}
+.mcard li::before{background:var(--isk-strong)!important}
+.mcard .bridge{background:var(--isk-strong-soft)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:400!important}
+.mcard .cimg,.pkg-media .pkg-row img,.pkg-media>img{border:2px solid var(--isk-navy)!important}
+
+/* ── Tabs / chips ──────────────────────────────────────────── */
+.tab,.stab,.ftab{background:var(--isk-white)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:700!important;box-shadow:var(--isk-shadow-1)!important}
+.tab:hover,.stab:hover,.ftab:hover{background:var(--isk-cream)!important;transform:translateY(-2px)!important}
+.tab.active,.stab.active,.ftab.active{background:var(--isk-strong)!important;
+  color:var(--isk-navy)!important;border-color:var(--isk-navy)!important;box-shadow:var(--isk-shadow-2)!important}
+.tab:active,.stab:active,.ftab:active{transform:translateY(3px)!important;box-shadow:rgb(8,40,76) 0 2px 0 0!important}
+.ver-strip span,.tags span{background:var(--isk-white)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:700!important}
+
+/* ── 天藍區塊（國一課程）內的白卡與文字 ────────────────────── */
+#courses .sec-head h2{color:var(--isk-white)!important;text-shadow:none!important}
+#courses .sec-head p{color:var(--isk-white)!important;font-weight:400!important}
+#courses .eyebrow{background:var(--isk-white)!important}
+.course-side{background:linear-gradient(150deg,#1a6fb8 0%,#08284c 100%)!important;color:var(--isk-white)!important;
+  border-right:2px solid var(--isk-navy)!important}
+.course-side .subj{color:var(--isk-mint)!important}
+.course-side .teacher{color:var(--isk-white)!important}
+.course-side .ver span{background:rgba(255,255,255,.2)!important;color:var(--isk-white)!important}
+.res-grid .r svg{color:#0e8f6f!important}
+
+/* ── 學員心得 ──────────────────────────────────────────────── */
+.avatar{background:var(--isk-strong)!important;color:var(--isk-navy)!important;font-weight:900!important;
+  border:2px solid var(--isk-navy)!important}
+.testi-card .who .name{color:var(--isk-navy)!important}
+.testi-card .who .role{color:var(--isk-muted)!important}
+.testi-card .q{color:var(--isk-strong-deep)!important}
+
+/* ── 比較表 ────────────────────────────────────────────────── */
+.cmp{background:var(--isk-white)!important;border:2px solid var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-1)!important}
+.cmp thead th{background:var(--isk-navy)!important;color:var(--isk-white)!important;font-weight:900!important}
+.cmp thead th.us{background:var(--isk-mint)!important;color:var(--isk-navy)!important}
+.cmp th,.cmp td{border-bottom:1px solid #cfdbe7!important;color:var(--isk-muted)!important;
+  padding:var(--isk-space-7) var(--isk-space-8)!important}
+.cmp td:first-child,.cmp th:first-child{color:var(--isk-navy)!important;font-weight:700!important}
+.cmp td.us{background:var(--isk-mint-soft)!important}
+.cmp .o{color:#0e8f6f!important;font-weight:900!important}
+.cmp .x{color:#7c8ea1!important}
+.cmp .p{color:var(--isk-muted)!important}
+.cmp .feat-hl{color:var(--isk-strong-deep)!important;font-weight:900!important}
+
+/* ── 步驟 ──────────────────────────────────────────────────── */
+.step .num{background:var(--isk-strong)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;box-shadow:var(--isk-shadow-1)!important}
+.step h4{color:var(--isk-navy)!important}
+.step p{color:var(--isk-muted)!important}
+
+/* ── 方案價格 ──────────────────────────────────────────────── */
+.price-card .pname{color:var(--isk-navy)!important}
+.price-card .psub{color:var(--isk-muted)!important}
+.price-card .amt{color:var(--isk-navy)!important}
+.price-card .amt b{color:var(--isk-strong-deep)!important;font-size:var(--isk-size-display)!important}
+.price-card .amt .todo-price{background:var(--isk-mint)!important;color:var(--isk-navy)!important}
+.price-card li::before{color:#0e8f6f!important}
+.price-card.best{background:var(--isk-mint-soft)!important;border:3px solid var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-2)!important}
+.price-card .rec{background:var(--isk-strong)!important;color:var(--isk-navy)!important;
+  border:2px solid var(--isk-navy)!important;font-weight:900!important}
+
+/* ── FAQ ───────────────────────────────────────────────────── */
+.faq-col h3{color:var(--isk-navy)!important}
+details{background:var(--isk-white)!important;border:2px solid var(--isk-navy)!important;
+  box-shadow:var(--isk-shadow-1)!important}
+details[open]{background:var(--isk-cream)!important}
+details summary{color:var(--isk-navy)!important;font-weight:700!important;
+  padding:var(--isk-space-7) var(--isk-space-8)!important}
+details summary:hover{color:var(--isk-strong-deep)!important}
+details summary::after{color:var(--isk-strong)!important;font-size:var(--isk-size-3xl)!important;font-weight:900!important}
+details .ans{color:var(--isk-muted)!important;padding:0 var(--isk-space-8) var(--isk-space-8)!important}
+
+/* ── CTA band：主色收尾 ────────────────────────────────────── */
+.cta-band{background:var(--gradient-brand)!important;color:var(--isk-white)!important;
+  border-top:3px solid var(--isk-navy)!important}
+.cta-band h2{color:var(--isk-white)!important;text-shadow:none!important}
+.cta-band p{color:var(--isk-navy)!important;font-weight:400!important}
+.cta-band .fineprint{color:var(--isk-navy)!important}
+.cta-band .btn-accent{background:var(--isk-white)!important;color:var(--isk-navy)!important}
+.cta-band .btn-accent:hover{background:var(--isk-cream)!important}
+.contact-strip{border-top:2px solid var(--isk-navy)!important}
+.contact-strip .ci .lbl{color:var(--isk-navy)!important;font-weight:700!important}
+.contact-strip .ci .val{color:var(--isk-navy)!important;font-weight:900!important}
+
+/* ── Footer ────────────────────────────────────────────────── */
+footer{background:var(--isk-navy)!important;color:rgba(255,255,255,.85)!important;
+  border-top:3px solid var(--isk-navy)!important}
+.logo-img--foot{filter:brightness(0) invert(1)!important}
+.foot-grid a{color:rgba(255,255,255,.85)!important}
+.foot-grid a:hover{color:var(--isk-mint)!important}
+.social a{background:rgba(255,255,255,.14)!important;color:var(--isk-white)!important}
+.social a:hover{background:var(--isk-mint)!important;color:var(--isk-navy)!important}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.25)!important;color:rgba(255,255,255,.72)!important}
+.foot-bottom a{color:rgba(255,255,255,.72)!important}
+.foot-bottom a:hover{color:var(--isk-mint)!important}
+
+/* ── 介面示意圖區（EDM／App 截圖模擬）維持原淺底 ───────────── */
+.fn-shot .shot{background:var(--isk-raised-soft)!important}
+.fn-shot .cap{background:var(--isk-white)!important}
+.fn-shot .cap .lbl{color:var(--isk-strong-deep)!important;font-weight:900!important;letter-spacing:.14em!important}
+.fn-shot .cap h4,.fn-shot .cap h3{color:var(--isk-navy)!important}
+.efeat-view,.edm-feats{background:transparent!important}
+
+
+/* ── 對比度修正（headless 實測 WCAG 2.2 AA 後回修）──────────── */
+/* 白底上的橘色小字 #e04425 僅 4.18:1，加深為可讀橘 */
+.fn-shot .cap .lbl,.testi-card .q,.cmp .feat-hl,.uni-course .uni-lead b,
+.buy-block .buy-incl b,.countdown b,.hero-price .pv span{color:#b8360f!important}
+/* 比較表首欄表頭：深藍字疊深藍底＝隱形字，表頭一律白字 */
+.cmp thead th:first-child{color:var(--isk-white)!important}
+.cmp thead th.us{color:var(--isk-navy)!important}
+/* 比較表符號：加深至 4.5:1 */
+.cmp .o{color:#0a7357!important}
+.cmp .x{color:#5a6b7c!important}
+/* 天藍區塊標題內的強調字：藍底藍字不可讀，改薄荷色 */
+#courses .sec-head h2 .hl{color:var(--isk-mint)!important}
+/* 介面示意圖內寫死的舊橘 #ef9d55 白字僅 2.18:1，加深 */
+[style*="#ef9d55"]{background:#c8421a!important}
+
+/* ── 響應式微調 ────────────────────────────────────────────── */
+@media (max-width:991px){
+  .hero h1{font-size:var(--isk-size-4xl)!important}
+  .sec-head h2,.cta-band h2{font-size:var(--isk-size-3xl)!important}
+}
+@media (max-width:767px){
+  section{padding:var(--isk-space-11) 0!important}
+  .wrap{padding:0 var(--isk-space-8)!important}
+  .hero h1{font-size:var(--isk-size-3xl)!important}
+  .btn,.mcard .mbuy{padding:var(--isk-space-6) var(--isk-space-8)!important}
+}
+</style>
+</head>
+<body>
+
+<!-- 0. Promo bar -->
+<div class="promo">🎁 開學早鳥優惠進行中，免費試用 7 天滿意再購　·　優惠內容 <span class="todo-inline">待補：折扣／期限／贈品</span></div>
+
+<!-- 1. Header -->
+<header>
+  <div class="wrap nav">
+    <a href="#" aria-label="翰林"><img class="logo-img" src="../logo-text-blue.svg" alt="翰林"></a>
+    <ul class="nav-links">
+      <li><a href="#features">課程特色</a></li>
+      <li><a href="#courses">國一課程</a></li>
+      <li><a href="#compare">比較</a></li>
+      <li><a href="#pricing">方案價格</a></li>
+      <li><a href="#faq">常見問題</a></li>
+    </ul>
+    <div class="nav-cta">
+      <span class="countdown">距 118 會考還有 <b>1046</b> 天</span>
+      <a href="#cta" class="btn btn-accent">免費試用 7 天</a>
+    </div>
+    <button class="menu-btn" aria-label="開啟選單">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- 2. Hero -->
+<section class="hero">
+  <div class="wrap hero-single">
+    <div>
+      <span class="hero-tag">108 課綱・國一全科線上課程</span>
+      <h1>剛上國中就跟上<br><span class="em">翰林雲端</span>國一線上課程</h1>
+      <p class="sub">國文、英語、數學、自然、社會全科名師到位，市面三大主流版本自由選，跟著你學校的進度走。國一打底穩，國二國三不追趕。</p>
+      <div class="hero-price">
+        <span class="pl">一科一學期</span>
+        <span class="pv">NT$ <span style="color:var(--accent-orange-dark)">2,880</span> 起</span>
+        <span class="pn">不到補習班一個月</span>
+      </div>
+      <div class="hero-cta">
+        <a href="#cta" class="btn btn-accent btn-lg">免費試用 7 天</a>
+        <a href="#courses" class="btn btn-ghost-light btn-lg">看國一課程</a>
+      </div>
+      <div class="trust-row">
+        <div class="item"><span class="num">第 1 名</span><span class="lbl">品牌未提示想起率</span></div>
+        <div class="item"><span class="num">85.5%</span><span class="lbl">試用滿意度</span></div>
+        <div class="item"><span class="num">獨家</span><span class="lbl">錯題訂正率追蹤</span></div>
+      </div>
+      <p class="hero-note">資料來源：翰林《線上學習平台座談會》潛在客群焦點座談（調查時間：<span class="todo-date">待補</span>）</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2.5 年段任務 (每年段獨有) -->
+<section id="stage">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">國一這一年</span>
+      <h2>國一，是<span class="hl">打底與養成習慣</span>的關鍵一年</h2>
+      <p>每個年段任務不同——國一要贏的不是分數，是銜接與方法。</p>
+    </div>
+    <div class="stage-grid">
+      <div class="stage">
+        <span class="n">1</span>
+        <h3>科目變多、難度跳升</h3>
+        <p>文言文、英文文法、正負數與代數同時登場，國小的讀法已經不夠用，落差是六年段裡最大的。</p>
+      </div>
+      <div class="stage">
+        <span class="n">2</span>
+        <h3>習慣，現在定江山</h3>
+        <p>國一養成的讀書節奏與自律，直接決定國二理化登場、國三會考衝刺時追不追得上。</p>
+      </div>
+      <div class="stage">
+        <span class="n">3</span>
+        <h3>提早卡位，會考不慌</h3>
+        <p>離會考還有近三年、還沒有考試壓力，正是把弱科補起來、把讀書方法練熟的黃金期。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3+4. 困擾 + 6 大功能（介面示意圖） -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">爸媽的心聲</span>
+      <h2>剛升國中，<span class="hl">這 5 個困擾最常見</span></h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>補習通勤兩頭燒</h3><p>接送、通勤吃掉大把時間，孩子到補習班已經累了。</p></div>
+      <div class="pain-card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m0 14l6-4 4 3 6-5"/></svg></div><h3>跟不上學校進度</h3><p>大班統一進度，聽不懂也只能往前趕，落差愈拉愈大。</p></div>
+      <div class="pain-card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></div><h3>在家分心、沒人盯</h3><p>關在房間說在讀書，家長看不到、問不出、不敢管。</p></div>
+      <div class="pain-card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 21h6"/></svg></div><h3>晚上卡題沒人問</h3><p>寫題卡住，補習班老師下班、爸媽不會教、問同學怕丟臉。</p></div>
+      <div class="pain-card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div><h3>錯的題目還是一直錯</h3><p>刷了很多題卻只刷心安，同一種題型考試又錯，訂正沒訂到底。</p></div>
+    </div>
+
+    <div class="sec-head" style="margin:56px auto 32px">
+      <span class="eyebrow">系統功能</span>
+      <h2>陪孩子把<span class="hl">每一步走踏實</span></h2>
+      <p>看實際介面——孩子每天打開就知道學什麼、練什麼、補什麼。</p>
+    </div>
+    <div class="fn-shot-grid">
+      <div class="fn-shot">
+        <div class="shot"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:10px; margin-top:12px;"><tr><td style="padding:13px 14px;">
+              <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4; margin-bottom:10px;">週行事曆 <span style="font-size:11px; color:#62778f; font-weight:400;">115/07</span></div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;"><tr>
+                <td width="20%" valign="top" style="border:1px solid #eef2f7; padding:6px 4px; height:64px;"><div style="font-family:Arial,sans-serif; font-size:10px; color:#62778f;">7/20 一</div></td>
+                <td width="20%" valign="top" style="border:1px solid #eef2f7; padding:6px 4px;"><div style="font-family:Arial,sans-serif; font-size:10px; color:#62778f;">7/21 二</div><div style="font-family:'Microsoft JhengHei',sans-serif; font-size:10px; font-weight:700; color:#1e3d60; background:#f4f7fb; border-radius:3px; padding:2px 3px; margin-top:4px;">國中地理</div><div style="font-family:'Microsoft JhengHei',sans-serif; font-size:10px; font-weight:700; color:#146c43; background:#f4f7fb; border-radius:3px; padding:2px 3px; margin-top:3px;">國中理化</div></td>
+                <td width="20%" valign="top" style="border:1px solid #eef2f7; padding:6px 4px;"><div style="font-family:Arial,sans-serif; font-size:10px; color:#62778f;">7/22 三</div><div style="font-family:'Microsoft JhengHei',sans-serif; font-size:10px; font-weight:700; color:#1e3d60; background:#f4f7fb; border-radius:3px; padding:2px 3px; margin-top:4px;">國中地理</div></td>
+                <td width="20%" valign="top" style="border:1px solid #eef2f7; padding:6px 4px;"><div style="font-family:Arial,sans-serif; font-size:10px; color:#62778f;">7/23 四</div><div style="font-family:'Microsoft JhengHei',sans-serif; font-size:10px; font-weight:700; color:#1e3d60; background:#f4f7fb; border-radius:3px; padding:2px 3px; margin-top:4px;">國中地理</div></td>
+                <td width="20%" valign="top" style="border:1px solid #eef2f7; padding:6px 4px;"><div style="font-family:Arial,sans-serif; font-size:10px; color:#62778f;">7/24 五</div><div style="font-family:'Microsoft JhengHei',sans-serif; font-size:10px; font-weight:700; color:#146c43; background:#f4f7fb; border-radius:3px; padding:2px 3px; margin-top:4px;">國中理化</div></td>
+              </tr></table>
+            </td></tr></table></div>
+        <div class="cap"><div class="lbl">01</div><h3>個人行事曆</h3><p>系統把整週學習排程視覺化，每天提醒該讀哪一科，幫孩子建立規律的讀書節奏。</p></div>
+      </div>
+      <div class="fn-shot">
+        <div class="shot"><!-- mini dashboard mock -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#064ea4; border-radius:14px;">
+          <tr><td style="padding:16px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td class="stack" width="50%" valign="top" style="padding-right:6px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:10px;"><tr><td style="padding:13px 14px;">
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4;">今日課程 <span style="font-size:11px; color:#62778f; font-weight:400;">115/07/20</span></div>
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; color:#62778f; margin:10px 0 12px;">選擇一堂課即可開始</div>
+                  <span style="display:inline-block; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; font-weight:700; color:#FFFFFF; background:#ef9d55; border-radius:5px; padding:7px 14px;">我要加課</span>
+                </td></tr></table>
+              </td>
+              <td class="stack-gap" width="12" style="font-size:1px; line-height:1px;">&nbsp;</td>
+              <td class="stack" width="50%" valign="top" style="padding-left:6px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:10px;"><tr><td style="padding:13px 14px;">
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4;">本週學習提醒 <span style="display:inline-block; font-size:11px; color:#fff; background:#b3261e; border-radius:9px; padding:0 6px; font-weight:700;">1</span></div>
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; color:#1e3d60; margin-top:10px;">📕 補課通知</div>
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:11px; color:#62778f; margin-top:5px;">07/21 12:00・國一上社會</div>
+                </td></tr></table>
+              </td>
+            </tr></table>
+          </td></tr>
+        </table></div>
+        <div class="cap"><div class="lbl">02</div><h3>專屬儀表板</h3><p>今日課程與本週學習提醒集中一頁，登入就能接續學習，家長也能一眼掌握。</p></div>
+      </div>
+      <div class="fn-shot">
+        <div class="shot"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:14px;">
+          <tr><td style="padding:20px 18px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="left"><tr><td>
+              <span style="display:inline-block; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4;">AI 助教</span>
+              <span style="display:inline-block; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:11px; color:#62778f; border:1px solid #becad7; border-radius:5px; padding:2px 8px; margin-left:6px;">點數 100 ›</span>
+            </td></tr></table>
+            <!-- user bubble -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="right" style="padding-top:16px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#f4f7fb; border-radius:12px 12px 2px 12px; padding:12px 14px;">
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; color:#1e3d60;">📷 這題怎麼算？</div>
+              </td></tr></table>
+            </td></tr></table>
+            <!-- ai bubble -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+              <td valign="top" width="42" style="padding-top:14px;">
+                <svg width="34" height="34" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI 助教">
+                  <circle cx="17" cy="17" r="16" fill="#064ea4"/>
+                  <rect x="9" y="11" width="16" height="12" rx="4" fill="#FFFFFF"/>
+                  <circle cx="14" cy="17" r="1.9" fill="#064ea4"/><circle cx="20" cy="17" r="1.9" fill="#064ea4"/>
+                  <rect x="16" y="6.5" width="2" height="3.5" rx="1" fill="#FFFFFF"/><circle cx="17" cy="6" r="1.6" fill="#ef9d55"/>
+                </svg>
+              </td>
+              <td valign="top" style="padding:14px 0 0 8px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#FFFFFF; border-radius:2px 12px 12px 12px; padding:12px 14px;">
+                  <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; line-height:1.7; color:#1e3d60;">我把解題步驟整理好了：<br>• ∠BGD′ = 80°，BG 與 GF 共線<br>&nbsp;&nbsp;→ ∠D′GF = 180° − 80° = 100°<br>• 折紙後 DC 對稱到 D′C′，摺線 EF 平分夾角…</div>
+                </td></tr></table>
+              </td>
+            </tr></table>
+          </td></tr>
+        </table></div>
+        <div class="cap"><div class="lbl">03</div><h3>AI 助教</h3><p>卡關的題目拍照上傳，AI 即時整理出清楚的解題步驟，晚上讀書也有人陪著想。</p></div>
+      </div>
+      <div class="fn-shot">
+        <div class="shot"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border:1px solid #becad7; border-radius:14px;">
+          <tr><td align="center" style="padding:24px 18px;">
+            <img src="https://ehanlin-web-public-resource.s3.ap-northeast-1.amazonaws.com/web/marketing-img/AI%E8%80%81%E5%B8%AB.png" width="150" alt="AI 老師" style="display:block; width:150px; max-width:150px; height:auto; border:0; margin:0 auto;">
+            <div style="font-family:'Microsoft JhengHei','PingFang TC',Arial,sans-serif; font-size:17px; font-weight:700; color:#064ea4; margin-top:14px;">AI 老師小提醒</div>
+            <div style="font-family:'Microsoft JhengHei','PingFang TC',Arial,sans-serif; font-size:13px; line-height:1.7; color:#1e3d60; max-width:400px; margin:10px auto 0;">建議你先觀看 1-1 章節的教學影片，重點理解「規律性」是計時工具的核心，例如單擺的等時性或太陽鐘的運作方式。</div>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:16px;"><tr>
+              <td style="padding:0 5px;"><span style="display:inline-block; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#FFFFFF; background:#064ea4; border-radius:5px; padding:9px 18px;">影片複習</span></td>
+              <td style="padding:0 5px;"><span style="display:inline-block; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#064ea4; background:#FFFFFF; border:1px solid #064ea4; border-radius:5px; padding:8px 18px;">試題練習</span></td>
+            </tr></table>
+          </td></tr>
+        </table></div>
+        <div class="cap"><div class="lbl">04</div><h3>AI 老師小提醒</h3><p>依孩子的作答與進度，主動提醒該複習的章節，一鍵前往影片複習或試題練習。</p></div>
+      </div>
+      <div class="fn-shot">
+        <div class="shot"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:14px;">
+          <tr><td style="padding:20px 18px;">
+            <div style="font-family:'Microsoft JhengHei','PingFang TC',Arial,sans-serif; font-size:16px; font-weight:700; color:#064ea4; margin-bottom:12px;">全冊內容搜尋</div>
+            <!-- search bar -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border:2px solid #064ea4; border-radius:24px;"><tr>
+              <td width="34" align="center" valign="middle" style="padding-left:12px;">
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="搜尋"><circle cx="7.5" cy="7.5" r="5.5" fill="none" stroke="#064ea4" stroke-width="2"/><line x1="11.5" y1="11.5" x2="16" y2="16" stroke="#064ea4" stroke-width="2" stroke-linecap="round"/></svg>
+              </td>
+              <td valign="middle" style="padding:11px 14px 11px 8px; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:15px; font-weight:700; color:#1e3d60;">匯率</td>
+            </tr></table>
+            <!-- result rows -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border-radius:10px; margin-top:12px;">
+              <tr><td style="padding:12px 14px; border-bottom:1px solid #eef2f7;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                  <td style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; color:#1e3d60;">匯率的變動（講義第 247 頁）</td>
+                  <td align="right" width="24"><span style="display:inline-block; width:16px; height:16px; background:#ef9d55; border-radius:50%; text-align:center; line-height:16px; color:#fff; font-size:9px;">▶</span></td>
+                </tr></table>
+              </td></tr>
+              <tr><td style="padding:12px 14px; border-bottom:1px solid #eef2f7; background:#f4f7fb;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                  <td style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#064ea4;">貨幣升值與貶值（講義第 247 頁）</td>
+                  <td align="right" width="24"><span style="display:inline-block; width:16px; height:16px; background:#ef9d55; border-radius:50%; text-align:center; line-height:16px; color:#fff; font-size:9px;">▶</span></td>
+                </tr></table>
+              </td></tr>
+              <tr><td style="padding:12px 14px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                  <td style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; color:#1e3d60;">國際貿易與匯率（講義第 251 頁）</td>
+                  <td align="right" width="24"><span style="display:inline-block; width:16px; height:16px; background:#ef9d55; border-radius:50%; text-align:center; line-height:16px; color:#fff; font-size:9px;">▶</span></td>
+                </tr></table>
+              </td></tr>
+            </table>
+          </td></tr>
+        </table></div>
+        <div class="cap"><div class="lbl">05</div><h3>全冊內容搜尋</h3><p>輸入關鍵字，直接跳到相關的教學影片段落與講義頁數，複習一秒定位重點。</p></div>
+      </div>
+      <div class="fn-shot">
+        <div class="shot"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFFFFF; border:1px solid #becad7; border-radius:14px;">
+          <tr><td style="padding:20px 22px;">
+            <div style="font-family:'Microsoft JhengHei','PingFang TC',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4;">課堂狀態</div>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:12px; background:#f4f7fb; border-radius:8px;"><tr>
+              <td align="center" width="50%" style="padding:14px 10px; border-right:1px solid #becad7;">
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#064ea4;">學生狀態</div>
+                <div style="font-family:Arial,sans-serif; font-size:12px; color:#1e3d60; margin-top:6px;">進入時間：115/07/28 15:14</div>
+              </td>
+              <td align="center" width="50%" style="padding:14px 10px;">
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#064ea4;">課程狀態</div>
+                <div style="font-family:Arial,sans-serif; font-size:12px; color:#1e3d60; margin-top:6px;">開始 15:14・結束 15:15</div>
+              </td>
+            </tr></table>
+            <div style="font-family:'Microsoft JhengHei','PingFang TC',Arial,sans-serif; font-size:15px; font-weight:700; color:#064ea4; margin-top:18px;">學習分析</div>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:12px;"><tr>
+              <td width="33%" align="center" valign="top">
+                <svg width="72" height="72" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="影片觀看比例 22%">
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f4f7fb" stroke-width="4"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#064ea4" stroke-width="4" stroke-linecap="round" stroke-dasharray="22 78" transform="rotate(-90 18 18)"/>
+                  <text x="18" y="20.6" text-anchor="middle" font-family="Arial" font-size="8.5" font-weight="700" fill="#064ea4">22%</text>
+                </svg>
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; color:#62778f; margin-top:4px;">影片觀看比例</div>
+              </td>
+              <td width="33%" align="center" valign="top">
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#1e3d60; margin-top:22px;">作答分析</div>
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; color:#62778f; margin-top:6px;">本堂課沒有作答紀錄</div>
+              </td>
+              <td width="33%" align="center" valign="top">
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:13px; font-weight:700; color:#1e3d60; margin-top:22px;">考卷分析</div>
+                <div style="font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12px; color:#62778f; margin-top:6px;">本堂課沒有名師派卷</div>
+              </td>
+            </tr></table>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:16px; border-top:1px solid #eef2f7;"><tr><td style="padding-top:14px; font-family:'Microsoft JhengHei',Arial,sans-serif; font-size:12.5px; color:#1e3d60;">雲端上課紀錄：位置的描述－教學(講義第6頁)　預估 04:06／花費 00:53</td></tr></table>
+          </td></tr>
+        </table></div>
+        <div class="cap"><div class="lbl">06</div><h3>學習紀錄</h3><p>進入時間、影片觀看比例、作答與考卷分析全記錄，孩子的學習不是黑盒子。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 國一各科（原學習地圖，接手 #courses 錨點） -->
+<section id="courses">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">國一學習地圖</span>
+      <h2>國一各科這樣學，<span class="hl">銜接不卡關</span></h2>
+      <p>國一各學期各科常見重點單元與銜接難點，先看清楚孩子要面對什麼。</p>
+    </div>
+    <div class="sem-tabs" role="tablist">
+      <button class="stab active" data-sem="s1">上學期</button>
+      <button class="stab" data-sem="s2">下學期</button>
+    </div>
+    <div class="sem-panel active" data-sempanel="s1">
+      <div class="map-grid">
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8A%E8%AA%B2%E7%A8%8B%E5%9C%96-%E9%99%B3%E9%A1%A5%E5%9C%8B%E6%96%87.png" alt="國一國文課程圖" loading="lazy">
+          <div class="mh"><span class="s">國文</span></div>
+          <div class="mteacher">陳顥老師、柳詠老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>文言文入門</li><li>字音字形辨析</li><li>記敘文閱讀理解</li><li>常見修辭法</li></ul>
+          <div class="bridge">銜接難點：從國小白話文跨到國中文言文，是落差最大的一科。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/115s1_%E5%9C%8B%E4%B8%80%E4%B8%8A%E8%AA%B2%E7%A8%8B%E5%9C%96-%E8%8B%B1%E8%AA%9E.png" alt="國一英語課程圖" loading="lazy">
+          <div class="mh"><span class="s">英語</span></div>
+          <div class="mteacher">林熹老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>be 動詞與現在簡單式</li><li>現在進行式</li><li>人稱與所有格代名詞</li><li>疑問句與否定句</li></ul>
+          <div class="bridge">銜接難點：從單字拼讀進入文法系統，句型觀念要打穩。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8A%E8%AA%B2%E7%A8%8B%E5%9C%96-%E9%83%AD%E5%A8%81%E6%95%B8%E5%AD%B8.png" alt="國一數學課程圖" loading="lazy">
+          <div class="mh"><span class="s">數學</span></div>
+          <div class="mteacher">郭威老師、黃小雅老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>正數與負數</li><li>數的四則運算</li><li>指數與科學記號</li><li>一元一次式與方程式</li></ul>
+          <div class="bridge">銜接難點：從算術思維轉向代數符號，一步觀念錯就跟不上。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8A%E8%AA%B2%E7%A8%8B%E5%9C%96-%E8%87%AA%E7%84%B6.png" alt="國一自然課程圖" loading="lazy">
+          <div class="mh"><span class="s">自然</span></div>
+          <div class="mteacher">謝豪老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>科學方法與觀察</li><li>生物的組成與細胞</li><li>養分與消化作用</li><li>光合作用與呼吸</li></ul>
+          <div class="bridge">銜接難點：國一自然聚焦生物，重圖表判讀與實驗理解。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8A%E8%AA%B2%E7%A8%8B%E5%9C%96-%E7%A4%BE%E6%9C%83.png" alt="國一社會課程圖" loading="lazy">
+          <div class="mh"><span class="s">社會</span></div>
+          <div class="mteacher">李天豪老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>地理：地圖與台灣地形氣候</li><li>歷史：史前到早期台灣、大航海</li><li>公民：人性尊嚴與人權</li><li>三科合一、跨科整合</li></ul>
+          <div class="bridge">銜接難點：地理、歷史、公民三科合一，資訊量一次大增。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+      </div>
+    </div>
+    <div class="sem-panel" data-sempanel="s2">
+      <div class="map-grid">
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8B%E8%AA%B2%E7%A8%8B%E5%9C%96-%E9%99%B3%E9%A1%A5%E5%9C%8B%E6%96%87.png" alt="國一國文課程圖" loading="lazy">
+          <div class="mh"><span class="s">國文</span></div>
+          <div class="mteacher">陳顥老師、柳詠老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>文言文選讀進階</li><li>語法與詞性</li><li>應用文寫作</li><li>閱讀素養整合題</li></ul>
+          <div class="bridge">銜接難點：文言篇幅加長、題目更重理解與素養整合。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/115s1_%E5%9C%8B%E4%B8%80%E4%B8%8B%E8%AA%B2%E7%A8%8B%E5%9C%96-%E8%8B%B1%E8%AA%9E.png" alt="國一英語課程圖" loading="lazy">
+          <div class="mh"><span class="s">英語</span></div>
+          <div class="mteacher">林熹老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>過去簡單式</li><li>未來式（will／be going to）</li><li>there is／are 句型</li><li>助動詞 can／must 與比較用法</li></ul>
+          <div class="bridge">銜接難點：時態變多，動詞變化與句型要熟練不混淆。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8B%E8%AA%B2%E7%A8%8B%E5%9C%96-%E9%83%AD%E5%A8%81%E6%95%B8%E5%AD%B8.png" alt="國一數學課程圖" loading="lazy">
+          <div class="mh"><span class="s">數學</span></div>
+          <div class="mteacher">郭威老師、黃小雅老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>一元一次不等式</li><li>二元一次聯立方程式</li><li>比與比例式</li><li>線型函數與圖形、統計圖表</li></ul>
+          <div class="bridge">銜接難點：進入聯立與函數，代數運算量與抽象度再升一級。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8B%E8%AA%B2%E7%A8%8B%E5%9C%96-%E8%87%AA%E7%84%B6.png" alt="國一自然課程圖" loading="lazy">
+          <div class="mh"><span class="s">自然</span></div>
+          <div class="mteacher">謝豪老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>生物的生殖與遺傳</li><li>演化與生物多樣性</li><li>族群與生態系</li><li>人類與環境</li></ul>
+          <div class="bridge">銜接難點：概念從個體延伸到生態系，需整合前後單元。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+        <div class="mcard">
+          <img class="cimg" src="https://public.ehanlin.com.tw/web/courseintro/%E5%9C%8B%E4%B8%80%E4%B8%8B%E8%AA%B2%E7%A8%8B%E5%9C%96-%E7%A4%BE%E6%9C%83.png" alt="國一社會課程圖" loading="lazy">
+          <div class="mh"><span class="s">社會</span></div>
+          <div class="mteacher">李天豪老師</div>
+          <div class="mprice">$2,880</div>
+          <ul><li>地理：台灣產業與區域發展</li><li>歷史：清領後期到日本統治</li><li>公民：家庭、社會與性別</li><li>跨科時事整合</li></ul>
+          <div class="bridge">銜接難點：內容延續上學期並加深，更需長期記憶與統整。</div>
+          <a class="mbuy" href="https://www.ehanlin.com.tw/app/online-showcase/product-list.html#JS&amp;K7&amp;all&amp;all" target="_blank" rel="noopener">我要購買</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Testimonials -->
+<section id="testi">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">真實學員心得</span>
+      <h2>國一學生真實心得，<span class="hl">成績有感提升</span></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="who"><span class="avatar">黃</span><div><div class="name">黃奕O 同學</div><div class="role">國一・東山高中附設國中部・國文</div></div></div>
+        <div class="q">「剛升七年級國文考四、五十分，現在可考 80 分以上！」</div>
+        <div class="body">翰林有很多題目可以刷，總能刷到和段考卷差不多的題目；校排從 550 名後進步到 120 名前。</div>
+        <div class="tags"><span>#題庫練習</span><span>#弱科逆轉</span></div>
+      </div>
+      <div class="testi-card">
+        <div class="who"><span class="avatar">莊</span><div><div class="name">莊O 同學</div><div class="role">國一・台北明湖國中・全科</div></div></div>
+        <div class="q">「數學這次 90 分，上次 56 分，進步 34 分！」</div>
+        <div class="body">數學老師上課很有趣、講解清楚，我很喜歡。</div>
+        <div class="tags"><span>#名師教學</span><span>#數學</span></div>
+      </div>
+      <div class="testi-card">
+        <div class="who"><span class="avatar">趙</span><div><div class="name">趙晨O 同學</div><div class="role">國一・高雄大社國中・生物</div></div></div>
+        <div class="q">「寫完考卷馬上知道錯題，不懂問 AI 助教立馬解答。」</div>
+        <div class="body">最有幫助的是名師派卷，看完影片還能用隨堂測驗確認懂不懂；這次生物考 100 分。</div>
+        <div class="tags"><span>#名師派卷</span><span>#AI助教</span></div>
+      </div>
+      <div class="testi-card">
+        <div class="who"><span class="avatar">黃</span><div><div class="name">黃浩O 同學</div><div class="role">國一・新北中和國中・全科</div></div></div>
+        <div class="q">「不必舟車勞頓往返補習班，還能自由安排時間。」</div>
+        <div class="body">段考前老師開直播課、導師也會關心協助；近一年班排前三、校排第五到第九名。</div>
+        <div class="tags"><span>#免通勤</span><span>#名師直播</span></div>
+      </div>
+    </div>
+    <p class="note">＊以上為真實國一學員使用心得節錄（來源：e名師使用心得回饋）。建議另補平台累積數據（會員數、累積訂正題數）進一步強化社會證明。</p>
+  </div>
+</section>
+
+<!-- 7. Comparison (merged 優勢 + 功能比較) -->
+<section id="compare" class="courses">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">怎麼選</span>
+      <h2>翰林雲端 <span class="hl">VS 題庫 App、傳統補習班</span></h2>
+      <p>只列客觀差異，讓你花錢前看得明白。</p>
+    </div>
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead><tr><th>比較項目</th><th class="us">翰林雲端</th><th>一般題庫 App</th><th>傳統補習班</th></tr></thead>
+        <tbody>
+          <tr><td>上課時間</td><td class="us"><span class="o">◎</span><div class="p">24H 隨時、可重看</div></td><td><span class="o">◎</span></td><td><span class="x">✕</span><div class="p">固定時段</div></td></tr>
+          <tr><td>五科名師教學影片</td><td class="us"><span class="o">◎</span></td><td><span class="x">✕</span></td><td><span class="p">部分</span></td></tr>
+          <tr><td>市面三大主流版本</td><td class="us"><span class="o">◎</span></td><td><span class="p">部分</span></td><td><span class="x">✕</span></td></tr>
+          <tr><td class="feat-hl">錯題訂正率追蹤（獨家）</td><td class="us"><span class="o">◎</span></td><td><span class="x">✕</span></td><td><span class="x">✕</span></td></tr>
+          <tr><td>週行事曆＋漏課提醒</td><td class="us"><span class="o">◎</span></td><td><span class="x">✕</span></td><td><span class="p">部分</span></td></tr>
+          <tr><td>24H AI 助教（拍照提問）</td><td class="us"><span class="o">◎</span></td><td><span class="p">部分</span></td><td><span class="x">✕</span><div class="p">下班即斷線</div></td></tr>
+          <tr><td>家長端進度可視化</td><td class="us"><span class="o">◎</span></td><td><span class="x">✕</span></td><td><span class="p">部分</span></td></tr>
+          <tr><td>段考範圍自動對應</td><td class="us"><span class="o">◎</span></td><td><span class="x">✕</span></td><td><span class="p">部分</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Pricing (待補) -->
+<section id="pricing" class="courses">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">課程方案</span>
+      <h2>方案與價格，<span class="hl">先看清楚再決定</span></h2>
+      <p>課程以「單科・學期」為單位——可任選國文／英語／數學／自然／社會，上、下學期分開買，或整年一次買齊。要補幾科自己決定。</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="pname">單科・上學期</div>
+        <div class="psub">任選 1 科，例：國一英語上學期</div>
+        <div class="amt">NT$ <b>2,880</b></div>
+        <ul><li>該科名師教學影片＋講義</li><li>自我評量＋名師派卷</li><li>三大數據＋24H AI 助教</li></ul>
+        <a href="#cta" class="btn btn-secondary">選這個方案</a>
+      </div>
+      <div class="price-card">
+        <div class="pname">單科・下學期</div>
+        <div class="psub">任選 1 科，例：國一英語下學期</div>
+        <div class="amt">NT$ <b>2,880</b></div>
+        <ul><li>該科名師教學影片＋講義</li><li>自我評量＋名師派卷</li><li>三大數據＋24H AI 助教</li></ul>
+        <a href="#cta" class="btn btn-secondary">選這個方案</a>
+      </div>
+      <div class="price-card best">
+        <div class="rec">最超值・全科一次到位</div>
+        <div class="pname">全科全學年</div>
+        <div class="psub">國英數自社 5 科，上＋下學期整年到位</div>
+        <div class="amt">NT$ <b>17,600</b></div>
+        <ul><li>五科上＋下學期名師課程</li><li>全學年講義＋評量＋名師派卷</li><li>三大數據＋24H AI 助教</li><li>整年錯題與學習紀錄完整累積</li></ul>
+        <a href="#cta" class="btn btn-accent">選這個方案</a>
+      </div>
+    </div>
+    <p class="note">＊單科可任選、上下學期分開購買；全科全學年為 5 科整年方案。以上為 115 上定價，實際優惠（早鳥價／截止日／贈品／退費保證）依官網公告為準。</p>
+  </div>
+</section>
+
+<!-- 10. FAQ (含購課服務) -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">常見問題</span>
+      <h2>國一家長<span class="hl">最常問的問題</span></h2>
+    </div>
+    <div class="faq-groups">
+      <div class="faq-col">
+        <h3>課程與版本</h3>
+        <details open><summary>孩子學校不是用翰林版，可以用嗎？</summary><div class="ans">可以。課程涵蓋市面三大主流版本，跟著你學校的版本走，排課系統會自動對應段考範圍。</div></details>
+        <details><summary>五科都有嗎？名師是誰？</summary><div class="ans">國文、英語、數學、自然、社會五科皆有，並各含段考複習課；完整名師陣容請見上方「國一 5 科課程」。</div></details>
+        <details><summary>內容會不會跟學校重複？</summary><div class="ans">可自選精簡／基本／完整三種份量，只補孩子不會的。</div></details>
+      </div>
+      <div class="faq-col">
+        <h3>銜接與成效</h3>
+        <details><summary>國小升國中落差大，怎麼銜接？</summary><div class="ans">名師從觀念打底、循序漸進，搭配段考複習課，排課系統自動對應進度。</div></details>
+        <details><summary>只看影片有用嗎？</summary><div class="ans">獨家「錯題訂正率」追蹤，訂正到會為止——測驗效應顯示有訂正練習者最終答對數約為未練習者兩倍。</div></details>
+        <details><summary>什麼是素養題？怎麼準備？</summary><div class="ans">課程附精選素養單題與名師派卷，貼合 108 課綱情境化命題。</div></details>
+      </div>
+      <div class="faq-col">
+        <h3>家長最擔心的事</h3>
+        <details><summary>在家會不會分心、沒人盯？</summary><div class="ans">週行事曆＋漏課紅字提醒＋三大數據，數據替你看著孩子。</div></details>
+        <details><summary>卡關晚上沒人問怎麼辦？</summary><div class="ans">24H AI 助教，講義、考卷拍照就能問，秒回且 100% 隱私。</div></details>
+        <details><summary>費用跟補習班比呢？</summary><div class="ans">一科一學期的費用，遠低於補習班單科一個月的學費；而且要補幾科自己決定，不用綁全科。歡迎先免費試用 7 天。</div></details>
+      </div>
+    </div>
+    <div class="todo faq-todo">
+      <span class="flag">待你提供官方政策</span>
+      <p>以下需你確認正式規則，給我答案後補進 FAQ：講義寄送天數、可否重複觀看/次數限制、支援裝置、退費政策、內容更新是否加價、AI 助教回覆時效。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11. CTA band (含聯絡) -->
+<section id="cta" class="cta-band">
+  <div class="wrap">
+    <h2>先免費試用 7 天，再決定</h2>
+    <p>不用先付費，開通即可體驗國一全科名師課程、三大數據與 24H AI 助教。試用滿意度 85.5%，眼見為憑。</p>
+    <div class="btns">
+      <a href="#" class="btn btn-accent btn-lg">免費試用 7 天</a>
+      <a href="#" class="btn btn-secondary btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.6)">免費會考能力檢測</a>
+    </div>
+    <p class="fineprint">早鳥優惠倒數中，開學前報名享限時折扣。</p>
+    <div class="contact-strip">
+      <div class="ci"><div class="lbl">LINE 官方帳號</div><div class="val">＠ID 待補</div></div>
+      <div class="ci"><div class="lbl">客服專線</div><div class="val">電話待補</div></div>
+      <div class="ci"><div class="lbl">服務時間</div><div class="val">時間待補</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="logo-img logo-img--foot" src="../logo-text-blue.svg" alt="翰林">
+        <p style="max-width:34ch">數位學習領導品牌，帶孩子沿著最有效率的學習路徑持續前進。</p>
+        <div class="social">
+          <a href="#" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v6h4v-6h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.4-5.2c-.3-1-1-1.7-2-2C18.9 4.5 12 4.5 12 4.5s-6.9 0-8.6.3c-1 .3-1.7 1-2 2C1 8.5 1 12 1 12s0 3.5.4 5.2c.3 1 1 1.7 2 2 1.7.3 8.6.3 8.6.3s6.9 0 8.6-.3c1-.3 1.7-1 2-2C23 15.5 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="LINE">LINE</a>
+        </div>
+      </div>
+      <div><h3>關於我們</h3><ul><li><a href="#">品牌介紹</a></li><li><a href="#">師資陣容</a></li><li><a href="#">合作學校</a></li></ul></div>
+      <div><h3>課程介紹</h3><ul><li><a href="#courses">國一課程</a></li><li><a href="#">國二・國三課程</a></li><li><a href="#">高中課程</a></li></ul></div>
+      <div><h3>服務洽詢</h3><ul><li><a href="#cta">免費試用</a></li><li><a href="#pricing">方案價格</a></li><li><a href="#">客服中心</a></li></ul></div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 翰林雲端學院　版權所有</span>
+      <span><a href="#">防詐騙聲明</a>　·　<a href="#">隱私權政策</a>　·　<a href="#">使用條款</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const resItems=["名師教學影片","講義（含封面）","自我評量","名師派卷成績單","考卷專區（歷屆試題）","精選素養題","模擬段考成卷","排課系統","自組模擬段考卷","字幕／逐字稿"];
+const chk='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+document.querySelectorAll('[data-res]').forEach(el=>{el.innerHTML=resItems.map(t=>`<div class="r">${chk}<span>${t}</span></div>`).join('')});
+const tabs=document.querySelectorAll('.tab');
+tabs.forEach(tab=>tab.addEventListener('click',()=>{
+  tabs.forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.course-panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===tab.dataset.tab));
+}));
+const stabs=document.querySelectorAll('.stab');
+stabs.forEach(t=>t.addEventListener('click',()=>{
+  stabs.forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.sem-panel').forEach(p=>p.classList.toggle('active',p.dataset.sempanel===t.dataset.sem));
+}));
+const ftabs=document.querySelectorAll('.ftab');
+const fpanels=document.querySelectorAll('.efeat-panel');
+let fIdx=0;
+function showF(i){fIdx=Math.max(0,Math.min(fpanels.length-1,i));ftabs.forEach((t,n)=>t.classList.toggle('active',n===fIdx));fpanels.forEach((p,n)=>p.classList.toggle('active',n===fIdx));}
+ftabs.forEach((t,n)=>t.addEventListener('click',()=>showF(n)));
+const fview=document.querySelector('.efeat-view');
+if(fview){let x0=null;
+  fview.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
+  fview.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>40)showF(fIdx+(dx<0?1:-1));x0=null},{passive:true});}
+document.querySelector('.menu-btn').addEventListener('click',()=>{document.querySelector('#courses').scrollIntoView({behavior:'smooth'})});
+</script>
+</body>
+</html>

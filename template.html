@@ -1,0 +1,2785 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翰林產品版型平台|套版詳細</title>
+<link rel="icon" type="image/svg+xml" href="logo-mark-only.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=202609061100">
+<script src="defaults.js?v=07cba8a599b4"></script>
+<script src="kits.js?v=cd67361477e4"></script>
+<!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
+<script src="jszip.min.js"></script>
+<script src="skillpack.js?v=1"></script>
+<style>
+/* ===== 套版詳細專用 =====
+   這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
+   都是從 kits.js 那一組讀出來寫進下面這幾個變數的，改資料就會跟著變。 */
+.tpl{--k-p:#0088D2;--k-s:#005696;--k-i:#40B4E5;--k-c:#FF9A3C;
+     --k-bg:#FFFFFF;--k-ln:#E6E8EC;--k-mu:#8C9099;--k-ink:#3A3D42;
+     --k-rd:14px;--k-rd-card:14px;--k-rd-box:14px;--k-sh:none;--k-bd:none}
+
+.crumb-line{font-size:12.5px;color:var(--gray-2);letter-spacing:.03em;margin-bottom:10px}
+.crumb-line a{color:var(--brand);text-decoration:none}
+/* ===== 已存採用列：固定在畫面底部 =====
+   這一頁是「勾選即存」，沒有送出的動作，所以使用者勾完不知道有沒有存進去。
+   把實際存下來的組合貼在畫面底部隨時看得到，右邊一顆確認鈕給明確回饋。
+   顏色與形狀都用全站原色，不隨色版變（它是平台介面，不是示範內容）。 */
+.adopt-dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:#fff;border-top:1px solid #E1E8F0;
+  box-shadow:0 -4px 18px rgba(20,45,70,.10);
+  padding:11px 0;
+}
+.adopt-dock[hidden]{display:none!important}
+.adopt-dock .pin{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.adopt-dock .ad-txt{flex:1 1 260px;min-width:0;font-size:12.5px;line-height:1.75;color:#5C6A78}
+.adopt-dock .ad-txt b{display:inline-flex;align-items:center;gap:5px;color:#0B6B3A;font-weight:500}
+.adopt-dock .ad-txt b .material-symbols-rounded{font-size:17px}
+.adopt-dock .ad-txt i{font-style:normal;color:#3A3D42}
+.adopt-dock .ad-act{flex:none;display:flex;gap:10px;align-items:center;order:-1}
+.adopt-dock .btn{border:none;box-shadow:none;border-radius:14px;font-size:13.5px;padding:10px 20px}
+.adopt-dock .btn.primary{background:#0088D2;color:#fff}
+.adopt-dock .btn.primary.done{background:#0B6B3A}
+/* 固定列會蓋住頁尾最後一段，把版面墊高等高的距離 */
+body.tpl.has-dock{padding-bottom:78px}
+@media(max-width:720px){
+  .adopt-dock .pin{gap:10px}
+  .adopt-dock .ad-act{width:100%}
+  .adopt-dock .ad-act .btn{flex:1;justify-content:center}
+  body.tpl.has-dock{padding-bottom:132px}
+}
+
+/* ===== 平台基本樣式：按鈕與選取狀態一律用全站原色 =====
+   套色是設在 <main> 上的（topbar／頁籤／頁尾本來就在作用域外），
+   但 main 裡面不是只有示範內容——操作用的按鈕、以及「你選了哪一個」的
+   選取回饋，是平台自己的介面，跟著色版變會讓人分不清
+   「這是平台的樣子」還是「這是這一組套版的樣子」。
+   這裡把它們釘回 style.css 的原值：#0088D2／#005696／#E6F4FB。
+
+   刻意不含在內的是示範內容：#controls／#popup／#project／#bookmark／
+   #brandcomps 裡的按鈕是在示範「這一組風格的按鈕長什麼樣」，
+   .logo-inv 的深色底、各元件示範的 .on 狀態同理，都必須跟著色版走。 */
+/* 操作按鈕：用 id 逐顆指定，才不會連示範用的按鈕一起釘住 */
+main .btn.primary#demoOpen,
+main .btn.primary#dlSample,
+main .btn.primary#goPreview,
+main .btn.primary#dlDirect,
+main .btn.primary#dlWithOpts,
+main #startgo .btn{background:#0088D2;color:#fff}
+main #startgo .btn .material-symbols-rounded{color:#fff}
+main .btn.soft#exportTheme,
+main .btn.soft#exportSkillMd{background:#E6F4FB;color:#0088D2}
+/* 形狀也要一起釘：.btn 的 border 與 box-shadow 讀 --bd-comp／--sh-btn，
+   只改顏色的話，漫畫貼紙風那種粗黑邊＋偏移陰影還是會套到平台按鈕上，
+   跟頁首那兩顆（在套色作用域外）長得不一樣。 */
+main .btn#demoOpen,
+main .btn#dlSample,
+main .btn#goPreview,
+main .btn#dlDirect,
+main .btn#dlWithOpts,
+main #startgo .btn,
+main .btn#exportTheme,
+main .btn#exportSkillMd{border:none;box-shadow:none;border-radius:14px}
+
+/* 選取狀態：採用中的框、圓形勾選、採用標籤、Logo 選擇器 */
+/* 選取框是平台的區塊外殼，不是示範內容：邊線與陰影固定，
+   裡面的 .pick-body 才是這一組套版該表現的地方。 */
+main .pick-box{border:1px solid #EDF0F4;box-shadow:0 1px 2px rgba(20,45,70,.05);border-radius:14px}
+main .pick-box.adopted{border:1.5px solid #0088D2}
+main .pick-head{color:#005696}
+main .pick-box.adopted .pick-state{border-color:#0088D2;background:#0088D2;color:#fff}
+main .adopt-tag{color:#0088D2;background:#E6F4FB}
+main .logo-sel.on{outline-color:#0088D2}
+main .logo-sel.on .chk{background:#0088D2}
+main .logo-inv.on{outline-color:#0088D2}
+main .logo-inv.on .chk{color:#0088D2}
+main .opt-card.sel{background:#E6F4FB}
+main .opt-dot.on{border-color:#0088D2}
+
+/* 範本頁之後的兩顆按鈕：不放標題與說明，按鈕自己就是說明 */
+.start-act{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.start-act .btn{border-radius:14px;padding:13px 30px;font-size:15px}
+@media(max-width:560px){
+  .start-act{flex-direction:column}
+  .start-act .btn{width:100%;justify-content:center}
+}
+/* 麵包屑的套版名稱：在落地頁時它就是「現在位置」，不該長得像可以點 */
+.crumb-line a#crumbName[data-here]{color:var(--gray-2);pointer-events:none}
+.crumb-line a:hover{text-decoration:underline}
+
+/* 頁首：這一組是什麼 */
+.k-head{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+.k-title{font-size:32px;font-weight:700;color:var(--gray-1);letter-spacing:.04em;margin-bottom:4px}
+.k-en{font-size:13px;color:var(--gray-2);letter-spacing:.1em;font-weight:400}
+.k-desc{font-size:14.5px;color:var(--gray-1);line-height:1.95;max-width:56ch;margin-top:12px}
+.k-src{font-size:12.5px;color:var(--gray-2);margin-top:10px}
+.k-src b{color:var(--gray-1);font-weight:500}
+.k-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* 60-30-10 比例條 */
+.ratio{display:flex;height:66px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.ratio i{display:flex;align-items:flex-end;justify-content:center;padding-bottom:9px;
+  font-size:11.5px;letter-spacing:.06em;font-weight:500}
+.ratio-note{font-size:12.5px;color:var(--gray-2);margin-top:10px;line-height:1.85}
+.sub-hd{font-size:15px;font-weight:700;color:var(--gray-1);margin:32px 0 6px;letter-spacing:.02em}
+.sub-hd .en{font-size:11px;font-weight:400;color:#A6AEBB;letter-spacing:.18em;margin-left:8px}
+.sub-note{font-size:13px;color:var(--gray-2);margin-bottom:16px;max-width:760px;line-height:1.85}
+
+/* 色票：主色票是大色塊配說明，延伸色票是橫式小卡（照 Master 的呈現）。
+   原本只有色塊＋色碼，看不出這個色該用在哪；用途才是規範的重點。 */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:14px}
+.sw{background:#fff;border:1px solid #E1E8F0;border-radius:10px;overflow:hidden;
+  text-align:left;padding:0;font-family:inherit;width:100%;
+  display:flex;flex-direction:column;align-items:stretch}
+.sw-chip{display:block;height:96px;flex:none;border-bottom:1px solid rgba(0,0,0,.06);position:relative}
+/* 色碼疊在色塊右上角。深色塊配白色藥丸、淺色塊配深色藥丸，兩種都是實色不透明，
+   避免半透明疊在中間調色上時對比不足。 */
+.sw-chip code{position:absolute;top:8px;right:8px;font-size:11px;letter-spacing:.02em;
+  padding:2px 7px;border-radius:5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.sw-chip.on-dark code{background:#fff;color:#3A3D42}
+.sw-chip.on-light code{background:#3A3D42;color:#fff}
+.sw-meta{display:block;padding:12px 14px 14px;flex:1}
+.sw-meta b{display:block;font-size:14px;font-weight:500;color:var(--gray-1);letter-spacing:.02em;margin-bottom:7px}
+/* 說明文：字級再收一階，並讓每一段各自成行、之間留距離，
+   不要整段擠成一坨（使用者回報「全部混一起」）。 */
+/* 不用 --gray-2 #8C9099：白底只有 3.20:1，11px 小字達不到 AA；#626A78 是 5.45:1。 */
+.sw-meta i{display:block;font-style:normal;font-size:11px;color:#626A78;line-height:1.6}
+.sw-meta i em{display:block;font-style:normal}
+.sw-meta i em+em{margin-top:5px}
+.sw-meta i .sw-role{color:var(--gray-1);font-weight:500}
+/* 延伸色票：橫式，色塊小、資訊多 */
+.ex-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.ex{display:flex;align-items:flex-start;gap:12px;text-align:left;width:100%;
+  background:#fff;border:1px solid #E1E8F0;border-radius:8px;padding:12px 14px;
+  font-family:inherit}
+.ex-c{flex:none;width:34px;height:34px;border-radius:6px;display:block;border:1px solid rgba(0,0,0,.12)}
+.ex-m{min-width:0}
+.ex-m code{display:inline-block;font-size:12px;background:var(--blue-50);color:var(--brand-dark);
+  padding:1px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.ex-m b{display:block;font-size:12px;color:var(--gray-1);margin:4px 0 2px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:700}
+.ex-m i{display:block;font-style:normal;font-size:11px;color:#626A78;line-height:1.6}
+
+/* 元件樣式：用該組的圓角／陰影／邊線實際畫出來 */
+.ui-demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--block-gap)}
+.ui-cell{background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:24px;border:1px solid #EDF0F4}
+.ui-cell h4{font-size:12px;color:#A6AEBB;letter-spacing:.16em;font-weight:400;margin-bottom:16px}
+.ui-cell .spec{font-size:11.5px;color:var(--gray-2);margin-top:14px;line-height:1.8;
+  font-variant-numeric:tabular-nums;word-break:break-all}
+.k-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:14.5px;
+  padding:11px 22px;cursor:pointer;
+  background:var(--k-p);color:#fff;border-radius:var(--k-rd);border:var(--k-bd);box-shadow:var(--k-sh)}
+.k-card{background:#fff;padding:18px 20px;border-radius:var(--k-rd-card);border:var(--k-bd);box-shadow:var(--k-sh)}
+.k-card b{font-size:14.5px;color:var(--k-ink)}
+.k-card p{font-size:12.5px;color:var(--k-mu);margin-top:4px}
+.k-input{display:block;width:100%;font-family:inherit;font-size:14px;padding:11px 16px;
+  border-radius:var(--k-rd);border:1px solid var(--k-ln);background:#fff;color:var(--k-ink)}
+.k-tag{display:inline-block;font-size:12.5px;padding:5px 14px;border-radius:999px;
+  background:var(--k-i);color:var(--k-ink)}
+
+/* AI 指令：兩種拿法並排，說明就寫在各自的區塊裡（使用者指定）。 */
+.way-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:18px}
+.way{position:relative;background:#fff;border:1px solid #EDF0F4;border-radius:14px;
+  padding:26px 26px 24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px}
+.way-no{position:absolute;top:22px;right:24px;width:26px;height:26px;border-radius:50%;
+  background:var(--gray-1);color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center}
+.way h3{font-size:17px;font-weight:700;color:var(--gray-1);letter-spacing:.02em;padding-right:34px}
+.way p{font-size:13px;color:var(--gray-2);line-height:1.95}
+.way-note{font-size:12px;color:var(--gray-1);background:var(--blue-50);border-radius:8px;padding:8px 12px}
+.way .btn,.way-act{margin-top:auto}
+.way-act{display:flex;gap:10px;flex-wrap:wrap}
+
+/* AI 指令 */
+/* 企劃怎麼把規範帶進 AI：只寫一段敘述的話，實際上看不出從哪一步開始。
+   編號球用 --gray-1 而不是 --k-p——16 組色版有亮有暗，綁品牌色會有幾組白字踩不到對比。 */
+.howto{counter-reset:h;list-style:none;margin:0 0 18px;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(min(258px,100%),1fr));gap:12px}
+.howto li{counter-increment:h;position:relative;background:#fff;border:1px solid #EDF0F4;
+  border-radius:12px;padding:16px 18px 16px 50px;box-shadow:var(--shadow-sm);
+  font-size:12.5px;color:var(--gray-2);line-height:1.85}
+.howto li::before{content:counter(h);position:absolute;left:16px;top:16px;
+  width:22px;height:22px;border-radius:50%;background:var(--gray-1);color:#fff;
+  font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.howto b{color:var(--gray-1);font-weight:700}
+.howto li>b:first-child{display:block;font-size:13.5px;margin-bottom:5px}
+
+/* 下載 */
+.dl-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.dl-note{font-size:12.5px;color:var(--gray-2);line-height:1.9;margin-top:12px}
+/* 備註用純色塊，不掛左邊線——左側那條 3px 只是裝飾，四角一致的色塊讀起來乾淨得多 */
+.missing{background:#FFF6E8;border-radius:10px;
+  padding:14px 18px;font-size:12.5px;color:var(--gray-1);line-height:1.85;margin-top:14px}
+.toast-mini{position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(14px);
+  background:var(--gray-1);color:#fff;font-size:13px;padding:10px 20px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:.22s;z-index:200}
+.toast-mini.on{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.toast-mini{transition:none}}
+
+/* 頁內分頁列：沿用 topbar 的黏頂，往下再黏一層 */
+.kit-tabs{position:sticky;top:51px;z-index:90;background:rgba(255,255,255,.97);
+  backdrop-filter:blur(6px);border-bottom:1px solid #E9EDF2;margin:0 0 28px}
+.kt-in{display:flex;align-items:center;gap:2px;height:50px;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none}
+.kt-in::-webkit-scrollbar{display:none}
+.kt-in a{flex:none;padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:400;
+  color:var(--gray-2);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.kt-in a:hover{background:var(--blue-50);color:var(--brand)}
+.kt-in a.on{background:var(--brand);color:#fff}
+.blk{scroll-margin-top:118px}
+/* 還在「規範細節」頁的區塊：講清楚在哪裡，不要留空白假裝有 */
+.todo{background:#F7F9FB;border:1px dashed #C9D3DE;border-radius:12px;
+  padding:16px 18px;font-size:12.5px;color:var(--gray-2);line-height:1.9;margin-top:18px}
+.todo b{color:var(--gray-1);font-weight:500}
+.todo a{color:var(--brand)}
+/* 品牌識別：Logo 在淺底與主色底各看一次 */
+.logo-duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--block-gap)}
+.logo-cell{border-radius:var(--k-rd-card);padding:30px 24px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;min-height:150px}
+.logo-cell span{font-size:11.5px;letter-spacing:.08em}
+/* 版面規範：數值表 */
+.spec-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.spec-tbl th,.spec-tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid #EDF0F4;
+  vertical-align:top;line-height:1.8}
+.spec-tbl th{width:150px;font-weight:400;color:var(--gray-2);white-space:nowrap}
+.spec-tbl td{color:var(--gray-1);font-variant-numeric:tabular-nums;word-break:break-all}
+
+/* ===== 版面尺度：照 Master/template.html =====
+   單元之間 56px（原本 30px 太密，區塊之間分不開）、
+   區塊標題 21px 配一條 2px 主色底線、說明一律緊接在標題下，
+   不再散在區塊各處用行內 margin 硬喬。 */
+.tpl main.wrap{gap:56px;padding:30px 24px 60px}  /* 上下內距照匯入頁 */
+.tpl .pagehead{background:#F6F9FC;border-bottom:1px solid #E4EBF2;padding:40px 0 36px;margin-bottom:8px}
+.tpl .pin{max-width:1160px;margin:0 auto;padding:0 24px}
+.tpl .blk-hd{margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--k-p)}
+.tpl .blk-hd h2{font-size:21px;font-weight:700;color:var(--gray-1);letter-spacing:.02em}
+.tpl .blk-hd h2 .en{font-size:12px;font-weight:400;color:#A6AEBB;letter-spacing:.18em;margin-left:10px}
+.tpl .blk-hd p{font-size:13px;color:var(--gray-2);margin-top:8px;line-height:1.85;max-width:760px}
+.tpl .blk>*+.todo{margin-top:24px}
+.tpl .ui-demo,.tpl .sw-grid,.tpl .logo-duo{gap:20px}
+
+/* ===== 套版範本：整頁範本的縮圖，點下去開新分頁 ===== */
+.demo-wrap{border:1px solid #E6E8EC;border-radius:14px;overflow:hidden;background:#fff}
+.demo-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 16px;border-bottom:1px solid #EDF0F4;background:#F7F9FB}
+.demo-bar span{font-size:13.5px;font-weight:500;color:var(--gray-1)}
+.demo-shot{display:block;position:relative;height:560px;overflow:hidden;text-decoration:none}
+/* iframe 用實際寬度 1280 再等比縮，縮圖才會跟真的開起來一模一樣 */
+.demo-shot iframe{width:1280px;height:1720px;border:0;transform-origin:0 0;
+  pointer-events:none;display:block}
+.demo-shot::after{content:"點擊開啟完整範本";position:absolute;left:0;right:0;bottom:0;
+  padding:11px;text-align:center;font-size:12.5px;letter-spacing:.05em;
+  background:rgba(255,255,255,.95);color:var(--gray-2);border-top:1px solid #EDF0F4}
+.demo-shot:hover::after{color:var(--brand)}
+
+/* 字體排版：三行範例照這一組的字體、字重與字級實際排出來 */
+.typo{background:#fff;border:1px solid #EDF0F4;border-radius:14px;overflow:hidden}
+.typo-row{display:grid;grid-template-columns:210px 1fr;gap:20px;align-items:baseline;
+  padding:22px 24px;border-bottom:1px solid #EDF0F4}
+.typo-row:last-child{border-bottom:0}
+.typo-row .k{font-size:12px;color:#A6AEBB;letter-spacing:.1em}
+.typo-row .k b{display:block;font-size:13.5px;color:var(--gray-1);font-weight:500;letter-spacing:.02em;margin-bottom:3px}
+.typo-row .v{color:var(--gray-1)}
+.kv-line{font-size:13px;color:var(--gray-2);line-height:1.9}
+.kv-line b{color:var(--gray-1);font-weight:500}
+
+/* ===== 探究科學報（EXPO）版型 =====
+   取自 demo/hanlin-expo-dopamine.html 的 Header 與 Footer。
+   顏色不寫死：亮色底、深色頁尾都走主題變數，換色版會跟著變。 */
+.hd-expo{
+  background:var(--blue-300);color:var(--gray-1);text-align:center;
+  padding:38px 24px 34px;border-radius:0 0 22px 22px;
+}
+.hd-expo .eb{
+  display:inline-block;font-size:11.5px;letter-spacing:.22em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.72;margin-bottom:12px;
+}
+.hd-expo h4{font-size:26px;font-weight:700;line-height:1.35;letter-spacing:.02em;margin:0 0 10px}
+.hd-expo h4 em{font-style:normal;background:var(--warm);padding:0 6px;border-radius:6px}
+.hd-expo p{font-size:13px;line-height:1.85;opacity:.78;max-width:52ch;margin:0 auto}
+.hd-expo .scroll{display:block;margin:18px auto 0;width:2px;height:24px;
+  background:linear-gradient(var(--gray-1),transparent)}
+
+.ft-expo{
+  background:var(--brand-dark);color:rgba(255,255,255,.78);text-align:center;
+  border-radius:22px;padding:34px 24px 30px;font-size:13px;line-height:1.9;
+}
+.ft-expo .ft-t{
+  color:#fff;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px;letter-spacing:.1em;margin-bottom:8px;
+}
+
+/* 區塊標題與分類頁籤屬於平台框架，維持翰林色（style.css 已固定，這裡不覆寫）。
+   套版的顏色只出現在區塊裡面的示範內容。 */
+</style>
+</head>
+<body class="tpl">
+
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="templates.html" class="on">視覺套版</a><a href="basic.html">基本規範</a><a href="ai.html" id="goAiTop">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="sticky-head">
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">menu_book</span>
+    <h1>套版詳細<span class="sub">Style Detail</span></h1>
+    <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
+      <button class="btn primary" id="goPreviewTop" style="font-size:13px;padding:8px 16px;border-radius:999px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>套入匯入頁</button>
+    </span>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <nav class="cat-tabs">
+    <!-- 品牌基礎暫時關閉 <button class="cat-tab" data-cat="brand">品牌基礎</button> -->
+    <button class="cat-tab" data-cat="identity">品牌識別</button>
+    <button class="cat-tab" data-cat="comps">介面套用</button>
+    <button class="cat-tab" data-cat="layout">版面規範</button>
+  </nav>
+  <div class="nav-chips">
+    <!-- <div class="nav-group" data-cat="brand"><a href="#principles">設計方針</a></div> -->
+    <div class="nav-group" data-cat="identity"><a href="#logo">Logo 組合</a><a href="#header">Header 版型</a><a href="#login">登入系統</a><a href="#footer">Footer 版型</a></div>
+    <div class="nav-group" data-cat="comps"><a href="#hero">歡迎橫幅</a><a href="#controls">基本控制項</a><a href="#table">表格 Table</a><a href="#project">專案清單</a><a href="#bookmark">書籤收藏</a><a href="#popup">彈出視窗</a><a href="#toast">系統 Toast</a><a href="#feature">功能選單</a><a href="#brandcomps">品牌元件</a></div>
+    <div class="nav-group" data-cat="layout"><a href="#colorsys">色彩系統</a><a href="#adopt">採用設定</a><a href="#typo">字體排版</a><a href="#kitshape">形狀數值</a><a href="#rwd">RWD 斷點</a><a href="#type">文字級距</a><a href="#shape">形狀與間距</a></div>
+  </div>
+</div>
+</div>
+
+<div class="pagehead">
+  <div class="pin">
+    <nav class="crumb-line" aria-label="麵包屑"><a href="templates.html">視覺套版</a> ／ <a href="#demo" id="crumbName" data-gocat="start">—</a><span id="crumbTail" hidden> ／ 完整規範</span></nav>
+    <div class="k-head">
+      <div>
+        <div class="k-title" id="kName">—</div>
+        <div class="k-en" id="kEn"></div>
+        <!-- 這一段是「這一組顏色長什麼樣」的介紹，只在「色彩系統」頁籤出現。
+             pagehead 不隨 main 的頁籤切換，原本每個頁籤都會再看到同一段介紹。 -->
+        <div id="kIntro">
+          <p class="k-desc" id="kDesc"></p>
+          <p class="k-src">來源規範文件　<b id="kSrc"></b></p>
+          <p class="kv-line" style="margin-top:10px"><b>適用</b>　<span id="kFit"></span></p>
+          <p class="kv-line"><b>避免</b>　<span id="kAvoid"></span></p>
+        </div>
+      </div>
+      <!-- 頁首原本還有一條四色帶。色彩只在「色彩系統」頁籤介紹一次，
+           那裡已有完整色票與 60-30-10 比例帶，頁首再放一次是重複，已移除。 -->
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+
+
+  <!-- 風格色版：一次選定整組配色（主色／輔色／亮色／對比色）。
+       這一區只是既有 curTheme／curContrast 的另一個入口，
+       不新增任何套用機制，也不改寫 localStorage 的結構。 -->
+  <!-- 風格色版已移到「視覺套版」列表頁（index.html），這裡不再放第二份。
+       挑色版在那邊做，這一頁只負責採用設定與規範細節。
+       產生按鈕的程式碼保留但有 if(!row)return 防護，沒有這個區塊就不會執行。 -->
+
+  <!-- 套版範本 -->
+
+
+  <!-- 品牌色彩 -->
+  <section class="sec" data-cat="start" id="demo">
+    <div class="sec-head"><h2>套版範本</h2><span class="note">FULL SAMPLE</span></div>
+    <p class="sec-desc">依這一組規範畫出來的一整頁：版面、元件與色彩比例都照規範走，可以直接當成交給 AI 的參考。點縮圖開啟完整範本。</p>
+    <div class="demo-wrap">
+      <div class="demo-bar">
+        <span id="demoName">範本頁</span>
+        <a class="btn primary" id="demoOpen" target="_blank" rel="noopener" style="font-size:13px;padding:8px 16px;border-radius:14px">開啟完整範本 ↗</a>
+      </div>
+      <a class="demo-shot" id="demoLink" target="_blank" rel="noopener" aria-label="開啟完整範本">
+        <iframe id="demoFrame" title="套版範本預覽" loading="lazy" tabindex="-1"></iframe>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- Logo 組合方式 -->
+  <section class="sec" data-cat="identity" id="logo">
+    <div class="sec-head"><h2>Logo 組合方式</h2><span class="note">LOGO LOCKUP</span></div>
+    <p class="sec-desc">四種組合擇一，標準版與反白版共用同一個選擇；選好後下方版型立即套用。</p>
+    <h3 class="sub-title">標準版（淺色背景用）<span class="en">— 用於白色或淺色底</span></h3>
+    <div class="grid-4">
+      <div><div class="logo-sel" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo.svg" alt="完整組合" style="height:64px"></div><p class="logo-caption">① 完整組合</p></div>
+      <div><div class="logo-sel" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-en.svg" alt="中英組合" style="height:64px"></div><p class="logo-caption">② 中英組合</p></div>
+      <div><div class="logo-sel on" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-text.svg" alt="標準字" style="height:50px"></div><p class="logo-caption">③ 標準字</p></div>
+      <div><div class="logo-sel" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-mark-only.svg" alt="品牌標誌" style="height:56px"></div><p class="logo-caption">④ 品牌標誌</p></div>
+    </div>
+
+    <h3 class="sub-title">反白版（深色背景用）<span class="en">— 用於深色或品牌色底，Logo 轉為白色</span></h3>
+    <div class="grid-4">
+      <div><div class="logo-inv" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo.svg" alt="" style="height:66px"></div><p class="logo-caption">① 完整組合</p></div>
+      <div><div class="logo-inv" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-en.svg" alt="" style="height:66px"></div><p class="logo-caption">② 中英組合</p></div>
+      <div><div class="logo-inv" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-text.svg" alt="" style="height:52px"></div><p class="logo-caption">③ 標準字</p></div>
+      <div><div class="logo-inv" data-g="logo"><span class="chk"><span class="material-symbols-rounded">check</span></span><img src="logo-mark-only.svg" alt="" style="height:58px"></div><p class="logo-caption">④ 品牌標誌</p></div>
+    </div>
+  </section>
+
+
+  <!-- 看完範本與 Logo 之後的兩條路：拿一份套好的檔案走，或往下看完整規範。
+       兩顆都不另外實作套版邏輯——範例檔直接取上面那個已經套好的範本頁畫面，
+       跟「開啟完整範本」看到的是同一份。 -->
+  <!-- 範本頁看完就是兩條路：拿一份套好的檔案走，或往下看完整規範。
+       標題與說明都拿掉——按鈕文字已經講完了要做什麼，再寫一段只是擋在中間。 -->
+  <section class="sec" data-cat="start" id="startgo">
+    <div class="start-act">
+      <button class="btn primary" id="dlSample"><span class="material-symbols-rounded" style="font-size:19px">download</span>下載範例檔</button>
+      <a class="btn primary" href="#header" data-gocat="identity"><span class="material-symbols-rounded" style="font-size:19px">tune</span>自訂規範樣式</a>
+    </div>
+  </section>
+
+
+  <!-- Header 版型 -->
+  <section class="sec" data-cat="identity" id="header">
+    <div class="sec-head"><h2>Header 版型（依產品 / 族群）</h2><span class="note">HEADER LAYOUTS</span></div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>品牌官網<span class="adopt-tag">採用中</span><span class="pick-note">日式極簡 · 留白（淺色）</span></div>
+      <div class="pick-body">
+        <div class="demo-bar light">
+          <img class="demo-logo" src="logo-text.svg" alt="翰林">
+          <nav><a href="#header">品牌故事</a><a href="#header">產品服務</a><a href="#header">最新消息</a></nav>
+          <span class="member-pill"><span class="material-symbols-rounded" style="font-size:17px">account_circle</span>翰林會員</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>品牌官網（深色）<span class="adopt-tag">採用中</span><span class="pick-note">翰林標準藍 · 深色沉浸</span></div>
+      <div class="pick-body">
+        <div class="demo-bar dark">
+          <img class="demo-logo" src="logo-text.svg" alt="翰林">
+          <nav><a href="#header">品牌故事</a><a href="#header">產品服務</a><a href="#header">最新消息</a></nav>
+          <span class="member-pill"><span class="material-symbols-rounded" style="font-size:17px">account_circle</span>翰林會員</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>教師平台<span class="adopt-tag">採用中</span><span class="pick-note">SSO 鑰匙圈 · 搜尋 / 通知 / 頭像</span></div>
+      <div class="pick-body">
+        <div class="demo-bar light">
+          <img class="demo-logo" src="logo-text.svg" alt="翰林">
+          <span class="demo-search"><span class="material-symbols-rounded" style="font-size:18px">search</span>搜尋試卷、資源...</span>
+          <span style="position:relative;color:var(--gray-1)"><span class="material-symbols-rounded">notifications</span><i style="position:absolute;top:0;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--warm)"></i></span>
+          <span class="avatar">王</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>國小 / 兒童產品<span class="adopt-tag">採用中</span><span class="pick-note">明亮圓潤 · 大圖示 · 趣味</span></div>
+      <div class="pick-body">
+        <div class="kid-bar">
+          <span class="kid-ic"><span class="material-symbols-rounded">school</span></span>小翰林樂園
+          <span class="grow">
+            <span class="kid-pill"><span class="material-symbols-rounded">home</span>首頁</span>
+            <span class="kid-pill"><span class="material-symbols-rounded">menu_book</span>課程</span>
+            <span class="kid-pill"><span class="material-symbols-rounded">play_circle</span>遊戲</span>
+            <span class="kid-pill"><span class="material-symbols-rounded">star</span>獎勵</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>國中 / 高中 學術<span class="adopt-tag">採用中</span><span class="pick-note">深藍沉穩 · 雙層學科分頁</span></div>
+      <div class="pick-body">
+        <div class="acad">
+          <div class="acad-top"><img src="logo-mark-only.svg" alt="" style="height:22px;filter:brightness(0) invert(1)">翰林學術<nav><a href="#header" style="color:inherit;text-decoration:none">課程</a><a href="#header" style="color:inherit;text-decoration:none">題庫</a><a href="#header" style="color:inherit;text-decoration:none">成績</a></nav><span class="avatar" style="background:#fff;color:var(--brand)">王</span></div>
+          <div class="acad-tabs"><a href="#header">國文</a><a href="#header">英文</a><a class="on" href="#header">數學</a><a href="#header">自然</a><a href="#header">社會</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>生產工具 · 命題大師<span class="adopt-tag">採用中</span><span class="pick-note">精簡工具列 · 即時派卷</span></div>
+      <div class="pick-body">
+        <div class="demo-bar light">
+          <img class="demo-logo" src="logo-text.svg" alt="翰林">
+          <b style="font-size:14px">命題大師</b>
+          <span class="tool-tag">建立試卷</span>
+          <span style="font-size:13.5px;color:var(--gray-1)">試卷紀錄</span>
+          <span class="grow"><span style="font-size:13.5px">共 8 題</span><button class="pill-btn">派卷</button></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>資源庫 · 行動大師<span class="adopt-tag">採用中</span><span class="pick-note">搜尋為主 · 快速篩選</span></div>
+      <div class="pick-body">
+        <div class="demo-bar light">
+          <img class="demo-logo" src="logo-text.svg" alt="翰林">
+          <span class="demo-search"><span class="material-symbols-rounded" style="font-size:18px">search</span>搜尋教材、影片、教案...</span>
+          <span class="chip on">全部</span><span class="chip">國小</span><span class="chip">國中</span><span class="chip">高中</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>影音派 / 投影展示<span class="adopt-tag">採用中</span><span class="pick-note">深色沉浸 · 教師預覽</span></div>
+      <div class="pick-body">
+        <div class="demo-bar black">
+          <img src="logo-mark-only.svg" alt="" style="height:22px;filter:brightness(0) invert(1)"><b style="font-size:14px">影音派</b>
+          <span class="grow">
+            <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border-radius:999px;padding:5px 14px;font-size:12.5px"><span class="live-dot"></span>教師預覽模式</span>
+            <span style="font-size:13px;font-family:Consolas,monospace">03:15 / 12:45</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>AI 數位導覽員<span class="adopt-tag">採用中</span><span class="pick-note">吉祥物 · 對話頭部</span></div>
+      <div class="pick-body">
+        <div class="ai-bar">
+          <span class="mascot"><span class="material-symbols-rounded">smart_toy</span></span>翰林 AI 小助手
+          <span style="margin-left:auto;cursor:pointer"><span class="material-symbols-rounded">close</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="hd">
+      <div class="pick-head"><span class="pick-state"></span>探究科學報（EXPO）<span class="adopt-tag">採用中</span><span class="pick-note">滿版亮色 · 置中大標 · 專題／單篇長文</span></div>
+      <div class="pick-body">
+        <div class="hd-expo">
+          <span class="eb">翰林 EXPO ・ 探究科學報</span>
+          <h4>從課本裡的一行公式，到<em>看得見的世界</em></h4>
+          <p>沒有導覽列，用一整屏的主視覺把讀者帶進主題；適合專題報導與單篇長文，不適合功能型頁面。</p>
+          <span class="scroll"></span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- 登入系統 -->
+  <section class="sec" data-cat="identity" id="login">
+    <div class="sec-head"><h2>登入系統</h2><span class="note">LOGIN</span></div>
+    <p class="sec-desc">翰林登入頁範本：左側品牌視覺+右側帳號/密碼登入，並提供教育雲端帳號、縣市親師生帳號、Google 等 SSO 單一登入。</p>
+
+    <div class="pick-box adopted" data-multi="1" data-toggle="member-wrap">
+      <div class="pick-head"><span class="pick-state"></span>在 Header 顯示「登入 / 翰林會員」入口<span class="adopt-tag">採用中</span><span class="pick-note">不需登入的站可關閉，Header 就不會出現這顆 icon</span></div>
+    </div>
+
+    <div id="member-wrap">
+    <h3 class="sub-title">Header 會員下拉選單<span class="en">（登入後點頭像展開）</span></h3>
+    <div class="card" style="display:flex;justify-content:center;padding:34px">
+      <div class="member-menu">
+        <div class="head"><span class="avatar" style="background:var(--blue-100);color:var(--brand)"><span class="material-symbols-rounded" style="font-size:20px">account_circle</span></span><div><b>王曉明 老師</b><span>翰林會員</span></div></div>
+        <ul>
+          <li><span class="material-symbols-rounded">workspace_premium</span>翰林相信學習</li>
+          <li><span class="material-symbols-rounded">lock</span>修改密碼</li>
+          <li><span class="material-symbols-rounded">download</span>下載中心</li>
+          <li><span class="material-symbols-rounded">logout</span>登出</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+
+  </section>
+
+
+  <!-- Footer 版型 -->
+  <section class="sec" data-cat="identity" id="footer">
+    <div class="sec-head"><h2>Footer 版型（點選採用）</h2><span class="note">FOOTER LAYOUTS</span></div>
+
+    <div class="pick-box" data-group="ft">
+      <div class="pick-head"><span class="pick-state"></span>完整頁尾<span class="adopt-tag">採用中</span><span class="pick-note">版權 + 社群連結（官網 / 產品站）</span></div>
+      <div class="pick-body">
+        <div class="ft-full">
+          <span class="ft-copy" style="margin:0">© 2026 翰林教學樞紐 Hanlin Hub · 相信學習</span>
+          <span class="socials">
+            <span class="material-symbols-rounded">thumb_up</span>
+            <span class="material-symbols-rounded">photo_camera</span>
+            <span class="material-symbols-rounded">chat</span>
+            <span class="material-symbols-rounded">smart_display</span>
+          </span>
+        </div>
+        <p class="ft-note" style="margin-top:14px">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="ft">
+      <div class="pick-head"><span class="pick-state"></span>導覽頁尾<span class="adopt-tag">採用中</span><span class="pick-note">連結列 + 版權（內容型網站）</span></div>
+      <div class="pick-body">
+        <div class="ft-links"><a href="#footer">關於翰林</a><a href="#footer">產品服務</a><a href="#footer">最新消息</a><a href="#footer">聯絡我們</a><a href="#footer">隱私權政策</a></div>
+        <p class="ft-copy">© 2026 翰林教學樞紐 Hanlin Hub · 相信學習</p>
+        <p class="ft-note">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-group="ft">
+      <div class="pick-head"><span class="pick-state"></span>精簡頁尾<span class="adopt-tag">採用中</span><span class="pick-note">深色版 · 置中版權+免責（工具 / 後台）</span></div>
+      <div class="pick-body">
+        <div class="ft-dark">
+          <p><b>© 2026 翰林教學樞紐 Hanlin Hub · 相信學習</b></p>
+          <p>本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box" data-group="ft">
+      <div class="pick-head"><span class="pick-state"></span>圓角深色頁尾（EXPO）<span class="adopt-tag">採用中</span><span class="pick-note">深色圓角卡片 · 置中 · 專題／單篇長文</span></div>
+      <div class="pick-body">
+        <div class="ft-expo">
+          <div class="ft-t">HANLIN EXPO ・ 探究科學報</div>
+          <p style="margin:0">© 2026 翰林出版事業股份有限公司 數位教育部　｜　翰林教學樞紐 Hanlin Hub · 相信學習</p>
+          <p style="margin:6px 0 0">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- 歡迎橫幅 -->
+
+  <!-- 基本控制項 -->
+  <section class="sec" data-cat="comps" id="hero">
+    <div class="sec-head"><h2>歡迎橫幅</h2><span class="note">WELCOME HERO</span></div>
+    <p class="sec-desc">「歡迎回來」兩種版型，點選採用其一（存進 theme，首頁即套用）。</p>
+    <div class="grid-2">
+      <div class="pick-box" data-group="hero" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>AI 漸層版<span class="adopt-tag">採用中</span><span class="pick-note">品牌漸層+AI 晶片+吉祥物</span></div>
+        <div class="pick-body">
+          <div class="hero-ai">
+            <div class="row"><img src="logo-text.svg" alt="翰林"><span class="ai-chip">AI<i></i></span></div>
+            <h4>成卷生成器</h4>
+            <p><span class="material-symbols-rounded star">auto_awesome</span>智能選題、精準出卷，教師的出題好幫手！</p>
+            <span class="bot"><span class="material-symbols-rounded">smart_toy</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="pick-box adopted" data-group="hero" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>純圖片版<span class="adopt-tag">採用中</span><span class="pick-note">整張背景照片+問候文字</span></div>
+        <div class="pick-body">
+          <div class="hero-photo">
+            <span class="material-symbols-rounded">auto_stories</span>
+            <span>背景照片預留位置（明亮、自然、真實學習場景）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" data-cat="comps" id="controls">
+    <div class="sec-head"><h2>基本控制項</h2><span class="note">BASIC CONTROLS</span></div>
+    <p class="sec-desc">Select、Label、Button 皆提供「淺色底（品牌色系）/深色底（白色系）」兩種版本；選取狀態一律以顏色輕重表達，禁止以邊線分辨。</p>
+
+    <div class="pick-box adopted" data-multi="1" data-key="btn">
+      <div class="pick-head"><span class="pick-state"></span>按鈕 Button<span class="adopt-tag">採用中</span><span class="pick-note">同一顆按鈕在淺色底用品牌色、深色底改用白色系；皆無邊線。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div style="display:flex;gap:14px;margin-top:4px"><button class="btn primary">立即派卷</button><button class="btn soft">取消</button></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div style="display:flex;gap:14px;margin-top:4px"><button class="btn primary">立即派卷</button><button class="btn soft">取消</button></div></div>
+    </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="seg">
+      <div class="pick-head"><span class="pick-state"></span>選取狀態 Selectable<span class="adopt-tag">採用中</span><span class="pick-note">被選取者以更重的色塊表示，未選取為淡色；全程不使用邊線分辨。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="seg" style="margin-top:4px"><span class="on">全部</span><span>數學</span><span>國文</span><span>英文</span></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="seg" style="margin-top:4px"><span class="on">全部</span><span>數學</span><span>國文</span><span>英文</span></div></div>
+    </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="select">
+      <div class="pick-head"><span class="pick-state"></span>下拉 Select<span class="adopt-tag">採用中</span><span class="pick-note">淺色底=柔色填底+品牌色字；深色底=白色半透明填底+白字。皆無外框。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="sel-demo" style="margin-top:4px">數學<span class="material-symbols-rounded">expand_more</span></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="sel-demo" style="margin-top:4px">數學<span class="material-symbols-rounded">expand_more</span></div></div>
+    </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="label">
+      <div class="pick-head"><span class="pick-state"></span>標籤 Label<span class="adopt-tag">採用中</span><span class="pick-note">欄位標題為純文字；狀態標籤在淺色底用柔、深色底用白色半透明。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><p class="lab-title" style="margin-top:6px">科目 <em>*</em></p><div class="lab-tags"><span class="on">數學</span><span>國文</span></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><p class="lab-title" style="margin-top:6px">科目 <em>*</em></p><div class="lab-tags"><span class="on">數學</span><span>國文</span></div></div>
+    </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">圖示 Icon <span class="en">MATERIAL SYMBOLS</span></h3>
+    <p class="sub-desc">採用 Google Material Symbols 基本樣式；有背景色=色底圓形容器，沒背景色=純圖示。點選採用其一。</p>
+    <div class="duo">
+      <div class="pick-box adopted" data-group="icon" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span><span class="icon-flag">沒背景色</span>純圖示 · 品牌色<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <div class="icon-grid">
+            <span class="ic"><span class="material-symbols-rounded">school</span></span><span class="ic"><span class="material-symbols-rounded">menu_book</span></span><span class="ic"><span class="material-symbols-rounded">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded">edit_note</span></span><span class="ic"><span class="material-symbols-rounded">event_available</span></span><span class="ic"><span class="material-symbols-rounded">description</span></span><span class="ic"><span class="material-symbols-rounded">quiz</span></span><span class="ic"><span class="material-symbols-rounded">checklist</span></span><span class="ic"><span class="material-symbols-rounded">star</span></span>
+            <span class="ic"><span class="material-symbols-rounded">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded">edit</span></span><span class="ic"><span class="material-symbols-rounded">grid_view</span></span><span class="ic"><span class="material-symbols-rounded">functions</span></span><span class="ic"><span class="material-symbols-rounded">science</span></span><span class="ic"><span class="material-symbols-rounded">biotech</span></span><span class="ic"><span class="material-symbols-rounded">translate</span></span><span class="ic"><span class="material-symbols-rounded">public</span></span><span class="ic"><span class="material-symbols-rounded">palette</span></span>
+            <span class="ic"><span class="material-symbols-rounded">groups</span></span><span class="ic"><span class="material-symbols-rounded">person</span></span><span class="ic"><span class="material-symbols-rounded">cast</span></span><span class="ic"><span class="material-symbols-rounded">videocam</span></span><span class="ic"><span class="material-symbols-rounded">play_circle</span></span><span class="ic"><span class="material-symbols-rounded">headphones</span></span><span class="ic"><span class="material-symbols-rounded">mic</span></span><span class="ic"><span class="material-symbols-rounded">work</span></span><span class="ic"><span class="material-symbols-rounded">smart_toy</span></span>
+            <span class="ic"><span class="material-symbols-rounded">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded">trending_up</span></span><span class="ic"><span class="material-symbols-rounded">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded">campaign</span></span><span class="ic"><span class="material-symbols-rounded">trophy</span></span><span class="ic"><span class="material-symbols-rounded">calendar_month</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="pick-box" data-group="icon" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span><span class="icon-flag">有背景色</span>色底圓形容器<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <div class="icon-grid bg">
+            <span class="ic"><span class="material-symbols-rounded">school</span></span><span class="ic"><span class="material-symbols-rounded">menu_book</span></span><span class="ic"><span class="material-symbols-rounded">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded">edit_note</span></span><span class="ic"><span class="material-symbols-rounded">event_available</span></span><span class="ic"><span class="material-symbols-rounded">description</span></span><span class="ic"><span class="material-symbols-rounded">quiz</span></span><span class="ic"><span class="material-symbols-rounded">checklist</span></span><span class="ic"><span class="material-symbols-rounded">star</span></span>
+            <span class="ic"><span class="material-symbols-rounded">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded">edit</span></span><span class="ic"><span class="material-symbols-rounded">grid_view</span></span><span class="ic"><span class="material-symbols-rounded">functions</span></span><span class="ic"><span class="material-symbols-rounded">science</span></span><span class="ic"><span class="material-symbols-rounded">biotech</span></span><span class="ic"><span class="material-symbols-rounded">translate</span></span><span class="ic"><span class="material-symbols-rounded">public</span></span><span class="ic"><span class="material-symbols-rounded">palette</span></span>
+            <span class="ic"><span class="material-symbols-rounded">groups</span></span><span class="ic"><span class="material-symbols-rounded">person</span></span><span class="ic"><span class="material-symbols-rounded">cast</span></span><span class="ic"><span class="material-symbols-rounded">videocam</span></span><span class="ic"><span class="material-symbols-rounded">play_circle</span></span><span class="ic"><span class="material-symbols-rounded">headphones</span></span><span class="ic"><span class="material-symbols-rounded">mic</span></span><span class="ic"><span class="material-symbols-rounded">work</span></span><span class="ic"><span class="material-symbols-rounded">smart_toy</span></span>
+            <span class="ic"><span class="material-symbols-rounded">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded">trending_up</span></span><span class="ic"><span class="material-symbols-rounded">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded">campaign</span></span><span class="ic"><span class="material-symbols-rounded">trophy</span></span><span class="ic"><span class="material-symbols-rounded">calendar_month</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>狀態 / 警示 Status<span class="adopt-tag">採用中</span><span class="pick-note">語意狀態色（成功/警告/危險/資訊）延伸中間色系統；按鈕沿用有底色（實心）與沒底色（柔色），警示條為柔色底+同色左標。</span></div>
+      <div class="pick-body">
+    <div class="st-row">
+      <button class="st-btn solid st-green"><span class="material-symbols-rounded">check_circle</span>成功</button>
+      <button class="st-btn solid st-orange"><span class="material-symbols-rounded">campaign</span>警告</button>
+      <button class="st-btn solid st-red"><span class="material-symbols-rounded">delete</span>危險</button>
+      <button class="st-btn solid st-blue"><span class="material-symbols-rounded">notifications</span>資訊</button>
+      <button class="st-btn soft st-green"><span class="material-symbols-rounded">check_circle</span>成功</button>
+      <button class="st-btn soft st-orange"><span class="material-symbols-rounded">campaign</span>警告</button>
+      <button class="st-btn soft st-red"><span class="material-symbols-rounded">delete</span>危險</button>
+      <button class="st-btn soft st-blue"><span class="material-symbols-rounded">notifications</span>資訊</button>
+    </div>
+    <div class="st-grid">
+      <div class="st-alert st-green"><span class="material-symbols-rounded">check_circle</span><div><b>派卷成功</b><p>試卷已送出給 3 個班級共 96 位學生。</p></div></div>
+      <div class="st-alert st-orange"><span class="material-symbols-rounded">campaign</span><div><b>尚未儲存</b><p>離開前請先儲存草稿，以免內容遺失。</p></div></div>
+      <div class="st-alert st-red"><span class="material-symbols-rounded">delete</span><div><b>刪除無法復原</b><p>此操作將一併移除所有作答紀錄。</p></div></div>
+      <div class="st-alert st-blue"><span class="material-symbols-rounded">notifications</span><div><b>系統維護通知</b><p>本週日 02:00–04:00 將暫停服務。</p></div></div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 表格 -->
+  <section class="sec" data-cat="comps" id="table">
+    <div class="sec-head"><h2>表格 Table</h2><span class="note">DATATABLE / STYLING</span></div>
+    <p class="sec-desc">列表資料一律使用資料表格：工具列（每頁筆數+搜尋）+表身+頁尾（筆數資訊+分頁）；跨斷點時轉為卡片式。</p>
+
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>資料表格 DataTable<span class="adopt-tag">採用中</span><span class="pick-note">搜尋 / 分頁 / 操作</span></div>
+      <div class="pick-body">
+    <div class="tbl-card">
+      <div class="tbl-toolbar">
+        <span class="show">顯示<b>10 筆<span class="material-symbols-rounded" style="font-size:16px">expand_more</span></b>／頁</span>
+        <span class="tbl-search"><span class="material-symbols-rounded" style="font-size:18px">search</span>搜尋試卷名稱、科目...</span>
+      </div>
+      <div style="overflow-x:auto">
+      <table class="tbl hover">
+        <thead><tr><th style="width:44px"><input type="checkbox"></th><th>試卷名稱</th><th>科目</th><th>年級</th><th>狀態</th><th>建立日期</th><th style="width:110px">操作</th></tr></thead>
+        <tbody>
+          <tr><td><input type="checkbox" checked></td><td>第一次段考複習卷 A</td><td><span class="tagx blue">數學</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/12</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox"></td><td>單元三 隨堂測驗</td><td><span class="tagx blue">國文</span></td><td>八年級</td><td><span class="tagx yellow">批改中</span></td><td>2026/08/10</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox"></td><td>英語聽力 Unit 5</td><td><span class="tagx blue">英語</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/08</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox"></td><td>AI 素養導向題組（草稿）</td><td><span class="tagx blue">自然</span></td><td>九年級</td><td><span class="tagx gray">草稿</span></td><td>2026/08/05</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox"></td><td>會考總複習 模擬卷一</td><td><span class="tagx blue">社會</span></td><td>九年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/01</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="tbl-foot">
+        <span class="info">顯示第 1–5 筆，共 42 筆</span>
+        <span class="pg"><a class="ghost" href="#table">上一頁</a><a class="on" href="#table">1</a><a href="#table">2</a><a href="#table">3</a><a class="ghost" href="#table">...</a><a href="#table">9</a><a class="ghost" href="#table">下一頁</a></span>
+      </div>
+    </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">表格樣式 Table Styling <span class="en">依情境擇一</span></h3>
+    <div class="grid-2">
+      <div class="pick-box adopted" data-group="tblsty" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>斑馬紋 Striped<span class="adopt-tag">採用中</span><span class="pick-note">長列表、報表瀏覽</span></div>
+        <table class="tbl striped">
+          <thead><tr><th>科目</th><th>已完成</th><th>平均分</th></tr></thead>
+          <tbody>
+            <tr><td>數學</td><td>28 / 32</td><td>86</td></tr>
+            <tr><td>國文</td><td>30 / 32</td><td>81</td></tr>
+            <tr><td>英語</td><td>25 / 32</td><td>78</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pick-box" data-group="tblsty" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>全框線 Bordered<span class="adopt-tag">採用中</span><span class="pick-note">成績單、對照表列印</span></div>
+        <table class="tbl bordered">
+          <thead><tr><th>科目</th><th>已完成</th><th>平均分</th></tr></thead>
+          <tbody>
+            <tr><td>數學</td><td>28 / 32</td><td>86</td></tr>
+            <tr><td>國文</td><td>30 / 32</td><td>81</td></tr>
+            <tr><td>英語</td><td>25 / 32</td><td>78</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pick-box" data-group="tblsty" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>主色表頭 Primary Header<span class="adopt-tag">採用中</span><span class="pick-note">儀表板重點表格</span></div>
+        <table class="tbl head-primary">
+          <thead><tr><th>科目</th><th>已完成</th><th>平均分</th></tr></thead>
+          <tbody>
+            <tr><td>數學</td><td>28 / 32</td><td>86</td></tr>
+            <tr><td>國文</td><td>30 / 32</td><td>81</td></tr>
+            <tr><td>英語</td><td>25 / 32</td><td>78</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pick-box" data-group="tblsty" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>深色表頭 Dark Header<span class="adopt-tag">採用中</span><span class="pick-note">後台管理清單</span></div>
+        <table class="tbl head-dark">
+          <thead><tr><th>科目</th><th>已完成</th><th>平均分</th></tr></thead>
+          <tbody>
+            <tr><td>數學</td><td>28 / 32</td><td>86</td></tr>
+            <tr><td>國文</td><td>30 / 32</td><td>81</td></tr>
+            <tr><td>英語</td><td>25 / 32</td><td>78</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 專案清單 -->
+  <section class="sec" data-cat="comps" id="project">
+    <div class="sec-head"><h2>專案清單 Project List</h2><span class="note">PROJECT LIST</span></div>
+    <p class="sec-desc">任務/專案型內容以卡片清單呈現：上方狀態頁籤+建立按鈕，卡片含入口圖示、統計、進度條與參與成員。</p>
+
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>專案卡片清單 Project Cards<span class="adopt-tag">採用中</span><span class="pick-note">狀態頁籤+進度條+成員</span></div>
+      <div class="pick-body">
+    <div class="pj-bar">
+      <div class="pj-tabs"><span class="on">全部</span><span>進行中</span><span>已完成</span></div>
+      <button class="btn primary" style="font-size:13.5px;padding:10px 18px"><span class="material-symbols-rounded" style="font-size:18px">add</span>建立新專案</button>
+    </div>
+
+    <div class="pj-grid">
+      <div class="pj-card">
+        <div class="pj-top"><span class="tile" style="background:var(--blue-50);color:var(--brand)"><span class="material-symbols-rounded">edit_note</span></span><div><b>第一次段考命題</b><span>數學 · 七年級</span></div><span class="state tagx green">進行中</span></div>
+        <div class="pj-meta"><div><b>32</b><span>題數</span></div><div><b>18</b><span>已審題</span></div><div><b>5</b><span>留言</span></div></div>
+        <div class="pj-prog"><div class="lab"><span>完成進度</span><span>56%</span></div><div class="bar"><i style="width:56%"></i></div></div>
+        <div class="pj-foot"><span class="avatar-stack"><span style="background:var(--brand)">王</span><span style="background:var(--c2)">林</span><span style="background:var(--c3)">陳</span></span><span class="pj-more">查看詳情<span class="material-symbols-rounded" style="font-size:15px">chevron_right</span></span></div>
+      </div>
+      <div class="pj-card">
+        <div class="pj-top"><span class="tile" style="background:var(--c2-bg);color:var(--c2)"><span class="material-symbols-rounded">smart_display</span></span><div><b>單元影音備課</b><span>國文 · 八年級</span></div><span class="state tagx yellow">審核中</span></div>
+        <div class="pj-meta"><div><b>12</b><span>影片</span></div><div><b>9</b><span>已上架</span></div><div><b>2</b><span>留言</span></div></div>
+        <div class="pj-prog"><div class="lab"><span>完成進度</span><span>75%</span></div><div class="bar"><i style="width:75%;background:var(--c2)"></i></div></div>
+        <div class="pj-foot"><span class="avatar-stack"><span style="background:var(--c2)">李</span><span style="background:var(--brand)">張</span></span><span class="pj-more">查看詳情<span class="material-symbols-rounded" style="font-size:15px">chevron_right</span></span></div>
+      </div>
+      <div class="pj-card">
+        <div class="pj-top"><span class="tile" style="background:var(--c3-bg);color:var(--c3)"><span class="material-symbols-rounded">auto_awesome</span></span><div><b>AI 素養題庫建置</b><span>自然 · 九年級</span></div><span class="state tagx gray">已完成</span></div>
+        <div class="pj-meta"><div><b>120</b><span>題數</span></div><div><b>120</b><span>已審題</span></div><div><b>14</b><span>留言</span></div></div>
+        <div class="pj-prog"><div class="lab"><span>完成進度</span><span>100%</span></div><div class="bar"><i style="width:100%;background:var(--c3)"></i></div></div>
+        <div class="pj-foot"><span class="avatar-stack"><span style="background:var(--c3)">周</span><span style="background:var(--brand)">王</span><span style="background:#8C9099">吳</span></span><span class="pj-more">查看詳情<span class="material-symbols-rounded" style="font-size:15px">chevron_right</span></span></div>
+      </div>
+    </div>
+      </div>
+    </div>
+
+    <h3 class="sub-title">專案詳情 Project Details <span class="en">檔案清單 / 活動紀錄</span></h3>
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>專案詳情 Project Details<span class="adopt-tag">採用中</span><span class="pick-note">檔案清單+活動紀錄</span></div>
+      <div class="pick-body">
+    <div class="grid-2">
+      <div class="file-card">
+        <div class="head">專案檔案 PROJECT FILES</div>
+        <div class="body">
+          <div class="file-row"><span class="fic"><span class="material-symbols-rounded">picture_as_pdf</span></span><div><b>段考複習卷_A.pdf</b><span>命題大師 · 數學科</span></div><button class="dl-btn">下載</button></div>
+          <div class="file-row"><span class="fic"><span class="material-symbols-rounded">co_present</span></span><div><b>單元課程簡報.pptx</b><span>備課資源 · 國文科</span></div><button class="dl-btn">下載</button></div>
+          <div class="file-row"><span class="fic"><span class="material-symbols-rounded">table_chart</span></span><div><b>班級成績統計.xlsx</b><span>成績管理 · 七年 3 班</span></div><button class="dl-btn">下載</button></div>
+          <div class="file-row"><span class="fic"><span class="material-symbols-rounded">folder_zip</span></span><div><b>題目素材包.zip</b><span>題庫資源 · 自然科</span></div><button class="dl-btn">下載</button></div>
+        </div>
+      </div>
+      <div class="file-card">
+        <div class="head">活動紀錄 ACTIVITIES</div>
+        <div class="body">
+          <div class="act-row"><span class="time">09:00</span><span class="tick"></span><div><b>建立試卷草稿</b><span>由 王曉明 老師</span></div></div>
+          <div class="act-row"><span class="time">10:50</span><span class="tick" style="background:var(--c2)"></span><div><b>AI 生成 20 題素養題</b><span>由 AI 小助手</span></div></div>
+          <div class="act-row"><span class="time">13:00</span><span class="tick" style="background:var(--c3)"></span><div><b>完成審題與難度調整</b><span>由 林老師</span></div></div>
+          <div class="act-row"><span class="time">15:30</span><span class="tick"></span><div><b>派發至 3 個班級</b><span>由 系統</span></div></div>
+          <div class="act-row"><span class="time">17:00</span><span class="tick" style="background:#26A649"></span><div><b>開始線上批改</b><span>由 陳老師</span></div></div>
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 書籤收藏 -->
+  <section class="sec" data-cat="comps" id="bookmark">
+    <div class="sec-head"><h2>書籤收藏 Bookmark</h2><span class="note">BOOKMARK APP</span></div>
+    <p class="sec-desc">收藏常用資源：左側依來源切換（我的收藏/我建立的/我的最愛/與我共用）+標籤篩選，右側為資源卡片。</p>
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>書籤收藏 Bookmark<span class="adopt-tag">採用中</span><span class="pick-note">側欄分類+資源卡片</span></div>
+      <div class="pick-body">
+    <div class="bm-wrap">
+      <aside class="bm-side">
+        <button class="btn primary"><span class="material-symbols-rounded" style="font-size:18px">add</span>建立新收藏</button>
+        <ul>
+          <li><span class="material-symbols-rounded">bookmarks</span>我的收藏</li>
+          <li class="on"><span class="material-symbols-rounded">person_edit</span>我建立的</li>
+          <li><span class="material-symbols-rounded">star</span>我的最愛</li>
+          <li><span class="material-symbols-rounded">group</span>與我共用</li>
+        </ul>
+        <p class="lbl">標籤 TAGS</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:0 10px">
+          <span class="tagx blue">數學</span><span class="tagx gray">國文</span><span class="tagx gray">素養題</span>
+        </div>
+      </aside>
+      <div class="bm-grid">
+        <div class="bm-card">
+          <div class="prev" style="background:var(--brand)"><span class="material-symbols-rounded">edit_note</span></div>
+          <div class="body"><b>段考命題範本</b><p>常用命題架構與配分範本，一鍵套用。</p>
+            <div class="foot"><span class="who">由 我 建立 · 8/12</span><span class="acts"><span class="material-symbols-rounded fav">star</span><span class="material-symbols-rounded">share</span><span class="material-symbols-rounded">edit</span></span></div>
+          </div>
+        </div>
+        <div class="bm-card">
+          <div class="prev" style="background:var(--c2)"><span class="material-symbols-rounded">auto_stories</span></div>
+          <div class="body"><b>閱讀素養文本庫</b><p>依年級整理的課外閱讀文本與題組。</p>
+            <div class="foot"><span class="who">由 我 建立 · 8/09</span><span class="acts"><span class="material-symbols-rounded">star</span><span class="material-symbols-rounded">share</span><span class="material-symbols-rounded">edit</span></span></div>
+          </div>
+        </div>
+        <div class="bm-card">
+          <div class="prev" style="background:var(--c3)"><span class="material-symbols-rounded">smart_display</span></div>
+          <div class="body"><b>翻轉教學影片清單</b><p>單元對應的教學影片與投影素材。</p>
+            <div class="foot"><span class="who">由 我 建立 · 8/05</span><span class="acts"><span class="material-symbols-rounded fav">star</span><span class="material-symbols-rounded">share</span><span class="material-symbols-rounded">edit</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 彈出視窗 -->
+  <section class="sec" data-cat="comps" id="popup">
+    <div class="sec-head"><h2>彈出視窗</h2><span class="note">POPUP / MODAL</span></div>
+    <p class="sec-desc">置中面板+半透明遮罩的彈窗範本，三種常見型態：確認、表單、警示。點「開啟彈窗」即可預覽。</p>
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>彈出視窗 Popup<span class="adopt-tag">採用中</span><span class="pick-note">置中面板+半透明遮罩（可點遮罩或右上 × 關閉）；底部行動右對齊，主行動實心、次行動柔色。深色模式自動套用中性灰。</span></div>
+      <div class="pick-body">
+    <div class="grid-3">
+      <div class="modal-card"><div class="ic" style="background:var(--blue-50);color:var(--brand)"><span class="material-symbols-rounded">check_circle</span></div><h4>確認對話框</h4><p>一般確認 / 提示，主行動用主色。</p><button class="btn primary" style="font-size:13.5px;padding:9px 18px" data-modal="m-confirm">開啟彈窗</button></div>
+      <div class="modal-card"><div class="ic" style="background:var(--blue-50);color:var(--brand)"><span class="material-symbols-rounded">edit</span></div><h4>表單彈窗</h4><p>在彈窗內填寫欄位後送出。</p><button class="btn primary" style="font-size:13.5px;padding:9px 18px" data-modal="m-form">開啟彈窗</button></div>
+      <div class="modal-card"><div class="ic" style="background:#F8E2E2;color:#DE3535"><span class="material-symbols-rounded">delete</span></div><h4>警示 / 刪除</h4><p>破壞性操作，主行動用警示紅。</p><button class="btn primary" style="font-size:13.5px;padding:9px 18px" data-modal="m-alert">開啟彈窗</button></div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 系統 Toast -->
+  <section class="sec" data-cat="comps" id="toast">
+    <div class="sec-head"><h2>系統 Toast</h2><span class="note">TOAST</span></div>
+    <p class="sec-desc">系統提示訊息：實心色底藥丸+圖示+訊息+關閉，依語意狀態色（成功/AI/警告/危險/中性）。通常出現在畫面下方、數秒後自動消失。</p>
+    <div class="pick-box adopted" data-multi="1">
+      <div class="pick-head"><span class="pick-state"></span>系統 Toast<span class="adopt-tag">採用中</span><span class="pick-note">實心色底藥丸+圖示+訊息+關閉</span></div>
+      <div class="pick-body">
+    <div class="toast-list">
+      <div class="toast" style="background:#26A649"><span class="material-symbols-rounded">check_circle</span>試卷已成功派發給 3 個班級<span class="material-symbols-rounded close">close</span></div>
+      <div class="toast" style="background:#2E9BE6"><span class="material-symbols-rounded">smart_toy</span>AI 已生成 20 題，請確認<span class="material-symbols-rounded close">close</span></div>
+      <div class="toast" style="background:#E08A1E"><span class="material-symbols-rounded">warning</span>尚未儲存，離開前請先儲存草稿<span class="material-symbols-rounded close">close</span></div>
+      <div class="toast" style="background:#DE3535"><span class="material-symbols-rounded">error</span>刪除失敗，請稍後再試<span class="material-symbols-rounded close">close</span></div>
+      <div class="toast" style="background:var(--brand-dark)"><span class="material-symbols-rounded">info</span>系統將於今晚 02:00 進行維護<span class="material-symbols-rounded close">close</span></div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 功能選單 -->
+  <section class="sec" data-cat="comps" id="feature">
+    <div class="sec-head"><h2>功能選單</h2><span class="note">FEATURE MENU</span></div>
+    <p class="sec-desc">大型功能入口卡（勾選採用圖示樣式）</p>
+
+    <div class="pick-box" data-group="fm">
+      <div class="pick-head"><span class="pick-state"></span>有色塊圖示磚版<span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+        <div class="fm-grid">
+          <div class="fm-card c-blue"><div class="fm-tile"><span class="material-symbols-rounded">casino</span></div><h4>隨機抽題</h4><p>從翰林智慧題庫自動篩選題目，依課次範圍快速組成試卷。</p></div>
+          <div class="fm-card c-teal"><div class="fm-tile"><span class="material-symbols-rounded">description</span></div><h4>成卷抽題</h4><p>上傳 1~5 份考古卷 PDF，讓 AI 解析題目並重新組卷。</p></div>
+          <div class="fm-card c-orange"><div class="fm-tile"><span class="material-symbols-rounded">auto_awesome</span></div><h4>AI 出題</h4><p>輸入單元與難度，AI 直接生成素養導向題組。</p></div>
+          <div class="fm-card c-lime"><div class="fm-tile"><span class="material-symbols-rounded">upload_file</span></div><h4>匯入題庫</h4><p>上傳自有題目，統一格式後納入個人題庫。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-group="fm">
+      <div class="pick-head"><span class="pick-state"></span>純 icon 版（無色塊）<span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+        <div class="fm-grid">
+          <div class="fm-card c-blue"><span class="fm-icon material-symbols-rounded">casino</span><h4>隨機抽題</h4><p>從翰林智慧題庫自動篩選題目，依課次範圍快速組成試卷。</p></div>
+          <div class="fm-card c-teal"><span class="fm-icon material-symbols-rounded">description</span><h4>成卷抽題</h4><p>上傳 1~5 份考古卷 PDF，讓 AI 解析題目並重新組卷。</p></div>
+          <div class="fm-card c-orange"><span class="fm-icon material-symbols-rounded">auto_awesome</span><h4>AI 出題</h4><p>輸入單元與難度，AI 直接生成素養導向題組。</p></div>
+          <div class="fm-card c-lime"><span class="fm-icon material-symbols-rounded">upload_file</span><h4>匯入題庫</h4><p>上傳自有題目，統一格式後納入個人題庫。</p></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="sec-desc" style="margin-top:30px">橫向選項卡（勾選採用圖示樣式；選取=色塊+填實圓點，不靠邊線）</p>
+
+    <div class="duo">
+      <div class="pick-box" data-group="opt" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>有色塊圖示磚版<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <p class="opt-label">選擇卷種 <em>*</em></p>
+          <div class="opt-row">
+            <div class="opt-card sel"><div class="fm-tile sm"><span class="material-symbols-rounded" style="color:var(--brand)">article</span></div><div class="opt-txt"><b>單課卷</b><span>針對單一課次出題</span></div><span class="opt-dot on"></span></div>
+            <div class="opt-card"><div class="fm-tile sm"><span class="material-symbols-rounded" style="color:var(--gray-1)">import_contacts</span></div><div class="opt-txt"><b>段考卷</b><span>可複選多個課次範圍</span></div><span class="opt-dot"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pick-box adopted" data-group="opt" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>純 icon 版（無色塊）<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <p class="opt-label">選擇卷種 <em>*</em></p>
+          <div class="opt-row">
+            <div class="opt-card sel"><span class="fm-icon sm material-symbols-rounded" style="color:var(--brand)">article</span><div class="opt-txt"><b>單課卷</b><span>針對單一課次出題</span></div><span class="opt-dot on"></span></div>
+            <div class="opt-card"><span class="fm-icon sm material-symbols-rounded" style="color:var(--gray-1)">import_contacts</span><div class="opt-txt"><b>段考卷</b><span>可複選多個課次範圍</span></div><span class="opt-dot"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 品牌元件 -->
+  <section class="sec" data-cat="comps" id="brandcomps">
+    <div class="sec-head"><h2>品牌元件</h2><span class="note">COMPONENTS</span></div>
+    <p class="sec-desc">點選要納入延伸套用的元件（可複選）</p>
+    <div class="grid-2">
+      <div class="pick-box adopted" data-multi="1" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>按鈕 Buttons<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body"><div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn primary" style="font-size:13.5px;padding:9px 18px">主要按鈕</button>
+          <button class="btn soft" style="font-size:13.5px;padding:9px 18px">次要按鈕</button>
+          <button class="btn" style="font-size:13.5px;padding:9px 18px;background:var(--blue-50);color:var(--brand-dark)">柔色按鈕</button>
+        </div></div>
+      </div>
+      <div class="pick-box adopted" data-multi="1" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>標籤 / 狀態 Badges<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <span class="tagx blue">科目</span><span class="tagx gray">年級</span>
+          <span class="tagx green">已派發</span><span class="tagx yellow">批改中</span>
+          <span class="tagx gray">草稿</span>
+        </div></div>
+      </div>
+      <div class="pick-box adopted" data-multi="1" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>輸入框 Inputs<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <div class="field"><input type="text" placeholder="搜尋..."></div>
+          <div class="check-line"><i></i>勾選項目</div>
+        </div>
+      </div>
+      <div class="pick-box adopted" data-multi="1" style="margin-bottom:0">
+        <div class="pick-head"><span class="pick-state"></span>卡片 Card<span class="adopt-tag">採用中</span></div>
+        <div class="pick-body">
+          <div style="border-radius:14px;padding:18px 20px;box-shadow:var(--shadow-md)">   <!-- 元件圓角統一 14px（使用者指定 2026-09-04）-->
+            <b style="font-size:14.5px">卡片標題</b>
+            <p style="font-size:12.5px;color:var(--gray-2)">卡片內文說明文字。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="confirm-strip" style="margin-top:30px">
+      <p>選好品牌規範（主色 / Logo / Header / Footer / 歡迎橫幅 / 元件...）後，按下確認存進採用設定，並回到視覺套版列表。</p>
+      <button class="btn primary" id="goPreview"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用，套入匯入頁</button>
+      <button class="btn soft" id="exportTheme" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">download</span>匯出 theme JSON</button>
+      <button class="btn soft" id="exportSkillMd" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">description</span>匯出 skill.md</button>
+    </div>
+  </section>
+
+  <section class="sec" data-cat="layout" id="colorsys">
+    <div class="sec-head"><h2>色彩系統</h2><span class="note">COLOR SYSTEM</span></div>
+    <p class="sec-desc">60－30－10：頁面底色佔最大面積，主色撐結構，對比色只在需要被點擊的地方出現。</p>
+    <div class="ratio" id="ratio"></div>
+    <div class="sw-grid" id="palette" style="margin-top:22px"></div>
+    <div id="exWrap" hidden>
+      <h3 class="sub-hd">裝飾色 <span class="en">EXTENDED</span></h3>
+      <p class="sub-note">來源規範文件裡的其餘色票，只供色塊使用，不承載小字。</p>
+      <div class="ex-grid" id="expal" style="margin-top:12px"></div>
+    </div>
+
+  </section>
+
+
+  <!-- 採用設定（原本在色彩系統節內，依使用者指定移到品牌識別） -->
+  <section class="sec" data-cat="layout" id="adopt">
+    <div class="sec-head"><h2>採用設定</h2><span class="note">ADOPTION</span></div>
+    <p class="sub-desc">上面是這一組色版的色票；下面幾項是整份規範的採用設定（行內強調的用法、中間色、灰階、淡色圖示方塊），
+       切換色版時會跟著主色連動，但要不要納入規範由你勾選。</p>
+
+    <!-- 【可選主題色先關起來】(使用者指定 2026-09-03)
+         用 hidden 而不是刪除：buildRow('theme-row',…) 與 apply() 仍會照常
+         建立與重繪這一列，色版切換那條路徑不受影響，只是不顯示。
+         要開回來把這兩個 hidden 拿掉即可。 -->
+    <p class="picker-label" id="theme-row-label" hidden>可選主題色</p>
+    <div class="theme-row" id="theme-row" hidden></div>
+
+    <!-- 【對比點綴色整區拿掉】(使用者指定 2026-09-03)
+         同「可選主題色」的處理方式，用 hidden 而不是刪除：
+         buildRow('contrast-row',…) 與 curContrast 仍照常運作，
+         色版帶來的對比色不受影響，只是不再顯示這一列讓人手動挑。 -->
+    <p class="picker-hint" hidden>選好主色後，系統已配一個「互補對比色」（藍↔暖橘、金↔天青、粉↔青綠...）。對比色<b>主要用在 span/em/mark 等行內文字強調與小標記</b>上（NEW、備註、必填*、限時、重點數字），只點綴、不當主色；你也可以在下方自選。</p>
+
+    <p class="picker-label" hidden>對比點綴色（點選即套用；「自動」=跟主色互補）</p>
+    <div class="theme-row" id="contrast-row" hidden></div>
+
+    <div class="preview-strip">
+      <b style="color:var(--gray-1)">細節預覽</b>
+      <span class="pv-new"><i></i>NEW 公告</span>
+      <span class="pv-mark">備註</span>
+      <span style="font-weight:400;color:var(--brand-dark)">試卷名稱 <em class="pv-star">*</em></span>
+      <span>本次<mark class="pv-hl">限時</mark>加贈 <b class="pv-warm">Pro 一個月</b></span>
+      <span><b class="pv-warm" style="font-size:16px">92</b><span style="color:var(--gray-2)"> /100</span></span>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="midcolor" style="margin-bottom:0;margin-top:30px">
+      <div class="pick-head"><span class="pick-state"></span>中間色 / 輔助色<span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <p class="sub-desc">柔色底+深色圖示，用於產品模組、KPI 卡、快捷入口的區隔；切換主題時對比色會連動。</p>
+    <div class="kv-grid">  <!-- 同第一排的固定欄寬 -->
+      <div class="kv-card"><div class="kv-chip" style="background:var(--teal)"></div><div class="kv-meta"><b><span id="lab-mid1">青綠</span> Mid 1</b><span id="hex-mid1">#22CFC9</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--lime)"></div><div class="kv-meta"><b><span id="lab-mid2">萊姆</span> Mid 2</b><span id="hex-mid2">#A9DC4B</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--warm)"></div><div class="kv-meta"><b><span id="lab-mid3">對比色</span> Contrast</b><span id="hex-mid3">#FF9A3C</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--blue-300)"></div><div class="kv-meta"><b><span id="lab-mid4">亮色</span> Accent</b><span id="hex-ice2">#40B4E5</span></div></div>
+    </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="gray" style="margin-bottom:0;margin-top:30px">
+      <div class="pick-head"><span class="pick-state"></span>灰階 Gray（中性輔助色）<span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <p class="sub-desc">次要文字、圖示、分隔線與底色一律用這三階灰，不要隨手用淺灰帶過。</p>
+    <div class="kv-grid">  <!-- 同第一排的固定欄寬 -->
+      <div class="kv-card"><div class="kv-chip" style="background:var(--gray-1)"></div><div class="kv-meta"><b>深灰 Gray-1</b><span>#3A3D42<br>主要文字 / 圖示</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--gray-2)"></div><div class="kv-meta"><b>中灰 Gray-2</b><span>#8C9099<br>次要文字 / 說明</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--gray-3)"></div><div class="kv-meta"><b>淺灰 Gray-3</b><span>#E6E8EC<br>分隔線 / 底色</span></div></div>
+    </div>
+      </div>
+    </div>
+
+    <div class="pick-box adopted" data-multi="1" data-key="softtile" style="margin-bottom:0;margin-top:30px">
+      <div class="pick-head"><span class="pick-state"></span>淡色圖示方塊<span class="adopt-tag">採用中</span><span class="pick-note">圖示放在淡色小方塊上，用於產品入口、功能卡，並排時柔和有層次。</span></div>
+      <div class="pick-body">
+    <div class="soft-tiles">
+      <span class="soft-tile" style="color:var(--brand)"><span class="tile" style="background:var(--blue-50)"><span class="material-symbols-rounded">edit_note</span></span>命題大師</span>
+      <span class="soft-tile" style="color:var(--c2)"><span class="tile" style="background:var(--c2-bg)"><span class="material-symbols-rounded">smartphone</span></span>行動大師</span>
+      <span class="soft-tile" style="color:var(--c3)"><span class="tile" style="background:var(--c3-bg)"><span class="material-symbols-rounded">play_circle</span></span>影音派</span>
+      <span class="soft-tile" style="color:var(--c4)"><span class="tile" style="background:var(--c4-bg)"><span class="material-symbols-rounded">folder_open</span></span>備課資源</span>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 字體排版 -->
+  <section class="sec" data-cat="layout" id="typo">
+    <div class="sec-head"><h2>字體排版</h2><span class="note">TYPOGRAPHY</span></div>
+    <p class="sec-desc">標題、內文與按鈕的字體、字重與字級，是這一組的一部分——換了字體就不是同一組風格了。下面三行是照規格實際排出來的。</p>
+    <div class="typo" id="typoBox"></div>
+  </section>
+
+
+  <!-- 形狀數值：這一段隨色版變動，其餘版面規範是全站共用的條文 -->
+  <section class="sec" data-cat="layout" id="kitshape">
+    <div class="sec-head"><h2>形狀數值</h2><span class="note">SHAPE OF THIS KIT</span></div>
+    <p class="sec-desc">圓角、陰影、邊線照這一組的來源規範文件，沒有自行取整；下面的間距刻度、RWD 斷點與文字級距則是全站共用，不隨色版改變。</p>
+    <div class="card" style="padding:6px 10px">
+      <table class="spec-tbl"><tbody id="layoutTbl"></tbody></table>
+    </div>
+  </section>
+
+
+  <!-- RWD 斷點 -->
+  <section class="sec" data-cat="layout" id="rwd">
+    <div class="sec-head"><h2>RWD 斷點</h2><span class="note">RESPONSIVE</span></div>
+    <p class="sec-desc"><b>斷點沿用 Tailwind 標準；跨斷點時表格轉卡片、多欄轉單欄</b>(此為開發時要遵循的約定，勾選只代表納入規範，不是功能開關)</p>
+    <div class="pick-box adopted" data-multi="1" data-key="rwd" style="margin-bottom:0">
+      <div class="pick-head"><span class="pick-state"></span>RWD 斷點 Responsive<span class="spec-tag">規範條文</span><span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <div class="grid-4">
+      <div class="bp-card"><div class="ic"><span class="material-symbols-rounded">smartphone</span></div><b>手機 Mobile</b><div class="range">&lt; 768px</div><p>單欄堆疊；表格改卡片式；側欄收合為漢堡選單。</p></div>
+      <div class="bp-card"><div class="ic"><span class="material-symbols-rounded">tablet_mac</span></div><b>平板 Tablet</b><div class="range">≥ 768px (md)</div><p>雙欄；表格完整顯示；篩選/工具列同排。</p></div>
+      <div class="bp-card"><div class="ic"><span class="material-symbols-rounded">desktop_windows</span></div><b>桌機 Desktop</b><div class="range">≥ 1024px (lg)</div><p>多欄網格；側欄固定；儀表板完整版位。</p></div>
+      <div class="bp-card"><div class="ic"><span class="material-symbols-rounded">desktop_windows</span></div><b>寬螢幕 Wide</b><div class="range">≥ 1280px (xl)</div><p>內容最大寬置中留白，避免行長過寬。</p></div>
+    </div>
+    <div class="card" style="margin-top:30px">
+      <div class="ruler-head">斷點尺規<span>640 · 768 · 1024 · 1280 px</span></div>
+      <div class="ruler">
+        <div class="ruler-row"><b style="width:24px">sm</b><i style="width:50%"></i><em>640px</em></div>
+        <div class="ruler-row"><b style="width:24px">md</b><i style="width:60%"></i><em>768px</em></div>
+        <div class="ruler-row"><b style="width:24px">lg</b><i style="width:80%"></i><em>1024px</em></div>
+        <div class="ruler-row"><b style="width:24px">xl</b><i style="width:100%"></i><em>1280px</em></div>
+      </div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 文字級距 -->
+  <section class="sec" data-cat="layout" id="type">
+    <div class="sec-head"><h2>文字級距</h2><span class="note">TYPOGRAPHY</span></div>
+    <div class="pick-box adopted" data-multi="1" data-key="type" style="margin-bottom:0">
+      <div class="pick-head"><span class="pick-state"></span>文字級距 Typography<span class="spec-tag">規範條文</span><span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <div class="type-card">
+      <div class="type-row"><div class="tag"><b>標題 H1</b><span>36px</span></div><div class="sample" style="font-size:36px;font-weight:400">翰林 · 相信學習</div></div>
+      <div class="type-row"><div class="tag"><b>標題 H2</b><span>28px</span></div><div class="sample" style="font-size:28px;font-weight:400">翰林 · 相信學習</div></div>
+      <div class="type-row"><div class="tag"><b>標題 H3</b><span>22px</span></div><div class="sample" style="font-size:22px;font-weight:400">翰林 · 相信學習</div></div>
+      <div class="type-row"><div class="tag"><b>基礎文字 Body</b><span>18px</span></div><div class="sample" style="font-size:18px">翰林 · 相信學習</div></div>
+      <div class="type-row"><div class="tag"><b>副文字 fd</b><span>13px</span></div><div class="sample" style="font-size:13px">翰林 · 相信學習</div></div>
+      <div class="type-row"><div class="tag"><b>標籤 Label</b><span>11px</span></div><div class="sample" style="font-size:11px;letter-spacing:.2em">翰林 · 相信學習</div></div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 形狀與間距 -->
+  <section class="sec" data-cat="layout" id="shape">
+    <div class="sec-head"><h2>形狀與間距</h2><span class="note">SHAPE &amp; SPACING</span></div>
+    <div class="pick-box adopted" data-multi="1" data-key="shape" style="margin-bottom:0">
+      <div class="pick-head"><span class="pick-state"></span>形狀與間距 Shape & Spacing<span class="spec-tag">規範條文</span><span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <div class="grid-3">
+      <!-- 【圓角統一 14px】(使用者指定 2026-09-04)
+           原本這裡示範 小8／中12／大16 三階，但元件實際用的圓角已統一成 14px，
+           留著三階等於規範頁自己講的跟頁面上做的不一樣。改成展示實際在用的三種形狀。 -->
+      <div class="radius-card"><div class="box" style="border-radius:14px"></div><p>元件圓角 <b>14px</b></p></div>
+      <div class="radius-card"><div class="box" style="border-radius:999px"></div><p>藥丸 <b>999px</b><br><span style="font-size:12.5px;color:var(--gray-2)">標籤 / chip / 膠囊按鈕</span></p></div>
+      <div class="radius-card"><div class="box" style="border-radius:50%;width:64px;height:64px"></div><p>圓形 <b>50%</b><br><span style="font-size:12.5px;color:var(--gray-2)">頭像 / 狀態點 / 圖示鈕</span></p></div>
+    </div>
+    <div class="card" style="margin-top:30px">
+      <div class="ruler-head" style="margin-bottom:18px">間距刻度<span>（4 的倍數）</span></div>
+      <div class="space-scale">
+        <span class="cell"><i style="width:4px;height:4px"></i>4</span>
+        <span class="cell"><i style="width:8px;height:8px"></i>8</span>
+        <span class="cell"><i style="width:12px;height:12px"></i>12</span>
+        <span class="cell"><i style="width:16px;height:16px"></i>16</span>
+        <span class="cell"><i style="width:24px;height:24px"></i>24</span>
+        <span class="cell"><i style="width:32px;height:32px"></i>32</span>
+      </div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- 設計方針 -->
+  <section class="sec" data-cat="brand" id="principles">
+    <div class="sec-head"><h2>設計方針</h2><span class="note">PRINCIPLES</span></div>
+    <div class="pick-box adopted" data-multi="1" data-key="principles" style="margin-bottom:0">
+      <div class="pick-head"><span class="pick-state"></span>設計方針 Principles<span class="spec-tag">規範條文</span><span class="adopt-tag">採用中</span></div>
+      <div class="pick-body">
+    <div class="grid-4">
+      <div class="pr-card"><h4>相信學習</h4><p>以學習者為中心，傳遞正向、值得信賴的教育感受。</p></div>
+      <div class="pr-card"><h4>一致性</h4><p>跨產品沿用同一套色彩、字級與元件，維持品牌識別。</p></div>
+      <div class="pr-card"><h4>親和力</h4><p>圓體與柔和藍調，降低學習門檻，貼近師生。</p></div>
+      <div class="pr-card"><h4>專業可靠</h4><p>清晰的資訊層級與留白，呈現內容的專業度。</p></div>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+
+<!-- 已存採用列：勾選即存，這一條負責讓使用者看到「實際存進去的是什麼」 -->
+<div class="adopt-dock" id="adoptDock" hidden>
+  <div class="pin">
+    <span class="ad-act">
+      <button class="btn primary" id="adoptConfirm"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用</button>
+    </span>
+    <span class="ad-txt" id="adoptDockTxt"></span>
+  </div>
+</div>
+
+<footer class="site-footer">
+  © 2026 翰林教學樞紐 Hanlin Hub · 相信學習<br>
+  <span style="font-size:11.5px;opacity:.75">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</span>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="回到頂端"><span class="material-symbols-rounded">arrow_upward</span></button>
+
+<!-- 彈窗範本 -->
+<div class="overlay" id="m-confirm">
+  <div class="modal">
+    <span class="close-x material-symbols-rounded">close</span>
+    <h4>確認派發試卷？</h4>
+    <p>試卷將送出給 3 個班級共 96 位學生，送出後仍可於派卷紀錄中撤回。</p>
+    <div class="acts"><button class="btn soft">取消</button><button class="btn primary">確認派卷</button></div>
+  </div>
+</div>
+<div class="overlay" id="m-form">
+  <div class="modal">
+    <span class="close-x material-symbols-rounded">close</span>
+    <h4>建立新試卷</h4>
+    <p>填寫基本資訊後開始選題。</p>
+    <div class="field"><label>試卷名稱 <em class="pv-star">*</em></label><input type="text" placeholder="例：第一次段考複習卷"></div>
+    <div class="field"><label>適用班級</label><input type="text" placeholder="例：七年 3 班"></div>
+    <div class="acts"><button class="btn soft">取消</button><button class="btn primary">建立</button></div>
+  </div>
+</div>
+<div class="overlay" id="m-alert">
+  <div class="modal">
+    <span class="close-x material-symbols-rounded">close</span>
+    <h4 style="color:#DE3535">刪除這份試卷？</h4>
+    <p>刪除無法復原，此操作將一併移除所有作答紀錄。</p>
+    <div class="acts"><button class="btn soft">取消</button><button class="btn danger">確認刪除</button></div>
+  </div>
+</div>
+<script>
+(function(){
+  /* ===== 重新整理即清掉之前的紀錄(頁面間跳轉不清) ===== */
+  /* 新分頁／新工作階段一律回到預設；同一次操作中頁面互相跳轉才保留設定 */
+  /* 進任何頁一律清空上一次的紀錄；只有「同一次操作的跳頁」帶著一次性通行證才保留，
+     通行證用完即丟，所以重整、直接開網址、換分頁一律是乾淨狀態。 */
+  var handoff=false;
+  /* 一次性通行證：只有「本頁是指定目的地」且「10 秒內發出」才算數。
+     跳頁若沒完成（取消、返回），殘留的票會因為目的地或時效不符而失效，
+     不會被之後任何一次載入撿走而誤留上一次的設定。 */
+  try{
+    var _hp=sessionStorage.getItem('hanlin-handoff');
+    sessionStorage.removeItem('hanlin-handoff');
+    if(_hp){
+      var _h=JSON.parse(_hp),_me=(location.pathname.split('/').pop()||'index.html');
+      handoff=(_h&&_h.to===_me&&(Date.now()-(+_h.t||0))<10000);
+    }
+  }catch(e){handoff=false}
+  if(!handoff){
+    /* 只清「一次性交接旗標」，不再清使用者自己的設定與匯入的檔案。
+       原本這裡連 hanlin-brand-theme／hanlin-import-html 一起清，
+       等於「沒有通行證的載入」＝設定歸零——按 F5 重新整理、用上一頁回來、
+       直接貼網址開啟，全都會把剛勾好的採用設定清光，
+       畫面就退回預設值，看起來像「換了勾選卻完全沒讀到」。
+       使用者的採用設定改為永久保存，只有他自己按「清除紀錄」才會清掉。 */
+    ['hanlin-import-pending','hanlin-settings-saved','hanlin-show-result'].forEach(function(k){localStorage.removeItem(k)});
+  }
+  /* 重新整理／新分頁進來就把匯入流程的資料清掉（共用 defaults.js 的那一份），
+     不然匯入過一次之後，只是想重選風格套版也會一直被步驟列咬著。
+     採用設定 hanlin-brand-theme 不清。 */
+  if(window.HL_freshEntryReset){
+    window.HL_freshEntryReset(handoff);
+  }
+  /* 從往返快取(bfcache)還原時強制重新渲染，確保與最新採用設定同步；location.replace 屬 navigate 不會觸發重整清除 */
+  window.addEventListener('pageshow',function(e){if(e.persisted)location.replace(location.href)});
+
+  /* ── 導覽列「匯入」的回程 ─────────────────────────────────────────
+     匯入頁改成「沒有通行證的載入一律清掉上次的檔案」之後，
+     導覽列這個純連結會把匯入到一半的檔案清掉——使用者從匯入頁挑完色版，
+     點「匯入」想回去看結果，檔案卻不見了，等於回不去。
+     手上還有匯入檔時就帶通行證過去；沒有檔案時維持原本行為（乾淨進入）。 */
+  (function(){
+    var a=document.querySelector('.band-nav a[href="import.html"]');
+    if(!a)return;
+    a.addEventListener('click',function(e){
+      var has=false;try{has=!!localStorage.getItem('hanlin-import-html')}catch(_){}
+      if(!has)return;
+      e.preventDefault();
+      try{saveTheme()}catch(_){}
+      try{localStorage.setItem('hanlin-show-result','1')}catch(_){}
+      try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:'import.html',t:Date.now()}))}catch(_){}
+      location.href='import.html';
+    });
+  })();
+
+  /* 匯入流程進行中：把步驟列帶過來，離開匯入頁也看得到自己走到哪 */
+  if(window.HL_importFlowBar)window.HL_importFlowBar();
+
+  /* ===== 頁籤切換 ===== */
+  var tabs=document.querySelectorAll('.cat-tab');
+  var groups=document.querySelectorAll('.nav-group');
+  var sections=document.querySelectorAll('main section.sec');
+  var tabBar=document.querySelector('.tab-bar');
+  /* data-cat 允許寫多個（空白分隔）：Logo 組合同時屬於落地頁與品牌識別，
+     複製成兩份 DOM 的話兩組選擇器會各記各的，選了一邊另一邊不動。 */
+  function inCat(el,cat){return (el.dataset.cat||'').split(/\s+/).indexOf(cat)>=0}
+  function setCat(cat){
+    tabs.forEach(function(t){t.classList.toggle('on',inCat(t,cat))});
+    groups.forEach(function(g){g.classList.toggle('hide',cat!=='all'&&!inCat(g,cat))});
+    sections.forEach(function(s){s.classList.toggle('hide',cat!=='all'&&!inCat(s,cat))});
+    /* 落地頁不放頁籤：進來先看這一組長什麼樣，按了「查看完整規範」才進到分頁籤的規範內容 */
+    if(tabBar)tabBar.style.display=(cat==='start')?'none':'';
+    if(window.__HL_updateDockVisible)window.__HL_updateDockVisible(cat);
+    var cn=document.getElementById('crumbName'),ct=document.getElementById('crumbTail');
+    if(cn){if(cat==='start')cn.setAttribute('data-here','1');else cn.removeAttribute('data-here')}
+    if(ct)ct.hidden=(cat==='start');
+    /* 顏色介紹只在「色彩系統」講一次；其餘頁籤只留麵包屑與名稱，
+       讓人知道自己在哪一組，但不再重複介紹一次顏色。 */
+    var intro=document.getElementById('kIntro');
+    if(intro)intro.style.display=(cat==='start')?'':'none';
+    window.scrollTo({top:0});
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){setCat(t.dataset.cat)})});
+  setCat('start');   /* 進站先看這一組長什麼樣：範本頁與 Logo，其餘規範在後面的頁籤 */
+
+  /* ===== 主題選色器 ===== */
+  var THEMES=[
+    {n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    {n:'深湛藍',p:'#005A9E',s:'#003D6E',i:'#4A9FD9',c:'#FF9A3C'},
+    {n:'天青藍',p:'#29A8E0',s:'#0F79AC',i:'#7FD0F2',c:'#F5B32F'},
+    {n:'靛藍',p:'#4F46E5',s:'#332DA8',i:'#8D88F2',c:'#F5C244'},
+    {n:'紫羅蘭',p:'#7C3AED',s:'#5526B0',i:'#B393F5',c:'#F5B32F'},
+    {n:'琥珀金',p:'#EFA51C',s:'#B5760A',i:'#F6C96A',c:'#29A8E0'},
+    {n:'蜜桃粉',p:'#F4737F',s:'#C74854',i:'#F9A6AE',c:'#1EC3A2'},
+    {n:'梅果紫',p:'#A93BB8',s:'#7C2489',i:'#D07FDB',c:'#1EC3A2'},
+    {n:'珊瑚 Multikart',p:'#F8827E',s:'#D4534F',i:'#FBB4B1',c:'#1F3E9E'}
+  ];
+  var CONTRASTS=[
+    {n:'自動',c:'auto'},{n:'暖橘',c:'#FF9A3C'},{n:'珊瑚紅',c:'#F4737F'},{n:'琥珀金',c:'#F5B32F'},
+    {n:'青綠',c:'#1EC3A2'},{n:'萊姆綠',c:'#8CC63F'},{n:'玫紅',c:'#E0356E'},{n:'亮紫',c:'#9B5CF6'},
+    {n:'墨藍',c:'#1F3E9E'},{n:'森綠',c:'#1F7A3F'},{n:'深莓',c:'#A61E4D'}
+  ];
+  function mix(hex,w){
+    var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    function m(v){return Math.round(v+(255-v)*w)}
+    return '#'+[m(r),m(g),m(b)].map(function(v){return v.toString(16).padStart(2,'0')}).join('').toUpperCase();
+  }
+  var curTheme=THEMES[0],curContrast='auto';
+  /* 套色只作用在 main 的示範內容。
+     頂帶、頁首、分類頁籤、麵包屑、頁尾是平台的基本框架，不隨選到哪一組套版而變——
+     框架會跟著變的話，使用者會分不清「這是平台的樣子」還是「這是套版的樣子」。
+     （中間色／灰階／功能選單那些會跟著換，靠的是 HL_previewKit 把這一組餵給 curTheme，
+       不是靠把套色範圍擴大到整頁。） */
+  var rootStyle=document.querySelector('main').style;
+  function apply(){
+    var t=curTheme,warm=(curContrast==='auto')?t.c:curContrast;
+    rootStyle.setProperty('--brand',t.p);
+    rootStyle.setProperty('--brand-dark',t.s);
+    rootStyle.setProperty('--brand-deep',t.s);
+    rootStyle.setProperty('--blue-300',t.i);
+    rootStyle.setProperty('--blue-50',mix(t.p,.9));
+    rootStyle.setProperty('--blue-100',mix(t.p,.8));
+    rootStyle.setProperty('--blue-200',mix(t.p,.6));
+    rootStyle.setProperty('--blue-400',mix(t.p,.2));
+    rootStyle.setProperty('--warm',warm);
+    rootStyle.setProperty('--grad-main','linear-gradient(135deg,'+t.p+' 0%,'+t.i+' 100%)');
+    rootStyle.setProperty('--grad-deep','linear-gradient(135deg,'+t.s+' 0%,'+t.p+' 100%)');
+    rootStyle.setProperty('--grad-sky','linear-gradient(135deg,'+mix(t.p,.8)+' 0%,'+mix(t.i,.85)+' 100%)');
+    var e;
+    (e=document.getElementById('hex-primary'))&&(e.textContent=t.p);
+    (e=document.getElementById('hex-secondary'))&&(e.textContent=t.s);
+    (e=document.getElementById('hex-ice'))&&(e.textContent=t.i);
+    (e=document.getElementById('hex-ice2'))&&(e.textContent=t.i);
+    /* 對比色與柔色先前只有文字說明、沒有色碼，切換色版時看不出換了什麼。
+       柔色是主色 10%（mix 出來的衍生值），不是文件裡直接給的色票，照實標示。 */
+    (e=document.getElementById('hex-warm'))&&(e.textContent=warm);
+    /* 【色票文字要跟著色版走】(2026-09-02)
+       標籤原本寫死「深藍 Secondary」「冰藍 Accent」，切到摩洛哥風時
+       底下是墨綠與鼠尾草綠，文字與顏色對不上。
+       有來源 token 名稱時直接顯示該名稱（例：forest.deep、sage），
+       沒有的（自訂主題色圓點）就退回中性字（輔色／亮色）。 */
+    /* 【形狀與質感也是色版的一部分】(使用者指定 2026-09-02)
+       只換顏色的話，漫畫貼紙風套出來還是圓角柔陰影的翰林樣式 ——
+       它的識別其實在「沒有模糊的實心投影＋粗邊」。
+       圓角與陰影一律照文件；文件沒寫用途的（清新小森林）
+       由我判斷後在資料裡標明。沒有給值就移除變數，退回頁面原本的樣式。 */
+    var docS=rootStyle;   /* ＝main.style：與顏色同一個作用域，不外溢到 topbar／footer（使用者回報 2026-09-03）*/
+    function setS(k,v){if(v)docS.setProperty(k,v);else docS.removeProperty(k)}
+    var RD=t.rd||[null,null,null],SH=t.sh||[null,null];
+    setS('--r-btn',RD[0]);setS('--r-card',RD[1]);setS('--r-box',RD[2]);
+    setS('--sh-1',SH[0]);setS('--sh-btn',t.bd?SH[0]:null);
+    setS('--bd-comp',t.bd);
+
+    /* 【只換元件與樣式的顏色，不動背景】(使用者指定 2026-09-02)
+       先前這裡把 --page／--gray-1／--gray-2／--gray-3 也改成跟著色版走，
+       整頁底色與灰階都會換 —— 那超出了指定範圍，已撤回。
+       色版只作用在元件與樣式的顏色（主色系、對比色、中間色與漸層）。
+       各色版仍保留來源文件的 bg／ln／mu／ink 資料，但不套用。 */
+    var TK=t.tk||null;          /* 先取得 token 名稱：下面 mid1 的預設標籤要用，
+                                   原本寫在後面，var 提升導致這裡讀到 undefined，
+                                   標籤退回「亮色」而不是實際的 token 名（稽核抓到）。 */
+    var EX=t.ex||[];
+    var mid1=EX[0]||[TK?TK[2]:'亮色',t.i];
+    var mid2=EX[1]||[null,mix(t.p,.80)];
+    rootStyle.setProperty('--teal',mid1[1]);
+    rootStyle.setProperty('--lime',mid2[1]);
+    (e=document.getElementById('lab-mid1'))&&(e.textContent=mid1[0]||'輔助色一');
+    (e=document.getElementById('hex-mid1'))&&(e.textContent=mid1[1]);
+    (e=document.getElementById('lab-mid2'))&&(e.textContent=mid2[0]||'輔助色二（主色 20%）');
+    (e=document.getElementById('hex-mid2'))&&(e.textContent=mid2[1]);
+    (e=document.getElementById('lab-primary'))&&(e.textContent=TK?TK[0]:'主色');
+    (e=document.getElementById('lab-secondary'))&&(e.textContent=TK?TK[1]:'輔色');
+    (e=document.getElementById('lab-ice'))&&(e.textContent=TK?TK[2]:'亮色');
+    (e=document.getElementById('lab-warm'))&&(e.textContent=TK?TK[3]:'對比色');
+    (e=document.getElementById('lab-mid3'))&&(e.textContent=TK?TK[3]:'對比色');
+    (e=document.getElementById('hex-mid3'))&&(e.textContent=warm);
+    (e=document.getElementById('lab-mid4'))&&(e.textContent=TK?TK[2]:'亮色');
+    (e=document.getElementById('hex-soft'))&&(e.textContent=mix(t.p,.9)+'（主色 10%）');
+
+    /* 重複元件群組（功能選單、專案清單、書籤、淡色圖示方塊）的四色輪替：
+       主色 → 亮色 → 對比色 → 輔色。底色取各自的 12% 淺階，圖示與標題用同色
+       壓深到對該底 4.5:1——不壓深的話，淺色系（例如清新小森林的奶油色）
+       會在自己的淺底上變成看不見的字。
+       狀態色（成功／警告／危險）不在這裡，它們是語意色，不隨色版變。 */
+    [[1,t.p],[2,t.i],[3,warm],[4,t.s]].forEach(function(x){
+      var bgc=mix(x[1],.88);
+      rootStyle.setProperty('--c'+x[0]+'-bg',bgc);
+      rootStyle.setProperty('--c'+x[0],darkenTo45(x[1],bgc));
+    });
+  }
+  function buildRow(elId,items,getColor,onPick,isOn){
+    var row=document.getElementById(elId); if(!row) return;
+    items.forEach(function(it){
+      var d=document.createElement('div');d.className='theme-dot';
+      d.innerHTML='<span class="ball"><span class="material-symbols-rounded">check</span></span><b></b>';
+      d.querySelector('b').textContent=it.n;
+      function paint(){
+        var col=getColor(it);
+        d.querySelector('.ball').style.background=col;d.style.color=col;
+        d.classList.toggle('on',isOn(it));
+      }
+      d.addEventListener('click',function(){onPick(it);/* 主題色／對比色改了，上方的風格色版卡也要跟著取消或亮起 */document.querySelectorAll('.pal-card').forEach(function(x){x.dispatchEvent(new Event('repaint'))});document.querySelectorAll('#'+elId+' .theme-dot').forEach(function(x){x.dispatchEvent(new Event('repaint'))});apply();});
+      d.addEventListener('repaint',paint);
+      row.appendChild(d);paint();
+    });
+  }
+  /* ── 風格色版 ──────────────────────────────────────────────
+     五組色票直接取自各組的來源規範文件（見 kits.js 的 src 欄位），
+     hex 逐一對照文件內的 token 表，未自行調色。
+     點選後只改 curTheme／curContrast，其餘交給既有的 apply()，
+     整個品牌規範頁的元件樣式（按鈕、卡片、表格、Header／Footer 示範…）
+     會跟著切換 —— 因為它們吃的都是 apply() 寫出去的那組 CSS 變數。 */
+  var PALETTES=[
+    {n:'翰林學習藍',en:'STYLEGUIDE',src:'STYLEGUIDE.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Sans TC / 700 / 32px','Noto Sans TC / 400 / 15px / 1.8','Noto Sans TC / 500 / 15px'],tyFam:'sans',
+     kw:['Professional','Trust','Education','Stable'],fit:'教育平台、後台系統、資訊密度高的產品頁',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['教育平台','後台工具','品牌官網'],
+     avoid:'不用紫藍漸層與玻璃擬態；裝飾黃只作點綴，黃底一律配深藍字',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'剛上國中就跟上，全科系統化學習',
+         sub:'國文、英文、數學、自然、社會五科跟著學校進度走，每週一份診斷卷抓出弱點，補在該補的地方。',
+         st:[['118','支課程影片'],['85.5','平均進步分'],['1046','題題庫']],
+         f:[['跟課進度','對齊各版本教科書章節，開學到段考不用自己排。'],
+            ['診斷測驗','每週一份，作答完立刻標出還沒穩的觀念。'],
+            ['學習歷程','一學期的作答與訂正紀錄，家長端也看得到。']]},
+     bg:'#F4F7FB',ln:'#EEF2F7',mu:'#62778F',ink:'#1E3D60',  /* page.bg.subtle / disabled.bg / text.primary / text.secondary */
+     tk:['主要藍','深藍（hover 態）','淺藍灰','裝飾黃'],
+     tkEn:['surface.strong','action.bg.hover','text.tertiary','decor.sun'],
+     rd:['100px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* 文件寫明：radius.md 100px 給按鈕／chip／輸入框，xs 12px 卡片，sm 20px 大區塊 */
+     /* 範本頁＝「技國_白話文小老師」用這一組實際套過的結果（走 engine.js，不是手改） */
+     demoFile:'demo/hanlin-baihuawen-hanlin.html',
+     ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
+     btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
+     p:'#064EA4',s:'#05407F',i:'#BECAD7',c:'#F5D35B',
+     d:'主色為主要藍，輔色是按鈕滑過時的深藍，對比色取自裝飾用的裝飾黃。'},
+    {n:'清新小森林',en:'Musical',src:'Musical-DESIGN.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Serif TC / 700 / 34px','Noto Sans TC / 400 / 16px / 1.85','Noto Sans TC / 500 / 15px'],tyFam:'serif',
+     kw:['Natural','Calm','Warm','Life'],fit:'自然生活、food & drink、慢步調的內容型網站',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['品牌官網','電商選物','內容閱讀'],
+     avoid:'不用高彩度霓虹色；奶油底不放淺灰字',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'一杯手沖，把早晨慢下來',
+         sub:'從產區到杯中的每一步都寫清楚：豆子怎麼來、怎麼烘、怎麼沖，回家也複製得出來。',
+         st:[['12','支單品豆'],['48','場沖煮課'],['6','個合作產區']],
+         f:[['產區直送','每一批都附烘焙日期與杯測分數，不做混豆。'],
+            ['沖煮課程','小班制，兩小時上手手沖與義式基礎。'],
+            ['訂閱配送','每月換一支當季豆，喝完再寄，不囤貨。']]},
+     bg:'#FDEEBF',ln:null,mu:'#454545',ink:'#314D4A',      /* surface.muted / （無線色，推導） / text.secondary / text.primary */
+     tk:['綠松石','深墨綠','奶油','琥珀'],
+     tkEn:['surface.strong','text.primary','surface.muted','text.inverse'],
+     rd:['30px','4px','27px'],sh:[null,null],bd:null,  /* 文件只給 xs4／sm27／md30 沒寫用途，判斷：md 給按鈕、xs 給卡片、sm 給區塊 */
+     /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
+     demoFile:'demo/hanlin-cloud-musical.html',
+     ex:[['深灰','#454545']],
+     btn:'#268270',  /* 風格色版按鈕底色：Musical surface.strong 綠松石（＝主色） */
+     p:'#268270',s:'#314D4A',i:'#FDEEBF',c:'#F3A93A',
+     d:'綠松石主色配奶油底，對比取琥珀。低彩度、暖調。'},
+    {n:'漫畫貼紙風',en:'istockapp',src:'istockapp-SKILL.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Sans TC / 900 / 36px','Noto Sans TC / 400 / 15px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Bold','Playful','Sticker','Youth'],fit:'活動網站、兒童與青少年產品、社群互動頁',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['行銷活動','教育平台'],
+     avoid:'不用柔和陰影；硬投影與 2px 邊線是這一組的識別，不可拿掉',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'一整個暑假，都是遊戲場',
+         sub:'十天營隊、二十場關卡、一比六的師生比。玩得起來，也帶得回去。',
+         st:[['5','天營期'],['20','場關卡'],['1:6','師生比']],
+         f:[['闖關任務','每天一個主題關卡，破關拿貼紙集點。'],
+            ['小隊制度','六人一小隊配一位隊輔，全程不落單。'],
+            ['成果發表','最後一天把作品貼滿整面牆，家長一起來。']]},
+     bg:null,ln:null,mu:'#333333',ink:'#08284C',           /* 文件的 surface.base 是純黑，不適合當規範頁底，改用推導淺底 */
+     tk:['金融藍','深海軍藍','螢光薄荷','橘紅'],
+     tkEn:['surface.raised','border.strong','text.secondary','surface.strong'],
+     rd:['39px','23px','39px'],sh:['#08284C 0 6.5px 0 0','#08284C 0 8.2px 0 0'],
+     bd:'2px solid #08284C',  /* 貼紙感的兩個來源：陰影沒有模糊（0 6.5px 0 0 實心投影）＋ 有 border.strong token。
+        圓角照 md 39／sm 23。這是判斷：文件沒明寫邊線寬度，取 2px 才撐得住硬投影 */
+     ex:[['深灰','#333333']],
+     /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
+        註：這份頁面的形狀特徵（2px 邊線＋無模糊硬投影）有套到，
+        但色票大多仍是 STYLEGUIDE 的藍，不是這一組的金融藍／橘紅。 */
+     demoFile:'demo/hanlin-cloud-istockapp.html',
+     btn:'#FF5933',  /* 風格色版按鈕底色：istockapp surface.strong 橘紅（使用者指定） */
+     p:'#2C89D8',s:'#08284C',i:'#04FDBC',c:'#FF5933',
+     d:'金融藍配深海軍藍，亮色是螢光薄荷，對比為橘紅。反差最強的一組。'},
+    {n:'復古文青風',en:'Navy / Ivory / Gold',src:'navy-ivory-gold-DESIGN.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Serif TC / 700 / 34px','Noto Sans TC / 400 / 16px / 1.85','Noto Sans TC / 500 / 15px'],tyFam:'serif',
+     kw:['Editorial','Classic','Quiet','Culture'],fit:'文化、出版、品牌故事、長文閱讀',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['內容閱讀','品牌官網'],
+     avoid:'金黃只作行動色，不當大面積底；不用漸層',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'一本書的重量，值得慢慢讀',
+         sub:'四個書系、九十六篇專欄，一年讀完一個主題。紙本與線上同步，斷點自動接續。',
+         st:[['32','位專欄作者'],['96','篇長文'],['4','個書系']],
+         f:[['主題書系','文學、歷史、生活、影像，一季一個主題。'],
+            ['長文閱讀','為長文調過的行高與級距，讀一小時不累。'],
+            ['編輯手記','每篇附編輯的選文理由，知道為什麼是這篇。']]},
+     bg:'#F7F0E8',ln:'#ECE5DA',mu:'#6B6455',ink:'#0E2A48',  /* ivory / line.soft / stone / navy */
+     tk:['深藍','最深藍','米白','金黃'],
+     tkEn:['navy','navy.deep','ivory','gold'],
+     rd:['10px','16px','22px'],sh:['0 1px 2px rgba(2,27,57,.05)','0 12px 32px -16px rgba(2,27,57,.24)'],bd:null,  /* 文件寫明：s10 按鈕／輸入框，m16 卡片，l22 大區塊 */
+     /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
+     demoFile:'demo/hanlin-edcafe-navy.html',
+     ex:[['沙色','#DED5C6'],['次深藍','#153252'],['石灰褐','#6B6455']],
+     btn:'#0E2A48',  /* 風格色版按鈕底色：navy-ivory-gold navy 深藍（＝主色） */
+     p:'#0E2A48',s:'#021B39',i:'#F7F0E8',c:'#F4A910',
+     d:'深藍、米白、金黃三色分工。金黃與深藍互為 7.29:1，兩者互當底色與文字都成立。'},
+    /* 這套的分層邏輯與其他組不同：不是同色深淺，而是不同色相，
+       「黑色是唯一的重量」。色票以 Master/assets/data.js 的 dopamine 為準：
+       主色 ink（近黑，只給文字／Nav／主要動作）、輔色 violet、亮色 yellow、
+       對比色 pink（＝文件版面骨架裡的 CTA 區塊底）。
+       原本輔色也放 ink（跟主色同一色，色帶少一條）、對比色放 coral
+       （文件裡 coral 的用途是「次要動作、警示裝飾」，不是 CTA）——都已改正。 */
+    {n:'多巴胺潮風',en:'Dopamine',src:'DESIGN-dopamine.md',
+     /* 字體排版與適用情境。字級照 font.size.4xl 30px 上限；base 字重 300 是文件給的，
+        標題字重文件沒寫，取 700（判斷）。字體是 Inter，不是其他組的 Noto Sans TC。 */
+     ty:['Inter / 700 / 30px','Inter / 300 / 15px / 1.5','Inter / 500 / 15px'],tyFam:'inter',
+     kw:['Dopamine','Playful','Pastel','Multi-hue'],fit:'行銷網站、活動頁、社群與潮流型產品',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['行銷活動','品牌官網'],
+     avoid:'近黑不可當頁面、Hero 或整段背景（面積 ≤15%）；粉彩底不可放淺色文字；語義色不可提高彩度；已用色相分隔的區塊不要再加邊線',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'這個週末，把城市變成調色盤',
+         sub:'三天、十八個攤位、七種顏色。走完一圈，手裡會多出一堆不知道什麼時候買的東西。',
+         st:[['3','天展期'],['18','個攤位'],['7','種主題色']],
+         f:[['選物市集','每一攤都有自己的顏色，好找也好拍。'],
+            ['現場工作坊','三十分鐘做一個帶得走的小東西。'],
+            ['集章換物','走滿五攤換限定貼紙，走滿十攤換托特包。']]},
+     bg:'#FBF5E9',ln:'#E6DFD3',mu:'#6B645F',ink:'#171315',  /* surface.base / line / text.secondary / text.primary */
+     tk:['近黑','深化薰衣草','亮黃','粉'],
+     tkEn:['ink','info','surface.strong / accent.yellow','accent.pink'],
+     /* 文件只給 radius.xs 4／sm 27／md 30，沒有 pill token。
+        判斷：md 30 給按鈕／chip／輸入框（文件說 pill buttons，30px 在 48px 高的按鈕上已接近膠囊）、
+        xs 4 給卡片、sm 27 給大區塊。文件沒有 shadow token，陰影留空＝不加陰影。 */
+     rd:['30px','4px','27px'],sh:[null,null],bd:null,
+     /* 版面骨架照文件：ink 只能用在文字、圖示、主要動作、Nav／Tab 與頁尾，
+        不可當頁面底、Hero 底或整段背景；Hero 用 surface.strong 亮黃、CTA 用 pink。
+        ink 底上的文字是 text.inverse 米白 #FBF5E9，不是純白。 */
+     lay:{nav:'#171315',navFg:'#FBF5E9',hero:'#FBE472',cta:'#F2BBDB',footer:'#171315'},
+     /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
+        沒有這一欄的組就用 demo.html?kit= 產生。 */
+     demoFile:'demo/hanlin-expo-dopamine.html',
+     /* 第三欄是用途，照來源文件的 token 表寫，不是自己編的 */
+     ex:[['surface.card','#FFFFFF','卡片底'],
+         ['surface.muted','#EEECFB','安靜區段的底'],
+         ['text.inverse','#FBF5E9','只用於 ink 實底上的文字'],
+         ['accent.coral','#FD9D9E','次要動作、警示裝飾'],
+         ['accent.mint','#BAE3DF','卡片、成功語意'],
+         ['accent.lilac','#C5C0F0','卡片、AI 與智慧功能'],
+         ['accent.sage','#C6CDA1','備用色相'],
+         ['yellow.soft','#FEF8DC','警示底、hover 底'],
+         ['pink.soft','#FCEBF4','區段底'],
+         ['coral.soft','#FFE5E5','危險底'],
+         ['mint.soft','#E4F4F2','成功底'],
+         ['lilac.soft','#EEECFB','資訊底'],
+         ['danger','#C0392B','錯誤，白底 5.44:1'],
+         ['success','#1E6F50','成功，白底 6.10:1'],
+         ['warn','#8A5A00','警示，白底 5.93:1']],
+     btn:'#FD9D9E',  /* 風格色版按鈕底色：多巴胺 coral 珊瑚（使用者指定） */
+     p:'#171315',s:'#5B4FA8',i:'#FBE472',c:'#F2BBDB',
+     d:'多色粉彩鋪在米白底上，近黑是全頁唯一的重量但只佔 15% 以內；色相負責分工，不負責層級（並排兩張卡是粉與薄荷，不是同色深淺兩階）。'},
+
+    /* 這套的識別來自「區塊之間的強弱落差」，不是整體明暗。
+       主色取 color.forest（Hero／Footer／標題／當前位置），深色取 forest.deep，
+       亮色取 sage、對比取 amber —— 後兩者在原文件裡都標明「僅色塊與裝飾，
+       不可承載小字」，要當文字色得改用 amber.deep #8A5A00。 */
+    {n:'摩洛哥風情',en:'Moroccan',src:'摩洛哥-DESIGN.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Serif TC / 700 / 34px','Noto Sans TC / 400 / 16px / 1.85','Noto Sans TC / 500 / 15px'],tyFam:'serif',
+     kw:['Earthy','Craft','Warm','Travel'],fit:'旅遊、選物、手作與生活風格網站',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['電商選物','品牌官網','內容閱讀'],
+     avoid:'鼠尾草綠與琥珀黃僅供色塊，不承載小字；要當文字色改用 #8A5A00',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'從麥地那的巷子，帶回來的顏色',
+         sub:'九條路線、三座城市、二十四件選物。每一件都寫得出它從哪裡來、誰做的。',
+         st:[['9','條深度路線'],['24','件手作選物'],['3','座城市']],
+         f:[['深度路線','不趕點，一天只走一區，走進巷子裡。'],
+            ['職人選物','陶器、地毯、銅器，全部標明工坊與作者。'],
+            ['旅程手記','回來以後才寄出的紙本手記，補完沒說完的部分。']]},
+     bg:'#EDEFEA',ln:'#DCE6DD',mu:'#5C6B60',ink:'#0C3B2E',  /* paper / line / muted / forest */
+     tk:['深墨綠','最深墨綠','鼠尾草綠','琥珀黃'],
+     tkEn:['forest','forest.deep','sage','amber'],
+     rd:['999px','16px','22px'],sh:['0 1px 2px rgba(12,59,46,.05)','0 12px 32px -16px rgba(12,59,46,.24)'],bd:null,  /* 文件寫明：pill 999 按鈕／chip，m16 卡片，l22 大區塊 */
+     ex:[['焦糖','#BB8A52'],['中綠','#3D6B52'],['深焦糖','#8A6534']],
+     btn:'#BB8A52',  /* 風格色版按鈕底色：摩洛哥 caramel 焦糖（使用者指定） */
+     p:'#0C3B2E',s:'#072A20',i:'#6D9773',c:'#FFBA00',
+     d:'深墨綠扛主結構，琥珀黃做主要動作與行動呼籲。鼠尾草綠與琥珀黃僅供色塊，不承載小字。'},
+    {n:'午夜金融藍',en:'dawho',src:'dawho-DESIGN.md',
+     /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
+        色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
+     ty:['Noto Sans TC / 700 / 32px','Noto Sans TC / 400 / 15px / 1.8','Noto Sans TC / 500 / 15px'],tyFam:'sans',
+     kw:['Tech','Night','Finance','Clean'],fit:'金融、數據儀表板、深色介面產品',
+     /* 網站類型：風格說的是長相，這個說的是拿來做什麼——列表用兩排篩選交叉過濾 */
+     wt:['後台工具','電商選物'],
+     avoid:'對比暖橘只用於行內強調；純黑底不放低彩度灰字',
+     /* 範本頁的文案：不同風格的範本，內容也不該長一樣（假資料照適用情境寫） */
+     cp:{hl:'盤後十分鐘，看完一天的部位',
+         sub:'六個帳戶合併成一張表，二十四小時監控，兩百毫秒更新一次。該看的都在第一屏。',
+         st:[['6','個帳戶合併'],['24h','不間斷監控'],['0.2s','報價更新']],
+         f:[['部位總覽','跨券商合併計算，不用自己開試算表。'],
+            ['風險警示','跌破設定值立刻推播，不必盯盤。'],
+            ['盤後報表','收盤後自動產出，隔天開盤前寄到信箱。']]},
+     bg:'#E5F6FF',ln:'#B8E7FF',mu:'#5A7080',ink:'#06283A',  /* surface.strong / surface.raised /（文件無次要文字與主要文字的淺底版本，推導）*/
+     tk:['亮藍','純黑','天藍','琥珀橘'],
+     tkEn:['text.tertiary','surface.base','text.inverse','（文件未給，判斷）'],
+     rd:['32px','8px','32px'],sh:[null,null],bd:null,  /* 文件給 xs4／sm8／md32／lg60／xl100 但沒寫用途，判斷：md 32 給按鈕／chip／輸入框、sm 8 給卡片、大區塊沿用 32（lg 60 留給主視覺圖，當區塊圓角過大）。文件沒有 shadow token，陰影留空＝退回頁面原本的樣式 */
+     ex:[['純黑底','#000000'],['淺藍底','#B8E7FF'],['極淺藍','#E5F6FF']],
+     btn:'#0094DF',  /* 風格色版按鈕底色：dawho text.tertiary 亮藍（＝主色）*/
+     p:'#0094DF',s:'#000000',i:'#2DB6FB',c:'#FF9F1C',
+     d:'純黑底配亮藍，是文件本身的深色介面配色；淺藍與極淺藍作淺底層次。文件沒有給對比色，判斷取主色的互補暖橘，只用於行內強調。'},
+    /* ── 以下 8 組來自 測試/規範產出，2026-09-04 新增 ──
+       六份「-DESIGN」共用同一組形狀 token：radius sm 12／md 20／pill 999，
+       沒有 shadow token（文件明寫「不得靠陰影做層級，明度差不足時改用另一個底色」）。
+       本結構的 rd[0] 是按鈕／chip／輸入框共用，塞不下 radius-sm 12px 給輸入框那一項。 */
+
+    {n:'芥黃刊物',en:'Mustard Journal',src:'芥黃刊物-DESIGN.md',
+     ty:['Noto Sans TC / 700 / 34px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Editorial','Paper','Warm','Retro'],fit:'刊物、專題報導、品牌故事與長文閱讀',
+     wt:['內容閱讀','品牌官網'],
+     avoid:'不得靠陰影做層級，明度差不足時改用另一個底色；中文標題不套襯線；淡紫與灰綠只做欄位分隔，不當大面積底',
+     cp:{hl:'紙的重量，螢幕上也留得住',
+         sub:'米色紙感底配深褐文字，芥黃只出現在該被看見的地方。一次一個專題，不趕稿。',
+         st:[['24','篇專題'],['6','位特約作者'],['4','期／年']],
+         f:[['專題企劃','一期一個主題，從企劃到成稿全程留紀錄。'],
+            ['作者專欄','每位作者一個固定欄位，讀者追得到人。'],
+            ['紙本訂閱','線上先讀，紙本季刊寄到家。']]},
+     bg:'#E7D4C3',ln:'#C5B3A4',mu:'#5B4B43',ink:'#2C1D18',  /* paper / line / muted / espresso */
+     tk:['深咖啡','極深階','淡粉','芥黃'],
+     tkEn:['espresso','charcoal','blush','mustard'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#2C1D18',navFg:'#FFFFFF',hero:'#EEC66F',cta:'#EEC66F',footer:'#1C1616'},
+     ex:[['paper','#E7D4C3','頁面底。米色紙感，佔比 50.5%'],
+         ['card','#F3E9E0','卡片底'],
+         ['lilac','#BD9FC3','欄位分隔'],
+         ['taupe','#A89586','次要文字、細線'],
+         ['sage','#78A58E','欄位分隔']],
+     btn:'#EEC66F',
+     p:'#2C1D18',s:'#1C1616',i:'#E0C4C0',c:'#EEC66F',
+     d:'米色紙感底配深褐文字，芥黃是唯一的大面積強調，淡紫與灰綠只做欄位分隔。'},
+
+    /* 深色介面：文件本身就設計成深墨綠底配淺綠白文字，不是抽取瑕疵 */
+    {n:'墨綠聖誕',en:'Pine & Gold',src:'墨綠聖誕-DESIGN.md',
+     ty:['Noto Sans TC / 700 / 34px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Festive','Deep','Gold','Winter'],fit:'節慶檔期、禮盒選物與限時活動頁',
+     wt:['電商選物','行銷活動'],
+     avoid:'金色只做主要行動與強調，不可大面積鋪；深底上不放中灰字，一律用 snow 或 muted',
+     cp:{hl:'今年的禮，想好了嗎',
+         sub:'深墨綠底把商品襯出來，金色只留給真正要被點的地方。十二月一日開跑。',
+         st:[['128','款禮盒'],['12/1','檔期開跑'],['3','種包裝']],
+         f:[['禮盒選配','三種包裝、兩種卡片，結帳前都能改。'],
+            ['指定日到貨','選好日期，當天早上送到。'],
+            ['企業採購','五十份以上專人對接，可客製卡片。']]},
+     bg:'#183A22',ln:'#3E5B45',mu:'#D7E1D1',ink:'#ECF3E4',  /* pine / line / muted / snow */
+     tk:['深墨綠','最深階','苔綠','金'],
+     tkEn:['pine','spruce','moss','gold'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#111111',navFg:'#FFFFFF',hero:'#183A22',cta:'#E3C874',footer:'#111111'},
+     ex:[['moss','#4D692D','卡片底、次級底'],
+         ['spruce','#142C15','最深階。頁尾、浮層'],
+         ['amber','#FF9831','側欄標籤、次要按鈕底'],
+         ['berry','#ED5A5A','促銷徽章底'],
+         ['snow','#ECF3E4','主要文字']],
+     btn:'#E3C874',
+     p:'#183A22',s:'#142C15',i:'#4D692D',c:'#E3C874',
+     d:'深墨綠底配淺綠白文字，金色只做主要行動與強調。苔綠當卡片底，靠色相分層不靠深淺。'},
+
+    {n:'撞色旅途',en:'Clash Trip',src:'撞色旅途-DESIGN.md',
+     ty:['Noto Sans TC / 900 / 36px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Bold','Clash','Pop','Travel'],fit:'旅遊商品、促銷檔期與高反差的行銷頁',
+     wt:['電商選物','行銷活動'],
+     avoid:'螢光黃只做分區底與促銷帶，不承載小字；黑色線稿是識別，不可改成灰',
+     cp:{hl:'下一站，隨便挑一個顏色',
+         sub:'白底把顏色讓出來，珊瑚、水藍、玫瑰各自分區，螢光黃留給促銷帶。',
+         st:[['36','條路線'],['8','個國家'],['24h','客服']],
+         f:[['自由配行程','挑城市、挑天數，剩下的我們排。'],
+            ['機加酒一次搞定','價格直接顯示，不用再點進去算。'],
+            ['出發前提醒','簽證、天氣、行李規定，出發前七天一次寄給你。']]},
+     bg:'#FFFFFF',ln:'#D1D1D1',mu:'#595959',ink:'#000000',  /* white / line / muted / ink */
+     tk:['黑','沙色','珊瑚','螢光黃'],
+     tkEn:['ink','sand','coral','lemon'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#000000',navFg:'#FFFFFF',hero:'#FDF032',cta:'#FDF032',footer:'#000000'},
+     ex:[['coral','#F39C80','分區底'],
+         ['aqua','#52C4DF','分區底'],
+         ['rose','#EF9CB0','分區底'],
+         ['sand','#F1DABB','柔和區塊底'],
+         ['azure','#00A0FE','連結色塊、資訊標籤']],
+     btn:'#FDF032',
+     p:'#000000',s:'#F1DABB',i:'#F39C80',c:'#FDF032',
+     d:'白底讓位給顏色，珊瑚、水藍、玫瑰各自分區，螢光黃只留給促銷帶。黑色線稿是識別。'},
+
+    {n:'酪梨青檸',en:'Avocado & Lime',src:'酪梨青檸-DESIGN.md',
+     ty:['Noto Sans TC / 700 / 34px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Fresh','Organic','Green','Food'],fit:'食品、有機選物與生活風格品牌',
+     wt:['品牌官網','電商選物'],
+     avoid:'橘只做標題強調與 CTA 色塊，不當大面積底；卡其底上不放淺字',
+     cp:{hl:'今天的菜，昨天還在土裡',
+         sub:'酪梨綠鋪滿整頁，橘色只出現在要你動手的地方。產地到餐桌不超過二十四小時。',
+         st:[['24h','產地直送'],['48','家合作農場'],['0','化學添加']],
+         f:[['當季配送','當週採收什麼就配什麼，不冷藏囤貨。'],
+            ['農場履歷','每一箱附產地與採收日，掃碼看得到人。'],
+            ['份量自選','一人份到四人份，隨時可以改。']]},
+     bg:'#CDDEB2',ln:'#B6C39C',mu:'#544F3C',ink:'#4E4736',  /* avocado / line / muted / bark */
+     tk:['橄欖褐','黑','卡其','橘'],
+     tkEn:['bark','ink','khaki','vermilion'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#4E4736',navFg:'#FFFFFF',hero:'#CDDEB2',cta:'#FF5E03',footer:'#4E4736'},
+     ex:[['pale','#E6EFD9','卡片底'],
+         ['khaki','#D5CB86','次級區塊底、影片牆'],
+         ['mint','#98DEBB','分區色塊'],
+         ['moss','#919777','次要文字、分隔'],
+         ['ink','#000000','線稿、極重標題']],
+     btn:'#FF5E03',
+     p:'#4E4736',s:'#000000',i:'#D5CB86',c:'#FF5E03',
+     d:'酪梨綠當頁面底佔六成五，橘色只做標題強調與 CTA。層級靠色相分區，不靠同色深淺。'},
+
+    {n:'林蔭野趣',en:'Forest Trail',src:'林蔭野趣-DESIGN.md',
+     ty:['Noto Sans TC / 700 / 34px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Natural','Outdoor','Calm','Trail'],fit:'戶外、自然教育與慢步調的內容型網站',
+     wt:['內容閱讀','品牌官網'],
+     avoid:'金色只做標籤與按鈕底，不承載小字；分區標籤的四個色相不可拿來當大面積底',
+     cp:{hl:'走進林子，把速度留在入口',
+         sub:'米黃底配深綠字，薄荷色切分章節。九條步道，一次只走一條。',
+         st:[['9','條步道'],['4','季導覽'],['2h','平均行程']],
+         f:[['步道地圖','離線可看，沿途標示水源與遮蔽點。'],
+            ['季節導覽','每季換一批解說主題，看得到當季的東西。'],
+            ['親子路線','三公里以內、坡度平緩，推車也走得過。']]},
+     bg:'#FEFEDE',ln:'#D3DBC0',mu:'#3F6159',ink:'#0F3A38',  /* cream / line / muted / forest */
+     tk:['深森綠','草綠','薄荷','金'],
+     tkEn:['forest','grass','mint','gold'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#0F3A38',navFg:'#FFFFFF',hero:'#C0DFD5',cta:'#DEAF5F',footer:'#0F3A38'},
+     /* 這一組有一份實際套好的頁面，範本頁直接用它 */
+     demoFile:'demo/map-history-trail.html',
+     ex:[['mint','#C0DFD5','次級區塊底。切分章節'],
+         ['lemon','#E8E6AD','第三層區塊底'],
+         ['sage','#618C81','次要文字、圖說'],
+         ['grass','#8AAE4C','分區標籤'],
+         ['sky','#5AB6FE','分區標籤、連結色塊'],
+         ['apricot','#D58147','秋季分區標籤'],
+         ['brick','#D16544','強調數字底']],
+     btn:'#DEAF5F',
+     p:'#0F3A38',s:'#8AAE4C',i:'#C0DFD5',c:'#DEAF5F',
+     d:'米黃底配深森綠文字，薄荷色切分章節，金色只做標籤與按鈕底。'},
+
+    /* 深色介面：文件本身就是深藍紫底，不是抽取瑕疵。
+       這一組的對比色與主要行動底不同色——accent 是黃、cta 是桃紅，照文件分開填。 */
+    {n:'藍夜霓虹',en:'Neon Night',src:'藍夜霓虹-DESIGN.md',
+     ty:['Noto Sans TC / 900 / 36px / 行高 1.2','Noto Sans TC / 400 / 16px / 1.8','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Neon','Night','Vivid','Sale'],fit:'夜間檔期、促銷活動與高彩度的行銷頁',
+     wt:['行銷活動','電商選物'],
+     avoid:'桃紅是裝飾色塊，不可承載文字；深底上不放中灰字，一律用白或 muted',
+     cp:{hl:'晚上十點，全站開跑',
+         sub:'深藍紫底把霓虹色撐起來，黃色只給重點數字與當前狀態，桃紅只做行動。',
+         st:[['22:00','開跑時間'],['48h','檔期'],['1,200+','參與品項']],
+         f:[['限時加碼','整點翻牌，每小時換一批。'],
+            ['滿額回饋','門檻直接顯示在購物車，不用自己算。'],
+            ['到貨提醒','缺貨的先登記，補到就推播。']]},
+     bg:'#1F2969',ln:'#475084',mu:'#A5A9C3',ink:'#FFFFFF',  /* navy / line / muted / white */
+     tk:['深藍紫','最深階','水藍','黃'],
+     tkEn:['navy','alt','cyan','accent'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,
+     lay:{nav:'#111111',navFg:'#FFFFFF',hero:'#1F2969',cta:'#DD1F72',footer:'#111111'},
+     ex:[['card','#2A3480','卡片底'],
+         ['cyan','#16B5D5','次級橫幅、資訊區塊'],
+         ['magenta','#FB2381','裝飾色塊（不可承載文字）'],
+         ['gold','#F5B715','次級強調、標籤底'],
+         ['crimson','#CA3843','頁籤列、次級促銷底'],
+         ['orange','#FF6920','裝飾形狀、次要標籤']],
+     btn:'#FAD852',
+     p:'#1F2969',s:'#151C4A',i:'#16B5D5',c:'#FAD852',
+     d:'深藍紫底撐起霓虹色，黃色給重點數字與當前狀態，桃紅只做主要行動。裝飾桃紅不承載文字。'},
+
+    /* 這兩組來自「-規範」那一批（自動抽取）。文件把 surface.base 標成純黑並自己註明
+       「幾乎確定是抽取瑕疵，來源站不是純黑底頁」——頁面底改抓文件裡的淺輔助色，
+       其餘色票照文件值，判斷處都標在下面。 */
+    {n:'學堂紫',en:'douclass',src:'douclass-DESIGN-規範.md',
+     ty:['Noto Sans TC / 700 / 24px','Noto Sans TC / 400 / 16px / 1.5','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Purple','Learning','Clean','Calm'],fit:'線上課程、學習平台與後台系統',
+     wt:['教育平台','後台工具'],
+     avoid:'文件把 text.primary 訂為 #666666，壓在主色上只有 1.09:1，深紫底一律改用白字；font.size.xs 是 0px，不可使用',
+     cp:{hl:'一堂課，從報名到結業都在這裡',
+         sub:'紫色只出現在主要動作與當前位置，其餘一律留白。介面安靜，內容才看得見。',
+         st:[['320','門課程'],['48','位講師'],['92%','完課率']],
+         f:[['課程管理','章節、教材與作業一頁排完。'],
+            ['學習進度','看得到每個人卡在哪一章。'],
+            ['結業證明','完課自動產出，可驗證。']]},
+     bg:'#F7F4FB',ln:'#E0E0E0',mu:'#666666',ink:'#333333',  /* 淺紫底（文件的淺輔助色）/ line / text.primary / text.secondary */
+     tk:['主紫','深灰','淺紫','琥珀'],
+     tkEn:['surface.strong','text.secondary','lilac.soft','（文件未給對比色，判斷）'],
+     rd:['999px','25px','30px'],sh:[null,null],bd:null,  /* 文件給 xs8／sm20／md25／lg28／xl30／2xl50，判斷：按鈕 pill、卡片 md25、大區塊 xl30 */
+     lay:{nav:'#7747B5',navFg:'#FFFFFF',hero:'#7747B5',cta:'#E8A33D',footer:'#333333'},
+     ex:[['surface.soft','#F7F4FB','頁面底（文件的淺輔助色，取代純黑的 surface.base）'],
+         ['lilac.soft','#EFE9F6','區塊底'],
+         ['lilac','#DED3ED','卡片底、標籤底'],
+         ['lilac.mid','#B49AD6','次級強調'],
+         ['slate','#9499A6','次要文字、圖示'],
+         ['gray.soft','#F6F6F6','停用底']],
+     btn:'#7747B5',
+     p:'#7747B5',s:'#333333',i:'#DED3ED',c:'#E8A33D',   /* 對比色文件沒給，判斷取主紫的互補暖琥珀，只用於行內強調與 CTA */
+     d:'主紫只出現在主要動作與當前位置，其餘用淺紫階做層次。文件沒給對比色，判斷取互補暖琥珀。'},
+
+    {n:'公務金黃',en:'gov',src:'gov-DESIGN-規範.md',
+     ty:['Noto Sans TC / 700 / 26px','Noto Sans TC / 400 / 16px / 1.7','Noto Sans TC / 700 / 15px'],tyFam:'sans',
+     kw:['Official','Warm','Clear','Trust'],fit:'公部門、公告佈告與資訊型網站',
+     wt:['品牌官網','內容閱讀'],
+     avoid:'金黃底一律配近黑字（白字只有 1.57:1，文件已標為不合格）；純黑的 surface.base 不可當頁面底',
+     cp:{hl:'該辦的事，一頁就查得到',
+         sub:'米白底配深褐字，金黃只用在要被點的地方。公告、表單、進度，分三區不混在一起。',
+         st:[['186','項線上服務'],['24h','線上申辦'],['3','個工作天']],
+         f:[['線上申辦','表單填完直接送出，不用臨櫃。'],
+            ['進度查詢','案件編號一查到底，每一關都看得到。'],
+            ['公告佈告','依單位與日期分類，可訂閱通知。']]},
+     bg:'#FFF8EA',ln:'#E2DEDC',mu:'#6B4632',ink:'#3B2117',  /* color.soft 淺奶油（取代純黑的 surface.base）/ line / text.primary / text.secondary */
+     tk:['磚橘','深褐','淺金','金黃'],
+     tkEn:['text.tertiary','text.secondary','mid','surface.strong'],
+     rd:['999px','20px','20px'],sh:[null,null],bd:null,  /* 文件只給 radius.xs=999px，判斷：按鈕與 chip 用 pill，卡片與大區塊取 20px */
+     lay:{nav:'#3B2117',navFg:'#FFFFFF',hero:'#FFC551',cta:'#FFC551',footer:'#3B2117'},
+     ex:[['soft','#FFF8EA','頁面底（文件的淺輔助色，取代純黑的 surface.base）'],
+         ['soft.2','#FFFCF5','最淺階'],
+         ['soft.3','#FFF1D5','次級區塊底'],
+         ['mid','#FFDF9F','淺金。標籤底、hover 底'],
+         ['raised','#AAA39B','浮起層、停用底']],
+     btn:'#FFC551',
+     p:'#C04C08',s:'#3B2117',i:'#FFDF9F',c:'#FFC551',
+     d:'米白底配深褐文字，磚橘撐結構，金黃只做主要行動。金黃底一律配近黑字，文件實測白字只有 1.57:1。'},
+
+  ];
+  /* 以色碼比對而非物件識別：色版自帶色票，不一定出現在 THEMES 的圓點列裡 */
+  /* 【頁籤底色要能承載反白文字】(2026-09-02)
+     頁籤文字是 13px（小字），WCAG AA 要求 4.5:1。七組主色直接當底時
+     實測不過的例子：漫畫貼紙風 #2C89D8 只有 3.70。
+     （原本另一個例子「電競潮流色 #0085DB 3.90」隨該組移除，機制本身不變。）
+     使用者要的是「主色底＋文字反白」，所以不改文字色，改成把底色往黑壓，
+     壓到剛好 4.5:1 為止（每次 4%，最多 40%），色相不變、只降明度。
+     達標的五顆完全不動，維持原色碼。 */
+  /* 主色與灰之間取一個中間值，當作沒有 muted token 時的次要文字色 */
+  function mixDark(hex,k){
+    var h=String(hex).replace('#','');
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
+    r=r+(140-r)*k;g=g+(144-g)*k;b=b+(153-b)*k;
+    return '#'+[r,g,b].map(function(v){return ('0'+Math.round(v).toString(16)).slice(-2)}).join('').toUpperCase();
+  }
+  function crOf(a,b){var l1=lumOf(a),l2=lumOf(b);
+    return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05)}
+  /* 往黑壓到與 against 達 4.5:1 為止（每次 4%，最多 12 次）。色相不變，只降明度。 */
+  function darkenTo45(hex,against){
+    against=against||'#FFFFFF';
+    var h=String(hex).replace('#','');
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16),cur=hex.toUpperCase();
+    for(var k=0;k<12;k++){
+      cur='#'+[r,g,b].map(function(v){return ('0'+Math.round(v).toString(16)).slice(-2)}).join('').toUpperCase();
+      if(crOf(cur,against)>=4.5)return cur;
+      r*=0.96;g*=0.96;b*=0.96;
+    }
+    return cur;
+  }
+  /* 相對亮度（WCAG）：決定按鈕在選取狀態要配白字還是深字 */
+  function lumOf(hex){
+    var h=String(hex).replace('#','');
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var v=[0,2,4].map(function(i){var c=parseInt(h.substr(i,2),16)/255;
+      return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)});
+    return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];
+  }
+  function palOn(pl){
+    return curTheme&&curTheme.p===pl.p&&curTheme.s===pl.s&&curTheme.i===pl.i&&curContrast===pl.c;
+  }
+  function buildPalettes(){
+    var row=document.getElementById('pal-row'); if(!row)return;
+    /* 每次重畫前先清空，否則取消選取後說明會殘留 */
+    row.addEventListener('kmreset',function(){});
+    PALETTES.forEach(function(pl){
+      var t={n:pl.n,p:pl.p,s:pl.s,i:pl.i,c:pl.c},warm=pl.c;
+      /* 第一層只放主題名稱按鈕，色碼交給下面的「品牌色彩」。
+         按鈕本身用該色版的顏色預覽：四宮格色票 ＋ 選取時整顆填成該色版主色。
+         文字色依主色亮度決定黑白，避免出現深底深字或淺底白字。 */
+      var card=document.createElement('button');card.type='button';card.className='pal-card';
+      card.title=pl.n+(pl.en?('（'+pl.en+'）'):'')+'　來源 '+pl.src+'\n'+pl.d+
+        (pl.tkEn?('\n對應 token：'+pl.tkEn.join(' / ')):'');
+      /* 七顆同時實色是視覺噪音。改成：
+           未選 → 該色版主色 10% 淡底 ＋ 壓到 4.5:1 的深色字（安靜、可讀）
+           選中 → 主色實底 ＋ 反白（一眼看得出目前是哪一組）
+         兩種狀態的顏色都是從該色版主色算出來的，不是另外挑的顏色。 */
+      /* 按鈕就顯示 md 的主色原值，不再壓深（使用者指定） */
+      var tint=mix(t.p,.90);                       /* 主色 10% 淡底，與規範頁的柔色同一支算法 */
+      /* 【按鈕底色改吃各文件的規範色】(使用者指定 2026-09-03)
+         先前七顆一律用該色版的主色 p，等於把「按鈕該用什麼色」這個決定
+         交給主色。文件其實有寫：istockapp 的 surface.strong 是橘紅、
+         多巴胺的 coral 是珊瑚、摩洛哥的 caramel 是焦糖 —— 這三組由使用者
+         指定改用文件色；其餘四組的文件主要色本來就等於 p，一併寫進 btn 欄，
+         讓按鈕底色有自己的來源，不再與主色綁死。 */
+      var pbtn=pl.btn||t.p;
+      card.style.setProperty('--pc',pbtn);
+      /* 選取狀態改成「同色淡 10%」，不用外框（使用者指定 2026-09-02）。
+         mix(hex,w) 是往白混 w 的比例，所以 .10 就是淡 10%。 */
+      var pon=mix(pbtn,.10);
+      card.style.setProperty('--pc-on',pon);
+      /* 【文字色依底色對比決定】(使用者指定 2026-09-04，取代 09-03 的「一律反白」)
+         規則：底色深 → 文字一定是淺色／白色；底色淺 → 文字壓深，
+         判準用實際對比值，不是憑感覺挑。
+         為什麼要改回來：09-03 指定七顆一律白字，實測代價是
+           多巴胺珊瑚 #FD9D9E 配白字 2.00:1、摩洛哥焦糖 #BB8A52 3.06:1、
+           漫畫貼紙風橘紅 #FF5933 3.12:1 —— 全部低於 AA 4.5:1，字幾乎看不見。
+         現在改成：白字達得到 4.5:1 就用白字（深底一律落在這一邊），
+         達不到就用 darkenTo45 把同一個色相壓深到剛好 4.5:1 當文字色，
+         顏色仍然來自該色版，不是另外挑一個黑。 */
+      function fgFor(bg){
+        try{
+          /* ① 白字達得到 AA 4.5:1 就用白字 —— 所有真正的深底都落在這一邊，
+                這就是「按鈕深色、文字一定淺色／白色」那條規則的實作。 */
+          var wc=crOf('#FFFFFF',bg);
+          if(wc>=4.5)return '#FFFFFF';
+          /* ② 白字不夠＝底色偏亮，把同一個色相壓深來當文字色。
+                自己跑迴圈，不用 darkenTo45：它只壓 12 次 × 0.96（最深只到原色的 61%），
+                對橘紅／珊瑚／焦糖這種亮彩壓不下去，會吐回一個對比只有 2.1 的顏色，
+                反而變成「深底配深字」。這裡壓到真的達標為止。 */
+          var h=String(bg).replace('#','');
+          if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+          var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
+          for(var k=0;k<40;k++){
+            r*=0.9;g*=0.9;b*=0.9;
+            var cur='#'+[r,g,b].map(function(v){return ('0'+Math.round(v).toString(16)).slice(-2)}).join('').toUpperCase();
+            if(crOf(cur,bg)>=4.5)return cur;
+          }
+          /* ③ 兩邊都到不了 4.5（極少見）：取對比高的那一邊，不留一個看不見的字。 */
+          return wc>=crOf('#111111',bg)?'#FFFFFF':'#111111';
+        }catch(e){return '#FFFFFF'}
+      }
+      /* 【七顆一律白字】(使用者指定 2026-09-04，看著實際畫面決定)
+         fgFor() 保留不刪：它是「白字達不到 4.5 就壓深同色相」的判準，
+         匯出的 SKILL.md 對比規則寫的就是這一套，套版產出仍然照它走。
+         這裡只有規範頁上這七顆展示按鈕例外——使用者要的是七顆一致反白，
+         代價（橘紅 3.12、焦糖 3.06、珊瑚 2.00）記在下方 __palFg，沒有被藏起來。 */
+      var _fg='#FFFFFF',_fgOn='#FFFFFF',_fgAuto=fgFor(pbtn);
+      card.style.setProperty('--pc-fg',_fg);
+      card.style.setProperty('--pc-fg-on',_fgOn);
+      try{(window.__palFg=window.__palFg||[]).push(
+        {n:pl.n,底:pbtn,文字:_fg,白字對比:Math.round(crOf(_fg,pbtn)*100)/100,
+         選取底:pon,選取白字對比:Math.round(crOf(_fgOn,pon)*100)/100,
+         達標的替代文字色:_fgAuto,替代色對比:Math.round(crOf(_fgAuto,pbtn)*100)/100})}catch(e){}
+      card.style.setProperty('--pc-tint',tint);
+      card.style.setProperty('--pc-ink',darkenTo45(t.p,tint));/* 淡底上的文字：對淡底 4.5:1 */
+      card.style.setProperty('--pc-line',mix(t.p,.72));
+      /* 膠囊本身就是主色，四宮格色票拿掉，維持與導覽頁籤一致的乾淨形狀 */
+      card.innerHTML='<span class="pal-name">'+pl.n+'</span>';
+      function paint(){
+        card.classList.toggle('on',palOn(pl));
+        /* 目前採用的說明放在按鈕列下方（使用者指定 2026-09-02） */
+        if(palOn(pl)){
+          var now=document.getElementById('pal-now');
+          if(now)now.innerHTML='<b>目前採用：'+pl.n+'</b>'+
+            '<span class="pal-now-src">來源 '+pl.src+(pl.en?('　'+pl.en):'')+'</span>'+
+            '<span class="pal-now-d">'+pl.d+'</span>';
+        }
+      }
+      card.addEventListener('click',function(){
+        /* 走既有路徑：只改 curTheme／curContrast，其餘交給 apply()，
+           不另外寫 localStorage，也不繞過任何既有流程。 */
+        curTheme={n:pl.n,p:pl.p,s:pl.s,i:pl.i,c:pl.c,tk:pl.tk,src:pl.src,
+                  bg:pl.bg,ln:pl.ln,mu:pl.mu,ink:pl.ink,ex:pl.ex,
+                  rd:pl.rd,sh:pl.sh,bd:pl.bd};curContrast=pl.c;
+        apply();
+        document.querySelectorAll('#theme-row .theme-dot,#contrast-row .theme-dot')
+          .forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+        var _n=document.getElementById('pal-now');if(_n)_n.innerHTML='';
+        document.querySelectorAll('.pal-card').forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+      });
+      card.addEventListener('repaint',paint);
+      row.appendChild(card);paint();
+    });
+  }
+
+  buildRow('theme-row',THEMES,function(t){return t.p},function(t){curTheme=t},function(t){return curTheme===t});
+  buildRow('contrast-row',CONTRASTS,function(o){return o.c==='auto'?curTheme.c:o.c},function(o){curContrast=o.c},function(o){return curContrast===o.c});
+  buildPalettes();
+  apply();
+
+  /* 帶 ?kit= 進來時，讓整頁先照那一組畫（只是預覽；採用設定由頁面互動自動存草稿，或按「套入匯入頁」寫入）。
+     沒有這一段的話，色彩系統下半部的中間色／灰階／淡色圖示方塊、以及所有元件示範
+     都會停在採用設定裡的翰林藍，跟上面那一組的色票對不起來——
+     走的是色版卡片本來就在用的那條路（改 curTheme／curContrast 再 apply），不另外開一套。 */
+  window.HL_previewKit=function(pl){
+    if(!pl||!pl.p)return;
+    curTheme={n:pl.n,p:pl.p,s:pl.s,i:pl.i,c:pl.c,tk:pl.tk,src:pl.src,
+              bg:pl.bg,ln:pl.ln,mu:pl.mu,ink:pl.ink,ex:pl.ex,
+              rd:pl.rd,sh:pl.sh,bd:pl.bd};
+    curContrast=pl.c;
+    apply();
+    document.querySelectorAll('#theme-row .theme-dot,#contrast-row .theme-dot')
+      .forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+    document.querySelectorAll('.pal-card').forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+  };
+
+  /* 可整組不套的群組（hd／ft 不在內，必選） */
+  var OPTIONAL_GROUPS=['hero','fm','opt','tblsty','icon'];
+  function paintOffState(){
+    OPTIONAL_GROUPS.forEach(function(g){
+      var boxes=document.querySelectorAll('.pick-box[data-group="'+g+'"]');
+      var none=![].some.call(boxes,function(b){return b.classList.contains('adopted')});
+      [].forEach.call(boxes,function(b){b.classList.toggle('no-adopt',none)});
+    });
+  }
+  /* ===== 選取框：單選群組與可複選元件 ===== */
+  document.querySelectorAll('.pick-head').forEach(function(h){
+    h.addEventListener('click',function(){
+      var box=h.closest('.pick-box'),g=box.getAttribute('data-group');
+      if(box.hasAttribute('data-multi')){
+        box.classList.toggle('adopted');
+        var tg=box.getAttribute('data-toggle');
+        if(tg){var el=document.getElementById(tg);if(el)el.style.display=box.classList.contains('adopted')?'':'none'}
+        return}
+      if(g){
+        /* hd／ft 必選：頁面一定有頁首頁尾，不允許整組不套。
+           其餘群組再點一次已採用的那張＝取消採用，該組整組不套。
+           取消後 adoptedIdx 回 -1，buildState 把 use[g] 記成 false，
+           套用端讀到 use=false 就整段跳過（不是落回預設值）。 */
+        var was=box.classList.contains('adopted');
+        document.querySelectorAll('.pick-box[data-group="'+g+'"]').forEach(function(b){b.classList.remove('adopted')});
+        if(!(was&&OPTIONAL_GROUPS.indexOf(g)>=0))box.classList.add('adopted');
+        paintOffState();
+      }
+    });
+  });
+  /* 橫向選項卡 */
+  document.querySelectorAll('.opt-card').forEach(function(c){
+    c.addEventListener('click',function(){
+      c.parentElement.querySelectorAll('.opt-card').forEach(function(x){x.classList.remove('sel');x.querySelector('.opt-dot').classList.remove('on')});
+      c.classList.add('sel');c.querySelector('.opt-dot').classList.add('on');
+    });
+  });
+  /* Logo 單選(依淺色/反白群組) */
+  /* 勾選 Logo 時，Header(hd)/Footer(ft)版型示範裡的 Logo 同步替換成所選樣式 */
+  var LOGO_FILES=['logo.svg','logo-en.svg','logo-text.svg','logo-mark-only.svg'];
+  function syncDemoLogos(){
+    function onIdx(sel){var idx=-1;document.querySelectorAll(sel).forEach(function(x,i){if(x.classList.contains('on'))idx=i});return idx}
+    var li=onIdx('.logo-sel'),di=onIdx('.logo-inv');
+    var src=LOGO_FILES[li>=0?li:(di>=0?di:2)];
+    document.querySelectorAll('.pick-box[data-group="hd"] .pick-body img[src^="logo"],.pick-box[data-group="ft"] .pick-body img[src^="logo"]').forEach(function(img){img.src=src});
+  }
+  document.querySelectorAll('[data-g]').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('[data-g="'+c.dataset.g+'"]').forEach(function(x){x.classList.remove('on')});
+      c.classList.add('on');
+      syncDemoLogos();
+    });
+  });
+
+  /* ===== 彈窗 ===== */
+  document.querySelectorAll('[data-modal]').forEach(function(b){
+    b.addEventListener('click',function(){document.getElementById(b.dataset.modal).classList.add('show')});
+  });
+  document.querySelectorAll('.overlay').forEach(function(o){
+    o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('show')});
+    o.querySelector('.close-x').addEventListener('click',function(){o.classList.remove('show')});
+    o.querySelectorAll('.acts .btn').forEach(function(b){b.addEventListener('click',function(){o.classList.remove('show')})});
+  });
+
+  /* ===== Top 按鈕 ===== */
+  var toTop=document.getElementById('toTop');
+  toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  window.addEventListener('scroll',function(){toTop.classList.toggle('show',window.scrollY>400)});
+
+  /* ===== Toast 關閉 ===== */
+  document.querySelectorAll('.toast .close').forEach(function(x){
+    x.addEventListener('click',function(){x.closest('.toast').style.display='none'});
+  });
+
+
+  /* ===== 自訂模式：先清空，再還原尚未匯出的選取草稿 ===== */
+  document.querySelectorAll('.pick-box.adopted').forEach(function(b){b.classList.remove('adopted')});
+  document.querySelectorAll('.logo-sel.on,.logo-inv.on').forEach(function(x){x.classList.remove('on')});
+  var mwEl=document.getElementById('member-wrap');
+  if(mwEl)mwEl.style.display='none';
+  /* 預設採用組合：新工作階段一進來就有完整可用的版型，使用者再逐項調整 */
+  var DEFAULT_ADOPT={theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',
+    logoLight:2,logoDark:2,logoInv:false,
+    groups:{hd:1,ft:2,hero:1,fm:1,opt:1,tblsty:0,icon:0},
+    controls:{btn:true,seg:true,select:true,label:true,principles:true,midcolor:true,gray:true,softtile:true,rwd:true,type:true,shape:true},
+    memberEntry:true};
+  try{
+    var draft=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
+    /* 只在畫面上套預設，不寫回 localStorage——否則重整清空後又立刻長出一筆，
+       使用者會看成「紀錄沒清掉」，其他頁也會誤判成「已有採用設定」而跳出覆蓋確認 */
+    applyState((draft&&draft.groups)?draft:DEFAULT_ADOPT);
+  }catch(e){try{applyState(DEFAULT_ADOPT)}catch(e2){}}
+  syncDemoLogos();
+  updateAdoptStatus();
+
+  /* ===== 從首頁「匯入」進來時，還原存下的品牌規範 ===== */
+  function applyState(st){
+    if(!st||typeof st!=='object')throw new Error('沒有可套用的資料');
+    if(st.theme&&st.theme.p){
+      var matched=THEMES.filter(function(x){return x.p===st.theme.p})[0];
+      curTheme=matched||st.theme;
+    }
+    if(st.contrast)curContrast=st.contrast;
+    document.querySelectorAll('.pal-card').forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+    document.querySelectorAll('#theme-row .theme-dot,#contrast-row .theme-dot').forEach(function(x){x.dispatchEvent(new Event('repaint'))});
+    if(typeof st.logoLight==='number'){
+      var inv=!!st.logoInv;
+      document.querySelectorAll('.logo-sel').forEach(function(x,i){x.classList.toggle('on',!inv&&i===st.logoLight)});
+      document.querySelectorAll('.logo-inv').forEach(function(x,i){x.classList.toggle('on',inv&&i===st.logoLight)});
+    }
+    if(st.groups)Object.keys(st.groups).forEach(function(g){
+      document.querySelectorAll('.pick-box[data-group="'+g+'"]').forEach(function(b,i){b.classList.toggle('adopted',i===st.groups[g])});
+    });
+    paintOffState();
+    if(st.controls)document.querySelectorAll('.pick-box[data-key]').forEach(function(b){
+      if(st.controls.hasOwnProperty(b.dataset.key))b.classList.toggle('adopted',!!st.controls[b.dataset.key]);
+    });
+    if(typeof st.memberEntry==='boolean'){
+      var mb=document.querySelector('[data-toggle="member-wrap"]');
+      if(mb){
+        mb.classList.toggle('adopted',st.memberEntry);
+        var el=document.getElementById('member-wrap');
+        if(el)el.style.display=st.memberEntry?'':'none';
+      }
+    }
+    apply();
+  }
+  if(localStorage.getItem('hanlin-import-pending')){
+    localStorage.removeItem('hanlin-import-pending');
+    try{applyState(JSON.parse(localStorage.getItem('hanlin-brand-theme')))}catch(e){}
+    syncDemoLogos();
+  }
+
+  /* ===== 確認採用：存 theme 到 localStorage，套入匯入頁 / 匯出 ===== */
+  function buildState(){
+    function adoptedIdx(g){
+      var boxes=[].slice.call(document.querySelectorAll('.pick-box[data-group="'+g+'"]'));
+      return boxes.findIndex(function(b){return b.classList.contains('adopted')});
+    }
+    function onIdx(sel){
+      var els=[].slice.call(document.querySelectorAll(sel));
+      return els.findIndex(function(x){return x.classList.contains('on')});
+    }
+    var groups={};
+    ['hd','ft','hero','fm','opt','tblsty','icon'].forEach(function(g){groups[g]=adoptedIdx(g)});
+    /* 「整組不套」用獨立的 use 開關表達，不去改寫 groups 的 -1。
+       -1 在套用端既有的語意是「落回預設值」，重新定義它會動到舊存檔。
+       未列出的鍵在套用端一律視為採用，所以舊存檔的行為完全不變。 */
+    var use={};
+    OPTIONAL_GROUPS.forEach(function(g){use[g]=adoptedIdx(g)>=0});
+    var controls={};
+    document.querySelectorAll('.pick-box[data-key]').forEach(function(b){controls[b.dataset.key]=b.classList.contains('adopted')});
+    var li=onIdx('.logo-sel'),di=onIdx('.logo-inv');
+    var logoIdx=li>=0?li:(di>=0?di:2);
+    var memberBox=document.querySelector('[data-toggle="member-wrap"]');
+    var state={
+      theme:curTheme,
+      contrast:curContrast,
+      logoLight:logoIdx,
+      logoDark:logoIdx,
+      logoInv:(li<0&&di>=0),
+      groups:groups,
+      use:use,
+      controls:controls,
+      memberEntry:!!(memberBox&&memberBox.classList.contains('adopted'))
+    };
+    return state;
+  }
+  function saveTheme(){
+    var st=buildState();
+    localStorage.setItem('hanlin-brand-theme',JSON.stringify(st));
+    return st;
+  }
+  /* 選取即存草稿：尚未匯出前，設定不會被清除 */
+  var draftTimer=null;
+  document.querySelector('main.wrap').addEventListener('click',function(){
+    clearTimeout(draftTimer);
+    draftTimer=setTimeout(function(){localStorage.setItem('hanlin-brand-theme',JSON.stringify(buildState()));updateAdoptStatus()},300);
+  });
+  /* 即時採用狀態列：勾選當下就顯示「實際存進去的組合」 */
+  var HD_NS=['品牌官網（淺色）','品牌官網（深色）','教師平台','國小／兒童','國中／高中學術','命題大師','行動大師','影音派','AI 數位導覽員'];
+  var FT_NS=['完整頁尾','導覽頁尾','精簡頁尾（深色置中）'];
+  var HERO_NS=['AI 漸層版','純圖片版'];
+  var FM_NS=['色塊版','純 icon 版'];
+  var TBL_NS=['斑馬紋','全框線','主色表頭','深色表頭'];
+  var adoptBar=document.createElement('div');
+  adoptBar.id='adoptStatus';
+  /* 【「目前已存採用」狀態列移除】(使用者指定 2026-09-03)
+     只隱藏、不刪除：updateAdoptStatus() 仍會被 draftTimer 與各處呼叫，
+     buildState() 的存檔流程一個環節都沒少，只是這條橫條不再顯示。 */
+  adoptBar.hidden=true;
+  adoptBar.style.cssText='display:none';
+  var wrapEl=document.querySelector('main.wrap');
+  wrapEl.insertBefore(adoptBar,wrapEl.firstChild);
+  function updateAdoptStatus(){
+    try{
+      var st=buildState();
+      adoptBar.innerHTML='<b style="color:var(--gray-1)">目前已存採用：</b>主題 '+(st.theme.n||st.theme.p)
+        +'｜Header：'+(HD_NS[st.groups.hd]||'未選')
+        +'｜Footer：'+(FT_NS[st.groups.ft]||'未選')
+        +'｜橫幅：'+(HERO_NS[st.groups.hero]||'未選')
+        +'｜功能選單：'+(FM_NS[st.groups.fm]||'未選')
+        +'｜表格：'+(TBL_NS[st.groups.tblsty]||'未選')
+        +'（勾選即存，切頁前請確認這行等於你的選擇）';
+    }catch(e){}
+  }
+  updateAdoptStatus();
+
+  /* ── 已存採用列（固定在畫面底部）────────────────────────────────
+     這一頁是勾選即存、沒有送出動作，所以勾完不知道到底存進去什麼。
+     這一條讀 buildState()——也就是「真的會被存下來的那份」——直接貼出來，
+     不另外維護一份狀態，畫面上寫什麼就等於存了什麼。 */
+  var dock=document.getElementById('adoptDock'),
+      dockTxt=document.getElementById('adoptDockTxt'),
+      dockBtn=document.getElementById('adoptConfirm'),
+      dockCat='';
+  /* 頁籤順序直接讀畫面上的按鈕，不另外寫死一份清單——
+     AI 指令那顆被註解關掉之後，寫死的清單就會把人帶到看不見的頁籤。 */
+  function tabOrder(){
+    return [].slice.call(document.querySelectorAll('.cat-tab')).map(function(t){return t.dataset.cat});
+  }
+  function nextCat(cat){
+    var o=tabOrder(),i=o.indexOf(cat);
+    return (i>=0&&i<o.length-1)?o[i+1]:'';
+  }
+  function tabName(cat){
+    var t=document.querySelector('.cat-tab[data-cat="'+cat+'"]');
+    return t?t.textContent.trim():'';
+  }
+  /* 是不是從匯入頁引導過來的：只有這種情況最後才要把人送回匯入頁。
+     從視覺套版列表自己進來挑風格的，終點是拿到規範檔，不該被帶去匯入頁。 */
+  function fromImport(){
+    try{return sessionStorage.getItem('hanlin-import-live')==='1'
+      &&!!localStorage.getItem('hanlin-import-html')}catch(e){return false}
+  }
+  function updateDock(){
+    if(!dock)return;
+    var nx=nextCat(dockCat),imp=fromImport(),
+        ico='<span class="material-symbols-rounded" style="font-size:18px">';
+    dockBtn.innerHTML=nx
+      ? ico+'arrow_forward</span>確認採用，下一步：'+tabName(nx)
+      : (imp? ico+'check</span>確認採用，回匯入頁'
+            : ico+'download</span>確認採用，下載規範檔');
+    dockTxt.innerHTML=nx
+      ? '<span style="color:#5C6A78">這一頁勾好之後按「確認採用」，會存起來並帶你到下一個頁籤。</span>'
+      : (imp? '<span style="color:#5C6A78">最後一步。按「確認採用」存起來，並回到匯入頁套用。</span>'
+            : '<span style="color:#5C6A78">最後一步。按「確認採用」存起來，並下載這一組的規範檔。</span>');
+  }
+  function updateDockVisible(cat){
+    if(!dock)return;
+    /* 落地頁沒有任何勾選項目，出現這一條只會擋住畫面 */
+    var show=(cat!=='start');
+    dockCat=cat;
+    dock.hidden=!show;
+    document.body.classList.toggle('has-dock',show);
+    if(show)updateDock();
+  }
+  if(dockBtn)dockBtn.addEventListener('click',function(){
+    saveTheme();
+    var nx=nextCat(dockCat);
+    /* 還有下一個頁籤就往下走；走到最後一頁才用既有的 saveAndPreview
+       （存檔、發通行證、去匯入頁），不另外寫一套。 */
+    if(nx){setCat(nx);return}
+    /* 從匯入頁來的才回匯入頁（既有的 saveAndPreview：存檔、發通行證、跳頁）；
+       其餘情況終點就是拿到檔案，直接打包下載。 */
+    if(fromImport()){saveAndPreview();return}
+    downloadKitZip(dockBtn);
+  });
+
+  /* setCat() 定義在前面、這一段在後面，用 window 掛勾接起來，
+     不把 dock 的程式往上搬（那一段是頁籤切換，跟採用狀態無關）。 */
+  window.__HL_updateDock=updateDock;
+  window.__HL_updateDockVisible=updateDockVisible;
+  updateDockVisible(document.querySelector('.cat-tab.on')?
+    document.querySelector('.cat-tab.on').dataset.cat:'start');
+
+  /* 離頁前強制寫入草稿，避免 300ms 延遲來不及存 */
+  window.addEventListener('pagehide',function(){try{localStorage.setItem('hanlin-brand-theme',JSON.stringify(buildState()))}catch(e){}});
+  /* 確認採用後導到「匯入」頁，把這一組套到使用者自己的頁面上（使用者指定）。
+     曾經導向 preview.html 與 templates.html，都改掉了：
+     從套版詳細出來的下一步是「看它套在我的頁面上長怎樣」，那是匯入頁。
+     一定要帶通行證：匯入頁對沒有通行證的載入會清掉上次匯入的檔案。
+     回列表改走頂部導覽列的「視覺套版」。 */
+  function saveAndPreview(){
+    saveTheme();
+    try{localStorage.setItem('hanlin-show-result','1')}catch(e){}
+    var to='import.html';
+    try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:to,t:Date.now()}))}catch(e){}
+    location.href=to;
+  }
+  document.getElementById('goPreview').addEventListener('click',saveAndPreview);
+  document.getElementById('goPreviewTop').addEventListener('click',saveAndPreview);
+  /* 所有下載規範檔的按鈕都只是觸發同一顆原本的匯出鈕，產生邏輯只有一份。
+     兩種拿法的差別不在產生器，而在「你有沒有先去品牌識別把版面設定挑好」——
+     挑過的設定本來就已經存進採用設定，匯出時自然會帶進去。 */
+  (function(){
+    /* 三顆都叫「下載規範檔」，一律走封包——同名按鈕做不一樣的事最難查 */
+    ['exportSkillMdTop','dlDirect','dlWithOpts'].forEach(function(id){
+      var b=document.getElementById(id);
+      if(b)b.addEventListener('click',function(){downloadKitZip(b)});
+    });
+  })();
+  /* 「先去挑樣式」：切到品牌識別頁籤再捲到採用設定，不然點了會停在沒顯示的區塊上 */
+  (function(){
+    document.querySelectorAll('[data-gocat]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        e.preventDefault();
+        setCat(a.getAttribute('data-gocat'));
+        var t=document.querySelector(a.getAttribute('href'));
+        if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    });
+  })();
+  /* 規範封包的產生邏輯已移到 skillpack.js，AI 指令頁共用同一份。
+     這裡只負責把「目前畫面上的勾選」交給它。 */
+  function downloadKitZip(btn){window.HL_downloadKitZip(btn,saveTheme())}
+  document.getElementById('exportSkillMd').addEventListener('click',function(){
+    var pk=window.HL_buildSkillPack(saveTheme());
+    window.HL_dlBlob(new Blob([pk.md],{type:'text/markdown'}),
+      pk.slug?('SKILL-'+pk.slug+'.md'):'SKILL.md');
+  });
+  document.getElementById('exportTheme').addEventListener('click',function(){
+    var st=saveTheme();
+    var blob=new Blob([JSON.stringify(st,null,2)],{type:'application/json'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='hanlin-theme.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  /* ===== 展示元件互動(讓 user 感受效果) ===== */
+  document.querySelectorAll('.seg,.lab-tags,.pj-tabs').forEach(function(g){
+    g.addEventListener('click',function(e){
+      var t=e.target.closest('span');
+      if(!t||t.parentElement!==g)return;
+      [].forEach.call(g.children,function(x){x.classList.remove('on')});
+      t.classList.add('on');
+    });
+  });
+  document.querySelectorAll('.demo-bar').forEach(function(bar){
+    var chips=bar.querySelectorAll('.chip');
+    if(!chips.length)return;
+    chips.forEach(function(c){c.addEventListener('click',function(){
+      chips.forEach(function(x){x.classList.remove('on')});
+      c.classList.add('on');
+    })});
+  });
+  document.querySelectorAll('.bm-side ul').forEach(function(ul){
+    ul.querySelectorAll('li').forEach(function(li){li.addEventListener('click',function(){
+      ul.querySelectorAll('li').forEach(function(x){x.classList.remove('on')});
+      li.classList.add('on');
+    })});
+  });
+  document.querySelectorAll('.acad-tabs').forEach(function(tabs){
+    tabs.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(e){
+      e.preventDefault();
+      tabs.querySelectorAll('a').forEach(function(x){x.classList.remove('on')});
+      a.classList.add('on');
+    })});
+  });
+  document.querySelectorAll('.pg').forEach(function(pg){
+    pg.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(e){
+      e.preventDefault();
+      if(a.classList.contains('ghost')||isNaN(parseInt(a.textContent,10)))return;
+      pg.querySelectorAll('a').forEach(function(x){x.classList.remove('on')});
+      a.classList.add('on');
+    })});
+  });
+  document.querySelectorAll('.sel-demo').forEach(function(sd){
+    sd.addEventListener('click',function(){sd.classList.toggle('open')});
+  });
+  document.querySelectorAll('.bm-card .acts .material-symbols-rounded:first-child').forEach(function(st){
+    st.addEventListener('click',function(){st.classList.toggle('fav')});
+  });
+  document.querySelectorAll('.tbl input[type=checkbox]').forEach(function(cb){cb.style.cursor='pointer'});
+
+  /* ===== 快速選單：預設 ===== */
+  var QUICK_DEFAULT=window.HL_QUICK_DEFAULT;  /* 預設值的單一真相源在 defaults.js?v=07cba8a599b4 */
+  document.querySelectorAll('.qd').forEach(function(a){a.addEventListener('click',function(e){
+    e.preventDefault();
+    if(localStorage.getItem('hanlin-brand-theme')&&!confirm('將套用「預設」組合，覆蓋你目前的採用設定。確定要繼續嗎？'))return;
+    localStorage.setItem('hanlin-brand-theme',JSON.stringify(QUICK_DEFAULT));
+    localStorage.removeItem('hanlin-import-html');
+    localStorage.removeItem('hanlin-skill-blocks');
+    localStorage.removeItem('hanlin-import-pending');
+    {try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:'preview.html',t:Date.now()}))}catch(e){}location.href='preview.html';}
+  })});
+})();
+</script>
+<!-- 每個 section 上方原本會自己長一條「視覺套版 › 分類 › 章節」麵包屑。
+     頁首已經有「視覺套版 ／ 這一組的名稱」，加上頁籤本身就標示了分類，
+     那一排是第三次講同一件事，依使用者指定移除。 -->
+<div class="toast-mini" id="kitToast" role="status" aria-live="polite"></div>
+<script>
+/* 套版詳細：這一組的色票、形狀、預覽、AI 指令與下載 */
+
+(function(){
+  /* 從往返快取(bfcache)還原時重新載入，讓「採用中」與最新的採用設定同步 */
+  window.addEventListener('pageshow',function(e){if(e.persisted)location.replace(location.href)});
+  var KITS=window.HL_KITS||[];
+  var id=new URLSearchParams(location.search).get('kit')||'';
+  var k=null;
+  for(var i=0;i<KITS.length;i++){if(KITS[i].id===id){k=KITS[i];break}}
+  if(!k)k=KITS[0];
+  if(!k)return;
+
+  var body=document.body;
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function setv(n,v){if(v)body.style.setProperty(n,v);else body.style.removeProperty(n)}
+
+  /* ── 把這一組寫進頁面變數，元件展示與網站預覽就會照它畫 ── */
+  var RD=k.rd||[],SH=k.sh||[];
+  setv('--k-p',k.p);setv('--k-s',k.s);setv('--k-i',k.i);setv('--k-c',k.c);
+  setv('--k-bg',k.bg||'#FFFFFF');setv('--k-ln',k.ln||'#E6E8EC');
+  setv('--k-mu',k.mu||'#8C9099');setv('--k-ink',k.ink||'#3A3D42');
+  setv('--k-rd',RD[0]||'14px');setv('--k-rd-card',RD[1]||'14px');setv('--k-rd-box',RD[2]||'14px');
+  setv('--k-sh',SH[0]||'none');setv('--k-bd',k.bd||'none');
+
+  /* ── 頁首 ── */
+  /* 整頁照這一組畫：中間色、灰階、淡色圖示方塊與所有元件示範都跟著換，
+     不是只有上面那排色票變。這裡只做預覽；採用設定由頁面互動自動存草稿，或按「套入匯入頁」寫入。 */
+  if(window.HL_previewKit)window.HL_previewKit(k);
+
+  document.title='翰林產品版型平台|'+k.n;
+  document.getElementById('crumbName').textContent=k.n;
+  document.getElementById('kName').textContent=k.n;
+  document.getElementById('kEn').textContent=k.en||'';
+  document.getElementById('kDesc').textContent=k.d||'';
+  document.getElementById('kSrc').textContent=k.src||'—';
+
+  /* ── 60-30-10 ── */
+  document.getElementById('ratio').innerHTML=
+    '<i style="background:'+esc(k.bg||'#FFFFFF')+';flex:6;color:'+esc(k.mu||'#8C9099')+'">底色 60%</i>'+
+    '<i style="background:'+esc(k.p)+';flex:3;color:#fff">主色 30%</i>'+
+    '<i style="background:'+esc(k.c)+';flex:1;color:#fff">對比 10%</i>';
+
+  /* ── 色票 ── */
+  var TK=k.tk||[],TKEN=k.tkEn||[];
+  /* 角色與用途：60-30-10 的分工寫在這裡，不然只看得到色塊看不出該用在哪 */
+  var main=[
+    ['主色 Primary',k.p,TK[0],TKEN[0],'30% 主色調（結構）· 主要按鈕、連結與重點區塊'],
+    ['輔色 Secondary',k.s,TK[1],TKEN[1],'30% 輔助色（結構）· hover、深色面板與頁尾'],
+    ['亮色 Accent',k.i,TK[2],TKEN[2],'色塊與標籤底 · 面積可大，但不承載小字'],
+    ['對比色 Contrast',k.c,TK[3],TKEN[3],'10% 對比色（強調）· 只用於 CTA、重要連結與通知標籤'],
+    ['頁面底色 Background',k.bg,'','','60% 主調色 · 頁面底色，建立基調'],
+    ['主要文字 Text',k.ink,'','','文字色 · 與底色對比至少 4.5:1']
+  ];
+  function swHtml(m){
+    var label=m[0],hex=m[1],zh=m[2],token=m[3],use=m[4];
+    if(!hex)return '';
+    /* 色票不再可點（使用者指定）：改用 div，不掛色碼屬性、不顯示複製提示。 */
+    /* token 名稱不顯示（使用者指定）：那是給實作看的，色票這裡只講「這是什麼色、用在哪」。
+       說明文依「·」拆行：原本佔比與用途擠成一長串，全部糊在一起讀不出層次。 */
+    /* 用正則切「·」而不是固定的「空格·空格」：資料裡有「（結構）· 主要按鈕」這種
+       前面沒有空格的寫法，用固定字串切會漏掉，那兩張就整段擠在一起。 */
+    var useLines=String(use||'').split(/\s*·\s*/).map(function(x){return x.trim()})
+                 .filter(function(x){return x});
+    /* 色碼疊在色塊右上角（使用者指定）。色塊顏色從純黑到極淺都有，
+       標籤底色依相對亮度反轉，才不會出現「淺色塊配白標籤」看不見的情形。 */
+    var _h=String(hex).replace('#',''); if(_h.length===3)_h=_h[0]+_h[0]+_h[1]+_h[1]+_h[2]+_h[2];
+    var _v=[0,2,4].map(function(i){var c=parseInt(_h.substr(i,2),16)/255;
+      return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)});
+    var _L=0.2126*_v[0]+0.7152*_v[1]+0.0722*_v[2];
+    var chipCls=_L<0.5?'on-dark':'on-light';
+    return '<div class="sw">'+
+      '<span class="sw-chip '+chipCls+'" style="background:'+esc(hex)+'">'+
+        '<code>'+esc(String(hex).toUpperCase())+'</code>'+
+      '</span>'+
+      '<span class="sw-meta"><b>'+esc(zh?zh+'　'+label:label)+'</b>'+
+      '<i>'+useLines.map(function(x,i){
+          return (i===0?'<em class="sw-role">':'<em>')+esc(x)+'</em>'}).join('')+'</i>'+
+      '</span></div>';
+  }
+  document.getElementById('palette').innerHTML=main.map(swHtml).join('');
+
+  /* 延伸色票：次要文字、分隔線與來源規範裡的其餘 token 都收在這裡。
+     ex 允許兩欄或三欄——第三欄是用途，沒寫就留白。 */
+  var EX=(k.ex||[]).slice();
+  if(k.mu)EX.unshift(['次要文字 muted',k.mu,'次要文字、說明文字']);
+  if(k.ln)EX.unshift(['分隔線 line',k.ln,'細線、停用底、表格分隔']);
+  if(EX.length){
+    document.getElementById('exWrap').hidden=false;
+    document.getElementById('expal').innerHTML=EX.map(function(e){
+      return '<div class="ex">'+
+        '<span class="ex-c" style="background:'+esc(e[1])+'"></span>'+
+        '<span class="ex-m"><code>'+esc(String(e[1]).toUpperCase())+'</code>'+
+        '<b>'+esc(e[0])+'</b><i>'+esc(e[2]||'')+'</i></span></div>';
+    }).join('');
+  }
+
+  /* 提示條：色票的複製互動已依使用者指定移除，
+     這支 say() 仍由 AI 指令的複製鈕使用，不能一起刪。 */
+  var toast=document.getElementById('kitToast'),tt=null;
+  function say(msg){
+    toast.textContent=msg;toast.classList.add('on');
+    clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},1800);
+  }
+
+
+  /* 原本這裡會組出一份完整的「視覺指令」文字，放在 AI 指令節下方的摺疊區供複製。
+     依使用者指定移除該區塊，這段產生器一併移除，不留無作用的死碼。
+     規範內容改由「下載規範檔」產出的 skill.md 提供。 */
+  /* ── 採用：只寫既有的那一個 key，不另外建狀態 ── */
+  function adopt(){
+    var prev={};
+    try{prev=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{}}catch(e){}
+    prev.theme={n:k.n,p:k.p,s:k.s,i:k.i,c:k.c,tk:k.tk,src:k.src,
+                bg:k.bg,ln:k.ln,mu:k.mu,ink:k.ink,ex:k.ex,
+                rd:k.rd,sh:k.sh,bd:k.bd};
+    prev.contrast=k.c;
+    localStorage.setItem('hanlin-brand-theme',JSON.stringify(prev));
+  }
+  function handoff(to){
+    try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:to,t:Date.now()}))}catch(e){}
+    location.href=to;
+  }
+  /* 頁首原本還有三顆：「採用這一組」「套到我的頁面」「套用並回匯入對照」，
+     依使用者指定全部移除。adopt()／handoff() 保留，仍有其他路徑在用。 */
+  /* ── 版面規範：把這一組的形狀數值列成表 ── */
+  (function(){
+    var rows=[
+      ['按鈕／chip／輸入框 圓角',RD[0]||'—'],
+      ['卡片 圓角',RD[1]||'—'],
+      ['大區塊 圓角',RD[2]||'—'],
+      ['一般陰影',SH[0]||'不使用陰影'],
+      ['大陰影',SH[1]||'不使用大陰影'],
+      ['元件邊線',k.bd||'無邊線（層次用色塊與陰影表達）'],
+      ['分隔線',k.ln||'（來源規範未給，沿用頁面原本的線色）'],
+      ['頁面底色',k.bg||'#FFFFFF'],
+      ['主要文字',k.ink||'—'],
+      ['次要文字',k.mu||'（來源規範未給）']
+    ];
+    document.getElementById('layoutTbl').innerHTML=rows.map(function(r){
+      return '<tr><th>'+esc(r[0])+'</th><td>'+esc(r[1])+'</td></tr>'}).join('');
+  })();
+
+  /* ── 套版範本：同一組色版畫出來的一整頁，縮圖點下去開新分頁 ── */
+  (function(){
+    var fr=document.getElementById('demoFrame');
+    if(!fr)return;
+    var url=k.demoFile||('demo.html?kit='+encodeURIComponent(k.id));
+    fr.src=url;
+    document.getElementById('demoLink').href=url;
+    document.getElementById('demoOpen').href=url;
+    document.getElementById('demoName').textContent=k.n+'　範本頁';
+    /* 等比縮到容器寬度：寫死縮放比例，換螢幕寬度就會露出白邊或被切掉 */
+    function fit(){
+      var w=fr.parentNode.clientWidth;
+      if(w)fr.style.transform='scale('+(w/1280)+')';
+    }
+    fit();
+    window.addEventListener('resize',fit);
+
+    /* 「下載範例檔」：不另外做一套套版邏輯，直接把上面這個 iframe 裡
+       已經套好的範本頁存下來——看到什麼就下載什麼。
+       範本頁的效果全部寫在 DOM（documentElement.style、element.style、textContent）上，
+       所以把 <script> 拿掉之後仍然是同一個畫面，也不需要 kits.js。
+       三個相對路徑的 SVG 轉成 data URI，下載後單獨一個檔也開得起來。 */
+    var dl=document.getElementById('dlSample');
+    if(dl)dl.addEventListener('click',function(){
+      var doc=null;
+      try{doc=fr.contentDocument}catch(_){}
+      if(!doc||!doc.body||!doc.body.children.length){
+        alert('範本頁還在載入，請稍候一下再按一次。');return;
+      }
+      var lab=dl.innerHTML;
+      dl.disabled=true;
+      dl.innerHTML='<span class="material-symbols-rounded" style="font-size:18px">hourglass_top</span>產生中…';
+      var root=doc.documentElement.cloneNode(true);
+      root.querySelectorAll('script').forEach(function(x){x.remove()});
+      /* 相對路徑的圖檔逐一轉成 data URI；轉不成就原樣留著，不讓一張圖擋掉整份下載 */
+      var imgs=[].slice.call(root.querySelectorAll('img[src],link[rel~="icon"][href]'));
+      Promise.all(imgs.map(function(el){
+        var at=el.tagName==='IMG'?'src':'href',v=el.getAttribute(at)||'';
+        if(/^(https?:|data:|#)/.test(v))return Promise.resolve();
+        return fetch(v).then(function(r){return r.ok?r.blob():null}).then(function(b){
+          if(!b)return;
+          return new Promise(function(res){
+            var fnr=new FileReader();
+            fnr.onload=function(){el.setAttribute(at,fnr.result);res()};
+            fnr.onerror=function(){res()};
+            fnr.readAsDataURL(b);
+          });
+        }).catch(function(){});
+      })).then(function(){
+        var html='<!DOCTYPE html>\n'+root.outerHTML;
+        var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+        var a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download='hanlin-sample-'+String(k.id||'kit').replace(/[^\w-]+/g,'-')+'.html';
+        document.body.appendChild(a);a.click();
+        setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+      }).catch(function(){
+        alert('產生範例檔時發生問題，請重新整理後再試一次。');
+      }).then(function(){
+        dl.disabled=false;dl.innerHTML=lab;
+      });
+    });
+  })();
+
+  /* ── 字體排版：照這一組的規格實際排一次 ── */
+  (function(){
+    var box=document.getElementById('typoBox');
+    if(!box)return;
+    var TY=k.ty||[],fam=(k.tyFam==='serif')?'"Noto Serif TC",serif'
+      :(k.tyFam==='inter')?'"Inter","Noto Sans TC",sans-serif':'"Noto Sans TC",sans-serif';
+    function px(spec){var m=/([0-9.]+)px/.exec(spec||'');return m?m[1]+'px':'16px'}
+    function wt(spec){var m=/\/\s*([0-9]{3})\s*\//.exec(spec||'');return m?m[1]:'400'}
+    var rows=[
+      ['標題 Heading',TY[0]||'—',fam,px(TY[0]),wt(TY[0]),'翰林 · 相信學習'],
+      ['內文 Body',TY[1]||'—','"Noto Sans TC",sans-serif',px(TY[1]),wt(TY[1]),
+       '這一組的內文級距與行高，長文閱讀時的舒適度就是靠這兩個值。'],
+      ['按鈕 Button',TY[2]||'—','"Noto Sans TC",sans-serif',px(TY[2]),wt(TY[2]),'立即開始']
+    ];
+    box.innerHTML=rows.map(function(r){
+      return '<div class="typo-row"><span class="k"><b>'+esc(r[0])+'</b>'+esc(r[1])+'</span>'+
+        '<span class="v" style="font-family:'+r[2]+';font-size:'+r[3]+';font-weight:'+r[4]+
+        ';line-height:1.5">'+esc(r[5])+'</span></div>';
+    }).join('');
+  })();
+
+  /* ── 適用情境與避免事項 ── */
+  (function(){
+    var a=document.getElementById('kFit'),b=document.getElementById('kAvoid');
+    if(a)a.textContent=(k.fit||'—')+(k.kw&&k.kw.length?('（'+k.kw.join('、')+'）'):'');
+    if(b)b.textContent=k.avoid||'—';
+  })();
+
+})();
+</script>
+</body>
+</html>

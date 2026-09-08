@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翰林產品版型平台|基本規範</title>
+<link rel="icon" type="image/svg+xml" href="logo-mark-only.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=202609061100">
+<style>
+/* ===== 基本規範（獨立頁） =====
+   不挑視覺套版、不交給 AI 的那條路。版面沿用站上的 .pin／.sec 尺度，
+   樣式集中在這裡，不動 style.css。 */
+.pin{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+.sec{padding:30px 0 60px}
+/* 標題區不再限寬，內文一路延伸到 .pin 的右緣 */
+.sec-hd{margin-bottom:36px}
+.sec-hd h2{font-size:30px;font-weight:700;color:var(--gray-1);letter-spacing:-.01em;margin:12px 0 10px}
+.sec-hd p{font-size:15px;color:#5C6A78;line-height:1.95}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;
+  letter-spacing:.18em;color:var(--brand);text-transform:uppercase}
+
+/* 實機預覽：直接把範例以 1280 寬載進來再等比縮，
+   跟點進去看到的完全一致，不必另外維護截圖。做法沿用套版列表的縮圖。 */
+.live{border:1px solid var(--gray-3);border-radius:var(--r-lg);background:var(--card);
+  box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:34px}
+.live-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 16px;border-bottom:1px solid var(--gray-3);background:#FBFCFE}
+.live-tabs{display:inline-flex;gap:6px}
+.live-tab{border:0;background:transparent;font-family:inherit;font-size:13px;
+  color:var(--gray-2);padding:7px 15px;border-radius:999px;cursor:pointer;
+  letter-spacing:.04em;transition:.18s}
+.live-tab:hover{background:var(--blue-50);color:var(--brand)}
+.live-tab[aria-selected="true"]{background:var(--brand);color:#fff}
+.live-open{margin-left:auto}
+.live-shot{position:relative;height:520px;overflow:hidden;background:#fff}
+.live-shot iframe{width:1280px;border:0;transform-origin:0 0;display:block;pointer-events:none}
+.live-hint{padding:9px 16px;border-top:1px solid var(--gray-3);background:#FBFCFE;
+  font-size:11.5px;color:var(--gray-2);letter-spacing:.04em}
+@media (max-width:640px){ .live-shot{height:380px} }
+
+/* 下載卡 */
+
+/* 色票：外觀沿用套版詳細頁的 .sw，兩邊看起來才是同一套系統。
+   只有色塊＋色碼看不出該用在哪，用途與對比度才是規範的重點。 */
+/* 固定寬度、靠左排，不用 1fr 拉伸——auto-fit + 1fr 會把剩餘空間平均分掉，
+   卡片少的那一排就會被撐得很寬，改下限完全沒有效果。 */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,184px);gap:12px;justify-content:start}
+@media (max-width:520px){ .sw-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))} }
+.sw{background:#fff;border:1px solid #E1E8F0;border-radius:10px;overflow:hidden;
+  text-align:left;padding:0;font-family:inherit;width:100%;
+  display:flex;flex-direction:column;align-items:stretch}
+.sw-chip{display:block;height:88px;flex:none;border-bottom:1px solid rgba(0,0,0,.06)}
+.sw-meta{display:block;padding:12px 14px 14px;flex:1}
+.sw-meta b{display:block;font-size:13.5px;font-weight:500;color:var(--gray-1);letter-spacing:.02em}
+.sw-meta code{display:inline-block;margin:5px 0 7px;font-size:12px;color:var(--brand-dark);
+  background:var(--blue-50);padding:2px 7px;border-radius:4px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.02em}
+.sw-meta i{display:block;font-style:normal;font-size:11.5px;color:var(--gray-2);line-height:1.65}
+.sw-cr{display:inline-block;margin-top:8px;font-size:11px;padding:2px 8px;border-radius:4px;letter-spacing:.02em}
+.sw-cr.ok{color:#14653C;background:#E8F3EC}
+.sw-cr.no{color:#8C2018;background:#FDF1F0}
+/* 字級：只列數字看不出級距差多少，樣本一律用規範的 Kumbh Sans 照真尺寸渲染。 */
+.type-row{display:grid;grid-template-columns:1fr 178px;gap:16px;align-items:baseline;
+  padding:11px 0;border-bottom:1px solid var(--gray-3)}
+.type-row:last-child{border-bottom:0}
+.type-sample{font-family:'Kumbh Sans','Noto Sans TC',sans-serif;color:var(--gray-1);
+  min-width:0;overflow-wrap:anywhere}
+/* 說明欄只是註記，壓到最小可讀，讓真正要看的字級樣本佔畫面 */
+.type-meta{font-size:11px;color:var(--gray-2);line-height:1.6;padding-top:3px}
+.type-meta code{display:inline-block;font-size:10.5px;color:var(--brand-dark);background:var(--blue-50);
+  padding:1px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.type-meta b{display:block;color:var(--gray-1);font-size:11.5px;font-weight:700;margin:3px 0 1px}
+@media (max-width:640px){ .type-row{grid-template-columns:1fr;gap:6px} }
+.sub-hd{font-size:15px;font-weight:700;color:var(--gray-1);letter-spacing:.04em;margin:34px 0 6px}
+.sub-note{font-size:12.5px;color:var(--gray-2);margin-bottom:14px;max-width:760px;line-height:1.85}
+
+/* 兩條路的對照 */
+.path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px}
+.path{
+  border:1px solid var(--gray-3);border-radius:var(--r-lg);background:var(--card);
+  padding:24px 26px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;
+}
+.path h3{font-size:16px;font-weight:700;color:var(--gray-1);letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.path h3 .material-symbols-rounded{color:var(--brand);font-size:21px}
+.path p{font-size:13.5px;color:var(--gray-2);line-height:1.85}
+.path .who{font-size:12px;color:var(--brand);font-weight:500;letter-spacing:.06em}
+.path .btn{align-self:flex-start;margin-top:auto}
+
+
+@media (max-width:640px){
+  .path{padding:22px 20px}
+  .sec-hd h2{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="templates.html">視覺套版</a><a href="basic.html" class="on">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">design_services</span>
+    <h1>基本規範<span class="sub">Basic Guideline</span></h1>
+    <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
+      <a class="btn primary" href="hanlin-web-starter.zip" download style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載範例</a>
+    </span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════ 開場 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Basic Starter</span>
+      <h2>基本 Guideline 套版範例</h2>
+      <p>
+        翰林基本規範的「現成起始範例」在這裡！裡面已經幫你準備好所有的設計 Token、
+        元件樣式、品牌 Logo 與頁籤 Icon。零相依、免建置，只要解壓縮，就能立刻開工！
+      </p>
+    </div>
+
+    <div class="live">
+      <div class="live-bar">
+        <div class="live-tabs" role="tablist" aria-label="預覽哪一頁">
+          <button class="live-tab" role="tab" type="button" aria-selected="true"
+                  data-src="hanlin-web-starter/index.html">示範頁</button>
+          <button class="live-tab" role="tab" type="button" aria-selected="false"
+                  data-src="hanlin-web-starter/styleguide.html">視覺樣本</button>
+        </div>
+        <a class="btn soft live-open" id="liveOpen" href="hanlin-web-starter/index.html"
+           target="_blank" rel="noopener" style="font-size:12.5px;padding:7px 15px;border-radius:999px"><span class="material-symbols-rounded" style="font-size:16px">open_in_new</span>開新分頁</a>
+      </div>
+      <div class="live-shot">
+        <iframe id="liveFrame" src="hanlin-web-starter/index.html" title="翰林 Web 基本範例 預覽" loading="lazy"></iframe>
+      </div>
+      <p class="live-hint">這是實機畫面，不是截圖。預覽框內不接受點擊，要操作請開新分頁。</p>
+    </div>
+
+   </div>
+  </section>
+
+  <!-- ══════ 色票 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Colors</span>
+      <h2>色彩系統</h2>
+      <p>取自 <code>STYLEGUIDE.md</code> §2.1，就是 <code>tokens.css</code> 裡的值。
+         對比度是實際計算的，不是抄文件的。</p>
+    </div>
+
+    <h3 class="sub-hd">主色 PRIMARY</h3>
+    <p class="sub-note">主要按鈕、連結、焦點框。hover 與 active 是同一色系往下壓兩階。</p>
+    <div class="sw-grid">
+        <div class="sw"><span class="sw-chip" style="background:#064ea4"></span><span class="sw-meta"><b>主色 surface.strong</b><code>#064EA4</code><i>主要按鈕、連結、焦點框</i><span class="sw-cr ok">白字 7.97:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#05407f"></span><span class="sw-meta"><b>hover 態</b><code>#05407F</code><i>主要按鈕滑過</i><span class="sw-cr ok">白字 10.26:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#03305f"></span><span class="sw-meta"><b>active 態</b><code>#03305F</code><i>主要按鈕按下</i><span class="sw-cr ok">白字 13.19:1</span></span></div>
+    </div>
+
+    <h3 class="sub-hd">中性色 NEUTRAL</h3>
+    <p class="sub-note">正文、標題、頁尾底色與分隔。白底不得用淺藍灰承載正文。</p>
+    <div class="sw-grid">
+        <div class="sw"><span class="sw-chip" style="background:#1e3d60"></span><span class="sw-meta"><b>標題 text.secondary</b><code>#1E3D60</code><i>標題、頁尾底色</i><span class="sw-cr ok">白底 11.10:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#62778f"></span><span class="sw-meta"><b>正文 text.primary</b><code>#62778F</code><i>內文預設色</i><span class="sw-cr ok">白底 4.61:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#becad7"></span><span class="sw-meta"><b>淺藍灰 text.tertiary</b><code>#BECAD7</code><i>深色底文字、分隔</i><span class="sw-cr no">白底 1.66:1 禁用</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#eef2f7"></span><span class="sw-meta"><b>停用底 disabled.bg</b><code>#EEF2F7</code><i>停用元件底色</i></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#f4f7fb"></span><span class="sw-meta"><b>區塊底 page.bg.subtle</b><code>#F4F7FB</code><i>Hero 與區塊底色</i></span></div>
+    </div>
+
+    <h3 class="sub-hd">語意色 SEMANTIC</h3>
+    <div class="sw-grid">
+        <div class="sw"><span class="sw-chip" style="background:#b3261e"></span><span class="sw-meta"><b>錯誤 danger</b><code>#B3261E</code><i>錯誤訊息與邊框</i><span class="sw-cr ok">於 #FDF1F0 上 5.92:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#146c43"></span><span class="sw-meta"><b>成功 success</b><code>#146C43</code><i>成功訊息</i><span class="sw-cr ok">白底 6.45:1</span></span></div>
+    </div>
+
+    <h3 class="sub-hd">裝飾色 DECORATIVE</h3>
+    <p class="sub-note">
+      限制最嚴、也最常被誤用的兩色。<b>只能用於 Hero 與插圖形狀</b>——不得作為文字色、狀態色，
+      也不得作為承載文字的底色。徽章、標籤、色塊一律白底配藍字。
+    </p>
+    <div class="sw-grid">
+        <div class="sw"><span class="sw-chip" style="background:#f5d35b"></span><span class="sw-meta"><b>裝飾黃 decor.sun</b><code>#F5D35B</code><i>僅限裝飾形狀</i><span class="sw-cr no">白底 1.46:1 不承載文字</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#ef9d78"></span><span class="sw-meta"><b>裝飾暖橘 decor.warm</b><code>#EF9D78</code><i>僅限裝飾形狀</i><span class="sw-cr no">白底 2.15:1 不承載文字</span></span></div>
+    </div>
+
+    <h3 class="sub-hd">推導值 DERIVED　<span style="font-weight:400;color:var(--gray-2);font-size:12.5px">規範未定義，非原文</span></h3>
+    <p class="sub-note">這三個 token 在 <code>STYLEGUIDE.md</code> §3 被引用，但 §2.1 的色彩表沒有給值。以下數值是為了能跑而推導的，取得正式值後直接覆蓋 <code>tokens.css</code>。</p>
+    <div class="sw-grid">
+        <div class="sw"><span class="sw-chip" style="background:#becad7"></span><span class="sw-meta"><b>邊框 border</b><code>#BECAD7</code><i>卡片、分隔線</i></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#7690a8"></span><span class="sw-meta"><b>強邊框 border.strong</b><code>#7690A8</code><i>輸入框邊框</i><span class="sw-cr ok">白底 3.32:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#8a9aab"></span><span class="sw-meta"><b>停用字 disabled.fg</b><code>#8A9AAB</code><i>停用元件文字</i><span class="sw-cr ok">於停用底 2.56:1</span></span></div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════ 字級 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Typography</span>
+      <h2>文字大小</h2>
+      <p>取自 <code>STYLEGUIDE.md</code> §2.2，就是 <code>tokens.css</code> 裡的 <code>--font-size-*</code>。
+         下面每一列都是照該級距真實渲染的，不是示意圖。</p>
+    </div>
+
+    <h3 class="sub-hd">字體 FONT</h3>
+    <p class="sub-note">主要字體 <code>Kumbh Sans</code>，堆疊 <code>Kumbh Sans, Noto Sans TC, sans-serif</code>。
+       正文預設 18px／行高 30.006px／字重 400。</p>
+
+    <h3 class="sub-hd">級距 SCALE</h3>
+    <p class="sub-note">Display 三級（56／40／32）是既有尺度的等比延伸，<b>不得再新增中間值</b>。
+       需要別的大小時，往上或往下取最接近的一級，不要自己插一個。</p>
+
+      <div class="type-row">
+        <p class="type-sample" style="font-size:56px;line-height:1.25;font-weight:700">相信學習</p>
+        <p class="type-meta"><code>font.size.display.lg</code><b>Heading 1</b>56px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:40px;line-height:1.25;font-weight:700">相信學習</p>
+        <p class="type-meta"><code>font.size.display.md</code><b>Heading 2</b>40px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:32px;line-height:1.25;font-weight:700">相信學習</p>
+        <p class="type-meta"><code>font.size.display.sm</code><b>Heading 3</b>32px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:24px;line-height:1.25;font-weight:700">相信學習 Hanlin</p>
+        <p class="type-meta"><code>font.size.4xl</code><b>Heading 4</b>24px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:20px;line-height:1.25;font-weight:700">相信學習 Hanlin</p>
+        <p class="type-meta"><code>font.size.3xl</code><b>Heading 5</b>20px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:18px;line-height:1.25;font-weight:700">相信學習 Hanlin</p>
+        <p class="type-meta"><code>font.size.2xl</code><b>Heading 6</b>18px／行高 1.25／字重 700</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:20px;line-height:1.7;font-weight:400">讓每個孩子都能找到自己的學習節奏，把該補的補在對的地方。</p>
+        <p class="type-meta"><code>font.size.3xl</code><b>Paragraph Large</b>20px／行高 1.7／字重 400</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:18px;line-height:30.006px;font-weight:400">讓每個孩子都能找到自己的學習節奏，把該補的補在對的地方。</p>
+        <p class="type-meta"><code>font.size.base</code><b>Paragraph Default</b>18px／行高 30.006px／字重 400</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:15px;line-height:1.7;font-weight:400">讓每個孩子都能找到自己的學習節奏。</p>
+        <p class="type-meta"><code>font.size.md</code><b>Paragraph Small</b>15px／行高 1.7／字重 400</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:16px;line-height:1.5;font-weight:500">相信學習 Hanlin</p>
+        <p class="type-meta"><code>font.size.lg</code><b>導覽、按鈕、卡片說明</b>16px／行高 1.5／字重 500</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:14px;line-height:1.6;font-weight:400">讓每個孩子都能找到自己的學習節奏。</p>
+        <p class="type-meta"><code>font.size.sm</code><b>提示、錯誤、麵包屑</b>14px／行高 1.6／字重 400</p>
+      </div>
+      <div class="type-row">
+        <p class="type-sample" style="font-size:13px;line-height:1.6;font-weight:400">讓每個孩子都能找到自己的學習節奏。</p>
+        <p class="type-meta"><code>font.size.xs</code><b>標籤、日期、學制</b>13px／行高 1.6／字重 400</p>
+      </div>
+   </div>
+  </section>
+
+  <!-- ══════ 兩條路 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Which One</span>
+      <h2>基本規範，還是視覺套版？</h2>
+      <p>兩者不衝突，差別在你要不要挑一個「長相」。</p>
+    </div>
+
+    <div class="path-grid">
+      <div class="path">
+        <span class="who">你在這一頁</span>
+        <h3><span class="material-symbols-rounded">design_services</span>基本規範</h3>
+        <p>只有翰林的基礎視覺語言：藍色主色、既定字級、圓角與間距尺度。不帶任何風格傾向，適合後台、內部工具、資訊密度高的產品頁。</p>
+        <a class="btn soft" href="hanlin-web-starter.zip" download style="border-radius:14px">下載這一份</a>
+      </div>
+      <div class="path">
+        <span class="who">想要有個性的長相</span>
+        <h3><span class="material-symbols-rounded">palette</span>視覺套版</h3>
+        <p>16 組風格，每組取自一份實際的規範文件——清新小森林、漫畫貼紙風、多巴胺潮流等等。挑一組就能把整套視覺方向交給 AI，或直接套到既有頁面。</p>
+        <a class="btn soft" href="templates.html" style="border-radius:14px">瀏覽 16 組套版 →</a>
+      </div>
+    </div>
+   </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  © 2026 翰林教學樞紐 Hanlin Hub · 相信學習<br>
+  <span style="font-size:11.5px;opacity:.75">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</span>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="回到頂端"><span class="material-symbols-rounded">arrow_upward</span></button>
+
+<script>
+(function(){
+  /* 預覽框等比縮放：寫死比例的話，換個螢幕寬度就會露白邊或被切掉 */
+  var frame=document.getElementById('liveFrame');
+  var shot=frame.parentNode;
+  function fit(){
+    var w=shot.clientWidth;
+    if(!w)return;
+    var scale=w/1280;
+    frame.style.transform='scale('+scale+')';
+    frame.style.height=(shot.clientHeight/scale)+'px';   /* 縮放後剛好填滿框高 */
+  }
+  fit();
+  window.addEventListener('resize',fit);
+
+  /* 分頁切換：換 src 之後高度要重算 */
+  var tabs=[].slice.call(document.querySelectorAll('.live-tab'));
+  var open=document.getElementById('liveOpen');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.setAttribute('aria-selected',String(x===t))});
+      frame.src=t.dataset.src;
+      open.href=t.dataset.src;
+      fit();
+    });
+  });
+
+  /* 原本這裡是「點色卡複製色碼」：色票改成不可點（使用者指定），
+     連帶的提示條與剪貼簿邏輯一併移除。 */
+
+  var toTop=document.getElementById('toTop');
+  toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  window.addEventListener('scroll',function(){toTop.classList.toggle('show',window.scrollY>400)},{passive:true});
+})();
+</script>
+
+</body>
+</html>

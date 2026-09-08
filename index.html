@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>翰林產品版型平台</title>
+<link rel="icon" type="image/svg+xml" href="logo-mark-only.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=202609061100">
+<script src="defaults.js?v=07cba8a599b4"></script>
+<script src="kits.js?v=cd67361477e4"></script>
+<style>
+/* ===== 視覺套版列表（進站第一頁） ===== */
+.lead{margin-bottom:var(--block-gap)}
+.lead .eyebrow{font-size:12px;color:var(--gray-2);letter-spacing:.18em;font-weight:400}
+.lead h2{font-size:27px;font-weight:700;color:var(--gray-1);letter-spacing:.04em;margin:6px 0 10px}
+.lead p{font-size:13.5px;color:var(--gray-2);line-height:1.95;max-width:66ch}
+
+/* 分類篩選 */
+/* 兩排篩選：風格說的是長相，網站類型說的是拿來做什麼，可以交叉篩 */
+.filter-rows{display:flex;flex-direction:column;gap:12px;margin-bottom:var(--block-gap)}
+.filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.filter-lab{flex:none;width:62px;font-size:12.5px;color:var(--gray-2);letter-spacing:.08em}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters .f{
+  font-family:inherit;font-size:13px;letter-spacing:.05em;cursor:pointer;
+  border:1px solid #E1E6ED;background:#fff;color:var(--gray-2);
+  border-radius:999px;padding:7px 18px;transition:.15s;
+}
+.filters .f:hover{border-color:var(--brand);color:var(--brand)}
+.filters .f.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.filters .f:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+/* 套版卡片：照 Master 的結構——縮圖在上，資料在下。
+   卡片本身一律白底，風格由「範本頁縮圖」呈現；
+   八張卡片自己染成八種底色反而會蓋掉縮圖，看不出差別的是哪一部分。 */
+.kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.kit{
+  background:#fff;border:1px solid #E1E8F0;border-radius:14px;box-shadow:var(--shadow-sm);
+  overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;
+  transition:transform .15s,box-shadow .15s;
+}
+.kit:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.kit:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+/* 範本頁縮圖：直接把 demo.html 以實際寬度 1280 載進來再等比縮，
+   跟點進去看到的完全一致，不必另外維護一份截圖 */
+.kit-shot{display:block;height:232px;overflow:hidden;border-bottom:1px solid #EDF1F6;background:#fff}
+.kit-shot iframe{width:1280px;height:1000px;border:0;transform-origin:0 0;pointer-events:none;display:block}
+.kit-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:11px;flex:1}
+.kit-name{font-size:19px;font-weight:700;color:var(--gray-1);letter-spacing:.02em;
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.kit-name .cat{font-size:13.5px;font-weight:400;color:var(--gray-2)}
+.kit-name .cat::before{content:"｜";color:#D6DEE7}
+.kit-name .now{margin-left:auto;font-size:11px;color:#fff;background:var(--brand);
+  border-radius:999px;padding:2px 10px;letter-spacing:.05em;display:none}
+.kit.on .kit-name .now{display:inline-block}
+.kit.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--blue-50),var(--shadow-md)}
+.kit-en{font-size:12px;color:#A6AEBB;letter-spacing:.06em;margin-top:-6px;
+  min-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 等高：說明與適用固定行數，關鍵字固定一列，按鈕一律貼在卡片底部。
+   不固定的話八張卡片的按鈕會各自停在不同高度，一排看過去像沒對齊。 */
+.kit-desc{font-size:13.5px;color:var(--gray-2);line-height:1.8;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+  min-height:calc(13.5px * 1.8 * 3)}
+/* 五個色塊：主、輔、底、文字、對比——一眼看出這一組的重量分配 */
+.kit-sw{display:flex;gap:7px}
+.kit-sw i{width:28px;height:28px;border-radius:7px;border:1px solid rgba(0,0,0,.09);display:block}
+/* 28px 不是 26px：標籤實高＝行高 20.125 ＋ padding 3+3 ＋ 框線 1+1 ＝ 28.1px，
+   鎖 26px 會把底部那條邊線切掉（overflow:hidden）。 */
+.kit-kw{display:flex;flex-wrap:wrap;gap:6px;min-height:28px;overflow:hidden;max-height:28px}
+/* 行高定死 20px：11.5px 字用 normal 會算出 20.125px，總高變 28.125px，
+   容器鎖 28px 時底線還是會被切掉 0.1px。20+3+3+1+1＝28，剛好對齊。 */
+.kit-kw span{font-size:11.5px;line-height:20px;color:var(--gray-2);border:1px solid #E1E8F0;
+  border-radius:6px;padding:3px 9px;letter-spacing:.02em;white-space:nowrap}
+/* 網站類型與適用是同一組資訊，之間只留 2px；卡片的 11px 間距是給不同組資訊用的。
+   網站類型固定一行、適用固定兩行，八張卡片的按鈕才會停在同一條水平線。 */
+.kit-use{display:flex;flex-direction:column;gap:2px}
+.kit-type{font-size:12.5px;color:var(--gray-2);line-height:1.7;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kit-type b{color:var(--gray-1);font-weight:500}
+.kit-fit{font-size:12.5px;color:var(--gray-2);line-height:1.7;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  min-height:calc(12.5px * 1.7 * 2)}
+.kit-fit b{color:var(--gray-1);font-weight:500}
+.kit-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:12px}
+/* 兩顆都用藍色（使用者指定），靠深淺分主次，不靠邊線。
+   對比實測：白字 on #005696＝7.58:1、#005696 on #E6F4FB＝6.75:1。
+   不用 --brand #0088D2 當實心底：白字只有 3.85:1，13.5px 達不到 AA。 */
+.kit-btn{font-size:13.5px;letter-spacing:.03em;border-radius:14px;padding:9px 18px;
+  border:0;text-decoration:none;transition:background .15s,color .15s}
+.kit-btn.go{background:#005696;color:#fff}
+.kit-btn.go:hover{background:#03305F}
+.kit-btn.imp{background:#E6F4FB;color:#005696}
+.kit-btn.imp:hover{background:#D6EDF9}
+.kit-empty{font-size:13px;color:var(--gray-2);padding:26px 0}
+
+
+/* 其他入口：不是套版，是流程上的另外三條路。
+   原本的三色卡片樣式綁在 .home-inner 底下，首頁改版後那層不在了，
+   這裡重寫一份：白底卡片配彩色圖示——次要區塊不該跟上面的套版卡片搶顏色。 */
+.ways .sec-hd h2{font-size:24px}
+.ways .start-grid{gap:20px}
+.ways .start-card{
+  background:#fff;border:1px solid #EDF0F4;box-shadow:var(--shadow-sm);
+  border-radius:14px;padding:28px 22px;transition:.15s;
+}
+.ways .start-card:hover{background:#fff;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.ways .start-card .material-symbols-rounded{font-size:34px}
+.ways .start-card.c-blue .material-symbols-rounded{color:#2E90D9}
+.ways .start-card.c-teal .material-symbols-rounded{color:#1EC3A2}
+.ways .start-card.c-orange .material-symbols-rounded{color:#F08A24}
+.ways .start-card b{font-size:15.5px;margin:10px 0 6px}
+.ways .start-card span:not(.material-symbols-rounded){font-size:12.5px;line-height:1.8}
+
+/* ===== Hero：照 Master/index.html 的比例 ===== */
+.hero{background:#fff;border-bottom:1px solid #EDF1F6}
+.hero-in{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.15fr .85fr;
+  gap:56px;align-items:center;padding:76px 24px 80px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;
+  letter-spacing:.16em;color:var(--brand);text-transform:uppercase}
+.hero-txt h1{font-size:44px;font-weight:700;line-height:1.28;letter-spacing:-.02em;
+  color:#16202B;margin:16px 0 18px}
+.hero-txt>p{font-size:16px;color:#3E4C5A;max-width:520px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.hero-note{margin-top:22px;font-size:13px;color:#5C6A78;
+  padding-left:14px;border-left:3px solid #F5D35B;max-width:520px}
+.hero-art{position:relative;height:320px}
+.ha-card{position:absolute;border-radius:14px;border:1px solid #E1E8F0;background:#fff;
+  box-shadow:0 6px 18px rgba(11,44,82,.07)}
+.ha-1{left:0;top:24px;width:60%;height:200px;background:var(--blue-50);border-color:#CFDDEE}
+.ha-2{right:8%;top:0;width:52%;height:170px;border-top:5px solid var(--brand)}
+.ha-3{right:0;bottom:6px;width:46%;height:130px;background:#F5D35B;border-color:#E7C34D}
+.ha-note{position:absolute;left:14%;bottom:10px;background:var(--brand);color:#fff;
+  padding:14px 18px;border-radius:12px;font-size:13px;line-height:1.5;z-index:2}
+.ha-note b{font-size:17px;font-weight:700}
+@media(max-width:900px){
+  .hero-in{grid-template-columns:1fr;gap:36px;padding:52px 24px 56px}
+  .hero-txt h1{font-size:32px}
+  .hero-art{height:240px}
+}
+
+/* 區塊標題：與 Master 的 sec-hd 同比例 */
+.sec-hd{margin-bottom:32px;max-width:760px}
+.sec-hd h2{font-size:28px;font-weight:700;color:var(--gray-1);letter-spacing:.02em;margin:12px 0 10px}
+.sec-hd p{font-size:14.5px;color:var(--gray-2);line-height:1.9}
+
+/* ===== CTA Band：60-30-10 的那 10%，對比色只用在希望被點擊的地方 ===== */
+.cta-band{background:#F5D35B;color:#3A2E00}
+.cta-in{max-width:1160px;margin:0 auto;padding:88px 24px;display:flex;align-items:center;
+  justify-content:space-between;gap:40px;flex-wrap:wrap}
+.cta-eb{display:inline-block;font-size:12px;font-weight:500;letter-spacing:.16em;color:#6E5200}
+.cta-band h2{font-size:30px;font-weight:700;margin:10px 0;color:#3A2E00;letter-spacing:-.01em}
+.cta-band p{font-size:15px;color:#5C4A0A;max-width:560px}
+.cta-act{display:flex;gap:12px;flex-wrap:wrap}
+.cta-act .btn{border-radius:14px;padding:12px 24px;font-size:14px}
+.btn-ink{background:#0B2C52;color:#fff;border:1px solid #0B2C52}
+.btn-ink:hover{background:#06203E;color:#fff}
+.btn-line{background:transparent;color:#3A2E00;border:1px solid #3A2E00}
+.btn-line:hover{background:rgba(255,255,255,.5)}
+@media(max-width:900px){.cta-in{padding:52px 24px}.cta-band h2{font-size:23px}}
+
+/* ===== 文字規範與版面尺度：照 Master/assets/app.css =====
+   站內其他頁維持原本的行高 1.9／字距 .03em；只有首頁改成 Master 那一套，
+   所以全部掛在 body.home 底下，不動共用的 style.css。 */
+body.home{background:#fff;color:#3E4C5A;line-height:1.75;letter-spacing:0}
+body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.4;font-weight:700}
+.home main{flex:1;width:100%}
+.pin{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+/* main 的上下內距照匯入頁（style.css 的 .wrap 是 30px／60px），全站一致 */
+.home .sec{padding:30px 0 60px}
+.home .sec.alt{background:#F6F9FC;border-top:1px solid #EDF1F6;border-bottom:1px solid #EDF1F6}
+.sec-hd{margin-bottom:36px;max-width:720px}
+.sec-hd h2{font-size:30px;letter-spacing:-.01em;margin:12px 0 10px}
+.sec-hd p{font-size:15px;color:#5C6A78}
+.home .kit-grid{gap:20px}
+.home .kit-name{color:var(--c-ink,#16202B)}
+</style>
+</head>
+<body class="home">
+
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">首頁</a><a href="templates.html">視覺套版</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">palette</span>
+    <h1>首頁<span class="sub">Hanlin Visual Kits</span></h1>
+    <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
+      <button class="btn soft" id="goImport" style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>匯入我的頁面</button>
+    </span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-in">
+    <div class="hero-txt">
+      <span class="eyebrow">Hanlin Visual Kits</span>
+      <h1>讓 AI 生成的網頁<br>完美延續翰林 DNA</h1>
+      <p>每一組視覺風格，都已經幫你把顏色、圓角和陰影全部標準化，不需要自己痛苦調色。
+         你只要挑選喜歡的一組，就能直接把視覺方向交給 AI 延伸，或是 1 秒直接套用到現有的網頁上。</p>
+      <div class="hero-cta">
+        <a class="btn primary" href="templates.html" style="border-radius:14px;padding:12px 24px;font-size:14px">瀏覽視覺風格</a>
+        <a class="btn soft" href="import.html" style="border-radius:14px;padding:12px 24px;font-size:14px">直接套用到我的頁面</a>
+      </div>
+      <p class="hero-note">企劃請放心：套版只負責幫網頁「變漂亮」，絕對不會動到你辛苦排好的文字內容、資訊架構與任何產品功能！</p>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="ha-card ha-1"></div>
+      <div class="ha-card ha-2"></div>
+      <div class="ha-card ha-3"></div>
+      <div class="ha-note"><span id="kitCount">—</span> 組<br><b>視覺套版</b></div>
+    </div>
+  </div>
+</section>
+
+<main>
+
+  <section class="sec" id="kits">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Visual Kits</span>
+      <h2>快速選擇視覺套版</h2>
+      <p>先看三組。直接看到配色、形狀特徵、風格名稱與來源規範文件，選定後可看完整細節與 AI 指令。
+         全部 <b id="kitCount2">—</b> 組與分類篩選在視覺套版列表。</p>
+    </div>
+
+    <div class="kit-grid" id="kitGrid"></div>
+    <p class="kit-empty" id="kitEmpty" hidden>這個分類目前沒有套版。</p>
+    <div style="margin-top:28px">
+      <a class="btn soft" href="templates.html" style="border-radius:14px;padding:11px 22px;font-size:14px">
+        查看全部套版與分類篩選 →</a>
+    </div>
+   </div>
+  </section>
+
+
+
+
+
+</main>
+
+<section class="cta-band">
+  <div class="cta-in">
+    <div>
+      <span class="cta-eb">READY?</span>
+      <h2>選好視覺套版，就可以交給 AI 了</h2>
+      <p>下載這一組的資源包與 AI 指令，連同你的企劃一起給 AI；或直接把既有頁面丟進來套。</p>
+    </div>
+    <div class="cta-act">
+      <a class="btn btn-ink" href="templates.html">瀏覽視覺套版</a>
+      <a class="btn btn-line" href="import.html">套到我的頁面</a>
+      <a class="btn btn-line" href="hanlin-web-starter.zip" download>下載基本範例</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  © 2026 翰林教學樞紐 Hanlin Hub · 相信學習<br>
+  <span style="font-size:11.5px;opacity:.75">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</span>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="回到頂端"><span class="material-symbols-rounded">arrow_upward</span></button>
+
+<script>
+(function(){
+  /* ===== 一次性交接旗標 ===== */
+  /* 進任何頁一律清空上一次的暫存旗標；只有「同一次操作的跳頁」帶著一次性通行證才保留，
+     通行證用完即丟，所以重整、直接開網址、換分頁一律是乾淨狀態。
+     使用者自己的採用設定與匯入的檔案不在這裡清，只有他按「清除紀錄」才會清掉。 */
+  var handoff=false;
+  try{
+    var _hp=sessionStorage.getItem('hanlin-handoff');
+    sessionStorage.removeItem('hanlin-handoff');
+    if(_hp){
+      var _h=JSON.parse(_hp),_me=(location.pathname.split('/').pop()||'index.html');
+      handoff=(_h&&_h.to===_me&&(Date.now()-(+_h.t||0))<10000);
+    }
+  }catch(e){handoff=false}
+  if(!handoff){
+    ['hanlin-import-pending','hanlin-settings-saved','hanlin-show-result'].forEach(function(k){localStorage.removeItem(k)});
+  }
+  /* 重新整理／新分頁進來就把匯入流程的資料清掉（共用 defaults.js 的那一份），
+     不然匯入過一次之後，只是想重選風格套版也會一直被步驟列咬著。
+     採用設定 hanlin-brand-theme 不清。 */
+  if(window.HL_freshEntryReset){
+    window.HL_freshEntryReset(handoff);
+  }
+  /* 從往返快取(bfcache)還原時重新載入，讓「採用中」與最新的採用設定同步 */
+  window.addEventListener('pageshow',function(e){if(e.persisted)location.replace(location.href)});
+
+  /* ===== Top 按鈕 ===== */
+  var toTop=document.getElementById('toTop');
+  toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  window.addEventListener('scroll',function(){toTop.classList.toggle('show',window.scrollY>400)});
+
+  /* ===== 套版列表 ===== */
+  var KITS=window.HL_KITS||[];
+  var grid=document.getElementById('kitGrid');
+  var empty=document.getElementById('kitEmpty');
+  /* 目前採用的是哪一組：讀既有的採用設定，不另外存一份狀態 */
+  var nowName='';
+  try{nowName=((JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{}).theme||{}).n||''}catch(e){}
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  /* 深底配白字、淺底配深字——只用來決定色帶上那行小標的顏色 */
+  function lum(hex){
+    var h=String(hex||'').replace('#','');
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    if(!/^[0-9a-f]{6}$/i.test(h))return 1;
+    var c=[0,2,4].map(function(i){
+      var v=parseInt(h.substr(i,2),16)/255;
+      return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);
+    });
+    return .2126*c[0]+.7152*c[1]+.0722*c[2];
+  }
+  function onColor(hex){return lum(hex)<.35?'#fff':'rgba(0,0,0,.62)'}
+
+  function card(k){
+    var sw=[k.p,k.s,k.bg||'#FFFFFF',k.ink||'#3A3D42',k.c];
+    var url='template.html?kit='+encodeURIComponent(k.id);
+    /* 卡片本身不再是連結：底部改成兩顆動作鈕（與視覺套版列表一致）。
+       連結包連結是無效標記，所以外層要從 <a> 換成 <div>。 */
+    return '<div class="kit'+(k.n===nowName?' on':'')+'">'+
+      '<span class="kit-shot">'+
+        '<iframe data-src="'+esc(k.demoFile||('demo.html?kit='+encodeURIComponent(k.id)))+'" '+
+          'title="'+esc(k.n)+' 範本頁縮圖" loading="lazy" tabindex="-1"></iframe>'+
+      '</span>'+
+      '<span class="kit-body">'+
+        '<span class="kit-name">'+esc(k.n)+'<span class="cat">'+esc(k.cat||'其他')+'</span>'+
+          '<span class="now">採用中</span></span>'+
+        '<span class="kit-en">'+esc(k.en||'')+'　來源 '+esc(k.src||'')+'</span>'+
+        '<span class="kit-desc">'+esc(k.d||'')+'</span>'+
+        '<span class="kit-sw">'+sw.map(function(c){
+            return '<i style="background:'+esc(c)+'"></i>'}).join('')+'</span>'+
+        '<span class="kit-kw">'+((k.kw||[]).map(function(x){
+            return '<span>'+esc(x)+'</span>'}).join(''))+'</span>'+
+        '<span class="kit-use">'+
+          '<span class="kit-type"><b>網站類型</b>　'+esc((k.wt||[]).join('、')||'—')+'</span>'+
+          '<span class="kit-fit"><b>適用</b>　'+esc(k.fit||'—')+'</span>'+
+        '</span>'+
+        '<span class="kit-act">'+
+          '<a class="kit-btn go" href="'+url+'" data-act="detail" data-kit="'+esc(k.id)+'">直接套版</a>'+
+          '<a class="kit-btn imp" href="import.html" data-act="import" data-kit="'+esc(k.id)+'">匯入套版</a>'+
+        '</span>'+
+      '</span></div>';
+  }
+
+  /* 縮圖：等比縮到卡片寬度。寫死縮放比例，換個螢幕寬度就會露白邊或被切掉 */
+  function fitShots(){
+    grid.querySelectorAll('.kit-shot iframe').forEach(function(fr){
+      var w=fr.parentNode.clientWidth;
+      if(w)fr.style.transform='scale('+(w/1280)+')';
+    });
+  }
+  function loadShots(){
+    grid.querySelectorAll('.kit-shot iframe').forEach(function(fr){
+      if(!fr.src)fr.src=fr.getAttribute('data-src');
+    });
+    fitShots();
+  }
+  window.addEventListener('resize',fitShots);
+
+  /* 首頁只列前 6 組——三欄兩排，一眼看得完；其餘用下面那顆按鈕帶到列表頁。
+     篩選不放在這裡：只篩得到 6 組會讓人以為套版就這些。 */
+  var HOME_MAX=3;   /* 首頁只放一排（桌機 1160px 容器 ÷ 最小 320px＝3 張） */
+  function render(){
+    var list=KITS.slice(0,HOME_MAX);
+    grid.innerHTML=list.map(card).join('');
+    empty.hidden=list.length>0;
+    loadShots();
+  }
+  render();
+  /* 說明裡的總組數讀資料，不寫死；render() 之後才有元素可寫 */
+  ['kitCount','kitCount2'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.textContent=KITS.length;
+  });
+
+  function go(to){
+    var file=to.split('?')[0];   /* 通行證比對的是檔名，不含查詢字串 */
+    try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:file,t:Date.now()}))}catch(e){}
+    location.href=to;
+  }
+  document.getElementById('goImport').addEventListener('click',function(){go('import.html')});
+  /* 卡片兩顆動作鈕：與視覺套版列表同一套行為，避免兩頁各寫一份而走鐘。
+     「匯入套版」先把這一組寫進採用設定並標記已挑樣式，否則到了匯入頁
+     會依「還沒挑樣式就兩邊一樣」的規則顯示成沒套版，那顆按鈕就沒意義了。 */
+  grid.addEventListener('click',function(e){
+    var a=e.target&&e.target.closest?e.target.closest('a.kit-btn'):null;
+    if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+    e.preventDefault();
+    if(a.getAttribute('data-act')==='import'){
+      var id=a.getAttribute('data-kit'),k=null;
+      for(var i=0;i<KITS.length;i++)if(KITS[i].id===id)k=KITS[i];
+      if(k){
+        var prev={};
+        try{prev=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{}}catch(_){}
+        prev.theme={n:k.n,p:k.p,s:k.s,i:k.i,c:k.c,tk:k.tk,src:k.src,
+                    bg:k.bg,ln:k.ln,mu:k.mu,ink:k.ink,ex:k.ex,rd:k.rd,sh:k.sh,bd:k.bd};
+        prev.contrast=k.c;
+        try{localStorage.setItem('hanlin-brand-theme',JSON.stringify(prev))}catch(_){}
+      }
+      try{sessionStorage.setItem('hanlin-import-styled','1')}catch(_){}
+      go('import.html');
+      return;
+    }
+    go(a.getAttribute('href'));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>翰林產品版型平台|套版詳細</title>
+<link rel="canonical" href="template.html">
+<script src="defaults.js?v=07cba8a599b4"></script>
+<script src="kits.js?v=497e457f2154"></script>
+</head>
+<body>
+<!-- 規範細節的四個分類（色彩系統／品牌識別／介面元件／版面規範）已整併進
+     套版詳細（template.html）。這一頁只留轉址，讓既有連結與書籤不會斷。
+     帶著目前採用的那一組過去；沒有採用過就給第一組。 -->
+<p>規範細節已整併進<a href="template.html">套版詳細</a>，正在為你轉過去…</p>
+<script>
+(function(){
+  var id='';
+  try{id=(window.HL_adoptedKitId&&window.HL_adoptedKitId())||''}catch(e){}
+  if(!id){var ks=window.HL_KITS||[];id=ks.length?ks[0].id:''}
+  location.replace(id?('template.html?kit='+encodeURIComponent(id)):'template.html');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電子的旅程：從發現到晶片的量子革命</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Dopamine palette — 取樣自 2多巴胺潮風.jpg；近黑為輔助色，非底色 */
+    --bg: #FBF5E9;            /* cream 頁面底 */
+    --bg-panel: #FFFFFF;      /* 卡片底 */
+    --bg-panel-alt: #EEECFB;  /* lilac.soft 次級底 */
+    --border: #E6DFD3;
+    --border-soft: #E6DFD3;
+    --text: #171315;          /* ink 近黑：文字、Nav、主要動作 */
+    --muted: #6B645F;
+    --muted-dim: #6B645F;
+    --gold: #5B4FA8;          /* 主強調（可讀文字色）*/
+    --gold-fill: #C5C0F0;     /* 主強調色塊 lilac */
+    --gold-soft: #EEECFB;
+    --cyan: #1E6F50;          /* 次強調（可讀文字色）*/
+    --cyan-fill: #BAE3DF;     /* 次強調色塊 mint */
+    --cyan-soft: #E4F4F2;
+    --danger: #C0392B;
+    --ok: #1E6F50;
+    --yellow: #FBE472;        /* hero 主視覺色塊 */
+    --pink: #F2BBDB;
+    --coral: #FD9D9E;
+    --radius: 22px;
+    --maxw: 880px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans TC','Space Grotesk',sans-serif;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  h1,h2,h3{ font-family:'Space Grotesk','Noto Sans TC',sans-serif; margin:0; letter-spacing:0.01em; }
+  a{ color:inherit; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 1.5rem; }
+
+  /* ---------- progress bar ---------- */
+  .progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg,var(--yellow),var(--pink));
+    z-index:80; transition:width 0.1s linear;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:6rem 1.5rem 4rem;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 12%, #FEF8DC 0%, transparent 60%),
+      var(--yellow);
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  .hl-brand{position:absolute;top:1.6rem;left:1.9rem;z-index:5;display:block;line-height:0}
+  .hl-brand img{height:34px;width:auto;display:block}
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem; letter-spacing:0.28em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:1.4rem;
+  }
+  .hero h1{
+    font-size:clamp(2rem, 5.4vw, 3.6rem);
+    font-weight:700; color:var(--text);
+    max-width:16ch;
+  }
+  .hero h1 em{
+    font-style:normal; color:var(--gold);
+    background:linear-gradient(transparent 62%, var(--pink) 62%, var(--pink) 94%, transparent 94%);
+    -webkit-box-decoration-break:clone; box-decoration-break:clone;
+  }
+  .hero p{
+    margin-top:1.4rem; color:var(--text); max-width:44ch; font-size:1.02rem;
+  }
+  .hero-byline{
+    margin-top:2.2rem; font-size:0.85rem; color:var(--muted);
+    font-family:'JetBrains Mono',monospace; letter-spacing:0.04em;
+  }
+  .hero-stage{
+    position:relative; width:min(92vw, 560px); aspect-ratio: 8/5; margin-top:2.6rem;
+  }
+  .hero-stage svg{ width:100%; height:100%; display:block; }
+  .hero-scroll{
+    position:absolute; bottom:1.6rem; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text);
+    letter-spacing:0.2em; text-transform:uppercase;
+    display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+  }
+  .hero-scroll .stick{ width:2px; height:26px; background:linear-gradient(var(--text), transparent); animation:pulse-y 1.8s ease-in-out infinite; }
+  @keyframes pulse-y{ 0%,100%{opacity:0.3;} 50%{opacity:1;} }
+
+  /* ---------- generic section chrome ---------- */
+  section{ padding:5rem 0; position:relative; }
+  .divider{
+    height:3px; width:100%; border-radius:999px;
+    background:linear-gradient(90deg, var(--yellow), var(--pink), var(--gold-fill), var(--cyan-fill));
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--text); margin-bottom:1rem;
+    display:inline-block; background:var(--yellow); border-radius:999px; padding:0.3rem 1rem;
+  }
+  .section-title{ font-size:clamp(1.5rem,3.4vw,2.1rem); font-weight:700; color:var(--text); max-width:24ch; }
+  .intro-card, .q-card, .chip-card{ box-shadow:0 2px 0 rgba(23,19,21,0.06); }
+  .section-lede{ color:var(--muted); max-width:58ch; margin-top:1rem; font-size:1rem; }
+
+  /* ---------- intro / nobel hook ---------- */
+  .intro-card{
+    margin-top:2.4rem;
+    background:linear-gradient(155deg, #FCEBF4, #FFFFFF);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:2rem 2rem 2.2rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .intro-card::before{
+    content:'';
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 88% -10%, var(--pink), transparent 58%);
+    pointer-events:none;
+  }
+  .intro-medal{
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:var(--muted);
+    display:flex; align-items:center; gap:0.6rem; margin-bottom:1rem;
+  }
+  .intro-medal .dot{ width:9px; height:9px; border-radius:50%; background:var(--coral); }
+  .intro-card p{ margin:0 0 0.9rem; color:var(--text); font-size:0.98rem; }
+  .intro-card p:last-child{ margin-bottom:0; }
+  .intro-card .laureates{ color:var(--gold); }
+
+  /* ---------- timeline ---------- */
+  .timeline{
+    position:relative;
+    margin-top:2.6rem;
+    margin-left:0.4rem;
+    padding-left:1.9rem;
+    border-left:3px solid var(--gold-fill);
+  }
+  .node{ position:relative; padding-bottom:1.1rem; }
+  .node:last-child{ padding-bottom:0; }
+  .node::before{
+    content:'';
+    position:absolute; left:calc(-1.9rem - 6px); top:1.55rem;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--muted-dim);
+    transition:all 0.25s ease;
+  }
+  .node.open::before{
+    border-color:var(--gold); background:var(--gold);
+    box-shadow:0 0 0 5px var(--gold-fill);
+  }
+  .node-head{
+    all:unset; cursor:pointer;
+    display:flex; align-items:baseline; gap:0.9rem;
+    width:100%; padding:0.9rem 0.2rem;
+    border-radius:10px;
+  }
+  .node-head:hover .node-title{ color:var(--text); }
+  .node-head:focus-visible{ outline:2px solid var(--cyan); outline-offset:4px; }
+  .node-year{
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:0.95rem;
+    color:var(--gold); min-width:5.4ch; flex-shrink:0;
+  }
+  .node-title{
+    font-weight:700; color:var(--muted); font-size:1.02rem; flex:1; transition:color 0.2s ease;
+  }
+  .node.open .node-title{ color:var(--text); }
+  .node-chevron{
+    font-family:'JetBrains Mono',monospace; color:var(--muted-dim); font-size:1.1rem;
+    transition:transform 0.25s ease; flex-shrink:0;
+  }
+  .node.open .node-chevron{ transform:rotate(45deg); color:var(--cyan); }
+  .node-body{
+    max-height:0; overflow:hidden; transition:max-height 0.35s ease;
+  }
+  .node-body-inner{
+    padding:1.1rem 1.3rem; margin:0 0 1rem; color:var(--text); font-size:0.95rem;
+    background:var(--bg-panel-alt); border-radius:var(--radius);
+  }
+  .node-body-inner p{ margin:0 0 0.8rem; }
+  .node-body-inner p:last-child{ margin-bottom:0; }
+  .node-formula{
+    font-family:'JetBrains Mono',monospace; color:var(--text); font-size:0.9rem; font-weight:700;
+    background:var(--cyan-fill); border:0;
+    border-radius:12px; padding:0.65rem 0.9rem; display:inline-block; margin:0.3rem 0 0.8rem;
+  }
+  .node-tag{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:0.68rem;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--text);
+    background:var(--yellow); border:0; border-radius:999px; padding:0.24rem 0.7rem;
+    margin-bottom:0.7rem;
+  }
+
+  /* ---------- chip divider ---------- */
+  .chip-divider{ padding:3.5rem 0; }
+  .chip-card{
+    display:flex; align-items:center; gap:1.6rem;
+    border:0; border-radius:var(--radius);
+    padding:1.6rem 1.8rem; background:var(--cyan-fill);
+  }
+  .chip-icon{ flex-shrink:0; width:52px; height:52px; }
+  .chip-card p{ margin:0; color:var(--text); font-size:0.94rem; }
+  .chip-card strong{ color:var(--text); }
+
+  /* ---------- quiz ---------- */
+  .quiz-list{ margin-top:2.4rem; display:flex; flex-direction:column; gap:1.6rem; }
+  .q-card{
+    border:0; border-radius:var(--radius);
+    background:var(--bg-panel); padding:1.7rem 1.8rem;
+  }
+  .q-card:nth-child(4n+1){ background:#FCEBF4; }
+  .q-card:nth-child(4n+2){ background:#E4F4F2; }
+  .q-card:nth-child(4n+3){ background:#FEF8DC; }
+  .q-card:nth-child(4n+4){ background:#EEECFB; }
+  .q-card:nth-child(4n+1) .q-num{ background:var(--coral); color:var(--text); }
+  .q-card:nth-child(4n+2) .q-num{ background:var(--cyan-fill); color:var(--text); }
+  .q-card:nth-child(4n+3) .q-num{ background:var(--yellow); color:var(--text); }
+  .q-card:nth-child(4n+4) .q-num{ background:var(--gold-fill); color:var(--text); }
+  .q-meta{
+    display:flex; align-items:center; gap:0.7rem; margin-bottom:0.9rem;
+  }
+  .q-num{
+    font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--bg);
+    background:var(--gold); border-radius:999px; width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center; font-size:0.82rem; flex-shrink:0;
+  }
+  .q-type{
+    font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .q-prompt{ color:var(--text); font-size:0.98rem; margin-bottom:1.1rem; }
+  .q-options{ display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.1rem; }
+  .opt{
+    display:flex; align-items:center; gap:0.7rem;
+    background:var(--bg-panel); border:1px solid transparent; border-radius:16px;
+    padding:0.65rem 0.9rem; cursor:pointer; font-size:0.92rem; color:var(--text);
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .opt:hover{ border-color:var(--text); }
+  .opt input{ accent-color:var(--gold); flex-shrink:0; }
+  .opt.selected{ border-color:var(--gold); background:var(--gold-soft); color:var(--text); }
+  .opt.correct{ border-color:var(--ok); background:var(--cyan-soft); color:var(--ok); }
+  .opt.incorrect{ border-color:var(--danger); background:#FFE5E5; color:var(--danger); }
+  .q-actions{ display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:0.8rem; letter-spacing:0.03em;
+    background:var(--text); border:1px solid var(--text); color:var(--bg);
+    padding:0.55rem 1.2rem; border-radius:999px; cursor:pointer;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .btn:hover{ background:#2c2528; }
+  .btn:focus-visible{ outline:3px solid var(--text); outline-offset:3px; }
+  .btn.secondary{ background:var(--bg-panel-alt); border-color:var(--bg-panel-alt); color:var(--text); }
+  .btn.secondary:hover{ background:var(--gold-fill); }
+  .q-feedback{ font-size:0.88rem; margin-top:0.9rem; display:none; }
+  .q-feedback.show{ display:block; }
+  .q-feedback.ok{ color:var(--ok); }
+  .q-feedback.bad{ color:var(--danger); }
+  .q-explain{
+    margin-top:0.7rem; padding-top:0.8rem; border-top:1px solid var(--border-soft);
+    color:var(--muted); font-size:0.9rem; display:none;
+  }
+  .q-explain.show{ display:block; }
+  .q-explain b{ color:var(--gold); }
+
+  .reveal-box{
+    max-height:0; overflow:hidden; transition:max-height 0.4s ease;
+    margin-top:0.6rem;
+  }
+  .reveal-box.open{ max-height:600px; }
+  .reveal-inner{
+    color:var(--muted); font-size:0.92rem; border-top:1px solid var(--border-soft);
+    padding-top:0.9rem; margin-top:0.5rem;
+  }
+  .reveal-inner p{ margin:0 0 0.6rem; }
+  .reveal-inner .mono{ color:var(--cyan); font-weight:700; }
+
+  /* ---------- footer ---------- */
+  footer{
+    padding:3.4rem 1.5rem 3rem; border-top:0; margin:2rem auto 1.5rem;
+    max-width:var(--maxw); background:var(--text); color:#D9D2C6;
+    border-radius:var(--radius); font-size:0.85rem; text-align:center;
+  }
+  footer .foot-title{ color:var(--bg); font-family:'JetBrains Mono',monospace; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.5rem; }
+
+  /* ---------- back to top ---------- */
+  .totop{
+    position:fixed; right:1.4rem; bottom:1.4rem; z-index:60;
+    width:42px; height:42px; border-radius:50%;
+    background:var(--text); border:0;
+    color:var(--bg); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; opacity:0; pointer-events:none; transition:opacity 0.25s ease;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .totop.show{ opacity:1; pointer-events:auto; }
+
+  /* electron dot on hero path */
+  .electron{ filter:drop-shadow(0 0 4px #17131533); }
+
+  @media (max-width:560px){
+    .chip-card{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<button class="totop" id="totop" aria-label="回到頂端">↑</button>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <a class="hl-brand" href="#" aria-label="翰林"><img src="../logo-text-blue.svg" alt="翰林"></a>
+  <span class="hero-eyebrow">翰林物理 EXPO ・ 探究科學報</span>
+  <h1>電子的旅程：從一顆<em>看不見的粒子</em>到一整片晶片</h1>
+  <p>1897 年，湯姆森在放電管裡看見了它。128 年後，它的集體行為讓一座巨觀電路展現出量子穿隧——這是電子從發現、被理解、到被「操控」的完整故事。</p>
+
+  <div class="hero-stage" aria-hidden="true">
+    <svg viewBox="0 0 600 360" fill="none">
+      <!-- circuit trace -->
+      <path id="tracePath" d="M 40 300 L 160 300 L 160 200 L 260 200 L 260 100 L 340 100 L 340 220 L 440 220 L 440 60 L 560 60"
+            stroke="#171315" stroke-width="2" fill="none" />
+      <path d="M 40 300 L 160 300 L 160 200 L 260 200 L 260 100 L 340 100 L 340 220 L 440 220 L 440 60 L 560 60"
+            stroke="#5B4FA8" stroke-width="1" fill="none" stroke-dasharray="2 6" />
+      <!-- nodes on trace -->
+      <circle cx="40" cy="300" r="4" fill="#171315"/>
+      <circle cx="160" cy="200" r="4" fill="#171315"/>
+      <circle cx="260" cy="100" r="4" fill="#171315"/>
+      <circle cx="340" cy="220" r="4" fill="#171315"/>
+      <circle cx="440" cy="60" r="4" fill="#171315"/>
+      <circle cx="560" cy="60" r="6" fill="none" stroke="#5B4FA8" stroke-width="3"/>
+      <!-- wafer disc at end -->
+      <circle cx="560" cy="60" r="30" fill="none" stroke="#5B4FA8" stroke-width="1.5"/>
+      <text x="560" y="105" text-anchor="middle" fill="#171315" font-family="JetBrains Mono, monospace" font-size="11">chip</text>
+      <text x="40" y="322" text-anchor="middle" fill="#171315" font-family="JetBrains Mono, monospace" font-size="11">e⁻ 1897</text>
+      <!-- electron traveling -->
+      <circle class="electron" r="7" fill="#C0392B">
+        <animateMotion dur="7s" repeatCount="indefinite" rotate="auto">
+          <mpath href="#tracePath"/>
+        </animateMotion>
+      </circle>
+    </svg>
+  </div>
+
+  <div class="hero-scroll"><span>scroll</span><span class="stick"></span></div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= INTRO / 2025 NOBEL HOOK ================= -->
+<section id="prize">
+  <span class="eyebrow">序章</span>
+  <h2 class="section-title">2025 年，量子力學走出了實驗室的角落</h2>
+  <p class="section-lede">在正式回到 1897 年之前，先看看電子的故事在今天走到了哪裡——這也是這整份報告的起點與終點。</p>
+
+  <div class="intro-card">
+    <div class="intro-medal"><span class="dot"></span>2025 諾貝爾物理獎</div>
+    <p class="laureates">John&nbsp;Clarke、Michel&nbsp;H.&nbsp;Devoret 與 John&nbsp;M.&nbsp;Martinis</p>
+    <p>三人因在超導電路中證明了「巨觀量子力學隧道效應」與「能量量子化」而獲獎。量子現象一般只存在於原子等級的微觀世界，難以被直接觀測；但這項研究利用超導體中電子配對而成的「庫柏對」，讓量子穿隧與能階量子化第一次能在一顆可以用手操作的電路裡被看見、被測量。</p>
+    <p>這不只是一項理論上的肯定，更是量子計算、量子感測與量子資訊技術邁向實用化的重要一步。而要真正讀懂這個成果，得先回到電子被發現的那一刻——1897 年。</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= UNIT 1 TIMELINE ================= -->
+<section id="unit1">
+  <span class="eyebrow">Unit 01</span>
+  <h2 class="section-title">電子看世界：從發現到量子理論奠基</h2>
+  <p class="section-lede">從陰極射線管裡的一道偏折射線，到一條能描述機率的波動方程式——三十年間，電子從「一種射線」變成了「量子世界的基本語言」。點擊年代展開內容。</p>
+
+  <ol class="timeline" id="timeline1"></ol>
+</section>
+
+<!-- ================= CHIP DIVIDER ================= -->
+<section class="chip-divider">
+  <div class="chip-card">
+    <svg class="chip-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+      <rect x="14" y="14" width="24" height="24" rx="5" stroke="#171315" stroke-width="2"/>
+      <rect x="21" y="21" width="10" height="10" rx="3" fill="#F2BBDB" stroke="#171315" stroke-width="1.5"/>
+      <path d="M14 20H6M14 26H6M14 32H6M38 20H46M38 26H46M38 32H46M20 14V6M26 14V6M32 14V6M20 38V46M26 38V46M32 38V46" stroke="#171315" stroke-width="1.5"/>
+    </svg>
+    <p><strong>電子，開始「做工」。</strong>1926 年之後，電子已經是量子力學裡「以機率分布」的基本粒子。但它真正走進每個人的生活，是從 1948 年那顆會放大電流、會開關的小小晶體管開始——理論物理，正式接上了產業鏈。</p>
+  </div>
+</section>
+
+<!-- ================= UNIT 2 TIMELINE ================= -->
+<section id="unit2">
+  <span class="eyebrow">Unit 02</span>
+  <h2 class="section-title">電子從理論走向應用：電晶體與積體電路革命</h2>
+  <p class="section-lede">從貝爾實驗室的第一顆電晶體，到一整片能容納數十億元件的晶圓——電子不再只是被觀察的對象，而是被精確操控、大規模整合的「工程材料」。</p>
+
+  <ol class="timeline" id="timeline2"></ol>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= UNIT 3 QUIZ ================= -->
+<section id="quiz">
+  <span class="eyebrow">Unit 03</span>
+  <h2 class="section-title">概念實戰演練</h2>
+  <p class="section-lede">改編自 114 年度分科測驗題組與課後演練，涵蓋光在介質中的衰減、電子發現史與本篇核心概念。作答後可查看詳解。</p>
+
+  <div class="quiz-list" id="quizList"></div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="foot-title">HANLIN EXPO ・ 探究科學報</div>
+  <p>從電子到晶片：半導體革命與量子未來　｜　師大附中／李柏翰 老師</p>
+  <p style="margin-top:0.4rem;">內容改編自翰林物理探究科學報，僅供課堂學習使用。</p>
+</footer>
+
+<script>
+/* ---------------- data: unit 1 timeline ---------------- */
+const unit1 = [
+  {
+    year:'1897', tag:'發現',
+    title:'湯姆森與電子的發現',
+    body:`<p>英國物理學家 J. J. 湯姆森在陰極射線管實驗中發現，射線會受磁場與電場影響而偏折，這無法用當時「原子不可分割」的理論解釋。他判斷這是一群帶負電、體積極小的粒子，命名為「電子」，並測出電子的荷質比。</p>`,
+    formula:'q/m = 1.76 × 10¹¹ C/kg',
+    extra:'<p>這是人類第一次確認原子內部還有更小的結構，正式拉開近代粒子物理與原子物理的序幕。</p>'
+  },
+  {
+    year:'1909', tag:'測量',
+    title:'密立根與電子電荷的測量',
+    body:`<p>羅伯特·密立根以著名的「油滴實驗」，讓帶電油滴在重力與電場力之間懸浮，透過精密量測與最大公因數分析，求出電子攜帶的最小電荷單位。</p>`,
+    formula:'e = 1.602 × 10⁻¹⁹ C　→　mₑ = 9.11 × 10⁻³¹ kg',
+    extra:'<p>這個電荷值至今仍是基本物理常數，也為湯姆森的電子概念提供了直接的實驗驗證。</p>'
+  },
+  {
+    year:'1911', tag:'超導',
+    title:'昂內斯與超導現象',
+    body:`<p>荷蘭物理學家昂內斯將汞冷卻至 4.2 K（約 −269°C）時，觀察到電阻瞬間降為零——超導現象首次被記錄。這代表電子在極低溫下能以「無阻力」的方式持續運動。</p>`,
+    extra:'<p>當時的經典導電理論完全無法解釋這個現象，直到 1957 年 BCS 理論才從微觀機制上說明其成因。</p>'
+  },
+  {
+    year:'1913–14', tag:'模型',
+    title:'波耳原子模型',
+    body:`<p>尼爾斯·波耳融合普朗克量子假說與拉塞福原子核模型，提出電子並非任意繞行原子核，而是被限制在特定「能階」上的固定軌道。當電子吸收或釋放特定能量的光子，便會在能階間「躍遷」。</p>`,
+    extra:'<p>此模型首次成功解釋了氫原子光譜的離散譜線，是早期量子力學的重要基石。</p>'
+  },
+  {
+    year:'1915', tag:'比熱',
+    title:'愛因斯坦與金屬電子比熱之謎',
+    body:`<p>愛因斯坦試圖解釋一個難題：為何金屬中電子的比熱遠低於經典理論預測？他提出電子在低溫下受限於量子規則，只有靠近費米能階的少數電子才能參與熱運動——這個洞見為日後的費米-狄拉克統計鋪路。</p>`,
+    formula:'Cᵥ = 3R(θE/T)² · e^(θE/T) / (e^(θE/T) − 1)²',
+    extra:'<p>模型在高溫極限與杜隆-珀蒂定律一致，但低溫預測與實驗仍有落差，後由德拜模型修正。</p>'
+  },
+  {
+    year:'1924', tag:'波動性',
+    title:'德布羅意與電子的物質波',
+    body:`<p>法國物理學家德布羅意提出革命性假說：包括電子在內的微觀粒子，同時擁有粒子性與波動性。任何具有動量 p 的粒子，都對應一個波長 λ。</p>`,
+    formula:'λ = h / p',
+    extra:'<p>1927 年戴維森－革末實驗以電子束射向晶體、觀察到繞射圖樣，證實了這個假說。德布羅意於 1929 年獲頒諾貝爾物理獎。</p>'
+  },
+  {
+    year:'1926', tag:'方程式',
+    title:'薛丁格與電子的波動方程式',
+    body:`<p>受物質波理論啟發，薛丁格提出以波動函數 Ψ 描述電子在空間中出現的機率分布，標誌著量子力學正式誕生。電子不再沿明確軌跡運動，而是以機率、疊加與不確定性存在。</p>`,
+    extra:'<p>薛丁格方程成功推導出氫原子電子軌域的形狀與能階，深刻影響了日後的材料科學與半導體理論。</p>'
+  },
+  {
+    year:'1928', tag:'自旋',
+    title:'狄拉克預言電子自旋與反粒子',
+    body:`<p>保羅·狄拉克將相對論與量子力學結合，提出狄拉克方程，自然導出電子具有「自旋」這種內在角動量，並預測每種粒子都存在帶相反電荷的「反粒子」。</p>`,
+    extra:'<p>1932 年，卡爾·安德森在宇宙射線實驗中發現正電子，驗證了狄拉克的理論——電子不再只是個體粒子，而是場中的一種激發態。</p>'
+  },
+];
+
+/* ---------------- data: unit 2 timeline ---------------- */
+const unit2 = [
+  {
+    year:'1948', tag:'元件',
+    title:'電晶體的誕生',
+    body:`<p>貝爾實驗室的蕭克利、巴丁與布拉頓研發出世界第一顆點接觸型電晶體，能以矽或鍺控制電流的放大與開關，體積小、能耗低。1950 年，蕭克利進一步發明穩定性更好的接面型電晶體。</p>`,
+    formula:'β = I_C / I_B（電流增益，常達數十至上百倍）',
+    extra:'<p>此發明標誌電子工業革命的開始，三人於 1956 年共同獲得諾貝爾獎。</p>'
+  },
+  {
+    year:'1957', tag:'理論',
+    title:'BCS 理論與電子的集體行為',
+    body:`<p>巴丁、庫珀與施里弗提出 BCS 理論，說明超導狀態下電子並非各自運動，而是透過晶格振動兩兩配對形成「庫柏對」，得以在晶格中無阻力流動——這正是一種宏觀量子態的展現。</p>`,
+    extra:'<p>這個理論不僅解釋了 1911 年昂內斯發現的超導現象，也為 2025 年諾貝爾獎的巨觀量子穿隧實驗提供了理論根基。</p>'
+  },
+  {
+    year:'1958', tag:'整合',
+    title:'積體電路的誕生',
+    body:`<p>德州儀器的傑克·基爾比展示了世界第一塊積體電路原型，證明電晶體、電阻、電容可以整合在同一塊半導體晶片上。隔年，仙童半導體的羅伯特·諾伊斯發明「平面製程」，讓晶片得以大規模、低成本量產。</p>`,
+    extra:'<p>電子元件從此不再需要大量手工焊接，數以百萬計的電晶體能像一張精密網路般協同運作在單一晶片上。</p>'
+  },
+  {
+    year:'1965', tag:'定律',
+    title:'摩爾定律與半導體產業鏈',
+    body:`<p>戈登·摩爾觀察到：積體電路上可容納的電晶體數量，約每 18 至 24 個月便會增加一倍。這個觀察成為整個產業追求的目標，也促使台積電這類專業晶圓代工廠在 1987 年應運而生。</p>`,
+    extra:'<p>自此，電子不再是實驗室裡的微觀粒子，而是透過 IC 轉化為驅動電腦、行動通訊與人工智慧的核心力量。</p>'
+  },
+  {
+    year:'2025', tag:'回望',
+    title:'從積體電路，回到巨觀量子穿隧',
+    body:`<p>六十七年後，電子的故事繞了回來：Josephson 接點利用庫柏對的量子穿隧，在「宏觀可操作的電路」中重現了原本只存在於原子尺度的量子行為，並構成了超導量子位元的實驗基礎。</p>`,
+    extra:'<p>電子看似微不足道，卻串起了從發現、理解到操控的完整旅程——這正是這份報告想說的故事。</p>'
+  },
+];
+
+function buildTimeline(containerId, data){
+  const ol = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'node';
+    li.innerHTML = `
+      <button class="node-head" aria-expanded="false">
+        <span class="node-year mono">${item.year}</span>
+        <span class="node-title">${item.title}</span>
+        <span class="node-chevron">+</span>
+      </button>
+      <div class="node-body">
+        <div class="node-body-inner">
+          <span class="node-tag">${item.tag}</span>
+          ${item.body}
+          ${item.formula ? `<span class="node-formula">${item.formula}</span>` : ''}
+          ${item.extra || ''}
+        </div>
+      </div>`;
+    const head = li.querySelector('.node-head');
+    const body = li.querySelector('.node-body');
+    head.addEventListener('click', () => {
+      const isOpen = li.classList.toggle('open');
+      head.setAttribute('aria-expanded', isOpen);
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0px';
+    });
+    ol.appendChild(li);
+  });
+}
+buildTimeline('timeline1', unit1);
+buildTimeline('timeline2', unit2);
+
+/* ---------------- quiz data ---------------- */
+const quiz = [
+  {
+    type:'multi',
+    prompt:'當在晶圓與光源間注入純水（浸潤式微影），下列有關光物理量改變的敘述，哪些正確？',
+    options:['波長變短','能量增大','頻率增大','強度增大','傳遞速率變慢'],
+    correct:[0,4],
+    explain:'光進入水中頻率不變，但波速變慢（v = v/n），波長隨之變短（λ = λ₀/n）；能量與強度不因介質折射率改變。'
+  },
+  {
+    type:'single',
+    prompt:'有關在晶圓與光源間注入純水的浸潤式微影做法，下列哪個波長的光源較不適用？',
+    options:['13.5 nm','193 nm','248 nm','365 nm','436 nm'],
+    correct:0,
+    explain:'由水的吸收光譜可知，水對極短波長（如 13.5 nm 的 EUV）吸收係數極高，光幾乎無法穿透，因此不適用浸潤式微影。'
+  },
+  {
+    type:'reveal',
+    prompt:'若光在水中傳遞 10 cm 後，其強度至少仍有起始強度的 0.37 倍，求可能的波長範圍 λ_L 到 λ_H。（I = I₀e^(−αz)，e⁻¹ ≈ 0.37）',
+    solution:`<p>令 e^(−αz) = 0.37，且 z = 0.1 m，因 e⁻¹ ≈ 0.37，故 αz = 1</p>
+      <p class="mono">α = 1 / 0.1 = 10 (m⁻¹)</p>
+      <p>對照水的吸收光譜圖，找出衰減係數 α ≈ 10 m⁻¹ 所對應的波長範圍，可得：</p>
+      <p class="mono">λ_L ≈ 200 nm，λ_H ≈ 900 nm</p>`
+  },
+  {
+    type:'single',
+    prompt:'哪一位科學家透過油滴實驗，精確地測定了電子的電荷？',
+    options:['J. J. 湯姆森','羅伯特·密立根','尼爾斯·波耳','埃爾溫·薛丁格'],
+    correct:1,
+    explain:'密立根於 1909 年設計油滴實驗，利用重力與電場力的平衡，精確求出電子的基本電荷量 e = 1.602×10⁻¹⁹ C。'
+  },
+  {
+    type:'reveal',
+    prompt:'積體電路發明（1958）後，如何間接催生了摩爾定律（1965）？這對台積電這類半導體企業的發展模式有何指導意義？',
+    solution:`<p>IC 使電子元件的微縮與整合成為可能，戈登·摩爾因而觀察到單一晶片上電晶體數量約每 18～24 個月翻倍的趨勢。</p>
+      <p>指導意義：摩爾定律成為整個產業追求的目標，驅動了持續的微縮研發競爭，也促使半導體產業走向專業化分工——例如台積電專注於「專業晶圓代工」，在全球科技鏈中扮演不可或缺的角色。</p>`
+  },
+  {
+    type:'reveal',
+    prompt:'2025 年諾貝爾物理獎表彰了電路中「巨觀量子穿隧效應」的實驗。（1）此實驗利用電子處於何種集體行為狀態來實現？（2）為何該研究是量子力學從「抽象微觀理論」邁向「宏觀實用應用」的關鍵里程碑？',
+    solution:`<p><b>（1）</b>利用超導體中電子形成的庫柏對，所結合成的巨觀量子態。</p>
+      <p><b>（2）</b>該實驗使用 Josephson 接點，證明了原本只在原子層級才能觀察到的量子穿隧與能量量子化，可以在宏觀、可操作的電路中實現，為開發「超導量子位元」提供了實驗基礎，是量子計算實用化的重要突破。</p>`
+  },
+];
+
+function buildQuiz(){
+  const list = document.getElementById('quizList');
+  quiz.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+
+    if(q.type === 'reveal'){
+      card.innerHTML = `
+        <div class="q-meta">
+          <span class="q-num">${qi+1}</span>
+          <span class="q-type">簡答／計算題</span>
+        </div>
+        <div class="q-prompt">${q.prompt}</div>
+        <div class="q-actions">
+          <button class="btn reveal-btn">查看詳解</button>
+        </div>
+        <div class="reveal-box">
+          <div class="reveal-inner">${q.solution}</div>
+        </div>`;
+      const btn = card.querySelector('.reveal-btn');
+      const box = card.querySelector('.reveal-box');
+      btn.addEventListener('click', () => {
+        const open = box.classList.toggle('open');
+        btn.textContent = open ? '收合詳解' : '查看詳解';
+      });
+    } else {
+      const isMulti = q.type === 'multi';
+      const inputType = isMulti ? 'checkbox' : 'radio';
+      const optsHtml = q.options.map((opt,i) => `
+        <label class="opt" data-idx="${i}">
+          <input type="${inputType}" name="q${qi}" value="${i}">
+          <span>${opt}</span>
+        </label>`).join('');
+      card.innerHTML = `
+        <div class="q-meta">
+          <span class="q-num">${qi+1}</span>
+          <span class="q-type">${isMulti ? '多選題' : '單選題'}</span>
+        </div>
+        <div class="q-prompt">${q.prompt}</div>
+        <div class="q-options">${optsHtml}</div>
+        <div class="q-actions">
+          <button class="btn check-btn">確認答案</button>
+          <button class="btn secondary reset-btn">重新作答</button>
+        </div>
+        <div class="q-feedback"></div>
+        <div class="q-explain"></div>`;
+
+      const optionEls = [...card.querySelectorAll('.opt')];
+      optionEls.forEach(el => {
+        el.addEventListener('click', (e) => {
+          if(e.target.tagName !== 'INPUT') el.querySelector('input').checked = !el.querySelector('input').checked && isMulti ? true : el.querySelector('input').checked;
+          if(!isMulti){
+            optionEls.forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+          } else {
+            el.classList.toggle('selected', el.querySelector('input').checked);
+          }
+        });
+      });
+
+      const feedback = card.querySelector('.q-feedback');
+      const explain = card.querySelector('.q-explain');
+      const checkBtn = card.querySelector('.check-btn');
+      const resetBtn = card.querySelector('.reset-btn');
+
+      checkBtn.addEventListener('click', () => {
+        const chosen = optionEls
+          .filter(el => el.querySelector('input').checked)
+          .map(el => parseInt(el.dataset.idx));
+        const correctSet = isMulti ? q.correct : [q.correct];
+
+        if(chosen.length === 0){
+          feedback.textContent = '請先選擇答案。';
+          feedback.className = 'q-feedback show bad';
+          return;
+        }
+
+        const isCorrect = chosen.length === correctSet.length &&
+          chosen.every(v => correctSet.includes(v));
+
+        optionEls.forEach(el => {
+          const idx = parseInt(el.dataset.idx);
+          el.classList.remove('selected');
+          if(correctSet.includes(idx)) el.classList.add('correct');
+          else if(chosen.includes(idx)) el.classList.add('incorrect');
+        });
+
+        feedback.textContent = isCorrect ? '✓ 答對了！' : '✗ 再想想——正確答案已標示為綠色。';
+        feedback.className = 'q-feedback show ' + (isCorrect ? 'ok' : 'bad');
+        explain.innerHTML = `<b>詳解</b>　${q.explain}`;
+        explain.classList.add('show');
+      });
+
+      resetBtn.addEventListener('click', () => {
+        optionEls.forEach(el => {
+          el.classList.remove('selected','correct','incorrect');
+          el.querySelector('input').checked = false;
+        });
+        feedback.classList.remove('show');
+        explain.classList.remove('show');
+      });
+    }
+
+    list.appendChild(card);
+  });
+}
+buildQuiz();
+
+/* ---------------- scroll progress + back to top ---------------- */
+const progressEl = document.getElementById('progress');
+const totopEl = document.getElementById('totop');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  progressEl.style.width = scrolled + '%';
+  totopEl.classList.toggle('show', h.scrollTop > 600);
+}, { passive:true });
+totopEl.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+</script>
+</body>
+</html>

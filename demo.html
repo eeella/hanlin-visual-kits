@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>套版範本</title>
+<link rel="icon" type="image/svg+xml" href="logo-mark-only.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="kits.js?v=cd67361477e4"></script>
+<style>
+/* ===== 套版範本 =====
+   整頁只用這一組色版的值：色彩、圓角、陰影、邊線都從 kits.js 讀進下面這些變數。
+   這一頁不引 style.css——引了就會混進平台自己的藍，看不出套版的效果。
+
+   文字級距照 Master 那一套的視覺層級：44 / 30 / 21 / 16 / 15 / 13，
+   一眼看得出誰大誰小，不是靠一兩 px 的差別去分。 */
+:root{
+  --p:#0088D2;--s:#005696;--i:#40B4E5;--c:#FF9A3C;
+  --bg:#FFFFFF;--ln:#E6E8EC;--mu:#8C9099;--ink:#3A3D42;
+  --rd:14px;--rd-card:14px;--rd-box:14px;--sh:none;--sh-lg:none;--bd:none;
+  --on-p:#fff;--on-c:#fff;--on-i:#3A3D42;--wrap:1160px;
+  --ff-head:"Noto Sans TC","PingFang TC",sans-serif;
+  --ff-body:"Noto Sans TC","PingFang TC",sans-serif;
+  --fs-h1:44px;--fw-h1:700;--fs-body:15px;--lh-body:1.75;--fs-btn:15px;--fw-btn:500;
+  /* 版面骨架：哪一塊用哪個色，由該組的 lay 決定。
+     沒有 lay 的組就沿用「Hero＝主色、頁尾＝輔色、CTA＝對比色」的預設。 */
+  --nav-bg:#FFFFFF;--nav-fg:#3A3D42;--hero-bg:#0088D2;--hero-fg:#fff;
+  --cta-bg:#FF9A3C;--cta-fg:#fff;--ft-bg:#005696;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--ff-body);
+  font-size:var(--fs-body);line-height:var(--lh-body);letter-spacing:.02em;
+}
+img{max-width:100%}
+h1,h2,h3,h4{margin:0;line-height:1.35;font-family:var(--ff-head);font-weight:var(--fw-h1);color:var(--ink)}
+p{margin:0}
+.wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 24px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--ff-body);font-size:var(--fs-btn);font-weight:var(--fw-btn);height:48px;padding:0 26px;
+  border-radius:var(--rd);border:var(--bd);box-shadow:var(--sh);cursor:pointer;text-decoration:none;
+}
+.btn-p{background:var(--p);color:var(--on-p)}
+.btn-c{background:var(--c);color:var(--on-c)}
+.btn-o{background:transparent;color:var(--p);border:1px solid var(--p);box-shadow:none}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase}
+
+/* 頁首 */
+.hd{background:var(--nav-bg);border-bottom:1px solid var(--ln);position:sticky;top:0;z-index:10}
+.hd .in{display:flex;align-items:center;gap:20px;height:72px}
+.hd img{height:40px;width:auto}
+.hd nav{margin-left:auto;display:flex;gap:6px}
+.hd nav a{font-size:15px;color:var(--nav-fg);opacity:.72;text-decoration:none;padding:8px 14px;border-radius:var(--rd)}
+.hd nav a.on{color:var(--on-p);background:var(--p);opacity:1}
+
+/* Hero：主色扛 30% 的那一塊 */
+.hero{background:var(--hero-bg);color:var(--hero-fg)}
+.hero .in{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;padding:84px 24px 88px}
+.hero .eyebrow{color:var(--hero-fg);opacity:.9}
+.hero h1{font-size:var(--fs-h1);line-height:1.28;color:var(--hero-fg);margin:16px 0 18px}
+.hero p{font-size:16px;color:var(--hero-fg);opacity:.92;max-width:520px}
+.hero .acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+/* 數字列：範本頁要看得出資訊密度，光有標題和按鈕撐不出真實感 */
+.stats{display:flex;gap:44px;flex-wrap:wrap;margin-top:34px;padding-top:26px;
+  border-top:1px solid rgba(255,255,255,.28)}
+.stats b{display:block;font-family:var(--ff-head);font-size:30px;line-height:1.2}
+.stats span{font-size:13px;opacity:.85}
+.hero-art{position:relative;height:300px}
+.ha{position:absolute;border-radius:var(--rd-card);border:var(--bd);box-shadow:var(--sh-lg)}
+.ha1{left:0;top:20px;width:60%;height:196px;background:var(--bg)}
+.ha2{right:6%;top:0;width:52%;height:164px;background:var(--i)}
+.ha3{right:0;bottom:0;width:46%;height:126px;background:var(--c)}
+
+/* 區段 */
+.sec{padding:76px 0}
+.sec.alt{background:var(--i)}
+.sec-hd{max-width:720px;margin-bottom:36px}
+.sec-hd h2{font-size:30px;margin:12px 0 10px}
+.sec-hd p{font-size:15px;color:var(--mu)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--bg);border-radius:var(--rd-card);border:var(--bd);box-shadow:var(--sh);padding:28px 26px}
+.card .ic{width:46px;height:46px;border-radius:var(--rd);background:var(--i);display:flex;align-items:center;justify-content:center}
+.card .ic .material-symbols-rounded{font-size:26px;color:var(--on-i)}
+.card h3{font-size:21px;margin:16px 0 8px}
+.card p{font-size:15px;color:var(--mu)}
+.tag{display:inline-block;font-size:13px;padding:5px 14px;border-radius:999px;background:var(--i);color:var(--on-i)}
+
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;background:var(--bg);border-radius:var(--rd-card);overflow:hidden;box-shadow:var(--sh);border:var(--bd)}
+.tbl th{background:var(--p);color:var(--on-p);font-size:14px;font-weight:500;text-align:left;padding:14px 18px;letter-spacing:.04em}
+.tbl td{font-size:15px;padding:14px 18px;border-bottom:1px solid var(--ln)}
+.tbl tr:last-child td{border-bottom:0}
+
+/* CTA：對比色只出現在希望被點擊的地方，面積不超過 10% */
+.cta{background:var(--cta-bg);color:var(--cta-fg)}
+.cta .in{padding:72px 24px;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.cta h2{font-size:30px;color:var(--cta-fg);margin-bottom:8px}
+.cta p{font-size:15px;color:var(--cta-fg);opacity:.88;max-width:560px}
+
+/* 頁尾 */
+.ft{background:var(--ft-bg);color:#fff}
+.ft .in{padding:52px 24px 24px;display:flex;gap:48px;flex-wrap:wrap;justify-content:space-between}
+.ft img{height:44px;width:auto;filter:brightness(0) invert(1)}
+.ft h4{font-size:15px;color:#fff;margin-bottom:10px}
+.ft a{display:block;font-size:14px;color:#fff;opacity:.82;text-decoration:none;padding:3px 0}
+.ft .bar{border-top:1px solid rgba(255,255,255,.22);padding:16px 24px;font-size:13px;opacity:.78}
+
+@media(max-width:900px){
+  .hero .in{grid-template-columns:1fr;gap:36px;padding:56px 24px 60px}
+  .hero h1{font-size:32px}
+  .g3{grid-template-columns:1fr}
+  .hero-art{height:220px}
+}
+</style>
+</head>
+<body>
+
+<header class="hd"><div class="wrap in">
+  <img id="logo" src="logo-text-blue.svg" alt="翰林">
+  <nav><a class="on" href="#">首頁</a><a href="#">課程</a><a href="#">教材</a><a href="#">支援</a></nav>
+</div></header>
+
+<section class="hero"><div class="wrap in">
+  <div>
+    <span class="eyebrow" id="kitEyebrow">VISUAL KIT</span>
+    <h1 id="heroTitle">標題文字</h1>
+    <p>這一頁的每一個顏色、圓角、陰影與邊線都來自同一份規範文件，沒有自行調色。可以直接把這個視覺方向交給 AI。</p>
+    <div class="kws" id="kws" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px"></div>
+    <div class="acts">
+      <a class="btn btn-c" href="#">立即開始</a>
+      <a class="btn btn-o" href="#" id="heroSecond" style="border-color:currentColor;color:inherit">了解更多</a>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="ha ha1"></div><div class="ha ha2"></div><div class="ha ha3"></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec-hd">
+    <span class="eyebrow" style="color:var(--p)">Features</span>
+    <h2>三個主要功能</h2>
+    <p>卡片的圓角、陰影與邊線都照這一組的規範值畫；圖示底色用亮色，文字色依底色深淺自動決定。</p>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ic"><span class="material-symbols-rounded">menu_book</span></div><h3>教材管理</h3><p>集中管理各版本教材，支援批次上架與版本比對。</p></div>
+    <div class="card"><div class="ic"><span class="material-symbols-rounded">groups</span></div><h3>班級經營</h3><p>班級名冊、分組與作業派發，一頁完成。</p></div>
+    <div class="card"><div class="ic"><span class="material-symbols-rounded">insights</span></div><h3>學習分析</h3><p>作答表現與落點分析，找出需要補強的單元。</p></div>
+  </div>
+</div></section>
+
+<section class="sec alt"><div class="wrap">
+  <div class="sec-hd">
+    <span class="eyebrow" id="eb2">Data</span>
+    <h2 id="h2alt">最新動態</h2>
+    <p id="palt">淺色底是這一組的亮色，用來把區段和上一段分開，不必再加邊線。</p>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>項目</th><th>分類</th><th>更新時間</th><th>狀態</th></tr></thead>
+    <tbody>
+
+    </tbody>
+  </table>
+</div></section>
+
+<section class="cta"><div class="wrap in">
+  <div>
+    <h2>這個視覺方向就可以交給 AI 了</h2>
+    <p>下載這一組的規範與 AI 指令，連同你的企劃一起提供，即可產出風格一致的頁面。</p>
+  </div>
+  <a class="btn" id="ctaBtn" href="#">下載這一組規範</a>
+</div></section>
+
+<footer class="ft">
+  <div class="wrap in">
+    <div>
+      <img src="logo-text-band.svg" alt="翰林">
+      <p style="font-size:14px;margin-top:12px;max-width:300px;opacity:.82">相信學習。教材、班級與學習分析，一站完成。</p>
+    </div>
+    <div style="display:flex;gap:48px;flex-wrap:wrap">
+      <div><h4>產品</h4><a href="#">教材管理</a><a href="#">班級經營</a><a href="#">學習分析</a></div>
+      <div><h4>支援</h4><a href="#">使用說明</a><a href="#">常見問題</a><a href="#">聯絡我們</a></div>
+    </div>
+  </div>
+  <div class="wrap"><div class="bar">© 2026 翰林出版事業股份有限公司 數位教育部</div></div>
+</footer>
+
+<script>
+(function(){
+  var KITS=window.HL_KITS||[];
+  var id=new URLSearchParams(location.search).get('kit')||'';
+  var k=null;
+  for(var i=0;i<KITS.length;i++){if(KITS[i].id===id){k=KITS[i];break}}
+  if(!k)k=KITS[0];
+  if(!k)return;
+
+  /* 深底配白字、淺底配深字：底色是規範值不能改，只能決定壓在上面的文字色 */
+  function lum(hex){
+    var h=String(hex||'').replace('#','');
+    if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    if(!/^[0-9a-f]{6}$/i.test(h))return 1;
+    var c=[0,2,4].map(function(n){
+      var v=parseInt(h.substr(n,2),16)/255;
+      return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);
+    });
+    return .2126*c[0]+.7152*c[1]+.0722*c[2];
+  }
+  function on(hex){return lum(hex)<.4?'#FFFFFF':'#1A1A1A'}
+
+  var r=document.documentElement.style,RD=k.rd||[],SH=k.sh||[];
+  function set(n,v){if(v)r.setProperty(n,v)}
+  set('--p',k.p);set('--s',k.s);set('--i',k.i);set('--c',k.c);
+  set('--bg',k.bg||'#FFFFFF');set('--ln',k.ln||'#E6E8EC');
+  set('--mu',k.mu||'#8C9099');set('--ink',k.ink||'#3A3D42');
+  set('--rd',RD[0]);set('--rd-card',RD[1]);set('--rd-box',RD[2]);
+  set('--sh',SH[0]||'none');set('--sh-lg',SH[1]||SH[0]||'none');
+  set('--bd',k.bd||'none');
+  set('--on-p',on(k.p));set('--on-c',on(k.c));set('--on-i',on(k.i));
+
+  document.title='套版範本｜'+k.n;
+  document.getElementById('heroTitle').textContent=k.n+'，一份規範撐起整頁。';
+  document.getElementById('kitEyebrow').textContent=(k.en||'Visual Kit')+'　'+k.n;
+
+  /* 版面骨架：該組有寫 lay 就照它，沒寫就沿用主色 Hero、輔色頁尾、對比色 CTA。
+     多巴胺是最典型的例子——文件寫明 Nav／Footer 才是近黑，Hero 是亮黃、CTA 是粉，
+     一律拿主色當 Hero 底會把整頁做成黑的，跟規範相反。 */
+  var L=k.lay||{};
+  var navBg=L.nav||k.bg||'#FFFFFF', heroBg=L.hero||k.p, ctaBg=L.cta||k.c, ftBg=L.footer||k.s;
+  set('--nav-bg',navBg);set('--nav-fg',L.navFg||on(navBg));
+  set('--hero-bg',heroBg);set('--hero-fg',on(heroBg));
+  set('--cta-bg',ctaBg);set('--cta-fg',on(ctaBg));
+  set('--ft-bg',ftBg);
+
+  /* 頁首標誌：深底才反白 */
+  document.getElementById('logo').style.filter=(lum(navBg)>=.4)?'none':'brightness(0) invert(1)';
+
+  /* Hero 的次要按鈕：線框顏色跟著 Hero 上的文字色走 */
+  var oc=on(heroBg);
+  document.getElementById('heroSecond').style.borderColor=oc;
+  document.getElementById('heroSecond').style.color=oc;
+
+  /* 淺色區段的文字色要跟著亮色底走，不能沿用頁面文字色 */
+  var oi=on(k.i);
+  ['eb2','h2alt','palt'].forEach(function(x){document.getElementById(x).style.color=oi});
+  document.getElementById('palt').style.opacity='.82';
+
+  /* 字體排版也是這一組的一部分：標題字體、字級與字重照規格套，
+     換了字體就不是同一組風格了。 */
+  var TY=k.ty||[];
+  function px(spec,d){var m=/([0-9.]+)px/.exec(spec||'');return m?m[1]+'px':d}
+  function wt(spec,d){var m=/\/\s*([0-9]{3})\s*\//.exec(spec||'');return m?m[1]:d}
+  function lh(spec,d){var m=/\/\s*([0-9.]+)\s*$/.exec(spec||'');return m?m[1]:d}
+  set('--ff-head',(k.tyFam==='serif')?'"Noto Serif TC","Songti TC",serif':'"Noto Sans TC","PingFang TC",sans-serif');
+  set('--fs-h1',px(TY[0],'44px'));set('--fw-h1',wt(TY[0],'700'));
+  set('--fs-body',px(TY[1],'15px'));set('--lh-body',lh(TY[1],'1.75'));
+  set('--fs-btn',px(TY[2],'15px'));set('--fw-btn',wt(TY[2],'500'));
+
+  /* 假資料照這一組的適用情境走：不同風格的範本頁，內容也不該長一樣。
+     文案寫在 kits.js 的 cp 欄位裡，跟色票同一個來源，不散在頁面上。 */
+  var CP=k.cp||{};
+  function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  if(CP.hl)document.getElementById('heroTitle').textContent=CP.hl;
+  document.querySelector('.hero p').textContent=
+    CP.sub||((k.fit?('適用於'+k.fit+'。'):'')+'這一頁的顏色、字體、圓角與陰影都來自同一份規範文件。');
+
+  var stEl=document.getElementById('stats');
+  if(stEl&&CP.st&&CP.st.length){
+    stEl.innerHTML=CP.st.map(function(x){
+      return '<span><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></span>'}).join('');
+  }else if(stEl){stEl.style.display='none'}
+
+  if(CP.f&&CP.f.length){
+    var cards=document.querySelectorAll('.sec .g3 .card');
+    CP.f.forEach(function(x,n){
+      if(!cards[n])return;
+      cards[n].querySelector('h3').textContent=x[0];
+      cards[n].querySelector('p').textContent=x[1];
+    });
+  }
+  var kws=document.getElementById('kws');
+  if(kws&&k.kw&&k.kw.length){
+    kws.innerHTML=k.kw.map(function(x){
+      return '<span style="font-size:12.5px;padding:4px 12px;border-radius:999px;'+
+        'border:1px solid currentColor;opacity:.75">'+x+'</span>';
+    }).join('');
+  }
+
+  /* 表格也是假資料：跟著這一組的情境走，咖啡的範本頁不該出現派卷紀錄 */
+  (function(){
+    var tb=document.querySelector('.tbl tbody');
+    if(!tb)return;
+    var rows=(CP.f||[]),kw=k.kw||[],st=['已完成','進行中','規劃中'];
+    var d=['2026-09-01 10:24','2026-09-02 14:08','2026-09-03 09:15'];
+    tb.innerHTML=rows.map(function(x,n){
+      return '<tr><td>'+esc(x[0])+'</td><td>'+esc(kw[n]||'—')+'</td><td>'+d[n]+
+             '</td><td><span class="tag">'+st[n]+'</span></td></tr>';
+    }).join('');
+  })();
+
+  /* CTA 的按鈕壓在對比色上，用主色實心最穩 */
+  var b=document.getElementById('ctaBtn');
+  b.style.background=k.p;b.style.color=on(k.p);
+  /* 數字列的分隔線跟著 Hero 文字色，淺色 Hero 上白線會看不見 */
+  var st=document.getElementById('stats');
+  if(st)st.style.borderTopColor=(lum(heroBg)>=.4)?'rgba(0,0,0,.15)':'rgba(255,255,255,.28)';
+})();
+</script>
+</body>
+</html>

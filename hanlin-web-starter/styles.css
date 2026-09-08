@@ -1,0 +1,492 @@
+/* ============================================================
+   翰林相信學習 — 元件樣式
+   本檔不得出現任何色碼或一次性尺寸，數值一律引用 tokens.css。
+   對應規範：STYLEGUIDE.md §3
+   ============================================================ */
+
+/* ── 基礎 ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* 本檔多處用 display:flex / grid，會蓋掉 hidden 的預設 display:none。
+   §4 要求收合內容必須移出無障礙樹，所以 hidden 一定要贏。 */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--font-line-height-base);
+  font-weight: var(--font-weight-base);
+  color: var(--color-text-primary);
+  background: var(--color-surface-muted);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--font-line-height-display);
+  text-wrap: balance;
+}
+h1 { font-size: var(--font-size-display-lg); }
+h2 { font-size: var(--font-size-display-md); }
+h3 { font-size: var(--font-size-display-sm); }
+h4 { font-size: var(--font-size-4xl); }
+h5 { font-size: var(--font-size-3xl); }
+h6 { font-size: var(--font-size-2xl); }
+
+p { margin: 0; }
+
+a {
+  color: var(--color-surface-strong);
+  /* 規範 §3.9 原文要求內文連結加底線（text-underline-offset: 3px），
+     此處依指示全站取消底線。要改回只需刪掉這一行。 */
+  text-decoration: none;
+}
+
+img { max-width: 100%; height: auto; }
+
+/* §4：所有可聚焦元素 3px 外框、offset 2px。不得移除。 */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: var(--space-9); top: var(--space-9);
+  z-index: 100; transform: translateY(-200%);
+  padding: var(--space-4) var(--space-9);
+  background: var(--color-action-bg); color: var(--color-action-fg);
+  border-radius: var(--radius-md); text-decoration: none;
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* ── 版面（§2.5）────────────────────────────────────────
+   兄弟元素一律用 flex/grid 的 gap 排版，不得逐一設定 margin。 */
+.container {
+  max-width: var(--layout-max-width);
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+}
+
+.section { padding-block: var(--space-13); }
+.section--subtle { background: var(--color-page-bg-subtle); }
+
+.stack        { display: flex; flex-direction: column; gap: var(--space-9); }
+.stack--tight { gap: var(--space-5); }
+.stack--loose { gap: var(--space-11); }
+.row {
+  display: flex; align-items: center;
+  gap: var(--space-5); flex-wrap: wrap;
+}
+
+/* ── 品牌標誌（§3.11）────────────────────────────────────
+   inline SVG 內嵌，墨色綁定 --logo-ink。
+   標誌已含品牌字樣，旁邊不得再重複品牌文字。 */
+.logo { display: block; }
+.logo svg { display: block; height: 40px; width: auto; }
+.logo svg path { fill: var(--logo-ink); }
+.site-footer .logo svg { height: 44px; }
+
+@media (width <= 640px) {
+  .logo svg { height: 32px; }
+}
+
+/* ── 頁首 ─────────────────────────────────────────────── */
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+.site-header .container {
+  display: flex; align-items: center;
+  gap: var(--space-9); min-height: 80px;
+}
+.site-nav {
+  display: flex; align-items: center; gap: var(--space-2);
+  margin-inline-start: auto; list-style: none; padding: 0;
+}
+.site-nav a {
+  display: inline-flex; align-items: center;
+  min-height: 44px; padding-inline: var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg); text-decoration: none;
+  color: var(--color-text-secondary);
+  transition: background var(--motion-duration-instant) var(--motion-easing);
+}
+.site-nav a:hover { background: var(--color-page-bg-subtle); color: var(--color-action-bg); }
+.site-nav a[aria-current="page"] { background: var(--color-action-bg); color: var(--color-action-fg); }
+
+/* ── 頁尾 ─────────────────────────────────────────────── */
+.site-footer {
+  /* §2.1：text.secondary 亦為頁尾底色；text.tertiary 於其上 6.67:1 */
+  background: var(--color-text-secondary);
+  color: var(--color-text-tertiary);
+  padding-block: var(--space-9);
+  text-align: center;
+  --logo-ink: var(--color-surface-muted);  /* §3.11：深色底覆寫 */
+}
+.site-footer .stack { align-items: center; gap: var(--space-5); }
+.site-footer a { color: var(--color-surface-muted); }
+.site-footer p { font-size: var(--font-size-sm); }
+/* 免責聲明是附註，壓一階字級與不透明度，才不會跟版權行搶讀 */
+.site-footer .footer-note { font-size: var(--font-size-xs); opacity: .75; }
+
+/* ── 3.1 Button ───────────────────────────────────────── */
+.btn {
+  /* 錨點：.btn > .btn__label */
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px; min-width: 44px;          /* 觸控目標 ≥ 44×44 */
+  padding: var(--space-4) var(--space-9);
+  border: 0; border-radius: var(--radius-md);
+  font-family: inherit; font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-action-bg); color: var(--color-action-fg);
+  cursor: pointer; text-decoration: none;
+  transition: background var(--motion-duration-instant) var(--motion-easing),
+              box-shadow var(--motion-duration-instant) var(--motion-easing),
+              transform var(--motion-duration-instant) var(--motion-easing);
+}
+.btn:hover  { background: var(--color-action-bg-hover); box-shadow: var(--shadow-1); }
+.btn:active { background: var(--color-action-bg-active); transform: translateY(1px); }
+
+.btn--secondary {
+  background: var(--color-page-bg-subtle); color: var(--color-action-bg);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+.btn--secondary:hover  { background: var(--color-disabled-bg); }
+.btn--secondary:active { background: var(--color-border); }
+
+.btn--ghost { background: transparent; color: var(--color-action-bg); }
+.btn--ghost:hover  { background: var(--color-page-bg-subtle); box-shadow: none; }
+.btn--ghost:active { background: var(--color-border); }
+
+.btn--sm    { min-height: 44px; padding-inline: var(--space-6); font-size: var(--font-size-sm); }
+.btn--block { display: flex; width: 100%; }
+
+.btn:disabled, .btn[aria-disabled="true"] {
+  background: var(--color-disabled-bg); color: var(--color-disabled-fg);
+  box-shadow: none; pointer-events: none; transform: none;
+}
+
+/* loading：label 以 visibility 保留寬度，版面不得位移 */
+.btn[data-loading="true"] { pointer-events: none; }
+.btn[data-loading="true"] .btn__label { visibility: hidden; }
+.btn[data-loading="true"]::after {
+  content: ""; position: absolute;
+  width: 18px; height: 18px; border-radius: var(--radius-lg);
+  border: 2px solid currentColor; border-top-color: transparent;
+  animation: hl-spin var(--motion-duration-normal) linear infinite;
+}
+@keyframes hl-spin { to { transform: rotate(360deg); } }
+
+/* ── 3.2 Input / Field ────────────────────────────────── */
+/* 錨點：.field > .label + .input + .hint + .error-text */
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.label {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.input {
+  min-height: 48px;
+  padding: var(--space-4) var(--space-9);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font-family: inherit; font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  transition: border-color var(--motion-duration-instant) var(--motion-easing),
+              background var(--motion-duration-instant) var(--motion-easing);
+}
+.input:hover { border-color: var(--color-surface-strong); }
+.input:disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-border);
+  color: var(--color-disabled-fg);
+  cursor: not-allowed;
+}
+.input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+}
+
+.hint { font-size: var(--font-size-sm); color: var(--color-text-primary); }
+
+.error-text {
+  display: flex; align-items: flex-start; gap: var(--space-1);
+  font-size: var(--font-size-sm); color: var(--color-danger);
+}
+.error-text:empty { display: none; }
+
+/* ── 3.3 Chip / 篩選 ──────────────────────────────────── */
+/* 錨點：.chip-group[role="tablist"] > .chip[role="tab"] */
+.chip-group { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.chip {
+  display: inline-flex; align-items: center;
+  min-height: 44px; padding-inline: var(--space-9);
+  border: 0; border-radius: var(--radius-md);
+  font-family: inherit; font-size: var(--font-size-lg);
+  background: var(--color-page-bg-subtle);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--motion-duration-instant) var(--motion-easing);
+}
+.chip:hover  { background: var(--color-border); }
+.chip:active { background: var(--color-border-strong); color: var(--color-action-fg); }
+.chip[aria-selected="true"] { background: var(--color-action-bg); color: var(--color-action-fg); }
+.chip[aria-disabled="true"] {
+  background: var(--color-disabled-bg); color: var(--color-disabled-fg);
+  pointer-events: none;
+}
+
+/* ── 3.5 Accordion ────────────────────────────────────── */
+/* 錨點：.accordion > .accordion__item > (h3 > .accordion__trigger) + .accordion__panel */
+.accordion {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.accordion__item + .accordion__item { border-top: 1px solid var(--color-border); }
+.accordion__item > h3 { margin: 0; font-size: inherit; }
+
+.accordion__trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-9); width: 100%;
+  min-height: 56px; padding: var(--space-5) var(--space-9);
+  border: 0; background: transparent;
+  font-family: inherit; font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  text-align: start; cursor: pointer;
+  transition: background var(--motion-duration-instant) var(--motion-easing);
+}
+.accordion__trigger:hover { background: var(--color-page-bg-subtle); color: var(--color-action-bg); }
+.accordion__trigger:active { background: var(--color-border); }
+.accordion__trigger:focus-visible { outline-offset: calc(var(--focus-ring-offset) * -1.5); }
+.accordion__trigger[aria-expanded="true"] { color: var(--color-action-bg); }
+
+/* 展開狀態同時以圖示形狀與 aria-expanded 表達，不得只用顏色 */
+.accordion__icon { flex: none; position: relative; width: 20px; height: 20px; }
+.accordion__icon::before,
+.accordion__icon::after {
+  content: ""; position: absolute; inset-inline: 0; top: 9px;
+  height: 2px; background: currentColor; border-radius: var(--radius-lg);
+  transition: transform var(--motion-duration-instant) var(--motion-easing);
+}
+.accordion__icon::after { transform: rotate(90deg); }
+[aria-expanded="true"] .accordion__icon::after { transform: rotate(0deg); }
+
+.accordion__panel { padding: 0 var(--space-9) var(--space-9); }
+
+/* ── 3.6 Card ─────────────────────────────────────────── */
+/* 錨點：.card > .card__media + .card__body > (.card__meta + .card__title + .card__excerpt) */
+.card-grid {
+  display: grid;
+  /* §2.5 訂的是 minmax(320px, 1fr)，但視窗 320px 時 320 + 左右內距會溢出。
+     用 min() 夾住下限：寬螢幕維持 320px，窄螢幕自動退成滿寬。 */
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--layout-card-min), 100%), 1fr));
+  gap: var(--space-10);
+}
+
+.card {
+  position: relative;
+  display: flex; flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface-muted);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  transition: transform var(--motion-duration-fast) var(--motion-easing),
+              box-shadow var(--motion-duration-fast) var(--motion-easing);
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-1), var(--shadow-2); }
+.card:has(.card__link:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.card__media {
+  aspect-ratio: 16 / 9;
+  background: var(--color-page-bg-subtle);
+}
+.card__body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-9); }
+
+.card__meta {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: .08em;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+}
+
+.card__title { font-size: var(--font-size-4xl); }
+.card__title,
+.card__excerpt {
+  display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card__title   { -webkit-line-clamp: 3; }   /* 標題最多 3 行 */
+.card__excerpt { -webkit-line-clamp: 2; font-size: var(--font-size-md); line-height: var(--font-line-height-loose); }
+
+/* 整張卡片可點，但只有標題連結進入 Tab 順序 */
+.card__link { color: inherit; text-decoration: none; }
+.card__link::after { content: ""; position: absolute; inset: 0; }
+
+/* 徽章：白底配藍字（7.97:1）。
+   承載文字的元件一律白底，不套裝飾色 —— §2.1 明訂裝飾色只能用於
+   Hero 與插圖形狀，不得作為文字色或狀態色；§3.12 也要求色塊底色一律 #FFFFFF。 */
+.badge {
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-action-bg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ── 3.8 Alert / 空狀態 ───────────────────────────────── */
+.alert {
+  display: flex; gap: var(--space-4);
+  padding: var(--space-6) var(--space-9);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-xs);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-size: var(--font-size-md);
+}
+.alert--success {
+  border-color: var(--color-success);
+  background: var(--color-page-bg-subtle);
+  color: var(--color-success);
+}
+.alert:empty { display: none; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-11);
+  border-radius: var(--radius-sm);
+  background: var(--color-page-bg-subtle);
+}
+
+/* ── 3.9 Rich Text ────────────────────────────────────── */
+.prose { max-width: var(--layout-prose-width); }
+.prose > * + * { margin-top: var(--space-9); }   /* 統一控制，不得逐一設定 margin */
+.prose p { font-size: var(--font-size-base); }
+.prose .lead { font-size: var(--font-size-3xl); line-height: var(--font-line-height-loose); }
+.prose small { font-size: var(--font-size-md); }
+.prose strong { font-weight: var(--font-weight-bold); color: var(--color-text-secondary); }
+
+.prose blockquote {
+  margin: 0;
+  padding: var(--space-6) var(--space-9);
+  border-inline-start: 4px solid var(--color-surface-strong);
+  border-radius: var(--radius-xs);
+  background: var(--color-page-bg-subtle);
+}
+
+.prose ul, .prose ol { padding-inline-start: var(--space-9); }
+.prose li + li { margin-top: var(--space-2); }
+
+.prose figure { margin: 0; }
+.prose figure img { border-radius: var(--radius-xs); }
+.prose figcaption { margin-top: var(--space-2); font-size: var(--font-size-sm); }
+
+.prose pre {
+  padding: var(--space-9);
+  border-radius: var(--radius-xs);
+  background: var(--color-page-bg-subtle);
+  overflow-x: auto;                 /* 頁面本體不得出現水平捲軸 */
+  font-size: var(--font-size-md);
+}
+
+/* ── 3.10 Icons ───────────────────────────────────────── */
+.icon {
+  flex: none; width: 24px; height: 24px;
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.icon--inverse { color: var(--color-surface-muted); }
+
+/* ── 回到頂端 ─────────────────────────────────────────────
+   §3.1：只有圖示的按鈕必須提供 aria-label；觸控目標 ≥ 44×44px。
+   捲動未達門檻時用 hidden 收起，不留在 Tab 順序裡。 */
+.to-top {
+  position: fixed;
+  inset-block-end: var(--space-9);
+  inset-inline-end: var(--space-9);
+  z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px;
+  border: 0; border-radius: var(--radius-lg);
+  background: var(--color-action-bg); color: var(--color-action-fg);
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+  /* 彈出用的起始狀態：縮小、下移、透明。加上 .is-in 才彈進畫面。 */
+  opacity: 0;
+  transform: translateY(10px) scale(.9);
+  transition: opacity var(--motion-duration-instant) var(--motion-easing),
+              transform var(--motion-duration-instant) var(--motion-easing),
+              background var(--motion-duration-instant) var(--motion-easing),
+              box-shadow var(--motion-duration-instant) var(--motion-easing);
+}
+.to-top.is-in { opacity: 1; transform: translateY(0) scale(1); }
+.to-top:hover  { background: var(--color-action-bg-hover); box-shadow: var(--shadow-1), var(--shadow-2); }
+.to-top.is-in:active { background: var(--color-action-bg-active); transform: translateY(1px) scale(1); }
+.to-top .icon  { width: 22px; height: 22px; stroke-width: 2; }
+
+@media (width <= 640px) {
+  .to-top {
+    inset-block-end: var(--space-7);
+    inset-inline-end: var(--space-7);
+  }
+}
+
+/* ── 3.7 Pagination ───────────────────────────────────── */
+.pagination { display: flex; gap: var(--space-2); list-style: none; padding: 0; }
+.pagination a, .pagination span {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; min-height: 44px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-lg); text-decoration: none;
+  color: var(--color-text-secondary);
+}
+.pagination a:hover { background: var(--color-page-bg-subtle); }
+.pagination [aria-current="page"] { background: var(--color-action-bg); color: var(--color-action-fg); }
+.pagination [aria-disabled="true"] { color: var(--color-disabled-fg); pointer-events: none; }
+
+/* ── 2.5 斷點 ─────────────────────────────────────────── */
+@media (width <= 860px) {
+  h1 { font-size: var(--font-size-display-md); }
+  h2 { font-size: var(--font-size-display-sm); }
+  .site-header .container { flex-wrap: wrap; padding-block: var(--space-5); }
+  .site-nav { margin-inline-start: 0; width: 100%; }
+}
+
+@media (width <= 640px) {
+  .section { padding-block: var(--space-11); }
+  h1 { font-size: var(--font-size-display-sm); }
+  .btn--block-sm { display: flex; width: 100%; }
+}
+
+/* §2.4 / §4：減少動態時所有動畫與轉場縮至 0.01ms */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

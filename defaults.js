@@ -59,11 +59,31 @@ window.HL_previewTarget=function(){
    重新整理，或新分頁／新工作階段進來，就把匯入流程的資料清乾淨。
    hanlin-brand-theme（使用者挑的風格）不在清單裡——那是他正在選的東西，
    清掉就變成「選了風格卻退回預設藍」。 */
+/* hanlin-import-html（使用者上傳的檔案本體）刻意不在清單裡：
+   使用者要解決的是「步驟列一直咬著上一次的匯入」，那由 hanlin-import-live
+   這個 sessionStorage 旗標決定，清掉它步驟列就不再出現。
+   把檔案本體也清掉會直接弄丟人家上傳的東西——實測兩條路都會踩到：
+     (a) 帶票到「挑選頁」（templates／template）之後按 F5；
+     (b) 分頁的第一頁就是匯入頁，上傳完點導覽列跳頁（第一跳就被當成新進入）。
+   注意 (a) 指的是挑選頁；在匯入頁自己按 F5 仍會清掉檔案，
+   那是 import.html 自己的規則（無通行證載入＝一次新的匯入），不歸這裡管。
+   檔案只有使用者自己按「清除紀錄」、或重新進匯入頁時才會消失。 */
 window.HL_FLOW_KEYS={
-  local:['hanlin-import-html','hanlin-import-opts','hanlin-import-done',
+  local:['hanlin-import-opts',
          'hanlin-skill-blocks','hanlin-import-pending','hanlin-show-result',
          'hanlin-settings-saved'],
-  session:['hanlin-import-styled','hanlin-import-live']
+  /* hanlin-import-done 是 sessionStorage 的旗標（import.html:6461／6590），
+     放在 local 桶等於對不存在的 key 做 removeItem，真正的旗標一次都沒清到。 */
+  session:['hanlin-import-styled','hanlin-import-live','hanlin-import-done']
+};
+/* 「現在是不是真的在匯入流程中」：手上有檔案，而且是這個分頁匯入的。
+   只看檔案存在的話，隔了幾天直接開挑選頁，畫面還會說「你的頁面已經讀進來了」——
+   那是早就結束的流程。步驟列、回匯入頁提示都用這一個判定，不各寫一份。 */
+window.HL_inImportFlow=function(){
+  try{
+    return sessionStorage.getItem('hanlin-import-live')==='1'
+        && !!localStorage.getItem('hanlin-import-html');
+  }catch(e){return false}
 };
 window.HL_freshEntryReset=function(handoff){
   if(handoff)return [];

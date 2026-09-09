@@ -11,11 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=07cba8a599b4"></script>
-<script src="kits.js?v=cd67361477e4"></script>
+<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="kits.js?v=39caefe7862e"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
-<script src="skillpack.js?v=1"></script>
+<script src="skillpack.js?v=d4cfcf18a0a1"></script>
 <style>
 /* ===== 套版詳細專用 =====
    這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
@@ -69,8 +69,6 @@ body.tpl.has-dock{padding-bottom:78px}
 main .btn.primary#demoOpen,
 main .btn.primary#dlSample,
 main .btn.primary#goPreview,
-main .btn.primary#dlDirect,
-main .btn.primary#dlWithOpts,
 main #startgo .btn{background:#0088D2;color:#fff}
 main #startgo .btn .material-symbols-rounded{color:#fff}
 main .btn.soft#exportTheme,
@@ -81,8 +79,6 @@ main .btn.soft#exportSkillMd{background:#E6F4FB;color:#0088D2}
 main .btn#demoOpen,
 main .btn#dlSample,
 main .btn#goPreview,
-main .btn#dlDirect,
-main .btn#dlWithOpts,
 main #startgo .btn,
 main .btn#exportTheme,
 main .btn#exportSkillMd{border:none;box-shadow:none;border-radius:14px}
@@ -2024,114 +2020,15 @@ main .opt-dot.on{border-color:#0088D2}
   function palOn(pl){
     return curTheme&&curTheme.p===pl.p&&curTheme.s===pl.s&&curTheme.i===pl.i&&curContrast===pl.c;
   }
-  function buildPalettes(){
-    var row=document.getElementById('pal-row'); if(!row)return;
-    /* 每次重畫前先清空，否則取消選取後說明會殘留 */
-    row.addEventListener('kmreset',function(){});
-    PALETTES.forEach(function(pl){
-      var t={n:pl.n,p:pl.p,s:pl.s,i:pl.i,c:pl.c},warm=pl.c;
-      /* 第一層只放主題名稱按鈕，色碼交給下面的「品牌色彩」。
-         按鈕本身用該色版的顏色預覽：四宮格色票 ＋ 選取時整顆填成該色版主色。
-         文字色依主色亮度決定黑白，避免出現深底深字或淺底白字。 */
-      var card=document.createElement('button');card.type='button';card.className='pal-card';
-      card.title=pl.n+(pl.en?('（'+pl.en+'）'):'')+'　來源 '+pl.src+'\n'+pl.d+
-        (pl.tkEn?('\n對應 token：'+pl.tkEn.join(' / ')):'');
-      /* 七顆同時實色是視覺噪音。改成：
-           未選 → 該色版主色 10% 淡底 ＋ 壓到 4.5:1 的深色字（安靜、可讀）
-           選中 → 主色實底 ＋ 反白（一眼看得出目前是哪一組）
-         兩種狀態的顏色都是從該色版主色算出來的，不是另外挑的顏色。 */
-      /* 按鈕就顯示 md 的主色原值，不再壓深（使用者指定） */
-      var tint=mix(t.p,.90);                       /* 主色 10% 淡底，與規範頁的柔色同一支算法 */
-      /* 【按鈕底色改吃各文件的規範色】(使用者指定 2026-09-03)
-         先前七顆一律用該色版的主色 p，等於把「按鈕該用什麼色」這個決定
-         交給主色。文件其實有寫：istockapp 的 surface.strong 是橘紅、
-         多巴胺的 coral 是珊瑚、摩洛哥的 caramel 是焦糖 —— 這三組由使用者
-         指定改用文件色；其餘四組的文件主要色本來就等於 p，一併寫進 btn 欄，
-         讓按鈕底色有自己的來源，不再與主色綁死。 */
-      var pbtn=pl.btn||t.p;
-      card.style.setProperty('--pc',pbtn);
-      /* 選取狀態改成「同色淡 10%」，不用外框（使用者指定 2026-09-02）。
-         mix(hex,w) 是往白混 w 的比例，所以 .10 就是淡 10%。 */
-      var pon=mix(pbtn,.10);
-      card.style.setProperty('--pc-on',pon);
-      /* 【文字色依底色對比決定】(使用者指定 2026-09-04，取代 09-03 的「一律反白」)
-         規則：底色深 → 文字一定是淺色／白色；底色淺 → 文字壓深，
-         判準用實際對比值，不是憑感覺挑。
-         為什麼要改回來：09-03 指定七顆一律白字，實測代價是
-           多巴胺珊瑚 #FD9D9E 配白字 2.00:1、摩洛哥焦糖 #BB8A52 3.06:1、
-           漫畫貼紙風橘紅 #FF5933 3.12:1 —— 全部低於 AA 4.5:1，字幾乎看不見。
-         現在改成：白字達得到 4.5:1 就用白字（深底一律落在這一邊），
-         達不到就用 darkenTo45 把同一個色相壓深到剛好 4.5:1 當文字色，
-         顏色仍然來自該色版，不是另外挑一個黑。 */
-      function fgFor(bg){
-        try{
-          /* ① 白字達得到 AA 4.5:1 就用白字 —— 所有真正的深底都落在這一邊，
-                這就是「按鈕深色、文字一定淺色／白色」那條規則的實作。 */
-          var wc=crOf('#FFFFFF',bg);
-          if(wc>=4.5)return '#FFFFFF';
-          /* ② 白字不夠＝底色偏亮，把同一個色相壓深來當文字色。
-                自己跑迴圈，不用 darkenTo45：它只壓 12 次 × 0.96（最深只到原色的 61%），
-                對橘紅／珊瑚／焦糖這種亮彩壓不下去，會吐回一個對比只有 2.1 的顏色，
-                反而變成「深底配深字」。這裡壓到真的達標為止。 */
-          var h=String(bg).replace('#','');
-          if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-          var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);
-          for(var k=0;k<40;k++){
-            r*=0.9;g*=0.9;b*=0.9;
-            var cur='#'+[r,g,b].map(function(v){return ('0'+Math.round(v).toString(16)).slice(-2)}).join('').toUpperCase();
-            if(crOf(cur,bg)>=4.5)return cur;
-          }
-          /* ③ 兩邊都到不了 4.5（極少見）：取對比高的那一邊，不留一個看不見的字。 */
-          return wc>=crOf('#111111',bg)?'#FFFFFF':'#111111';
-        }catch(e){return '#FFFFFF'}
-      }
-      /* 【七顆一律白字】(使用者指定 2026-09-04，看著實際畫面決定)
-         fgFor() 保留不刪：它是「白字達不到 4.5 就壓深同色相」的判準，
-         匯出的 SKILL.md 對比規則寫的就是這一套，套版產出仍然照它走。
-         這裡只有規範頁上這七顆展示按鈕例外——使用者要的是七顆一致反白，
-         代價（橘紅 3.12、焦糖 3.06、珊瑚 2.00）記在下方 __palFg，沒有被藏起來。 */
-      var _fg='#FFFFFF',_fgOn='#FFFFFF',_fgAuto=fgFor(pbtn);
-      card.style.setProperty('--pc-fg',_fg);
-      card.style.setProperty('--pc-fg-on',_fgOn);
-      try{(window.__palFg=window.__palFg||[]).push(
-        {n:pl.n,底:pbtn,文字:_fg,白字對比:Math.round(crOf(_fg,pbtn)*100)/100,
-         選取底:pon,選取白字對比:Math.round(crOf(_fgOn,pon)*100)/100,
-         達標的替代文字色:_fgAuto,替代色對比:Math.round(crOf(_fgAuto,pbtn)*100)/100})}catch(e){}
-      card.style.setProperty('--pc-tint',tint);
-      card.style.setProperty('--pc-ink',darkenTo45(t.p,tint));/* 淡底上的文字：對淡底 4.5:1 */
-      card.style.setProperty('--pc-line',mix(t.p,.72));
-      /* 膠囊本身就是主色，四宮格色票拿掉，維持與導覽頁籤一致的乾淨形狀 */
-      card.innerHTML='<span class="pal-name">'+pl.n+'</span>';
-      function paint(){
-        card.classList.toggle('on',palOn(pl));
-        /* 目前採用的說明放在按鈕列下方（使用者指定 2026-09-02） */
-        if(palOn(pl)){
-          var now=document.getElementById('pal-now');
-          if(now)now.innerHTML='<b>目前採用：'+pl.n+'</b>'+
-            '<span class="pal-now-src">來源 '+pl.src+(pl.en?('　'+pl.en):'')+'</span>'+
-            '<span class="pal-now-d">'+pl.d+'</span>';
-        }
-      }
-      card.addEventListener('click',function(){
-        /* 走既有路徑：只改 curTheme／curContrast，其餘交給 apply()，
-           不另外寫 localStorage，也不繞過任何既有流程。 */
-        curTheme={n:pl.n,p:pl.p,s:pl.s,i:pl.i,c:pl.c,tk:pl.tk,src:pl.src,
-                  bg:pl.bg,ln:pl.ln,mu:pl.mu,ink:pl.ink,ex:pl.ex,
-                  rd:pl.rd,sh:pl.sh,bd:pl.bd};curContrast=pl.c;
-        apply();
-        document.querySelectorAll('#theme-row .theme-dot,#contrast-row .theme-dot')
-          .forEach(function(x){x.dispatchEvent(new Event('repaint'))});
-        var _n=document.getElementById('pal-now');if(_n)_n.innerHTML='';
-        document.querySelectorAll('.pal-card').forEach(function(x){x.dispatchEvent(new Event('repaint'))});
-      });
-      card.addEventListener('repaint',paint);
-      row.appendChild(card);paint();
-    });
-  }
+  /* 原本這裡有一個 104 行的色版渲染函式，已移除。
+     它是唯一「讀原始 PALETTES 來畫東西」的地方，但風格色版早就移到視覺套版列表頁，
+     #pal-row 不存在，函式開頭的 if(!row)return 讓它一次都沒執行過。
+     留著的代價不是效能，是這一頁同時存在兩個資料來源：
+     渲染有時讀原始資料、有時讀產物 HL_KITS，改了一邊就會兩邊對不上。
+     現在 PALETTES 只剩一個身分——build-kits.py 的來源資料，畫面一律讀 HL_KITS。 */
 
   buildRow('theme-row',THEMES,function(t){return t.p},function(t){curTheme=t},function(t){return curTheme===t});
   buildRow('contrast-row',CONTRASTS,function(o){return o.c==='auto'?curTheme.c:o.c},function(o){curContrast=o.c},function(o){return curContrast===o.c});
-  buildPalettes();
   apply();
 
   /* 帶 ?kit= 進來時，讓整頁先照那一組畫（只是預覽；採用設定由頁面互動自動存草稿，或按「套入匯入頁」寫入）。
@@ -2445,13 +2342,6 @@ main .opt-dot.on{border-color:#0088D2}
   /* 所有下載規範檔的按鈕都只是觸發同一顆原本的匯出鈕，產生邏輯只有一份。
      兩種拿法的差別不在產生器，而在「你有沒有先去品牌識別把版面設定挑好」——
      挑過的設定本來就已經存進採用設定，匯出時自然會帶進去。 */
-  (function(){
-    /* 三顆都叫「下載規範檔」，一律走封包——同名按鈕做不一樣的事最難查 */
-    ['exportSkillMdTop','dlDirect','dlWithOpts'].forEach(function(id){
-      var b=document.getElementById(id);
-      if(b)b.addEventListener('click',function(){downloadKitZip(b)});
-    });
-  })();
   /* 「先去挑樣式」：切到品牌識別頁籤再捲到採用設定，不然點了會停在沒顯示的區塊上 */
   (function(){
     document.querySelectorAll('[data-gocat]').forEach(function(a){
@@ -2527,16 +2417,11 @@ main .opt-dot.on{border-color:#0088D2}
   document.querySelectorAll('.tbl input[type=checkbox]').forEach(function(cb){cb.style.cursor='pointer'});
 
   /* ===== 快速選單：預設 ===== */
-  var QUICK_DEFAULT=window.HL_QUICK_DEFAULT;  /* 預設值的單一真相源在 defaults.js?v=07cba8a599b4 */
-  document.querySelectorAll('.qd').forEach(function(a){a.addEventListener('click',function(e){
-    e.preventDefault();
-    if(localStorage.getItem('hanlin-brand-theme')&&!confirm('將套用「預設」組合，覆蓋你目前的採用設定。確定要繼續嗎？'))return;
-    localStorage.setItem('hanlin-brand-theme',JSON.stringify(QUICK_DEFAULT));
-    localStorage.removeItem('hanlin-import-html');
-    localStorage.removeItem('hanlin-skill-blocks');
-    localStorage.removeItem('hanlin-import-pending');
-    {try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:'preview.html',t:Date.now()}))}catch(e){}location.href='preview.html';}
-  })});
+  /* 接線改用 defaults.js 的 HL_bindQuickDefault：這段行為原本在
+     template.html 與 preview.html 各有一份逐字相同的複製，
+     共用函式早就寫好了卻沒人呼叫。取不到就不綁，不要退回自己寫一份——
+     那正是當初分岔的起點。 */
+  if(window.HL_bindQuickDefault)window.HL_bindQuickDefault();
 })();
 </script>
 <!-- 每個 section 上方原本會自己長一條「視覺套版 › 分類 › 章節」麵包屑。
@@ -2550,6 +2435,23 @@ main .opt-dot.on{border-color:#0088D2}
   /* 從往返快取(bfcache)還原時重新載入，讓「採用中」與最新的採用設定同步 */
   window.addEventListener('pageshow',function(e){if(e.persisted)location.replace(location.href)});
   var KITS=window.HL_KITS||[];
+  /* 產物防錯：kits.js 是 build-kits.py 從本頁的 var PALETTES 產生的。
+     沒載到就整頁沒有套版資料，靜默空白最難查；組數對不上則代表
+     改了 PALETTES 卻沒重跑 python3 _dev/build-kits.py。兩種都直接講出來。 */
+  (function(){
+    if(!window.HL_KITS||!window.HL_KITS.length){
+      console.error('[hanlin] kits.js 沒有載入或內容為空——套版資料會整片空白。'
+        +'確認 <script src="kits.js"> 有載到，或重跑 python3 _dev/build-kits.py');
+      return;
+    }
+    try{
+      var srcN=(typeof PALETTES!=='undefined'&&PALETTES)?PALETTES.length:null;
+      if(srcN!==null&&srcN!==window.HL_KITS.length){
+        console.warn('[hanlin] kits.js 落後於來源：PALETTES 有 '+srcN+' 組、'
+          +'kits.js 只有 '+window.HL_KITS.length+' 組。請重跑 python3 _dev/build-kits.py');
+      }
+    }catch(e){}
+  })();
   var id=new URLSearchParams(location.search).get('kit')||'';
   var k=null;
   for(var i=0;i<KITS.length;i++){if(KITS[i].id===id){k=KITS[i];break}}

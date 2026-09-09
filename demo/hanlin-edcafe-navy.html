@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<!-- robot-hello.png／robot-thumb.png 這兩張圖整個專案裡都不存在（8 處引用全部 404）。
+     原本每一處都寫了 onerror 降級，畫面不會壞，但每次載入都白發兩個失敗請求，
+     而且圖區會先閃一下才消失。改成內嵌的 SVG 佔位圖：零外部請求、每一處都有視覺，
+     onerror 保留著（永遠不會觸發），要換回真圖時把 data URI 換掉即可。 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -1262,7 +1266,7 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
   <div class="chat-scroll" id="chatScroll">
     <div class="hello" id="hello">
       <div class="hello-bot">
-        <img src="robot-hello.png" alt="翰林 AI 助教" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="翰林 AI 助教" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
         <svg viewBox="0 0 200 230" style="display:none"><use href="#robotAI"/></svg>
       </div>
       <h1>老師好，今天想準備什麼？</h1>
@@ -1305,7 +1309,7 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
     </div>
 
     <div class="cv-empty" id="cvEmpty">
-      <div class="bot"><img src="robot-thumb.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+      <div class="bot"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.parentElement.style.display='none'"></div>
       <b>客製化資源產生區</b>
       <small>完成左側對話後，教案、簡報、評量與學生端資源<br>將產出於此；經老師審核派發後，可於「學習監控」追蹤。</small>
     </div>
@@ -1507,7 +1511,7 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
     <!-- 07 學習監控 -->
     <div class="pane" id="pane7">
       <div id="monEmpty" class="cv-empty" style="height:auto;padding:60px 0">
-        <div class="bot"><img src="robot-thumb.png" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <div class="bot"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.parentElement.style.display='none'"></div>
         <b>尚未派發任何任務</b>
         <small>產出評量或 AI 助教後，經老師「審核通過・派發」，<br>學生作答與對話數據就會即時回到這裡。</small>
       </div>
@@ -2091,7 +2095,7 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
   <div class="sv-main">
   <div class="sv-head">
     <div class="bot">
-      <img src="robot-hello.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
       <svg viewBox="0 0 200 230" style="display:none"><use href="#robotAI"/></svg>
     </div>
     <div>
@@ -2107,14 +2111,14 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
       <div class="s-pane show" id="sp-wait">
         <div class="sv-empty" style="min-height:62vh" id="waitNone">
           <div class="bot">
-            <img src="robot-thumb.png" alt="" onerror="this.parentElement.style.display='none'">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.parentElement.style.display='none'">
           </div>
           <b>老師還沒派發任務喔</b>
           <small>等老師在「老師端」按下「✓ 審核通過・派發學生」，<br>左邊的功能就會解鎖，你就能在這裡作答與自主學習了！</small>
         </div>
         <div class="sv-empty" style="min-height:62vh;display:none" id="waitPick">
           <div class="bot">
-            <img src="robot-hello.png" alt="" onerror="this.parentElement.style.display='none'">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.parentElement.style.display='none'">
           </div>
           <b>老師派發新任務囉！</b>
           <small>👈 點開左側<b>有紅色數字</b>的分組，選<b>亮起綠點</b>的項目開始學習；<br>灰色的項目要等老師派發才會解鎖。</small>
@@ -2328,7 +2332,7 @@ textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,
   <button class="ss-x" onclick="closeShow()">✕ 結束放映</button>
   <div class="ss-stage" onclick="ssGo(ssIdx+1)">
     <div class="ss-slide cover">
-      <img src="robot-hello.png" alt="" onerror="this.style.display='none'">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.style.display='none'">
       <div class="kicker">翰林國文七下・第四課</div>
       <h1>小詩選</h1>
       <p class="sub">艾青〈跳水〉 × 白靈〈風箏〉</p>
@@ -2490,7 +2494,7 @@ function stuShow(key){
 function stuSelf(msg){toast(msg)}
 
 /* ---------- 對話渲染 ---------- */
-const BOT_ICON=`<img src="robot-hello.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><svg viewBox="0 0 200 230" style="display:none"><use href="#robotAI"/></svg>`;
+const BOT_ICON=`<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiIgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2Ij48cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iI0U4RUVGNiIvPjxyZWN0IHg9IjI0IiB5PSIzMCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjM4IiByeD0iMTIiIGZpbGw9IiMwQjJDNTIiLz48Y2lyY2xlIGN4PSIzOSIgY3k9IjQ3IiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTciIGN5PSI0NyIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI1NyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuOCIvPjxyZWN0IHg9IjQ1IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjMEIyQzUyIi8+PGNpcmNsZSBjeD0iNDgiIGN5PSIxNiIgcj0iNSIgZmlsbD0iIzJDODlEOCIvPjxyZWN0IHg9IjE0IiB5PSI0MiIgd2lkdGg9IjgiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjMEIyQzUyIiBvcGFjaXR5PSIuNTUiLz48cmVjdCB4PSI3NCIgeT0iNDIiIHdpZHRoPSI4IiBoZWlnaHQ9IjE2IiByeD0iNCIgZmlsbD0iIzBCMkM1MiIgb3BhY2l0eT0iLjU1Ii8+PC9zdmc+" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><svg viewBox="0 0 200 230" style="display:none"><use href="#robotAI"/></svg>`;
 function addUser(txt){
   document.getElementById('chatInner').insertAdjacentHTML('beforeend',
     `<div class="m-row user"><div class="bubble">${esc(txt)}</div></div>`);

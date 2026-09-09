@@ -10,8 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=07cba8a599b4"></script>
-<script src="kits.js?v=cd67361477e4"></script>
+<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="kits.js?v=39caefe7862e"></script>
 <style>
 /* ===== 視覺套版列表（進站第一頁） ===== */
 .lead{margin-bottom:var(--block-gap)}
@@ -116,23 +116,21 @@
 .ways .start-card span:not(.material-symbols-rounded){font-size:12.5px;line-height:1.8}
 
 /* ===== Hero：照 Master/index.html 的比例 ===== */
-.hero{background:#fff;border-bottom:1px solid #EDF1F6}
+.hero{background:#F5D35B;border-bottom:1px solid #E7C34D}
 .hero-in{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.15fr .85fr;
   gap:56px;align-items:center;padding:76px 24px 80px}
 .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;
-  letter-spacing:.16em;color:var(--brand);text-transform:uppercase}
+  letter-spacing:.16em;color:#6E5200;text-transform:uppercase}
 .hero-txt h1{font-size:44px;font-weight:700;line-height:1.28;letter-spacing:-.02em;
-  color:#16202B;margin:16px 0 18px}
-.hero-txt>p{font-size:16px;color:#3E4C5A;max-width:520px}
+  color:#3A2E00;margin:16px 0 18px}
+.hero-txt>p{font-size:16px;color:#5C4A0A;max-width:520px}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
-.hero-note{margin-top:22px;font-size:13px;color:#5C6A78;
-  padding-left:14px;border-left:3px solid #F5D35B;max-width:520px}
 .hero-art{position:relative;height:320px}
 .ha-card{position:absolute;border-radius:14px;border:1px solid #E1E8F0;background:#fff;
   box-shadow:0 6px 18px rgba(11,44,82,.07)}
-.ha-1{left:0;top:24px;width:60%;height:200px;background:var(--blue-50);border-color:#CFDDEE}
+.ha-1{left:0;top:24px;width:60%;height:200px;background:#fff;border-color:#E7C34D}
 .ha-2{right:8%;top:0;width:52%;height:170px;border-top:5px solid var(--brand)}
-.ha-3{right:0;bottom:6px;width:46%;height:130px;background:#F5D35B;border-color:#E7C34D}
+.ha-3{right:0;bottom:6px;width:46%;height:130px;background:#0B2C52;border-color:#0B2C52}
 .ha-note{position:absolute;left:14%;bottom:10px;background:var(--brand);color:#fff;
   padding:14px 18px;border-radius:12px;font-size:13px;line-height:1.5;z-index:2}
 .ha-note b{font-size:17px;font-weight:700}
@@ -146,21 +144,6 @@
 .sec-hd{margin-bottom:32px;max-width:760px}
 .sec-hd h2{font-size:28px;font-weight:700;color:var(--gray-1);letter-spacing:.02em;margin:12px 0 10px}
 .sec-hd p{font-size:14.5px;color:var(--gray-2);line-height:1.9}
-
-/* ===== CTA Band：60-30-10 的那 10%，對比色只用在希望被點擊的地方 ===== */
-.cta-band{background:#F5D35B;color:#3A2E00}
-.cta-in{max-width:1160px;margin:0 auto;padding:88px 24px;display:flex;align-items:center;
-  justify-content:space-between;gap:40px;flex-wrap:wrap}
-.cta-eb{display:inline-block;font-size:12px;font-weight:500;letter-spacing:.16em;color:#6E5200}
-.cta-band h2{font-size:30px;font-weight:700;margin:10px 0;color:#3A2E00;letter-spacing:-.01em}
-.cta-band p{font-size:15px;color:#5C4A0A;max-width:560px}
-.cta-act{display:flex;gap:12px;flex-wrap:wrap}
-.cta-act .btn{border-radius:14px;padding:12px 24px;font-size:14px}
-.btn-ink{background:#0B2C52;color:#fff;border:1px solid #0B2C52}
-.btn-ink:hover{background:#06203E;color:#fff}
-.btn-line{background:transparent;color:#3A2E00;border:1px solid #3A2E00}
-.btn-line:hover{background:rgba(255,255,255,.5)}
-@media(max-width:900px){.cta-in{padding:52px 24px}.cta-band h2{font-size:23px}}
 
 /* ===== 文字規範與版面尺度：照 Master/assets/app.css =====
    站內其他頁維持原本的行高 1.9／字距 .03em；只有首頁改成 Master 那一套，
@@ -204,7 +187,6 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
         <a class="btn primary" href="templates.html" style="border-radius:14px;padding:12px 24px;font-size:14px">瀏覽視覺風格</a>
         <a class="btn soft" href="import.html" style="border-radius:14px;padding:12px 24px;font-size:14px">直接套用到我的頁面</a>
       </div>
-      <p class="hero-note">企劃請放心：套版只負責幫網頁「變漂亮」，絕對不會動到你辛苦排好的文字內容、資訊架構與任何產品功能！</p>
     </div>
     <div class="hero-art" aria-hidden="true">
       <div class="ha-card ha-1"></div>
@@ -228,9 +210,9 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
 
     <div class="kit-grid" id="kitGrid"></div>
     <p class="kit-empty" id="kitEmpty" hidden>這個分類目前沒有套版。</p>
-    <div style="margin-top:28px">
-      <a class="btn soft" href="templates.html" style="border-radius:14px;padding:11px 22px;font-size:14px">
-        查看全部套版與分類篩選 →</a>
+    <div style="margin-top:28px;text-align:center">
+      <a class="btn" href="templates.html" style="border-radius:14px;padding:11px 22px;font-size:14px;background:#005696;color:#fff">
+        更多視覺套版 →</a>
     </div>
    </div>
   </section>
@@ -240,21 +222,6 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
 
 
 </main>
-
-<section class="cta-band">
-  <div class="cta-in">
-    <div>
-      <span class="cta-eb">READY?</span>
-      <h2>選好視覺套版，就可以交給 AI 了</h2>
-      <p>下載這一組的資源包與 AI 指令，連同你的企劃一起給 AI；或直接把既有頁面丟進來套。</p>
-    </div>
-    <div class="cta-act">
-      <a class="btn btn-ink" href="templates.html">瀏覽視覺套版</a>
-      <a class="btn btn-line" href="import.html">套到我的頁面</a>
-      <a class="btn btn-line" href="hanlin-web-starter.zip" download>下載基本範例</a>
-    </div>
-  </div>
-</section>
 
 <footer class="site-footer">
   © 2026 翰林教學樞紐 Hanlin Hub · 相信學習<br>

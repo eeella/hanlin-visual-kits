@@ -9,9 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=07cba8a599b4"></script>
+<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="importbase.js?v=1"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
-<script src="kits.js?v=b4608ee90de1"></script>
+<script src="kits.js?v=39caefe7862e"></script>
 <style>
 /* 與品牌規範 / 版型預覽統一內容寬度 1160px */
 .imp-tabs{display:inline-flex;gap:8px}
@@ -95,6 +96,20 @@
 
 @media (prefers-reduced-motion:reduce){ .flow li{transition:none} .flow li.now{transform:none} }
 @media (max-width:640px){ .flow li{flex:1 1 100%} }
+
+/* ===== 匯入來源的安全提醒 =====
+   平常是低調的提醒；真的偵測到 <script> 才轉成琥珀警示。
+   對比實測：#3E4C5A on #F1F4F8 ＝ 8.16:1、#8A4508 on #F8EDE0 ＝ 6.19:1。 */
+.src-warn{display:flex;gap:11px;align-items:flex-start;
+  background:#F1F4F8;border-radius:12px;padding:13px 16px;margin:0 0 14px;
+  font-size:12.5px;line-height:1.9;color:#3E4C5A}
+.src-warn .material-symbols-rounded{font-size:19px;flex:none;margin-top:1px;color:#5C6A78}
+.src-warn b{font-weight:500;color:#16202B}
+.src-warn.danger{background:#F8EDE0;color:#5C5248}
+.src-warn.danger .material-symbols-rounded{color:#B45309}
+.src-warn.danger b{color:#8A4508}
+.src-warn code{font-family:Consolas,Menlo,monospace;font-size:12px;
+  background:rgba(0,0,0,.06);border-radius:4px;padding:1px 5px}
 </style>
 </head>
 <body>
@@ -177,6 +192,27 @@
   <!-- 選擇來源（載入後收合，由「重新匯入」展開） -->
   <div class="imp-step" id="stepSource">
     <div class="step-head">選擇來源<span class="en">SOURCE</span></div>
+    <!-- 匯入的 HTML 會在本站的同源環境裡執行（對照預覽的 iframe 需要同源才能量測、
+         做版型比對與高度自適應，所以 sandbox 保留了 allow-same-origin）。
+         這代表檔案裡的 <script> 具有和本站相同的權限，能讀寫本站的 localStorage。
+         功能上無法在不砍掉核心驗收功能的前提下關掉同源，所以改成把風險講清楚，
+         並在真的偵測到 script 時升級成明顯的警示。 -->
+    <div class="src-warn" id="srcWarn">
+      <span class="material-symbols-rounded">shield</span>
+      <span class="src-warn-t">
+        <b>只匯入你自己或同事的檔案。</b>
+        匯入的頁面會在本站環境中預覽，檔案裡的 JavaScript 會實際執行，
+        並且能讀寫本站儲存的採用設定。來路不明的 HTML 請不要貼進來。
+      </span>
+    </div>
+    <div class="src-warn danger" id="srcWarnScript" hidden>
+      <span class="material-symbols-rounded">warning</span>
+      <span class="src-warn-t">
+        <b>這份檔案裡有 <span id="srcScriptN">0</span> 段 JavaScript。</b>
+        它會在預覽時執行，權限與本站相同。確認來源可信再繼續；
+        不確定的話，先把檔案裡的 <code>&lt;script&gt;</code> 移除再匯入。
+      </span>
+    </div>
     <div class="dropzone" id="dropZone">
       <span class="material-symbols-rounded">upload_file</span>
       拖曳檔案到這裡，或點擊選擇
@@ -421,6 +457,11 @@ hlStampAssets();
       handoff=(_h&&_h.to===_me&&(Date.now()-(+_h.t||0))<10000);
     }
   }catch(e){handoff=false}
+  /* 這一頁也要走一次共用的進入處理：重點是它會蓋上 hanlin-session。
+     沒蓋的話，「分頁的第一頁就是匯入頁」這種情況下，上傳完點導覽列跳到
+     視覺套版或 AI 指令，那一跳會被下一頁判定成全新工作階段，
+     連帶把流程旗標清掉、步驟列就消失了。 */
+  if(window.HL_freshEntryReset)window.HL_freshEntryReset(handoff);
   if(!handoff){
     /* 沒有通行證的載入（F5 重整、新分頁、直接貼網址、從導覽列點進來）
        ＝一次新的匯入，一律清掉上一次的檔案與旗標（使用者指定）。
@@ -2557,10 +2598,17 @@ hlStampAssets();
             Array.prototype.forEach.call(doc.querySelectorAll('style'),function(s){css+=s.textContent||''});
             if(!css)return false;
             /* body 規則常拆成好幾條（html,body{height:100vh} 另寫一條），要全部合併再判斷 */
-            /* 用 lookbehind 排除 .xxx-body 這類 class；前一條規則的 } 會被吃掉，
-               所以不能用「前面必須是 }」當條件（曾因此只讀到第一條 body 規則）。 */
-            var bodyRules='',rr=/(?<![\w.#-])body\s*\{([^}]*)\}/gi,mm;
-            while((mm=rr.exec(css)))bodyRules+=mm[1]+';';
+            /* 排除 .xxx-body 這類 class：改用「比對後手動檢查前一個字元」，
+               不用 lookbehind——Safari ≤16.3 連 regex literal 都過不了解析階段，
+               整個檔案會直接 SyntaxError（畫面全白），不是執行到才壞。
+               也不能改成捕獲組 /(^|[^\w.#-])body\s*\{/：那會吃掉前導字元，
+               相鄰的 }body{ 會漏抓（曾因此只讀到第一條 body 規則）。 */
+            var bodyRules='',rr=/body\s*\{([^}]*)\}/gi,mm,prevCh;
+            while((mm=rr.exec(css))){
+              prevCh=mm.index>0?css.charAt(mm.index-1):'';
+              if(prevCh&&/[\w.#-]/.test(prevCh))continue;
+              bodyRules+=mm[1]+';';
+            }
             /* 只認 height:100vh，不認 min-height:100vh——後者是「footer 貼底」的常見寫法，不是 app shell */
             var vh=/(?:^|[;{\s])height\s*:\s*100(?:vh|dvh|svh)/i.test(bodyRules);
             var bodyHidden=/overflow\s*:\s*hidden/i.test(bodyRules);
@@ -4555,7 +4603,16 @@ hlStampAssets();
          寫的是能看見的顏色。若要求絕對不碰 element.style，代價是這些文字會隱形。 */
       +'function ownText(el){for(var i=0;i<el.childNodes.length;i++){var n=el.childNodes[i];'
         +'if(n.nodeType===3&&n.nodeValue.replace(/\\s+/g,"").length>=2)return true}return false}'
-      +'function sweep(){try{'
+      /* sweep() 會寫 el.style，而下面那個 observer 正好監聽 style——
+         自己的寫入會再觸發自己一輪全掃（querySelectorAll("body *") ＋ 逐個
+         getComputedStyle）。第二輪不會再寫入所以會收斂，不是無限迴圈，
+         但每次 DOM 變動都白付一輪。改成掃描期間先斷開監聽，
+         掃完 takeRecords() 丟掉這段期間累積的記錄再接回去。 */
+      +'var __hlMo=null;'
+      +'var __hlMoCfg={childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]};'
+      +'function sweep(){'
+        +'if(__hlMo){try{__hlMo.disconnect()}catch(e){}}'
+        +'try{'
         +'var all=document.querySelectorAll("body *");'
         +'for(var i=0;i<all.length;i++){var e=all[i];'
           +'var isIc=/material-symbols|material-icons/.test(String(e.className||""));'
@@ -4566,11 +4623,14 @@ hlStampAssets();
            不該有的 element.style，違反成對綁定的保護契約。 */
         +'var own=document.querySelectorAll("input:not([type=checkbox]):not([type=radio]),select,textarea,[data-hl-member-btn],[data-hl-member-item],[data-hl-formopt],[data-hl-sb]");'
         +'for(var j=0;j<own.length;j++)fix(own[j],4.5);'
-      +'}catch(e){}}'
+      +'}catch(e){}'
+        /* 這段期間的記錄全是自己造成的，丟掉再接回去 */
+        +'if(__hlMo){try{__hlMo.takeRecords();__hlMo.observe(document.body,__hlMoCfg)}catch(e){}}'
+      +'}'
       +'sweep();setTimeout(sweep,300);setTimeout(sweep,1200);'
       +'document.addEventListener("click",function(){setTimeout(sweep,60)},true);'
-      +'try{var t=null;var mo=new MutationObserver(function(){clearTimeout(t);t=setTimeout(sweep,80)});'
-        +'mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]})}catch(e){}'
+      +'try{var t=null;__hlMo=new MutationObserver(function(){clearTimeout(t);t=setTimeout(sweep,80)});'
+        +'__hlMo.observe(document.body,__hlMoCfg)}catch(e){}'
     +'})();<\/script>';
     /* 【前置的 Logo 不要自己佔掉一整行】(使用者回報 2026-09-03：匯入檔跑版)
        把 <img> 接在使用者 header 的最前面，它就成了一個 flex item。
@@ -4679,6 +4739,20 @@ hlStampAssets();
 
   /* ===== 預覽呈現(顯示在頁面最上方) ===== */
   var pendingState=null,lastRawMarkup=null,lastBranded=null,lastName='imported';
+  /* 匯入檔的原始網址。從本機上傳或直接貼上時沒有這個資訊，就維持 null——
+     那時 HL_rebaseHtml 會注入一個指向不存在子目錄的 base，
+     讓相對路徑必定落空但不會撞到平台自己的檔案。
+     之後如果要讓使用者填來源網址，把值指到這裡就會自動改用真實 base。 */
+  var importSourceUrl=null;
+  var lastRebase=null;
+  /* 所有 iframe 內容一律走這裡，不要各自寫 f.srcdoc=—— 少一處就少一層防護 */
+  function setFrameHtml(f,html){
+    if(!f)return null;
+    var r=(window.HL_rebaseHtml)?window.HL_rebaseHtml(html,importSourceUrl):{html:html,count:0};
+    f.srcdoc=r.html;
+    if(r.count)lastRebase=r;
+    return r;
+  }
   /* 上一次套用時所依據的採用設定原文，用來判斷「使用者是不是又重新勾選過」 */
   var lastCfgSig=null;
   /* 匯出閘門：只有「逐項全量比對跑完（沒有尚未比對／解析失敗）且 0 不符合」才放行。
@@ -4901,7 +4975,7 @@ hlStampAssets();
       }
       rf.onload=function(){setTimeout(go,700)};
       setTimeout(go,3000);
-      rf.srcdoc=lastRawMarkup;
+      setFrameHtml(rf,lastRawMarkup);
       document.body.appendChild(rf);
     }
     /* 渲染層：實際算圖驗證 */
@@ -6204,7 +6278,7 @@ hlStampAssets();
       }catch(e){probs.push('版型比對異常：'+e.message);finish();}
     };
     setTimeout(finish,8000);
-    f.srcdoc=res.html;
+    setFrameHtml(f,res.html);
     document.body.appendChild(f);
   }
   function fitCompareFrames(){
@@ -6275,7 +6349,7 @@ hlStampAssets();
         框架:res.framework||'未使用框架'
       });
     }catch(e){}
-    document.getElementById('frameBranded').srcdoc=res.html;
+    setFrameHtml(document.getElementById('frameBranded'),res.html);
     document.getElementById('sameNote').style.display=(Object.keys(res.map).length||res.logoSwapped)?'none':'block';
     var el=document.getElementById('impReport');
     var keys=Object.keys(res.map);
@@ -6375,9 +6449,25 @@ hlStampAssets();
     });
     window.addEventListener('pageshow',function(){refreshIfCfgChanged('頁面重新顯示')});
   })();
+  /* 匯入的頁面會在同源 iframe 裡預覽（比對表、版型偵測、高度自適應都要求同源），
+     所以檔案裡的 script 具有與本站相同的權限。偵測到就把提醒升級成警示，
+     並講清楚有幾段——只寫一句籠統的警語，使用者不會知道自己這一份到底有沒有。 */
+  function countScripts(html){
+    if(!html)return 0;
+    var m=String(html).match(/<script\b[^>]*>/gi);
+    return m?m.length:0;
+  }
+  function updateSrcWarn(rawMarkup){
+    var box=document.getElementById('srcWarnScript'),n=countScripts(rawMarkup);
+    if(!box)return;
+    box.hidden=!(n>0);
+    var el=document.getElementById('srcScriptN');
+    if(el)el.textContent=n;
+  }
   function showPreview(st,src,rawMarkup){
     pendingState=st;
     lastRawMarkup=rawMarkup||null;
+    updateSrcWarn(lastRawMarkup);
     document.getElementById('previewSource').textContent='來源：'+src
       +(st.groups?' · 完整設定（含版型與元件選取）':' · 從內容解析出的品牌色');
     var cmp=document.getElementById('cmpGrid');
@@ -6385,7 +6475,7 @@ hlStampAssets();
     var note=document.getElementById('sameNote');
     var notStyled=document.getElementById('notStyledNote');
     if(rawMarkup){
-      document.getElementById('frameRaw').srcdoc=rawMarkup;
+      setFrameHtml(document.getElementById('frameRaw'),rawMarkup);
       if(isStyled()){
         notStyled.style.display='none';
         document.getElementById('impOpts').style.display='flex';
@@ -6393,7 +6483,7 @@ hlStampAssets();
       }else{
         /* 還沒挑樣式：右邊直接放原檔，不跑套用引擎，兩邊一模一樣 */
         lastBranded=rawMarkup;
-        document.getElementById('frameBranded').srcdoc=rawMarkup;
+        setFrameHtml(document.getElementById('frameBranded'),rawMarkup);
         document.getElementById('impOpts').style.display='none';
         document.getElementById('impReportBox').style.display='none';
         note.style.display='none';
@@ -6542,10 +6632,18 @@ hlStampAssets();
     var prev={};try{prev=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{}}catch(e){}
     var merged={};
     [prev,pendingState].forEach(function(o){Object.keys(o||{}).forEach(function(k){merged[k]=o[k]})});
-    localStorage.setItem('hanlin-brand-theme',JSON.stringify(merged));
+    /* 配額爆掉不能讓整個流程斷在這裡：含 base64 圖片的 HTML 很容易超過 5MB。
+       採用設定寫不進去只是下次要重挑，但後面的預覽與下載必須照跑。 */
+    try{localStorage.setItem('hanlin-brand-theme',JSON.stringify(merged));}
+    catch(e){try{hlmon('採用設定寫入失敗',{原因:e&&e.name,說明:'多半是 localStorage 配額已滿'})}catch(_){}}
     pendingState=merged;
     if(lastRawMarkup){
-      localStorage.setItem('hanlin-import-html',lastRawMarkup);
+      /* 同上：檔案存不進去就走「這次不保存」，不要讓例外打斷流程 */
+      try{localStorage.setItem('hanlin-import-html',lastRawMarkup);}
+      catch(e){
+        try{hlmon('匯入檔保存失敗',{原因:e&&e.name,長度:lastRawMarkup.length+' bytes',
+          說明:'超過 localStorage 配額，這次的檔案不會被記住，但預覽與下載不受影響'})}catch(_){}
+      }
       /* 「這個工作階段匯入過檔案」的標記必須放 sessionStorage。
          hanlin-import-html 在 localStorage 且已改為永久保存，
          拿它當「本次匯入過」的依據等於永遠成立。 */

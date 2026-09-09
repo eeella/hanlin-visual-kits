@@ -10,8 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=07cba8a599b4"></script>
-<script src="kits.js?v=cd67361477e4"></script>
+<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="kits.js?v=39caefe7862e"></script>
 <style>
 /* ===== 視覺套版列表（進站第一頁） ===== */
 .lead{margin-bottom:var(--block-gap)}
@@ -425,9 +425,10 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
      判斷依據是「手上真的有一份匯入的頁面」，不是只看旗標——
      旗標可能是上一輪殘留的，那樣會對著沒有匯入檔的人說「你的頁面已經讀進來了」。 */
   (function(){
-    var hasImport=false;
-    try{hasImport=!!localStorage.getItem('hanlin-import-html')}catch(e){}
-    if(!hasImport)return;
+    /* 用共用的流程判定：光看「有檔案」的話，隔了幾天直接開這一頁，
+       還會對著早就結束的流程說「你的頁面已經讀進來了」。 */
+    var inFlow=window.HL_inImportFlow?window.HL_inImportFlow():false;
+    if(!inFlow)return;
     var bar=document.getElementById('fromImport');
     bar.hidden=false;
     document.getElementById('backToImport').addEventListener('click',function(){go('import.html')});

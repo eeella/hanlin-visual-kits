@@ -1,0 +1,82 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FILE</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1400px;height:1000px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0,SAMPLE="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>\u5feb\u901f\u5b78\u5802</title></head><body style=\"margin:0;font-family:'Segoe UI',sans-serif\">\n<div id=\"root\">\n<header style=\"background:#e11d48;color:white;padding:18px 36px;display:flex;justify-content:space-between;align-items:center\">\n<div style=\"font-size:22px;font-weight:bold\">\u5feb\u901f\u5b78\u5802</div><nav style=\"display:flex;gap:20px\"><a href=\"#\" style=\"color:white;text-decoration:none\">\u8ab2\u7a0b</a><a href=\"#\" style=\"color:white;text-decoration:none\">\u95dc\u65bc</a></nav></header>\n<div style=\"background:linear-gradient(120deg,#e11d48,#f43f5e);color:#fff;padding:70px 36px;text-align:center\">\n<span style=\"font-size:13px;letter-spacing:3px\">FAST LEARNING</span><h1 style=\"font-size:44px;margin:12px 0\">\u4e09\u5341\u5929\u901f\u6210</h1><p>\u6bcf\u5929\u53ea\u8981 20 \u5206\u9418 \u23f0</p>\n<button style=\"margin-top:24px;background:#fff;color:#e11d48;border:2px solid #fff;padding:12px 32px;border-radius:6px;font-size:16px\">\u514d\u8cbb\u8a66\u807d</button></div>\n<div style=\"display:flex;gap:24px;padding:56px 36px\">\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83d\udcda</span><h3 style=\"color:#e11d48\">\u7cfb\u7d71\u8ab2\u7a0b</h3><p style=\"color:#64748b\">\u5faa\u5e8f\u6f38\u9032</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\u270d\ufe0f</span><h3 style=\"color:#e11d48\">\u96a8\u5802\u7df4\u7fd2</h3><p style=\"color:#64748b\">\u5373\u6642\u56de\u994b</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83c\udfc6</span><h3 style=\"color:#e11d48\">\u7d50\u696d\u8b49\u66f8</h3><p style=\"color:#64748b\">\u5c65\u6b77\u52a0\u5206</p></div>\n</div>\n<div style=\"background:#1f2937;color:#9ca3af;padding:28px;text-align:center\">\u00a9 2026 \u5feb\u901f\u5b78\u5802</div>\n</div></body></html>";
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fr=document.getElementById('fr'),BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function D(){return fr.contentDocument}function W(){return fr.contentWindow}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function until(fn,ms){return new Promise(function(res){var t=0;(function c(){var v=false;try{v=fn()}catch(e){}if(v||t>=(ms||6000))return res(v);t+=120;setTimeout(c,120)})()})}
+function go(p){
+  /* 每次進頁面前清掉上一輪的匯入內容,確保測的是本次上傳 */
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  sessionStorage.setItem('hanlin-session','1');
+  return new Promise(function(res){fr.onload=function(){setTimeout(res,700)};(ticket(p),fr.src=BASE+p)});
+}
+function pick(name,content,type){
+  var f=new File([content],name,{type:type||'text/html'});
+  var dt=new DataTransfer();dt.items.add(f);
+  var inp=D().getElementById('importFile');
+  inp.files=dt.files;
+  inp.dispatchEvent(new Event('change',{bubbles:true}));
+}
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  localStorage.setItem('hanlin-brand-theme',"{\"theme\": {\"n\": \"\u7ff0\u6797\u85cd\", \"p\": \"#0088D2\", \"s\": \"#005696\", \"i\": \"#40B4E5\", \"c\": \"#FF9A3C\"}, \"contrast\": \"auto\", \"logoLight\": 2, \"groups\": {\"hd\": 2, \"ft\": 2, \"hero\": 0, \"fm\": 0, \"tblsty\": 0, \"icon\": 0}, \"controls\": {\"btn\": true}, \"memberEntry\": true}");
+  localStorage.removeItem('hanlin-import-html');
+  /* A. 檔案上傳:HTML */
+  await go('import.html');
+  T('檔案輸入元素存在',!!D().getElementById('importFile'));
+  pick('mypage.html',SAMPLE);
+  await until(function(){return D().getElementById('cmpGrid').style.display==='grid'},8000);
+  await until(function(){return (D().getElementById('impReport').textContent||'').indexOf('套用檢查')>-1},8000);
+  T('A 上傳 HTML 檔 → 進入對照預覽',D().getElementById('cmpGrid').style.display==='grid'&&D().getElementById('stepPreview').style.display==='block');
+  var b=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('A 套用結果正確(原色消失、品牌色出現)',b.length>500&&b.indexOf('#e11d48')<0&&b.indexOf('#0088D2')>-1,'長度 '+b.length);
+  var rep=D().getElementById('impReport').textContent||'';
+  T('A 報告與檢查已產生',rep.indexOf('替換報告')>-1&&rep.indexOf('套用檢查')>-1&&rep.indexOf('⚠')<0,rep.indexOf('⚠')>-1?rep.slice(rep.indexOf('⚠'),rep.indexOf('⚠')+50):'無警告');
+  T('A 來源標示為檔名',(D().getElementById('previewSource').textContent||'').indexOf('mypage.html')>-1,(D().getElementById('previewSource').textContent||'').slice(0,36));
+  /* B. 檔案上傳:JSON */
+  sessionStorage.setItem('hanlin-session','1');
+  await go('import.html');
+  pick('theme.json',JSON.stringify({theme:{n:'琥珀金',p:'#EFA51C',s:'#B5760A',i:'#F6C96A',c:'#29A8E0'},contrast:'auto',logoLight:1,groups:{hd:6,ft:0,hero:1,fm:1,tblsty:1,icon:1},controls:{btn:true},memberEntry:true}),'application/json');
+  await until(function(){return (D().getElementById('previewSource').textContent||'').indexOf('完整設定')>-1},8000);
+  T('B 上傳 JSON 檔 → 辨識為完整設定',(D().getElementById('previewSource').textContent||'').indexOf('完整設定')>-1,(D().getElementById('previewSource').textContent||'').slice(0,40));
+  D().getElementById('importConfirm').click();
+  await until(function(){var s=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');return s.theme&&s.theme.p==='#EFA51C'},6000);
+  var st=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
+  T('B JSON 還原:主題與版型正確',st.theme.p==='#EFA51C'&&st.groups.hd===6&&st.groups.tblsty===1,'主色'+st.theme.p+' hd='+st.groups.hd);
+  /* C. 檔案上傳:CSS */
+  sessionStorage.setItem('hanlin-session','1');
+  await go('import.html');
+  pick('site.css',':root{--brand:#16a34a}\n.btn{background:var(--brand);color:#fff}','text/css');
+  await until(function(){return (D().getElementById('previewSource').textContent||'').indexOf('品牌色')>-1},8000);
+  T('C 上傳 CSS 檔 → 解析出品牌色',(D().getElementById('previewSource').textContent||'').indexOf('品牌色')>-1,(D().getElementById('previewSource').textContent||'').slice(0,40));
+  /* D. 載入上次儲存 */
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'梅果紫',p:'#A93BB8',s:'#7C2489',i:'#D07FDB',c:'#1EC3A2'},contrast:'auto',logoLight:2,groups:{hd:1,ft:2,hero:0,fm:0,tblsty:0,icon:0},controls:{btn:true},memberEntry:true}));
+  sessionStorage.setItem('hanlin-session','1');
+  await go('import.html');
+  var savedBtn=D().getElementById('importSaved');
+  T('D「載入上次儲存」按鈕可用',!!savedBtn&&savedBtn.offsetParent!==null,savedBtn?'存在':'不存在');
+  if(savedBtn){savedBtn.click();await until(function(){return D().getElementById('compSample').style.display==='block'||D().getElementById('cmpGrid').style.display==='grid'},8000);
+    T('D 載入上次儲存 → 顯示規範元件示例',D().getElementById('compSample').style.display==='block'||D().getElementById('cmpGrid').style.display==='grid');
+  }
+  /* E. 不支援的檔案 */
+  sessionStorage.setItem('hanlin-session','1');
+  await go('import.html');
+  var alerted='';W().alert=function(m){alerted=m};
+  pick('readme.txt','這是一個純文字檔案，沒有任何色碼或設定','text/plain');
+  await until(function(){return alerted.length>0},8000);
+  T('E 不支援的檔案 → 給出明確提示',alerted.indexOf('匯入失敗')>-1,alerted.slice(0,50));
+}catch(e){T('例外:'+e.message,false)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='FILE-'+fails+'-FAIL';
+})();
+</script></body></html>

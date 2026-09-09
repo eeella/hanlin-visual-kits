@@ -1,0 +1,84 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HF</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fa" style="width:1300px;height:900px;position:absolute;left:-99999px"></iframe>
+<iframe id="fb" style="width:1300px;height:800px;position:absolute;left:-99999px;top:0"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0,S="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>AppEdu</title><style>\nbody{margin:0;font-family:system-ui;background:#f7f8fa}\n.topbar{display:flex;align-items:center;gap:16px;padding:12px 28px;background:#7c3aed;color:#fff}\n.brand-name{font-weight:800;font-size:18px}\n.topbar nav a{color:#fff;text-decoration:underline;margin:0 4px}\n.search-box{border:1px solid #ddd;border-radius:4px;padding:6px 10px;min-width:150px}\n.bell{font-size:20px}\n.avatar-circle{width:28px;height:28px;background:#ddd;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}\n.login-btn{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;border-radius:4px;padding:5px 10px}\n.hero{background:#7c3aed;color:#fff;padding:56px 28px;text-align:center}\n.cards{display:flex;gap:16px;padding:36px 28px}\n.card{flex:1;background:#fff;border:1px solid #eee;border-radius:8px;padding:20px;text-align:center}\nfooter{background:#3b0764;color:#ddd;padding:22px;text-align:center}\n</style></head><body>\n<div class=\"topbar\"><span class=\"brand-name\">AppEdu</span>\n<nav><a href=\"#\">\u8ab2\u7a0b</a><a href=\"#\">\u984c\u5eab</a></nav>\n<input class=\"search-box\" type=\"text\" placeholder=\"\u641c\u5c0b\u8ab2\u7a0b...\">\n<span class=\"bell material-icons\">notifications</span>\n<span class=\"avatar-circle\">\u738b</span>\n<button class=\"login-btn\">\u6703\u54e1\u767b\u5165</button></div>\n<div class=\"hero\"><h1>\u5b78\u7fd2\u5f9e\u9019\u88e1\u958b\u59cb</h1><p>\u4e00\u7ad9\u5f0f\u6559\u5b78\u5e73\u53f0</p></div>\n<div class=\"cards\"><div class=\"card\"><i class=\"fas fa-book\"></i><h3>\u6559\u6750</h3></div><div class=\"card\"><i class=\"fas fa-pen\"></i><h3>\u4f5c\u696d</h3></div><div class=\"card\"><i class=\"fas fa-chart-line\"></i><h3>\u6210\u7e3e</h3></div></div>\n<footer>\u00a9 2026 AppEdu</footer></body></html>";
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fa=document.getElementById('fa'),fb=document.getElementById('fb');
+var BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function until(fn,ms){return new Promise(function(res){var t=0;(function c(){var v=false;try{v=fn()}catch(e){}if(v||t>=(ms||8000))return res(v);t+=120;setTimeout(c,120)})()})}
+function lum(c){var m=/(\d+), (\d+), (\d+)/.exec(c||'');return m?(0.2126*+m[1]+0.7152*+m[2]+0.0722*+m[3])/255:null}
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  await new Promise(function(res){fa.onload=function(){setTimeout(res,900)};(ticket('brand.html'),fa.src=BASE+'brand.html')});
+  var da=fa.contentDocument,Wa=fa.contentWindow;
+  var t1=[].filter.call(da.querySelectorAll('.cat-tab'),function(x){return x.dataset.cat==='identity'})[0];
+  if(t1)t1.click();await until(function(){return true},400);
+  var ai=da.querySelector('.hero-ai'),ph=da.querySelector('.hero-photo');
+  var cai=Wa.getComputedStyle(ai),cph=Wa.getComputedStyle(ph);
+  R.push('規格來源｜歡迎橫幅示範:');
+  R.push('  AI 漸層版  底='+(cai.backgroundImage!=='none'?'漸層':cai.backgroundColor)+' 字='+cai.color);
+  R.push('  純圖片版   底='+(cph.backgroundImage!=='none'?'漸層':cph.backgroundColor)+' 字='+cph.color);
+  var t2=[].filter.call(da.querySelectorAll('.cat-tab'),function(x){return x.dataset.cat==='comps'})[0];
+  if(t2)t2.click();await until(function(){return true},500);
+  var fmBoxes=da.querySelectorAll('.pick-box[data-group="fm"]');
+  var tile=fmBoxes[0].querySelector('.fm-tile'),ctile=tile?Wa.getComputedStyle(tile):null;
+  var icon2=fmBoxes[1].querySelector('.fm-icon'),cicon=icon2?Wa.getComputedStyle(icon2):null;
+  R.push('規格來源｜功能選單示範:');
+  R.push('  有色塊圖示磚版 tile 底='+(ctile?ctile.backgroundColor:'?')+' 尺寸='+(ctile?ctile.width+'x'+ctile.height:'?')+' 圓角='+(ctile?ctile.borderRadius:'?'));
+  R.push('  純 icon 版   圖示大小='+(cicon?cicon.fontSize:'?')+' 底='+(cicon?cicon.backgroundColor:'?'));
+  R.push('套用結果比對:');
+  async function run(g,label){
+    localStorage.setItem('hanlin-import-html',S);
+    localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',logoLight:2,groups:g,controls:{btn:true},memberEntry:true}));
+    sessionStorage.setItem('hanlin-session','1');
+    await new Promise(function(res){fb.onload=function(){setTimeout(res,600)};(ticket('preview.html'),fb.src=BASE+'preview.html')});
+    var f2=fb.contentDocument.getElementById('importPageFrame');
+    await until(function(){var d2=f2.contentDocument;return d2&&d2.body&&d2.body.children.length>0},8000);
+    return {d:f2.contentDocument,W:f2.contentWindow};
+  }
+  /* hero 兩種 */
+  var r0=await run({hd:1,ft:2,hero:0,fm:0,tblsty:0,icon:0});
+  var h0=r0.d.querySelector('[data-hl-hero]');
+  var c0=h0?r0.W.getComputedStyle(h0):null;
+  T('hero=0 AI 漸層版：套用為漸層＋白字',!!c0&&c0.backgroundImage.indexOf('gradient')>-1&&lum(c0.color)>0.8,c0?((c0.backgroundImage.indexOf('gradient')>-1?'漸層':c0.backgroundColor)+' 字'+c0.color):'找不到 hero');
+  var r1=await run({hd:1,ft:2,hero:1,fm:0,tblsty:0,icon:0});
+  var h1=r1.d.querySelector('[data-hl-hero]');
+  var c1=h1?r1.W.getComputedStyle(h1):null;
+  /* 規格更正：brand.html 的 .hero-photo 示範是「背景照片預留位置」，
+     沒有任何 CSS 定義（就是預設淺底面板＋圖示＋說明文字），不是漸層白字。
+     舊斷言「示範同樣是漸層白字」是照著舊實作寫的，不是照規範。
+     純圖片版現在：有照片＝整張照片＋暗角遮罩＋白字；
+     沒照片＝中性淺底＋墨色文字＋照片預留位，與 AI 漸層版一眼可辨。 */
+  var _p1=!!c1&&c1.backgroundImage.indexOf('url(')>-1;
+  var _ph1=!!(r1.d&&r1.d.querySelector('[data-hl-photo]'));
+  T('hero=1 純圖片版：整張照片，或中性底＋照片預留位（與漸層版可辨）',
+    !!c1&&(_p1||_ph1)&&(_p1?lum(c1.color)>0.8:lum(c1.color)<0.4),
+    c1?((_p1?'照片':(_ph1?'中性底＋預留位':'漸層'))+' 字'+c1.color):'找不到 hero');
+  T('hero 兩種變體的漸層不同',!!c0&&!!c1&&c0.backgroundImage!==c1.backgroundImage,'相同='+(c0&&c1&&c0.backgroundImage===c1.backgroundImage));
+  /* fm 兩種 */
+  var rA=await run({hd:1,ft:2,hero:0,fm:0,tblsty:0,icon:0});
+  var flexA=rA.d.querySelector('div[style*="display:flex"][style*="gap"]')||rA.d.querySelector('.cards');
+  var icA=flexA?flexA.querySelector('.material-symbols-rounded,svg'):null;
+  var cA=icA?rA.W.getComputedStyle(icA):null;
+  var pA=(icA&&icA.parentElement)?rA.W.getComputedStyle(icA.parentElement):null;
+  T('fm=0 有色塊圖示磚版：圖示有柔色塊',!!cA&&(cA.backgroundColor!=='rgba(0, 0, 0, 0)'||(pA&&pA.backgroundColor!=='rgba(0, 0, 0, 0)')),
+    cA?('圖示底='+cA.backgroundColor+' 容器底='+(pA?pA.backgroundColor:'-')+' 圓角='+cA.borderRadius):'找不到卡片圖示');
+  var rB=await run({hd:1,ft:2,hero:0,fm:1,tblsty:0,icon:0});
+  var flexB=rB.d.querySelector('div[style*="display:flex"][style*="gap"]')||rB.d.querySelector('.cards');
+  var icB=flexB?flexB.querySelector('.material-symbols-rounded,svg'):null;
+  var cB=icB?rB.W.getComputedStyle(icB):null;
+  var pB=(icB&&icB.parentElement)?rB.W.getComputedStyle(icB.parentElement):null;
+  T('fm=1 純 icon 版：圖示無色塊且放大至示範尺寸',!!cB&&cB.backgroundColor==='rgba(0, 0, 0, 0)'&&cB.padding==='0px'&&parseFloat(cB.fontSize)>=34,
+    cB?('圖示底='+cB.backgroundColor+' 容器底='+(pB?pB.backgroundColor:'-')+' 大小='+cB.fontSize):'找不到卡片圖示');
+}catch(e){T('例外:'+e.message,false)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='HEROFM-'+fails+'-FAIL';
+})();
+</script></body></html>

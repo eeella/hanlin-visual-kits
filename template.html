@@ -11,8 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=5fb9bddef70d"></script>
-<script src="kits.js?v=39caefe7862e"></script>
+<script src="defaults.js?v=16974f4afe52"></script>
+<script src="kits.js?v=cd67361477e4"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
 <script src="skillpack.js?v=d4cfcf18a0a1"></script>
@@ -2137,7 +2137,24 @@ main .opt-dot.on{border-color:#0088D2}
     var draft=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
     /* 只在畫面上套預設，不寫回 localStorage——否則重整清空後又立刻長出一筆，
        使用者會看成「紀錄沒清掉」，其他頁也會誤判成「已有採用設定」而跳出覆蓋確認 */
-    applyState((draft&&draft.groups)?draft:DEFAULT_ADOPT);
+
+    /* 【缺 groups 不等於整組不要】(使用者回報 2026-09-09：選了套版卻跑出翰林藍)
+       原本是 (draft&&draft.groups)?draft:DEFAULT_ADOPT —— 二選一。
+       但從視覺套版列表按「匯入套版」寫進去的設定只有 theme 與 contrast，
+       沒有 groups；條件不成立就把使用者剛選的那一組整個丟掉，
+       改用 DEFAULT_ADOPT，而它的 theme.n 是「翰林藍」。
+       結果就是「我明明選了 A，點進去卻是翰林藍那一版」。
+       改成逐項補齊：使用者有的就用他的，只有缺的欄位才拿預設值填。 */
+    var base=draft&&typeof draft==='object'?draft:null;
+    var merged=DEFAULT_ADOPT;
+    if(base){
+      merged={};
+      Object.keys(DEFAULT_ADOPT).forEach(function(k){merged[k]=DEFAULT_ADOPT[k]});
+      Object.keys(base).forEach(function(k){
+        if(base[k]!==undefined&&base[k]!==null)merged[k]=base[k];
+      });
+    }
+    applyState(merged);
   }catch(e){try{applyState(DEFAULT_ADOPT)}catch(e2){}}
   syncDemoLogos();
   updateAdoptStatus();
@@ -2145,6 +2162,7 @@ main .opt-dot.on{border-color:#0088D2}
   /* ===== 從首頁「匯入」進來時，還原存下的品牌規範 ===== */
   function applyState(st){
     if(!st||typeof st!=='object')throw new Error('沒有可套用的資料');
+    if(window.HL_trace)window.HL_trace('套版詳細 applyState（還原匯入設定）',{傳入:(st.theme&&st.theme.n)||'(無)',目前curTheme:(curTheme&&curTheme.n)||'(無)'});
     if(st.theme&&st.theme.p){
       var matched=THEMES.filter(function(x){return x.p===st.theme.p})[0];
       curTheme=matched||st.theme;
@@ -2217,6 +2235,7 @@ main .opt-dot.on{border-color:#0088D2}
   }
   function saveTheme(){
     var st=buildState();
+    if(window.HL_trace)window.HL_trace('套版詳細 saveTheme',{curTheme:(curTheme&&curTheme.n)||'(無)',存入:(st.theme&&st.theme.n)||'(無)'});
     localStorage.setItem('hanlin-brand-theme',JSON.stringify(st));
     return st;
   }
@@ -2333,6 +2352,12 @@ main .opt-dot.on{border-color:#0088D2}
   function saveAndPreview(){
     saveTheme();
     try{localStorage.setItem('hanlin-show-result','1')}catch(e){}
+    /* 【從這一頁過去就是「已經挑過樣式」】(使用者回報 2026-09-09)
+       匯入頁用 hanlin-import-styled 決定對照預覽的右邊要不要套版；
+       沒有這個旗標，右邊就維持原檔，並顯示「還沒挑視覺套版，所以左右兩邊一樣」。
+       但使用者是在這一頁把版型挑完才按「套入匯入頁」的——他已經挑過了。
+       首頁與視覺套版列表的兩顆按鈕本來就有設，只有這條路徑漏了。 */
+    try{sessionStorage.setItem('hanlin-import-styled','1')}catch(e){}
     var to='import.html';
     try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:to,t:Date.now()}))}catch(e){}
     location.href=to;
@@ -2474,6 +2499,7 @@ main .opt-dot.on{border-color:#0088D2}
   /* ── 頁首 ── */
   /* 整頁照這一組畫：中間色、灰階、淡色圖示方塊與所有元件示範都跟著換，
      不是只有上面那排色票變。這裡只做預覽；採用設定由頁面互動自動存草稿，或按「套入匯入頁」寫入。 */
+  if(window.HL_trace)window.HL_trace('套版詳細載入',{網址kit:id||'(沒帶)',實際用:k.n});
   if(window.HL_previewKit)window.HL_previewKit(k);
 
   document.title='翰林產品版型平台|'+k.n;

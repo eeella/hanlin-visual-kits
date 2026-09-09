@@ -1,0 +1,38 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FRESH</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1300px;height:900px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 進匯入頁應該是乾淨的：localStorage 有上次的檔案，但這是「新工作階段」
+   （sessionStorage 沒有 hanlin-import-live 標記），不該自動還原對照預覽。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var SAMPLE="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>舊檔</title></head><body><section class=\"hero\"><h1>上次匯入的頁面</h1></section><div class=\"box\"><p>內容</p></div></body></html>";
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+(async function(){
+try{
+  /* 佈置「上次留下的紀錄」 */
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',logoLight:2,groups:{hd:1,ft:2,hero:0,fm:0,opt:0,tblsty:0,icon:0}}));
+  localStorage.setItem('hanlin-import-html',SAMPLE);
+  sessionStorage.removeItem('hanlin-import-live');   /* ← 關鍵：新工作階段 */
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,900)};ticket('import.html');fr.src='import.html';});
+  var d=D();
+  var cmp=d.getElementById('cmpGrid'), step=d.getElementById('stepPreview');
+  T('新工作階段：不自動顯示對照預覽（畫面是乾淨的匯入頁）',
+    cmp.style.display!=='grid'&&step.style.display!=='block',
+    'cmpGrid='+(cmp.style.display||'(空)')+' stepPreview='+(step.style.display||'(空)'));
+  T('新工作階段：殘留的匯入檔案已被清掉',localStorage.getItem('hanlin-import-html')===null,
+    'hanlin-import-html='+(localStorage.getItem('hanlin-import-html')===null?'已清':'仍存在'));
+  T('新工作階段：採用設定仍保留（永久保存，不受影響）',!!localStorage.getItem('hanlin-brand-theme'));
+  /* 同工作階段的還原流程由 run-all.sh 的既有各組覆蓋，這裡不點「確認採用」——
+     那顆按鈕會導頁到 preview.html，會把這個測試頁卡住。 */
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='FRESH-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message;
+  document.title='FRESH-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

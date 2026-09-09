@@ -47,6 +47,184 @@ window.HL_previewTarget=function(){
   return id?('template.html?kit='+encodeURIComponent(id)):'preview.html';
 };
 
+/* ── 跨頁流程追蹤 ───────────────────────────────────────────────────
+   目的：回答「我選的東西是在哪一步被改掉的」。
+
+   兩個設計決定，都是被前幾次失敗逼出來的：
+
+   1) 不靠人工埋點。先前是我挑幾個地方手動加 HL_trace，結果漏掉
+      parseImport 覆蓋 theme、clearPrevious 清旗標這兩個真正的兇手，
+      白猜了兩輪。現在改成攔截 localStorage／sessionStorage 的寫入，
+      任何對 hanlin-* 的改動都會自己現形，不管是誰寫的。
+
+   2) 開關放 localStorage。先前放 sessionStorage，換一個分頁就失效，
+      使用者操作時忘了帶 ?hlmon=1 就什麼都沒記到。現在帶一次 ?hlmon=1
+      就持續有效，直到在面板按「停止」或帶 ?hlmon=0。
+
+   關掉時：不攔截、不記錄、不建面板，對正常使用零影響。 */
+(function(){
+  var KEY='hanlin-trace', SW='hanlin-trace-on';
+  function on(){
+    try{
+      if(/[?&]hlmon=0/.test(location.search)){localStorage.removeItem(SW);return false}
+      if(/[?&]hlmon=1/.test(location.search)){localStorage.setItem(SW,'1');return true}
+      return localStorage.getItem(SW)==='1';
+    }catch(e){return false}
+  }
+  if(!on())return;   /* 沒開就整段不做事 */
+
+  function themeName(){
+    try{
+      var st=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{};
+      return ((st.theme||{}).n)||'(無)';
+    }catch(e){return '(讀不到)'}
+  }
+  function kid(){
+    try{return (window.HL_adoptedKitId&&window.HL_adoptedKitId())||'(對不上任何一組)'}catch(e){return '-'}
+  }
+  /* 誰改的：從堆疊取第一個不屬於追蹤自己的位置 */
+  function caller(){
+    try{
+      var st=(new Error()).stack||'';
+      var lines=st.split('\n').slice(1);
+      for(var i=0;i<lines.length;i++){
+        var L=lines[i];
+        if(/defaults\.js/.test(L))continue;
+        var m=L.match(/([\w.-]+\.(?:html|js))[?:][^)]*?(\d+):(\d+)/);
+        if(m)return m[1]+':'+m[2];
+        m=L.match(/([\w.-]+\.(?:html|js)):(\d+)/);
+        if(m)return m[1]+':'+m[2];
+      }
+    }catch(e){}
+    return '';
+  }
+  function brief(v){
+    v=String(v==null?'':v);
+    if(v.length>90){
+      /* 是 JSON 就抽關鍵欄位，不要貼一大串 */
+      try{
+        var o=JSON.parse(v);
+        if(o&&o.theme)return '{theme.n='+(o.theme.n||'?')+', groups='+(o.groups?'有':'無')+', '+v.length+' bytes}';
+      }catch(e){}
+      return '('+v.length+' bytes) '+v.slice(0,60)+'…';
+    }
+    return v;
+  }
+  var rows=[];
+  try{rows=JSON.parse(sessionStorage.getItem(KEY)||'[]')}catch(e){rows=[]}
+  function push(o){
+    rows.push(o);
+    if(rows.length>400)rows=rows.slice(-400);
+    try{sessionStorage.setItem(KEY,JSON.stringify(rows))}catch(e){}
+  }
+  window.HL_trace=function(evt,extra){
+    push({t:new Date().toTimeString().slice(0,8),
+          page:(location.pathname.split('/').pop()||'index.html'),
+          evt:evt, kit:themeName(), kid:kid(),
+          extra:extra?JSON.stringify(extra):'', kind:'event'});
+  };
+  window.HL_traceDump=function(){return rows.slice()};
+  window.HL_traceClear=function(){rows=[];try{sessionStorage.removeItem(KEY)}catch(e){}};
+  window.HL_traceStop=function(){try{localStorage.removeItem(SW)}catch(e){};location.reload()};
+
+  /* ── 攔截 storage：所有 hanlin-* 的寫入與刪除都自己現形 ── */
+  ['localStorage','sessionStorage'].forEach(function(kind){
+    var st; try{st=window[kind]}catch(e){return}
+    if(!st)return;
+    var _set=st.setItem.bind(st), _rm=st.removeItem.bind(st), _clr=st.clear.bind(st);
+    var tag=kind==='localStorage'?'L':'S';
+    st.setItem=function(k,v){
+      var before=(k==='hanlin-brand-theme')?themeName():null;
+      var out=_set(k,v);
+      if(/^hanlin-/.test(k)&&k!==KEY&&k!==SW){
+        var after=(k==='hanlin-brand-theme')?themeName():null;
+        push({t:new Date().toTimeString().slice(0,8),
+              page:(location.pathname.split('/').pop()||'index.html'),
+              evt:'寫入 '+tag+':'+k, kit:themeName(), kid:kid(),
+              extra:brief(v), by:caller(), kind:'write',
+              themeChanged:(before!==null&&before!==after)?(before+' → '+after):''});
+      }
+      return out;
+    };
+    st.removeItem=function(k){
+      if(/^hanlin-/.test(k)&&k!==KEY&&k!==SW){
+        push({t:new Date().toTimeString().slice(0,8),
+              page:(location.pathname.split('/').pop()||'index.html'),
+              evt:'刪除 '+tag+':'+k, kit:themeName(), kid:kid(),
+              extra:'', by:caller(), kind:'del'});
+      }
+      return _rm(k);
+    };
+    st.clear=function(){
+      push({t:new Date().toTimeString().slice(0,8),
+            page:(location.pathname.split('/').pop()||'index.html'),
+            evt:'清空 '+tag+'（整個）', kit:themeName(), kid:kid(),
+            extra:'', by:caller(), kind:'del'});
+      return _clr();
+    };
+  });
+
+  /* ── 面板 ── */
+  function panel(){
+    if(document.getElementById('hlTrace'))return;
+    var d=document.createElement('div');
+    d.id='hlTrace';
+    d.setAttribute('style','position:fixed;left:12px;bottom:12px;z-index:2147483646;'
+      +'width:560px;max-height:52vh;overflow:auto;background:#0F1621;color:#D8E4F0;'
+      +'font:11px/1.55 Consolas,Menlo,monospace;border-radius:10px;'
+      +'box-shadow:0 8px 30px rgba(0,0,0,.45)');
+    function esc(x){return String(x==null?'':x).replace(/[&<>]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+    function render(){
+      var html='<div style="position:sticky;top:0;background:#17212F;padding:7px 11px;'
+        +'border-radius:10px 10px 0 0;display:flex;align-items:center;gap:7px">'
+        +'<b style="color:#6FD3FF">流程追蹤</b>'
+        +'<span style="color:#7C8CA0;font-size:10px">'+rows.length+' 筆 · 攔截所有 hanlin-* 寫入</span>'
+        +'<button id="hlTC" style="margin-left:auto;background:#2A3A4D;color:#D8E4F0;border:0;'
+        +'border-radius:6px;padding:3px 9px;font:inherit;cursor:pointer">清空</button>'
+        +'<button id="hlTS" style="background:#5A2A2A;color:#FFD8D8;border:0;'
+        +'border-radius:6px;padding:3px 9px;font:inherit;cursor:pointer">停止</button>'
+        +'<button id="hlTH" style="background:#2A3A4D;color:#D8E4F0;border:0;'
+        +'border-radius:6px;padding:3px 9px;font:inherit;cursor:pointer">收起</button></div>'
+        +'<div style="padding:8px 11px 11px">';
+      if(!rows.length)html+='<div style="color:#7C8CA0">還沒有記錄。操作一次就會出現。</div>';
+      var prevKit=null, prevPage=null;
+      rows.forEach(function(r){
+        if(r.page!==prevPage){
+          html+='<div style="margin:7px 0 3px;color:#6FD3FF;border-top:1px solid #24354A;'
+            +'padding-top:5px">▸ '+esc(r.page)+'</div>';
+          prevPage=r.page;
+        }
+        var changed=prevKit!==null&&prevKit!==r.kit;
+        var color=r.kind==='write'?'#9BE8A0':(r.kind==='del'?'#FFB08A':'#C5D2E0');
+        html+='<div style="padding:3px 0 3px 8px">'
+          +'<span style="color:#7C8CA0">'+r.t+'</span> '
+          +'<span style="color:'+color+'">'+esc(r.evt)+'</span>'
+          +(r.by?' <span style="color:#7C8CA0">@'+esc(r.by)+'</span>':'')
+          +(r.extra?'<div style="padding-left:14px;color:#8FA3B8">'+esc(r.extra)+'</div>':'')
+          +(r.themeChanged?'<div style="padding-left:14px;color:#FF8A6B">採用的組：'
+              +esc(r.themeChanged)+'</div>':'')
+          +(changed&&!r.themeChanged?'<div style="padding-left:14px;color:#FF8A6B">'
+              +'採用的組變成 '+esc(r.kit)+'（原本 '+esc(prevKit)+'）</div>':'')
+          +'</div>';
+        prevKit=r.kit;
+      });
+      html+='</div>';
+      d.innerHTML=html;
+      var c=document.getElementById('hlTC'); if(c)c.onclick=function(){window.HL_traceClear();render()};
+      var st2=document.getElementById('hlTS'); if(st2)st2.onclick=function(){window.HL_traceStop()};
+      var h=document.getElementById('hlTH'); if(h)h.onclick=function(){d.style.display='none'};
+    }
+    document.body.appendChild(d);
+    render();
+    setInterval(render,1200);
+  }
+  function boot(){window.HL_trace('進入頁面');panel()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+  window.addEventListener('pagehide',function(){window.HL_trace('離開頁面')});
+})();
+
 /* ── 乾淨進入時清掉匯入流程的資料 ───────────────────────────────────
    挑風格的三頁（首頁／視覺套版列表／套版詳細）共用這一份，不各寫一份。
 

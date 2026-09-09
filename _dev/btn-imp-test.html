@@ -1,0 +1,126 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BTNIMP</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1440px;height:1000px;position:absolute;left:-99999px"></iframe>
+<script>
+/* ══ 對抗原檔自帶 !important 的迴歸鎖 ═════════════════════════════════
+   固定樣本：samples/user-cloudec2.html（使用者真實檔案，101,676 bytes）
+   凍結夾具，不要因為桌面上的原始檔被改就跟著更新。
+
+   這份樣本的關鍵特徵：**它是已經套過 STYLEGUIDE 的版本，自帶 349 個 !important**，
+   其中直接對抗我們的有：
+       .btn-secondary   { border:1.5px solid #064ea4!important }
+       .btn-ghost-light { border:1.5px solid rgba(255,255,255,.7)!important }
+       .btn-lg          { padding:14px 32px!important }
+
+   【事故】setS() 原本用 el.setAttribute('style', …) 寫**普通 inline 宣告**。
+   依 CSS 疊代規則，**樣式表的 !important 勝過普通 inline 宣告**，
+   於是 .btn-secondary ×2、.btn-secondary.btn-lg ×1、.btn-ghost-light.btn-lg ×1
+   共 4 顆按鈕的邊線永遠消不掉 —— 稽核報「按鈕無邊線只套到 8/12」。
+   這違反專案鐵則「所有套用一律用 setProperty(prop,value,'important') 寫在元素上」。
+
+   【修法】setS() 改成逐條 setProperty(k,v,'important')。
+   切分宣告時必須認括號：linear-gradient(...)／url(...) 內可能含分號，
+   單純 split(';') 會把一條宣告切成兩半而整條失效。
+
+   驗收一律量實際渲染的 computedStyle。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  var SRC=await (await fetch('samples/user-cloudec2.html')).text();
+
+  /* 先確認夾具本身沒被換掉——這道防線的前提就是「樣本自帶 !important」 */
+  var impCount=(SRC.match(/!important/g)||[]).length;
+  T('夾具前提：樣本仍自帶大量 !important（≥300）',impCount>=300,'!important '+impCount+' 個');
+  T('夾具前提：樣本仍含對抗性的 .btn-secondary 邊線規則',
+    /\.btn-secondary\s*\{[^}]*border\s*:[^}]*!important/.test(SRC),
+    /\.btn-secondary\s*\{[^}]*border\s*:[^}]*!important/.test(SRC)?'存在':'已消失，夾具失效');
+
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({
+    theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    contrast:'auto',logoLight:2,
+    groups:{hd:1,ft:2,hero:1,fm:1,opt:1,tblsty:0,icon:0},
+    controls:{btn:true,select:true,label:true,seg:true},memberEntry:true}));
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html';});
+  D().getElementById('importJson').value=SRC;
+  D().getElementById('importApply').click();
+  await wait(4200);
+
+  var f2=D().getElementById('frameBranded');
+  var dd=f2.contentDocument,W=f2.contentWindow;
+  if(!dd||!dd.body){T('套用後有渲染內容',false,'iframe 無內容');}
+  else{
+    /* ── 核心：所有可見按鈕都必須無邊線，一顆都不能漏 ── */
+    var btns=dd.querySelectorAll('button,[class*=btn]'),tot=0,bad=[];
+    Array.prototype.forEach.call(btns,function(b){
+      var c=W.getComputedStyle(b);
+      if(c.display==='none')return;
+      tot++;
+      var noBd=(c.borderStyle==='none'||parseFloat(c.borderTopWidth)===0);
+      if(!noBd&&bad.length<4){
+        bad.push(b.tagName.toLowerCase()+'.'+String(b.className).slice(0,30)+'（border '+c.borderTopWidth+'）');
+      }else if(!noBd){bad.push('…');}
+    });
+    T('原檔自帶 !important 也要蓋掉：所有按鈕無邊線',bad.length===0,
+      (tot-bad.length)+'/'+tot+(bad.length?('｜未消：'+bad.slice(0,3).join('、')):''));
+
+    /* ── 稽核不得再出現這條紅字 ── */
+    var rep=D().getElementById('impReport').textContent||'';
+    T('稽核不再回報「按鈕無邊線只套到 N/M」',rep.indexOf('規則「按鈕無邊線」')<0,
+      rep.indexOf('規則「按鈕無邊線」')<0?'無此紅字':(/規則「按鈕無邊線」[^｜]*/.exec(rep)||[''])[0].slice(0,60));
+
+    /* ── setS 的 important 是否真的寫進元素（不是靠注入 CSS 撐著）── */
+    var one=null;
+    Array.prototype.forEach.call(dd.querySelectorAll('[class*=btn-secondary]'),function(b){
+      if(!one&&W.getComputedStyle(b).display!=='none')one=b;
+    });
+    if(!one)R.push('◽ 樣本中找不到可見的 .btn-secondary，略過 inline 檢查');
+    else{
+      /* 2026-08-28 政策改變：不再往使用者元素寫 inline style。
+         舊斷言驗的是「border 以 inline important 寫在元素上」——那正是被淘汰的做法。
+         新契約：使用者的元素上不得有 inline style，覆蓋改由注入 CSS 達成
+         （html body [data-hl-s] specificity 高於原站，且置底於 </body>）。
+         所以這裡改驗兩件事：①元素乾淨 ②但效果仍然生效。 */
+      /* 例外只有一個：執行期隱形字守門。它是全系統唯一被允許寫 element.style
+         的地方（inline !important 贏過任何樣式表規則是 CSS 疊代的硬限制，
+         而它要蓋掉的正是原檔自己的 inline !important 顏色）。
+         它的寫入帶 data-hl-cgfix 標記，可以和「我們亂寫的樣式」區分開。
+         這條驗的是後者：除了守門的救援，按鈕上不得有任何 inline 樣式。 */
+      var cg=one.getAttribute('data-hl-cgfix')==='1';
+      var st=String(one.getAttribute('style')||'');
+      var nonGuard=cg?st.replace(/color\s*:[^;]*;?/i,'').trim():st;
+      T('按鈕元素上不得留下 inline style（守門的對比救援除外）',
+        !nonGuard, (cg?'（守門救援 color，其餘：）':'')+'style="'+nonGuard+'"');
+      var saved=D().getElementById('frameBranded').contentDocument.querySelectorAll('[data-hl-cgfix]').length;
+      R.push('◽ 隱形字守門實際救援 '+saved+' 個元素（唯一允許寫 element.style 之處）');
+      T('雖無 inline，覆蓋仍生效（靠注入 CSS 的 specificity 與置底）',
+        (function(){var c=W.getComputedStyle(one);
+          return c.borderStyle==='none'||parseFloat(c.borderTopWidth)===0})(),
+        'computed border='+W.getComputedStyle(one).borderTopWidth);
+    }
+
+    /* ── 括號內的分號不得把宣告切壞：漸層類屬性必須完整套上 ── */
+    var gradBroken=0;
+    Array.prototype.forEach.call(dd.querySelectorAll('[style*="gradient"]'),function(e){
+      var v=e.style.backgroundImage||'';
+      if(v&&v.indexOf('gradient')>-1&&!/\)/.test(v))gradBroken++;
+    });
+    T('漸層宣告未被分號切壞（括號感知切分）',gradBroken===0,'破損 '+gradBroken+' 個');
+  }
+
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='BTNIMP-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='BTNIMP-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

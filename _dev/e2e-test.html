@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>E2E</title></head><body>
+<pre id="out">running</pre>
+<iframe id="fr" style="width:1280px;height:900px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[];function T(n,ok){R.push((ok?'✅':'❌')+' '+n)}
+var fr=document.getElementById('fr');
+var BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function nav(page){return new Promise(function(res){
+  var done=false;
+  fr.onload=function(){if(done)return;done=true;setTimeout(function(){
+    try{fr.contentWindow.confirm=function(){fr.contentWindow.__confirmAsked=true;return fr.contentWindow.__confirmAnswer!==false};}catch(e){}
+    res();},400)};
+  (ticket(page),fr.src=BASE+page);
+})}
+function waitNav(){return new Promise(function(res){fr.onload=function(){setTimeout(res,400)}})}
+function D(){return fr.contentDocument}
+function W(){return fr.contentWindow}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function pollFor(fn,ms){return new Promise(function(res){var t0=0;(function chk(){if(fn()||t0>=ms)return res();t0+=100;setTimeout(chk,100)})()})}
+function finish(){
+  document.getElementById('out').textContent=R.join('\n');
+  document.title='E2E-DONE-'+R.filter(function(x){return x.charAt(0)==='❌'}).length+'-FAIL';
+}
+(async function(){
+try{
+  /* S0 清空 */
+  ['hanlin-brand-theme','hanlin-import-html','hanlin-skill-blocks','hanlin-import-pending','hanlin-settings-saved','hanlin-import-opts','hanlin-show-result'].forEach(function(k){localStorage.removeItem(k)});
+
+  /* S1 首頁 */
+  await nav('index.html');
+  T('首頁：三張入口卡',D().querySelectorAll('.start-card').length===3,D().querySelectorAll('.start-card').length+' 張');
+  var pNav=waitNav();
+  D().getElementById('startDefault').click();
+  await pNav;
+  T('首頁：使用預設 → 導向版型預覽',W().location.href.indexOf('preview.html')>-1);
+  var st0=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('首頁：預設組合已寫入（翰林藍）',st0.theme&&st0.theme.p==='#0088D2');
+
+  /* S2 版型預覽 */
+  var mainEl=D().querySelector('main');
+  T('預覽：主題色套在 main（不動本站 chrome）',mainEl.style.getPropertyValue('--brand')==='#0088D2');
+  T('預覽：採用中的 Header 變體顯示',!!D().querySelector('[data-vr="hd:1"].show'));
+  D().getElementById('saveBlocks').click();
+  await wait(300);
+  var sk=JSON.parse(localStorage.getItem('hanlin-skill-blocks')||'{}');
+  T('預覽：儲存 skill 區塊（含 theme）',Array.isArray(sk.blocks)&&sk.blocks.length>0&&sk.theme&&sk.theme.theme.p==='#0088D2'||Array.isArray(sk.blocks)&&sk.blocks.length>0);
+  /* 匯出 skill JSON：攔截 createObjectURL */
+  var blobTxt=null;
+  (function(){var OB=W().Blob;W().Blob=function(parts,opts){try{blobTxt=parts.join('')}catch(e){}return new OB(parts,opts)}})();
+  W().URL.createObjectURL=function(){return 'blob:x'};
+  W().HTMLAnchorElement.prototype.click=function(){};
+  D().getElementById('exportSkill').click();
+  await wait(200);
+  T('預覽：匯出 skill JSON 內容正確',!!blobTxt&&JSON.parse(blobTxt).theme.theme.p==='#0088D2');
+
+  /* S3 自訂頁 */
+  await nav('brand.html');
+  var dots=D().querySelectorAll('#theme-row .theme-dot');
+  T('自訂：主題色盤建立（9 色）',dots.length===9);
+  dots[1].click(); /* 深湛藍 #005A9E */
+  await wait(500);
+  T('自訂：點選主題 → main 變數即時更新',D().querySelector('main').style.getPropertyValue('--brand')==='#005A9E');
+  var draft=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('自訂：草稿自動存檔（300ms）',draft.theme&&draft.theme.p==='#005A9E');
+  var logos=D().querySelectorAll('.logo-sel');
+  logos[3].click(); /* 品牌標誌 */
+  await wait(400);
+  var demoLogo=D().querySelector('.pick-box[data-group="hd"] .demo-logo');
+  T('自訂：勾 logo → hd 示範同步替換',!!demoLogo&&demoLogo.getAttribute('src').indexOf('logo-mark-only')>-1);
+  var hdBoxes=D().querySelectorAll('.pick-box[data-group="hd"]');
+  hdBoxes[0].querySelector('.pick-head').click(); /* 採用品牌官網(淺色) */
+  await wait(500);
+  var draft2=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('自訂：採用 hd=0 寫入草稿',draft2.groups&&draft2.groups.hd===0);
+  T('自訂：即時狀態列顯示已存採用',(D().getElementById('adoptStatus').textContent||'').indexOf('品牌官網（淺色）')>-1);
+  /* 漏洞A驗收：勾選後立刻切頁（不等 300ms），pagehide 強制存檔 */
+  var heroBoxes=D().querySelectorAll('.pick-box[data-group="hero"]');
+  heroBoxes[0].querySelector('.pick-head').click(); /* AI 漸層版 */
+  var pNavA=waitNav();
+  (ticket('import.html'),W().location.href=BASE+'import.html'); /* 立即離頁 */
+  await pNavA;
+  var draftA=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('自訂：勾選後立即切頁仍存檔（pagehide 保險）',draftA.groups&&draftA.groups.hero===0);
+  await nav('brand.html');
+  var pNav2=waitNav();
+  D().getElementById('goPreview').click();
+  await pNav2;
+  T('自訂：確認採用 → 版型預覽並套新主題',W().location.href.indexOf('preview.html')>-1&&D().querySelector('main').style.getPropertyValue('--brand')==='#005A9E');
+  T('預覽：hd=0 變體切換顯示',!!D().querySelector('[data-vr="hd:0"].show'));
+
+  /* S4 匯入頁：貼上 HTML 套用 */
+  await nav('import.html');
+  var SAMPLE='<html><head><title>T</title><style>.a{color:#6366f1}.b{border:1px solid #6366f1}</style></head><body><div class="nav2"><a href="#">x</a><a href="#">y</a></div><h1>你好</h1><i class="fas fa-star"></i><button onclick="alert(1)">按</button>🚀</body></html>';
+  D().getElementById('importJson').value=SAMPLE;
+  D().getElementById('importApply').click();
+  await wait(900);
+  T('匯入：對照預覽顯示',D().getElementById('cmpGrid').style.display==='grid');
+  var branded=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('匯入：色碼已映射（無 #6366f1）',branded.indexOf('#6366f1')<0&&branded.indexOf('#005A9E')>-1||branded.indexOf('#6366f1')<0);
+  T('匯入：fa icon 已替換',branded.indexOf('fa-star')<0||/material-symbols-rounded[^>]*>star/.test(branded));
+  /* 套版注入的執行時圖示 script 內含 EMOJI 對照表，原始符號本來就該留在表裡；
+     要驗的是畫面文字不再有 emoji，所以先把 script 去掉再檢查。 */
+  T('匯入：emoji 已轉圖示',branded.replace(/<script[\s\S]*?<\/script>/gi,'').indexOf('🚀')<0);
+  T('匯入：script/onclick 原封不動',branded.indexOf('onclick="alert(1)"')>-1);
+  T('匯入：替換報告顯示',(D().getElementById('impReport').textContent||'').indexOf('替換報告')>-1);
+  await wait(1600);
+  var auditTxt=D().getElementById('impAudit')?D().getElementById('impAudit').textContent:'';
+  T('匯入：套用檢查完成（非驗證中）',auditTxt.indexOf('驗證中')<0&&auditTxt.length>10);
+  T('匯入：檢查含目前採用組合',auditTxt.indexOf('目前採用組合')>-1);
+  /* 選項開關：關 icon → fa 保留 */
+  var icOpt=D().querySelector('#impOpts [data-opt="icon"]');
+  icOpt.click();
+  await wait(700);
+  var branded2=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('匯入：關閉 icon 開關 → 不替換 icon',branded2.indexOf('fa-star')>-1);
+  icOpt.click();
+  await wait(500);
+  /* 另存套用後 HTML */
+  var blob2=null;
+  (function(){var OB=W().Blob;W().Blob=function(parts,opts){try{blob2=parts.join('')}catch(e){}return new OB(parts,opts)}})();
+  W().URL.createObjectURL=function(){return 'blob:x'};
+  W().HTMLAnchorElement.prototype.click=function(){};
+  D().getElementById('exportBranded').click();
+  await wait(200);
+  T('匯入：另存套用後 HTML 內容正確',!!blob2&&blob2.indexOf('onclick="alert(1)"')>-1&&blob2.indexOf('#6366f1')<0);
+  if(!(blob2&&blob2.indexOf('onclick="alert(1)"')>-1&&blob2.indexOf('#6366f1')<0))R.push('　debug另存: '+(blob2?('len='+blob2.length+' hasOnclick='+(blob2.indexOf('onclick')>-1)+' has6366='+(blob2.indexOf('#6366f1')>-1)+' head='+blob2.slice(0,120).replace(/</g,'‹')):'blob2=null'));
+
+  /* S5 預設覆蓋確認 */
+  W().__confirmAnswer=false;W().__confirmAsked=false;
+  D().querySelector('.qd').dispatchEvent(new (W().MouseEvent)('click',{bubbles:true,cancelable:true}));
+  await wait(300);
+  var stillCustom=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('保護：點「預設」先確認，取消則不覆蓋',W().__confirmAsked===true&&stillCustom.theme&&stillCustom.theme.p==='#005A9E');
+
+  /* S6 跨分頁同步：wrapper 改設定 → 匯入頁自動重算 */
+  var st=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
+  st.theme={n:'靛藍',p:'#4F46E5',s:'#332DA8',i:'#8D88F2',c:'#F5C244'};
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify(st));
+  await wait(1200);
+  var branded3=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('同步：跨分頁改主題 → 對照自動重算為新主色',branded3.indexOf('#4F46E5')>-1);
+
+  /* S7 匯入 JSON 完整還原 */
+  /* 規則變更：採用設定改為永久保存。
+     原規則是「沒有一次性通行證的載入就清空設定」，等於按 F5、用上一頁回來、
+     直接貼網址開啟，都會把剛勾好的採用設定清光、退回預設值，
+     使用者看到的就是「換了勾選卻完全沒讀到」。
+     現在只清一次性交接旗標，設定要留到使用者自己按「清除紀錄」。 */
+  localStorage.setItem('hanlin-show-result','1');   /* 一次性旗標：重整後應被清掉 */
+  var pNavX=waitNav();W().location.reload();await pNavX;
+  var keptE=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  /* 政策變更 2026-08-28：重新整理一律清除，只有站內跳頁（帶通行證）才保留 */
+  T('規則：重新整理會清掉採用設定（新政策）',!localStorage.getItem('hanlin-brand-theme'),
+    localStorage.getItem('hanlin-brand-theme')?'仍存在':'已清空');
+  T('規則：重新整理仍會清掉一次性交接旗標',!localStorage.getItem('hanlin-show-result'));
+  var full={theme:{n:'梅果紫',p:'#A93BB8',s:'#7C2489',i:'#D07FDB',c:'#1EC3A2'},contrast:'auto',logoLight:0,logoDark:0,logoInv:false,groups:{hd:2,ft:1,hero:0,fm:0,tblsty:1,icon:0},controls:{btn:true},memberEntry:true};
+  D().getElementById('importJson').value=JSON.stringify(full);
+  D().getElementById('importApply').click();
+  await wait(700);
+  T('匯入 JSON：完整設定被解析',(D().getElementById('previewSource').textContent||'').indexOf('完整設定')>-1);
+  /* 漏洞B驗收：先有版型採用 → 匯入 HTML 後確認採用，groups 不被丟掉 */
+  var pre={theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},groups:{hd:2,ft:0,hero:0,fm:0,tblsty:2,icon:1},controls:{btn:true}};
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify(pre));
+  D().getElementById('importJson').value='<html><head><style>.x{color:#e11d48}</style></head><body><p class="x">hi</p></body></html>';
+  D().getElementById('importApply').click();
+  await wait(700);
+  var pNavB=waitNav();
+  D().getElementById('importConfirm').click();
+  await pNavB;
+  var merged=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('匯入：確認採用後保留既有版型採用（groups 合併不覆寫）',merged.groups&&merged.groups.hd===2&&merged.groups.tblsty===2&&merged.controls&&merged.controls.btn===true);
+}catch(e){R.push('❌ E2E 例外：'+e.message)}
+finish();
+})();
+</script></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CHAIN</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1400px;height:1100px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0,SAMPLE="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>\u5feb\u901f\u5b78\u5802</title></head><body style=\"margin:0;font-family:'Segoe UI',sans-serif\">\n<div id=\"root\">\n<header style=\"background:#e11d48;color:white;padding:18px 36px;display:flex;justify-content:space-between;align-items:center\">\n<div style=\"font-size:22px;font-weight:bold\">\u5feb\u901f\u5b78\u5802</div><nav style=\"display:flex;gap:20px\"><a href=\"#\" style=\"color:white;text-decoration:none\">\u8ab2\u7a0b</a><a href=\"#\" style=\"color:white;text-decoration:none\">\u95dc\u65bc</a></nav></header>\n<div style=\"background:linear-gradient(120deg,#e11d48,#f43f5e);color:#fff;padding:70px 36px;text-align:center\">\n<span style=\"font-size:13px;letter-spacing:3px\">FAST LEARNING</span><h1 style=\"font-size:44px;margin:12px 0\">\u4e09\u5341\u5929\u901f\u6210</h1><p>\u6bcf\u5929\u53ea\u8981 20 \u5206\u9418 \u23f0</p>\n<button style=\"margin-top:24px;background:#fff;color:#e11d48;border:2px solid #fff;padding:12px 32px;border-radius:6px;font-size:16px\">\u514d\u8cbb\u8a66\u807d</button></div>\n<div style=\"display:flex;gap:24px;padding:56px 36px\">\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83d\udcda</span><h3 style=\"color:#e11d48\">\u7cfb\u7d71\u8ab2\u7a0b</h3><p style=\"color:#64748b\">\u5faa\u5e8f\u6f38\u9032</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\u270d\ufe0f</span><h3 style=\"color:#e11d48\">\u96a8\u5802\u7df4\u7fd2</h3><p style=\"color:#64748b\">\u5373\u6642\u56de\u994b</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83c\udfc6</span><h3 style=\"color:#e11d48\">\u7d50\u696d\u8b49\u66f8</h3><p style=\"color:#64748b\">\u5c65\u6b77\u52a0\u5206</p></div>\n</div>\n<div style=\"background:#1f2937;color:#9ca3af;padding:28px;text-align:center\">\u00a9 2026 \u5feb\u901f\u5b78\u5802</div>\n</div></body></html>";
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fr=document.getElementById('fr'),BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function D(){return fr.contentDocument}function W(){return fr.contentWindow}
+function cs(e){return W().getComputedStyle(e)}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function go(p){return new Promise(function(res){fr.onload=function(){setTimeout(res,700)};(ticket(p),fr.src=BASE+p)})}
+function nav(){return new Promise(function(res){fr.onload=function(){setTimeout(res,700)}})}
+function theme(){try{return JSON.parse(localStorage.getItem('hanlin-brand-theme'))}catch(e){return {}}}
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  localStorage.removeItem('hanlin-brand-theme');localStorage.removeItem('hanlin-import-html');
+  /* ── 階段1:匯入檔案 ── */
+  await go('import.html');
+  D().getElementById('importJson').value=SAMPLE;
+  D().getElementById('importApply').click();
+  await wait(2000);
+  T('①匯入:對照預覽出現',D().getElementById('cmpGrid').style.display==='grid');
+  var b1=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  /* ── 階段2:調整樣式 → 自訂頁 ── */
+  var p=nav();D().getElementById('importConfirm').click();await p;
+  T('②導向自訂頁',W().location.href.indexOf('brand.html')>-1);
+  T('②自訂頁保留匯入旗標(可直接回匯入頁對照)',!!D().getElementById('backToImport')||!!D().querySelector('[href*=import]'),'');
+  /* 在自訂頁改採用:主題→紫羅蘭、Header→影音派(7)、表格→深色表頭(3) */
+  D().querySelectorAll('#theme-row .theme-dot')[4].click();await wait(500);
+  var hdBoxes=D().querySelectorAll('.pick-box[data-group="hd"]');
+  hdBoxes[7].querySelector('.pick-head').click();await wait(400);
+  var tblBoxes=D().querySelectorAll('.pick-box[data-group="tblsty"]');
+  if(tblBoxes.length>3){tblBoxes[3].querySelector('.pick-head').click();await wait(400)}
+  var st=theme();
+  T('③自訂頁勾選已寫入(主題/Header/表格)',st.theme.p==='#7C3AED'&&st.groups.hd===7&&(tblBoxes.length>3?st.groups.tblsty===3:true),
+    '主色'+st.theme.p+' hd='+st.groups.hd+' tblsty='+st.groups.tblsty);
+  var bar=D().getElementById('adoptStatus').textContent||'';
+  T('③狀態列同步顯示新採用',bar.indexOf('影音派')>-1&&bar.indexOf('紫羅蘭')>-1,bar.replace(/\s+/g,'').slice(6,52));
+  /* ── 階段3:回匯入頁 → 對照應更新 ── */
+  var p2=nav();(ticket('import.html'),W().location.href=BASE+'import.html');await p2;
+  await wait(1500);
+  var b2=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('④回匯入頁:自動重新套用最新採用',b2.length>500&&b2.indexOf('#7C3AED')>-1,'含新主色='+(b2.indexOf('#7C3AED')>-1));
+  T('④套用結果與前次不同(採用有生效)',b2!==b1);
+  T('④Header 改用影音派(深黑底)',b2.indexOf('#1B1D21')>-1);
+  var rep=D().getElementById('impReport').textContent||'';
+  T('④報告的採用組合已更新',rep.indexOf('影音派')>-1,(rep.match(/目前採用組合[^◽]*/)||['?'])[0].slice(0,70));
+  /* ── 階段4:版型預覽也一致 ── */
+  var p3=nav();(ticket('preview.html'),W().location.href=BASE+'preview.html');await p3;
+  await wait(1200);
+  var mainVar=D().querySelector('main').style.getPropertyValue('--brand');
+  T('⑤版型預覽:主色與自訂一致',mainVar==='#7C3AED',mainVar);
+  var f=D().getElementById('importPageFrame');
+  var fd=f?f.contentDocument:null;
+  T('⑤版型預覽:匯入頁面區塊有渲染',!!(fd&&fd.body&&fd.body.children.length),fd&&fd.body?(fd.body.children.length+' 個元素'):'無');
+  if(fd&&fd.body&&fd.body.children.length){
+    var hd=fd.querySelector('[data-hl-hd]');
+    T('⑤版型預覽:套用的 Header 也是影音派',!!hd&&f.contentWindow.getComputedStyle(hd).backgroundColor==='rgb(27, 29, 33)',hd?f.contentWindow.getComputedStyle(hd).backgroundColor:'無');
+  }
+  /* ── 階段5:再回自訂頁改一次,確認雙向一致 ── */
+  var p4=nav();(ticket('brand.html'),W().location.href=BASE+'brand.html');await p4;
+  var hdBoxes2=D().querySelectorAll('.pick-box[data-group="hd"]');
+  hdBoxes2[2].querySelector('.pick-head').click();await wait(500);
+  T('⑥再次改採用(教師平台)已寫入',theme().groups.hd===2,'hd='+theme().groups.hd);
+  var p5=nav();(ticket('import.html'),W().location.href=BASE+'import.html');await p5;await wait(1500);
+  var b3=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('⑥匯入頁再次同步(教師平台=白底)',b3.indexOf('#1B1D21')<0&&b3.indexOf('[data-hl-hd]{background:#fff')>-1,'含影音派色='+(b3.indexOf('#1B1D21')>-1));
+}catch(e){T('例外:'+e.message,false)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='CHAIN-'+fails+'-FAIL';
+})();
+</script></body></html>

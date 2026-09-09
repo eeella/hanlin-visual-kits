@@ -1,0 +1,154 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HERO</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1440px;height:1000px;position:absolute;left:-99999px"></iframe>
+<script>
+/* ══ 使用者真實檔案的橫幅與佈局迴歸鎖 ══════════════════════════════════
+   固定樣本：samples/user-cloudec.html（使用者提供的真實產品頁，79KB）
+   這份樣本是**凍結的迴歸夾具**，不要因為原始檔在桌面上被改就跟著更新——
+   它存在的目的是釘住「2026-08-27 這次事故不得重演」。
+
+   原檔關鍵特徵（決定了為什麼會出事）：
+     .hero{background:var(--gradient-brand);color:#fff;padding:80px 0 88px}
+     hero 內 <img> 0 個、<svg> 0 個  → 主視覺完全寫在 CSS 裡
+     實測渲染高度 760px
+     @media(max-width:991px/900px/767px/600px) → .price-grid / .faq-groups 由 3 欄塌成 1 欄
+
+   兩個情境都要守：
+     A. 未主動勾選（groups 缺 hero 鍵）→ 鐵律①：橫幅完全不得被改寫
+     B. 明確勾選 hero:1（純圖片版）    → 原生主視覺仍不得被洗成樣板淺底
+
+   驗收一律用實際渲染的 computedStyle，不用 grep 判定。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function lum(c){var m=/(\d+),\s*(\d+),\s*(\d+)/.exec(c||'');return m?(0.2126*+m[1]+0.7152*+m[2]+0.0722*+m[3])/255:null}
+/* 我們樣板淺底的指紋：HERO_BASE.bg = linear-gradient(180deg,#FFFFFF …)。
+   判定「有沒有被洗掉」必須比對這個精確特徵——
+   不可以只查「有沒有漸層」，也不可以只查 backgroundImage：
+   純色背景會落在 backgroundColor，只查 backgroundImage 會誤判（鐵律③）。 */
+function washedByTemplate(c){
+  return /linear-gradient\(180deg,\s*rgb\(255,\s*255,\s*255\)/.test(c.backgroundImage||'');
+}
+
+var SRC='';
+async function applyWith(groups){
+  var cfg={theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+           contrast:'auto',logoLight:2,controls:{btn:true,select:true,label:true,seg:true},memberEntry:true};
+  if(groups)cfg.groups=groups;                      /* 不傳＝groups 缺鍵＝未主動勾選 */
+  else cfg.groups={hd:1,ft:2,tblsty:0,icon:0};      /* 刻意不含 hero 鍵 */
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify(cfg));
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  sessionStorage.setItem('hanlin-session','1');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html';});
+  D().getElementById('importJson').value=SRC;
+  D().getElementById('importApply').click();
+  await wait(4000);
+  var f2=D().getElementById('frameBranded');
+  return {d:f2.contentDocument,W:f2.contentWindow,html:f2.getAttribute('srcdoc')||''};
+}
+
+/* 同寬度渲染，量指定選擇器的欄數與 hero 高度。
+   不可以量 import 頁裡的對照 iframe——那是半版寬，會觸發原檔自己的斷點
+   而塌成一欄，量到的是行動版版面，與套版有沒有跑版無關。 */
+function measure(html){
+  return new Promise(function(res){
+    var fx=document.createElement('iframe');
+    fx.style.cssText='width:1440px;height:1200px;position:absolute;left:-99999px';
+    document.body.appendChild(fx);
+    fx.onload=function(){
+      setTimeout(function(){
+        var dd=fx.contentDocument,WW=fx.contentWindow,out={};
+        ['.price-grid','.faq-groups'].forEach(function(sel){
+          var el=dd.querySelector(sel);
+          out[sel]=el?((WW.getComputedStyle(el).gridTemplateColumns||'').trim().split(/\s+/).length):null;
+        });
+        var he=dd.querySelector('[data-hl-hero]')||dd.querySelector('.hero');
+        out.heroH=he?Math.round(he.getBoundingClientRect().height):null;
+        res(out);
+      },700);
+    };
+    fx.srcdoc=html;
+  });
+}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  SRC=await (await fetch('samples/user-cloudec.html')).text();
+  var base=await measure(SRC);
+
+  /* ── 情境 A：未主動勾選（groups 缺 hero 鍵）──────────────────────
+     鐵律①【無主動勾選，則完全不污染】。
+     這是使用者真實遭遇的情境：他只是匯入，從未動過歡迎橫幅的勾選，
+     系統卻套用預設 hero:1，把 760px 高的品牌漸層主視覺洗成中性淺底，
+     還補上一個「主視覺照片」提示框。這一組就是釘死那個事故。 */
+  var a=await applyWith(null);
+  var heA=a.d.querySelector('[data-hl-hero]');
+  if(!heA){T('未勾選｜橫幅有被標記',false,'找不到 [data-hl-hero]');}
+  else{
+    var cA=a.W.getComputedStyle(heA),lA=lum(cA.color);
+    T('未勾選｜橫幅不得被洗成樣板淺底（鐵律①）',!washedByTemplate(cA),
+      '底色='+cA.backgroundColor+'｜底圖='+((cA.backgroundImage||'none').slice(0,44)));
+    T('未勾選｜文字色維持原本的白字（不得被改成墨色）',lA!==null&&lA>0.8,
+      '文字亮度='+(lA===null?'?':lA.toFixed(2)));
+    T('未勾選｜不得注入硬編碼高度 min-height:340px（鐵律②）',cA.minHeight!=='340px',
+      'min-height='+cA.minHeight);
+    T('未勾選｜不得改變內容排列（display／text-align）',cA.display!=='flex'&&cA.textAlign!=='center',
+      'display='+cA.display+'｜text-align='+cA.textAlign);
+    T('未勾選｜不得補「主視覺照片」預留位',a.d.querySelectorAll('[data-hl-photo]').length===0,
+      '預留位 '+a.d.querySelectorAll('[data-hl-photo]').length+' 個');
+  }
+  var mA=await measure(a.html);
+  T('未勾選｜同寬度 1440px：橫幅高度與原檔一致（±10%）',
+    base.heroH&&mA.heroH&&Math.abs(mA.heroH-base.heroH)/base.heroH<=0.10,
+    '原檔 '+base.heroH+'px／套用後 '+mA.heroH+'px');
+
+  /* ── 情境 B：明確勾選 hero:1（純圖片版）────────────────────────
+     使用者真的去勾了純圖片版。此時可以套用該版型的特徵，
+     但原檔既有的主視覺設計仍不得被洗成空白樣板——
+     沒有照片不代表沒有主視覺（這份檔案的主視覺寫在 CSS 裡）。 */
+  var b=await applyWith({hd:1,ft:2,hero:1,fm:1,opt:1,tblsty:0,icon:0});
+  var heB=b.d.querySelector('[data-hl-hero]');
+  if(!heB){T('勾選純圖片版｜橫幅有被標記',false,'找不到 [data-hl-hero]');}
+  else{
+    var cB=b.W.getComputedStyle(heB),lB=lum(cB.color);
+    T('勾選純圖片版｜原生主視覺不得被洗成樣板淺底',!washedByTemplate(cB),
+      '底色='+cB.backgroundColor+'｜底圖='+((cB.backgroundImage||'none').slice(0,44)));
+    T('勾選純圖片版｜文字色維持白字',lB!==null&&lB>0.8,'文字亮度='+(lB===null?'?':lB.toFixed(2)));
+    T('勾選純圖片版｜不得補預留位（原檔已有主視覺設計）',
+      b.d.querySelectorAll('[data-hl-photo]').length===0,
+      '預留位 '+b.d.querySelectorAll('[data-hl-photo]').length+' 個');
+    /* 對比色光暈不可高透明度大面積蓋住主體 */
+    T('勾選純圖片版｜對比色光暈已收斂',
+      !/rgba\(255,\s*154,\s*60,\s*0?\.(3|4|5|6|7|8|9)/.test(cB.backgroundImage||''),
+      '光暈檢查');
+  }
+
+  /* ── 佈局未被破壞：同寬度比對欄數 ─────────────────────────────
+     這一項守的是「PDF 看起來塌成一欄」的誤判：
+     A4 列印寬約 794px，低於原檔的 991px／900px 斷點，
+     塌成一欄是原檔自己的行動版設計，不是套版造成的。 */
+  var mB=await measure(b.html);
+  ['.price-grid','.faq-groups'].forEach(function(sel){
+    if(base[sel]===null){R.push('◽ 原檔找不到 '+sel+'，略過');return}
+    T('同寬度 1440px：'+sel+' 欄數與原檔一致',base[sel]===mB[sel],
+      '原檔 '+base[sel]+' 欄／套用後 '+mB[sel]+' 欄');
+  });
+
+  /* 列印防線（使用者回報的「文字標題被攔腰切在兩頁」） */
+  T('已注入列印防線（break-inside:avoid ＋ print-color-adjust）',
+    /@media\s*print/i.test(b.html)&&/break-inside\s*:\s*avoid/i.test(b.html)&&/print-color-adjust\s*:\s*exact/i.test(b.html),
+    '@media print='+(/@media\s*print/i.test(b.html)?'有':'無'));
+
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='HERO-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='HERO-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

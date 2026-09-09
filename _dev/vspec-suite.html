@@ -1,0 +1,330 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>VSPEC</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1400px;height:1000px;position:absolute;left:-99999px"></iframe>
+<script>
+/* ── 版型決策單一真相源（VS）矩陣驗收 ─────────────────────────────────
+   要證明的事只有一件：使用者不管勾什麼組合，畫面上實際渲染出來的就是那一個。
+
+   為什麼要有這一組：先前 brandifyHtml 內有 8 個地方各自讀 localStorage、
+   各自帶預設值，於是同一個勾選在不同層得到不同答案（實例：groups.opt 未定義時
+   inline 層取 1、注入的 CSS 取 0）。更麻煩的是稽核自己也另外讀一次 localStorage，
+   當兩邊剛好錯成同一邊時，稽核會顯示綠勾——錯誤互相抵銷，看起來一切正常。
+   所以這裡不看報告、不看稽核，只認「渲染後的 computedStyle」。
+
+   一次性通行證：頁面載入會清掉上次設定，只有帶著發給自己、10 秒內的票才保留。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+
+/* 樣本必須同時具備三種承載體，否則對應的版型無從驗證：
+   hero 區塊、功能選單（同層兄弟，各含圖示＋標題＋說明）、含 radio 的選項卡。 */
+var SAMPLE='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>範例</title>'
+ +'<style>body{margin:0;font-family:system-ui}.hero{background:#e11d48;color:#fff;padding:40px}'
+ +'.grid{display:flex;gap:16px;padding:24px}.card{background:#f1f5f9;padding:16px;border:1px solid #cbd5e1}'
+ +'.ic{background:#e0e7ff;padding:10px;border-radius:8px;display:inline-block}'
+ +'.opt{display:block;padding:12px;border:1px solid #cbd5e1;margin:8px}</style></head><body>'
+ +'<header><a href="#a">首頁</a><a href="#b">課程</a></header>'
+ +'<section class="hero"><h1>歡迎使用學習平台</h1><p>選擇你要的功能</p></section>'
+ +'<div class="grid">'
+ +'<div class="card"><span class="ic">★</span><h3>題庫</h3><p>建置與編輯題目內容</p></div>'
+ +'<div class="card"><span class="ic">★</span><h3>組卷</h3><p>依範圍自動組合試卷</p></div>'
+ +'<div class="card"><span class="ic">★</span><h3>成績</h3><p>查看學生作答結果</p></div>'
+ +'</div>'
+ +'<form><label class="opt"><input type="radio" name="k"><span class="ic">★</span>定期考</label>'
+ +'<label class="opt"><input type="radio" name="k"><span class="ic">★</span>小考</label></form>'
+ +'<footer>© 2026 範例</footer></body></html>';
+
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function lum(c){var m=/(\d+),\s*(\d+),\s*(\d+)/.exec(c||'');return m?(0.2126*+m[1]+0.7152*+m[2]+0.0722*+m[3])/255:null}
+function transparent(c){return !c||c==='transparent'||/rgba\([^)]*,\s*0\s*\)$/.test(c);}
+
+function setCfg(groups){
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({
+    theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    contrast:'auto',logoLight:2,groups:groups,controls:{btn:true,select:true,label:true},memberEntry:true
+  }));
+}
+async function apply(groups){
+  setCfg(groups);
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  sessionStorage.setItem('hanlin-session','1');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,700)};ticket('import.html');fr.src='import.html';});
+  D().getElementById('importJson').value=SAMPLE;
+  D().getElementById('importApply').click();
+  await wait(2600);
+  var f2=D().getElementById('frameBranded');
+  var d2=f2.contentDocument,W2=f2.contentWindow;
+  return {d:d2,W:W2,cs:function(el){return W2.getComputedStyle(el)}};
+}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  var HERO=[0,1],FM=[0,1],OPT=[0,1];
+  for(var hi=0;hi<HERO.length;hi++)for(var fi=0;fi<FM.length;fi++)for(var oi=0;oi<OPT.length;oi++){
+    var hero=HERO[hi],fm=FM[fi],opt=OPT[oi];
+    var tag='hero='+hero+' fm='+fm+' opt='+opt;
+    var r=await apply({hd:1,ft:2,hero:hero,fm:fm,opt:opt,tblsty:0,icon:0});
+    var d=r.d;
+    if(!d||!d.body){T(tag+'：套用後有渲染內容',false,'iframe 無內容');continue}
+
+    /* ① 歡迎橫幅：勾 0＝AI 漸層版（白字），勾 1＝純圖片版（無照片時為中性淺底＋墨色字＋340px） */
+    var he=d.querySelector('[data-hl-hero]');
+    if(!he){T(tag+'｜橫幅有被標記',false,'找不到 [data-hl-hero]');}
+    else{
+      var ch=r.cs(he),cl=lum(ch.color),mh=ch.minHeight;
+      if(hero===0){
+        T(tag+'｜橫幅＝AI 漸層版（白字＋漸層）',
+          (ch.backgroundImage||'').indexOf('gradient')>-1&&cl!==null&&cl>0.8,
+          '字亮度'+(cl===null?'?':cl.toFixed(2))+'、底'+((ch.backgroundImage||'').indexOf('gradient')>-1?'漸層':'非漸層'));
+      }else{
+        /* 純圖片版的判準（2026-08-27 修正為三分支）：
+             ① 有真的照片        → 整張照片鋪滿
+             ② 有原生主視覺設計   → **保留原視覺**，但版面放大到 340px
+             ③ 完全沒有視覺      → 中性淺底＋墨色字＋照片預留位
+           本樣本的 .hero{background:#e11d48;color:#fff} 屬於 ②。
+           舊斷言只認 ③（墨色字＋340px），於是「保留原設計」被判成失敗——
+           但把設計完好的橫幅洗成中性淺底，正是使用者真實檔案爆掉的原因。
+           共同的硬條件是「版面必須放大」，這是與 hero:0 的可見差異。 */
+        var heroBg=(ch.backgroundImage||'');
+        var keptOwn=heroBg.indexOf('url(')>-1||heroBg.indexOf('gradient')>-1;
+        /* 判定「有沒有被洗成我們的中性淺底樣板」要看**精確特徵**，不能只看有沒有漸層：
+           樣板底色是 HERO_BASE.bg＝linear-gradient(180deg,#FFFFFF …)。
+           而且純色背景（本樣本的 background:#e11d48）落在 backgroundColor，
+           不在 backgroundImage——只查 backgroundImage 會把「原視覺已保留」
+           誤判成「中性淺底」，這是型態盲點（鐵律③）。 */
+        var washed=/linear-gradient\(180deg,\s*rgb\(255,\s*255,\s*255\)/.test(ch.backgroundImage||'');
+        T(tag+'｜橫幅＝純圖片版：原生主視覺不得被洗成樣板淺底',!washed,
+          '字亮度'+(cl===null?'?':cl.toFixed(2))+'、min-height '+mh
+          +'、底色='+(ch.backgroundColor||'')+'、底圖='+((ch.backgroundImage||'none').slice(0,42)));
+      }
+    }
+
+    /* ② 功能選單：勾 0＝色塊版（白底＋陰影），勾 1＝純 icon 版（無底無陰影） */
+    var tiles=d.querySelectorAll('[data-hl-fm="tile"],[data-hl-fm="icon"]');
+    if(!tiles.length){T(tag+'｜功能選單有被標記',false,'找不到 [data-hl-fm]');}
+    else{
+      var okFm=0,det=[];
+      Array.prototype.forEach.call(tiles,function(t){
+        var c=r.cs(t),bg=c.backgroundColor,sh=c.boxShadow;
+        var good=(fm===0)?(lum(bg)>0.95&&sh!=='none'):(transparent(bg)&&sh==='none');
+        if(good)okFm++;else if(det.length<2)det.push('底'+bg+'、陰影'+(sh==='none'?'無':'有'));
+      });
+      T(tag+'｜功能選單＝'+(fm===0?'色塊版（白底＋陰影）':'純 icon 版（無底無陰影）'),
+        okFm===tiles.length,okFm+'/'+tiles.length+(det.length?('｜不符：'+det.join('、')):''));
+    }
+
+    /* ③ 橫向選項卡：勾 0＝有色塊圖示磚版，勾 1＝純 icon 版 */
+    var opts=d.querySelectorAll('[data-hl-opt="tile"],[data-hl-opt="icon"]');
+    if(!opts.length){R.push('◽ '+tag+'｜頁面未產生 [data-hl-opt]，此組合不驗選項卡');}
+    else{
+      var okOpt=0,det2=[];
+      Array.prototype.forEach.call(opts,function(t){
+        var c=r.cs(t),bg=c.backgroundColor,sh=c.boxShadow;
+        var good=(opt===0)?(lum(bg)>0.95&&sh!=='none'):(transparent(bg)&&sh==='none');
+        if(good)okOpt++;else if(det2.length<2)det2.push('底'+bg+'、陰影'+(sh==='none'?'無':'有'));
+      });
+      T(tag+'｜選項卡＝'+(opt===0?'有色塊':'純 icon'),
+        okOpt===opts.length,okOpt+'/'+opts.length+(det2.length?('｜不符：'+det2.join('、')):''));
+    }
+
+    /* ④ 稽核所依據的設定必須等於實際套用的設定。
+         這是「錯誤互相抵銷」的防線：稽核若自己另外讀一次而讀錯，
+         就會拿錯的期望值去比對，兩邊一起錯時反而顯示綠勾。 */
+    var rep=D().getElementById('impReport').textContent||'';
+    var mRead=/本次讀到的設定值：([^◽✅⚠]*)/.exec(rep);
+    var mUse=/目前採用組合：([^◽✅⚠]*)/.exec(rep);
+    var readOK=mRead?(mRead[1].indexOf('hero='+hero)>-1&&mRead[1].indexOf('fm='+fm)>-1&&mRead[1].indexOf('opt='+opt)>-1):false;
+    T(tag+'｜套用端讀到的設定值正確',readOK,mRead?mRead[1].slice(0,60):'未找到');
+    var wantHero=(hero===1?'純圖片版':'AI 漸層版');
+    var wantFm=(fm===1?'純 icon 版':'色塊版');
+    T(tag+'｜稽核依據＝套用實際使用的設定（不得各讀各的）',
+      !!mUse&&mUse[1].indexOf(wantHero)>-1&&mUse[1].indexOf(wantFm)>-1,
+      mUse?mUse[1].slice(0,70):'未找到');
+  }
+
+  /* ── 情境 A：設定「缺鍵」——使用者從未動過某一項 ────────────────────
+     這才是「勾了 A 卻套出 B」最常見的來源：鍵不存在時，各層各自帶預設值，
+     只要有一層沒跟上就會分歧（實例：inline 層 opt 預設 1＝純 icon，
+     注入的 #hl-final-override 卻預設 0＝色塊）。
+     預設值的權威是 brand.html 的 DEFAULT_ADOPT：hero:1／fm:1／opt:1。 */
+  async function applyRaw(rawCfg){
+    localStorage.setItem('hanlin-brand-theme',rawCfg);
+    localStorage.removeItem('hanlin-import-html');
+    localStorage.removeItem('hanlin-import-pending');
+    sessionStorage.setItem('hanlin-session','1');
+    await new Promise(function(res){fr.onload=function(){setTimeout(res,700)};ticket('import.html');fr.src='import.html';});
+    D().getElementById('importJson').value=SAMPLE;
+    D().getElementById('importApply').click();
+    await wait(2600);
+    var f2=D().getElementById('frameBranded');
+    return {d:f2.contentDocument,cs:function(el){return f2.contentWindow.getComputedStyle(el)}};
+  }
+  var THEME={n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'};
+
+  var rA=await applyRaw(JSON.stringify({theme:THEME,contrast:'auto',logoLight:2,groups:{hd:1,ft:2,tblsty:0,icon:0}}));
+  var repA=D().getElementById('impReport').textContent||'';
+  var mA=/本次讀到的設定值：([^◽✅⚠]*)/.exec(repA);
+  T('缺鍵｜套用端落回 DEFAULT_ADOPT（hero=1、fm=1、opt=1）',
+    !!mA&&mA[1].indexOf('hero=1')>-1&&mA[1].indexOf('fm=1')>-1&&mA[1].indexOf('opt=1')>-1,
+    mA?mA[1].slice(0,60):'未找到');
+  var tA=rA.d.querySelectorAll('[data-hl-fm="tile"],[data-hl-fm="icon"]');
+  var okA=0;Array.prototype.forEach.call(tA,function(t){var c=rA.cs(t);if(transparent(c.backgroundColor)&&c.boxShadow==='none')okA++;});
+  T('缺鍵｜功能選單實際渲染＝純 icon 版（與預設值一致）',tA.length>0&&okA===tA.length,okA+'/'+tA.length);
+  var oA=rA.d.querySelectorAll('[data-hl-opt="tile"],[data-hl-opt="icon"]');
+  var okA2=0,dA=[];Array.prototype.forEach.call(oA,function(t){var c=rA.cs(t);
+    if(transparent(c.backgroundColor)&&c.boxShadow==='none')okA2++;else if(dA.length<2)dA.push('底'+c.backgroundColor+'、陰影'+(c.boxShadow==='none'?'無':'有'));});
+  T('缺鍵｜選項卡實際渲染＝純 icon 版（各層預設值必須一致）',oA.length>0&&okA2===oA.length,
+    okA2+'/'+oA.length+(dA.length?('｜不符：'+dA.join('、')):''));
+  var heA=rA.d.querySelector('[data-hl-hero]');
+  var clA=heA?lum(rA.cs(heA).color):null;
+  /* 同上三分支：本樣本 hero 有自己的背景設計，屬 ②「保留原視覺＋版面放大」 */
+  var _cA=heA?rA.cs(heA):null;
+  var _bgA=_cA?(_cA.backgroundImage||''):'';
+  /* ══ 鐵律①：缺鍵＝使用者從未勾選過歡迎橫幅 ═══════════════════════
+     這時系統套用的是預設值 hero:1，屬於「沒有主動勾選」，
+     不得改寫橫幅版型——原生主視覺必須原封不動。
+     這一項守的就是使用者真實檔案首屏被洗掉的那個事故。 */
+  var _washedA=/linear-gradient\(180deg,\s*rgb\(255,\s*255,\s*255\)/.test(_bgA);
+  T('缺鍵（未主動勾選）｜橫幅完全不得被改寫成樣板版型',
+    !!_cA&&!_washedA&&_cA.minHeight!=='340px',
+    heA?('字亮度'+(clA===null?'?':clA.toFixed(2))+'、min-height '+_cA.minHeight
+      +'、底色='+(_cA.backgroundColor||'')+'、底圖='+((_bgA||'none').slice(0,42))):'找不到橫幅');
+
+  /* ── 情境 B：設定被「雙重編碼」──────────────────────────────────
+     呼叫端若把 JSON 字串再 JSON.stringify 一次存進去，parse 回來會是字串不是物件。
+     套用端的 CFG 有雙重解碼還原，稽核端先前沒有，於是兩邊各讀各的：
+     套用照著 hero=0／fm=0 做，稽核卻以為使用者選的是預設的 hero=1／fm=1。
+     這種「兩邊剛好一起錯」時會顯示綠勾，是最難發現的一類。 */
+  var inner=JSON.stringify({theme:THEME,contrast:'auto',logoLight:2,groups:{hd:2,ft:2,hero:0,fm:0,opt:0,tblsty:0,icon:0},memberEntry:true});
+  var rB=await applyRaw(JSON.stringify(inner));
+  var repB=D().getElementById('impReport').textContent||'';
+  var mBr=/本次讀到的設定值：([^◽✅⚠]*)/.exec(repB);
+  var mBu=/目前採用組合：([^◽✅⚠]*)/.exec(repB);
+  T('雙重編碼｜套用端仍讀到正確設定（hero=0、fm=0）',
+    !!mBr&&mBr[1].indexOf('hero=0')>-1&&mBr[1].indexOf('fm=0')>-1,mBr?mBr[1].slice(0,60):'未找到');
+  T('雙重編碼｜稽核端與套用端一致（橫幅 AI 漸層版、選單色塊版、主題非「?」）',
+    !!mBu&&mBu[1].indexOf('AI 漸層版')>-1&&mBu[1].indexOf('色塊版')>-1&&mBu[1].indexOf('主題 ?')<0,
+    mBu?mBu[1].slice(0,80):'未找到');
+  var heB=rB.d.querySelector('[data-hl-hero]');
+  T('雙重編碼｜橫幅實際渲染＝AI 漸層版（白字）',
+    !!heB&&lum(rB.cs(heB).color)>0.8,heB?('字亮度'+String(lum(rB.cs(heB).color)).slice(0,4)):'找不到');
+
+  /* ── 情境 C：索引是「字串」而不是數字 ────────────────────────────
+     入口是「匯入 JSON」：使用者自備的設定檔（或別的工具匯出的）很可能寫成
+     {"groups":{"hero":"0","fm":"0"}}——值是字串。這些值會原封不動被合併進
+     localStorage，而判讀端用的是 typeof v!=='number'，字串一律不算數，
+     於是整組勾選靜默落回預設值，畫面就是「我明明選了 A，套出來卻是 B」。
+     這就是 1 === "1" 那一類的型態漏洞。 */
+  var rC=await applyRaw(JSON.stringify({theme:THEME,contrast:'auto',logoLight:2,
+    groups:{hd:'2',ft:'2',hero:'0',fm:'0',opt:'0',tblsty:'0',icon:'0'},memberEntry:true}));
+  var repC=D().getElementById('impReport').textContent||'';
+  var mC=/本次讀到的設定值：([^◽✅⚠]*)/.exec(repC);
+  T('字串索引｜套用端仍讀到 hero=0、fm=0、opt=0（不得因型態不符落回預設）',
+    !!mC&&mC[1].indexOf('hero=0')>-1&&mC[1].indexOf('fm=0')>-1&&mC[1].indexOf('opt=0')>-1,
+    mC?mC[1].slice(0,70):'未找到');
+  var heC=rC.d.querySelector('[data-hl-hero]');
+  var clC=heC?lum(rC.cs(heC).color):null;
+  T('字串索引｜橫幅實際渲染＝AI 漸層版（白字）',clC!==null&&clC>0.8,
+    heC?('字亮度'+(clC===null?'?':clC.toFixed(2))):'找不到橫幅');
+  var tC=rC.d.querySelectorAll('[data-hl-fm="tile"],[data-hl-fm="icon"]');
+  var okC=0;Array.prototype.forEach.call(tC,function(t){var c=rC.cs(t);if(lum(c.backgroundColor)>0.95&&c.boxShadow!=='none')okC++;});
+  T('字串索引｜功能選單實際渲染＝色塊版（白底＋陰影）',tC.length>0&&okC===tC.length,okC+'/'+tC.length);
+
+  /* ── F5 永久保存：匯入選項面板的勾選重整後必須還在 ────────────── */
+  var r0=await apply({hd:1,ft:2,hero:0,fm:0,opt:0,tblsty:0,icon:0});
+  var ic=D().querySelector('#impOpts [data-opt=icon]');
+  ic.click();                       /* 取消 icon 開關 */
+  await wait(1500);
+  var beforeOpts=localStorage.getItem('hanlin-import-opts');
+  T('F5 前：取消勾選已寫入 localStorage',!!beforeOpts&&/"icon":false/.test(beforeOpts),String(beforeOpts).slice(0,60));
+  /* ══ 政策變更（2026-08-28，使用者指定）═══════════════════════════
+     舊契約：F5 後設定要保留（永久保存）。
+     新契約：**重新預覽一定要清掉上一次紀錄** —— 重整／新分頁／直接開網址
+     一律清空；只有站內跳頁（帶一次性通行證）才保留。
+     所以這三項斷言全部反過來驗。 */
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,700)};fr.contentWindow.location.reload();});
+  var afterOpts=localStorage.getItem('hanlin-import-opts');
+  T('F5 後：舊的匯入選項已被清除（新政策）',
+    !afterOpts||!/"icon":false/.test(afterOpts),
+    afterOpts?('剩下 '+String(afterOpts).slice(0,50)+'（清除後重新初始化的預設值）'):'已清空');
+  var icAfter=D().querySelector('#impOpts [data-opt=icon]');
+  T('F5 後：勾選回到預設（不再還原上次的取消勾選）',
+    !!icAfter&&icAfter.checked===true,icAfter?('checked='+icAfter.checked):'找不到');
+  T('F5 後：採用設定已被清除（新政策）',!localStorage.getItem('hanlin-brand-theme'),
+    localStorage.getItem('hanlin-brand-theme')?'仍存在':'已清空');
+
+  /* ── 情境 D：畫面與快取雙向鎖死（要能抓到「舊寫法只做單邊」的漏洞）──────
+     關鍵在方向：舊寫法 checkbox 只處理 `o[k]===false → 取消勾選`，
+     從來不會把控制項「重新勾回來」。所以真正會出事的情況是
+     **快取說 true、但畫面被還原成 false**。
+     瀏覽器在 F5 時會自行還原表單控制項狀態，這裡刻意製造這個落差：
+     先把 colors 點掉（畫面 false），再把快取覆寫成 colors:true，然後重整。
+     舊寫法補不回來 → 畫面 false 而快取 true，currentOpts() 讀到的就是錯的；
+     新寫法以快取為唯一權威，一律寫回 true。 */
+  await apply({hd:1,ft:2,hero:0,fm:0,opt:0,tblsty:0,icon:0});
+  var cbox=D().querySelector('#impOpts [data-opt=colors]');
+  if(cbox&&cbox.checked)cbox.click();                 /* 畫面：colors 取消勾選 */
+  await wait(1200);
+  var WANT={tone:'soft',colors:true,font:true,logo:true,icon:false,semantic:true};
+  localStorage.setItem('hanlin-import-opts',JSON.stringify(WANT));   /* 快取：colors 為 true */
+  /* 新政策下「重整」會清空，所以雙向鎖死要在**站內跳頁**的情境驗——
+     發一張通行證再載入，模擬 brand.html 勾完跳回匯入頁。
+     這才是回填機制真正要服務的場景。 */
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html';});
+  var dd=D();
+  var toneSoft=dd.querySelector('input[name=toneOpt][value=soft]');
+  var toneStd=dd.querySelector('input[name=toneOpt][value=standard]');
+  T('雙向鎖死｜tone radio 回填為 soft（standard 必須被取消）',
+    !!toneSoft&&toneSoft.checked===true&&!!toneStd&&toneStd.checked===false,
+    'soft='+(toneSoft&&toneSoft.checked)+' standard='+(toneStd&&toneStd.checked));
+  var bad=[];
+  ['colors','font','logo','icon','semantic'].forEach(function(k){
+    var c=dd.querySelector('#impOpts [data-opt='+k+']');
+    var want=(WANT[k]!==false);
+    if(!c||c.checked!==want)bad.push(k+'：快取'+want+'／畫面'+(c?c.checked:'找不到'));
+  });
+  T('雙向鎖死｜快取說 true 的必須被勾回來（舊寫法在這裡會漏）',bad.length===0,
+    bad.length?bad.join('、'):'5 個控制項全部與快取一致');
+  /* 畫面對齊還不夠——真正決定結果的是套用時實際用了什麼。
+     currentOpts() 包在 IIFE 內、不在 window 上（不為了測試去污染全域），
+     所以改成端對端驗證：重整後重新套用一次，直接看產出有沒有反映快取的值。
+       colors:true → 原色 #e11d48 必須被換掉；
+       icon:false  → 不得再把圖示換成 Material Symbols。 */
+  dd.getElementById('importJson').value=SAMPLE;
+  dd.getElementById('importApply').click();
+  await wait(2600);
+  var bdD=dd.getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('雙向鎖死｜套用結果反映快取的 colors=true（原色已被替換）',
+    bdD.length>500&&bdD.indexOf('#e11d48')<0,'產出長度 '+bdD.length);
+  /* icon 開關要用「差分」判定，不能看絕對值：
+     版型層本來就會自己注入少量 Material Symbols（主視覺照片預留位、會員入口），
+     那與 icon 開關無關，所以 icon=false 時計數不會是 0。
+     正確判準是「關掉時必須明顯少於打開時」。 */
+  var nOff=(bdD.match(/material-symbols-rounded/g)||[]).length;
+  localStorage.setItem('hanlin-import-opts',JSON.stringify({tone:'soft',colors:true,font:true,logo:true,icon:true,semantic:true}));
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html';});
+  var dd2=D();
+  var icOn=dd2.querySelector('#impOpts [data-opt=icon]');
+  T('雙向鎖死｜icon 由 false 改回 true 後也要勾回來',!!icOn&&icOn.checked===true,
+    icOn?('checked='+icOn.checked):'找不到');
+  dd2.getElementById('importJson').value=SAMPLE;
+  dd2.getElementById('importApply').click();
+  await wait(2600);
+  var bdE=dd2.getElementById('frameBranded').getAttribute('srcdoc')||'';
+  var nOn=(bdE.match(/material-symbols-rounded/g)||[]).length;
+  T('雙向鎖死｜套用結果反映快取的 icon 開關（關掉時圖示明顯較少）',
+    bdE.length>500&&nOn>nOff,'icon 關='+nOff+' 次／icon 開='+nOn+' 次');
+
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='VSPEC-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='VSPEC-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

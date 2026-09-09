@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ASYNC</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<script>
+/* ══ 動態渲染時間差的永久看守 ═══════════════════════════════════════
+   要守住的能力：**匯入檔自己的 script 在套用之後才生成的表格與勾選框，
+   也必須被標記到，成對綁定不能漏。**
+
+   為什麼需要這一組：brandifyHtml 跑在 DOMParser 的離線字串文件上，
+   那份文件是靜態的 —— 套用端永遠看不到「稍後才插入」的節點。
+   先前沒有任何測試涵蓋這個時間點，所以動態生成的勾選框完全沒有標記，
+   而自動化測試全綠（因為所有夾具都是靜態的）。
+
+   夾具 samples-async.html 刻意用 setTimeout(400ms) 才插入表格與三種勾選寫法。
+   驗的是產出頁的執行期監聽（MutationObserver）有沒有補上標記。 */
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+var fr=document.createElement('iframe');
+fr.style.cssText='width:1400px;height:800px;position:absolute;left:-99999px';
+document.body.appendChild(fr);
+function D(){return fr.contentDocument}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  var SRC=await (await fetch('samples-async.html')).text();
+  T('夾具前提：勾選框由 script 延遲插入（套用端看不到）',
+    /setTimeout/.test(SRC)&&/type="checkbox"/.test(SRC)&&SRC.indexOf('<input')>SRC.indexOf('<script'),
+    '延遲插入');
+
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({
+    theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    contrast:'auto',logoLight:2,groups:{hd:1,ft:2,hero:0,fm:0,opt:0,tblsty:1,icon:0},
+    controls:{btn:true,select:true,label:true,seg:true},memberEntry:false}));
+  localStorage.removeItem('hanlin-import-html');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html'});
+  D().getElementById('importJson').value=SRC;
+  D().getElementById('importApply').click();
+  await wait(4200);
+
+  var f2=D().getElementById('frameBranded');
+  var dd=f2.contentDocument,W=f2.contentWindow;
+  if(!dd||!dd.body){T('套用後有渲染內容',false,'iframe 無內容');}
+  else{
+    /* 產出的靜態 HTML 裡不該有這些節點——證明它們真的是稍後才生成的 */
+    var srcdoc=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+    var stat=new DOMParser().parseFromString(srcdoc,'text/html');
+    T('前提確認：產出的靜態 HTML 裡確實沒有這些勾選框',
+      stat.querySelectorAll('input[type=checkbox]').length===0,
+      '靜態 HTML 內 '+stat.querySelectorAll('input[type=checkbox]').length+' 個');
+
+    /* 等 MutationObserver 補標記 */
+    await wait(1200);
+    var late=dd.querySelectorAll('#lateTable');
+    T('延遲插入的表格已出現在渲染結果',late.length===1,late.length+' 個');
+
+    var inputs=dd.querySelectorAll('input[type=checkbox]');
+    var marked=0;Array.prototype.forEach.call(inputs,function(i){if(i.getAttribute('data-hl-k')==='check')marked++});
+    T('執行期補標記：延遲插入的勾選框都判定為 check',marked===inputs.length&&inputs.length>=3,
+      marked+'/'+inputs.length);
+
+    var pairOK=0,pairBad=[];
+    Array.prototype.forEach.call(inputs,function(i){
+      var pid=i.getAttribute('data-hl-pair');
+      if(!pid){pairBad.push((i.id||'?')+':無編號');return}
+      var mates=dd.querySelectorAll('[data-hl-pair="'+pid+'"][data-hl-k=checkmark]');
+      if(mates.length>=1)pairOK++;else pairBad.push((i.id||'?')+':沒有配對標籤');
+    });
+    T('成對綁定：每個勾選框都有共用 data-hl-pair 的顯示標籤',
+      pairOK===inputs.length&&inputs.length>0,
+      pairOK+'/'+inputs.length+(pairBad.length?('｜'+pairBad.slice(0,2).join('、')):''));
+
+    var sq=dd.querySelector('#la')&&dd.querySelector('#la').parentElement.querySelector('span.sq');
+    T('成對綁定：緊鄰的打勾方框被標記',!!(sq&&sq.getAttribute('data-hl-k')==='checkmark'),
+      sq?('data-hl-k='+sq.getAttribute('data-hl-k')+'  pair='+sq.getAttribute('data-hl-pair')):'找不到 span.sq');
+    T('幾何辨識：小方塊被認出來（僅勾選控制項才做此比對）',
+      !!(sq&&sq.getAttribute('data-hl-checkbox')==='1'),
+      sq?('data-hl-checkbox='+sq.getAttribute('data-hl-checkbox')+'  '+Math.round(sq.getBoundingClientRect().width)+'x'+Math.round(sq.getBoundingClientRect().height)):'—');
+
+    /* 打勾樣式必須真的顯色，而且切換要活的 */
+    var a=dd.querySelector('#la'),b=dd.querySelector('#lb');
+    var aSq=a&&a.parentElement.querySelector('span.sq'),bSq=b&&b.parentElement.querySelector('span.sq');
+    if(aSq&&bSq){
+      T('顯色：已勾與未勾的方框底色不同',
+        W.getComputedStyle(aSq).backgroundColor!==W.getComputedStyle(bSq).backgroundColor,
+        W.getComputedStyle(aSq).backgroundColor+' vs '+W.getComputedStyle(bSq).backgroundColor);
+      var before=W.getComputedStyle(bSq).backgroundColor;
+      b.click(); await wait(200);
+      var after=W.getComputedStyle(bSq).backgroundColor;
+      T('動態：延遲插入的勾選框點擊後打勾樣式有變化',before!==after,before+' → '+after);
+      b.click(); await wait(200);
+      T('動態：取消後回到原樣',W.getComputedStyle(bSq).backgroundColor===before,
+        after+' → '+W.getComputedStyle(bSq).backgroundColor);
+    }
+    var dirty=[];
+    Array.prototype.forEach.call(dd.querySelectorAll('[data-hl-k=check],[data-hl-k=checkmark]'),function(e){
+      var st=e.getAttribute('style')||'';
+      if(/background|color|opacity|visibility|display/i.test(st))dirty.push(e.tagName.toLowerCase());
+    });
+    T('保護：執行期補標記沒有在勾選組件上寫視覺屬性',dirty.length===0,
+      dirty.length?dirty.slice(0,3).join(','):'乾淨');
+
+    var th=dd.querySelector('#lateTable th');
+    if(th){
+      var c=W.getComputedStyle(th);
+      R.push('◽ 延遲插入的表頭實際底色：'+c.backgroundColor+'（表格規範由樣式表涵蓋，動態節點自動吃到）');
+    }
+  }
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='ASYNC-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='ASYNC-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

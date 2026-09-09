@@ -1,0 +1,127 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FUZZ</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1300px;height:900px;position:absolute;left:-99999px"></iframe>
+<script>
+/* ── 特徵指紋偵測的永久看守 ────────────────────────────────────────
+   要守住的能力：**不管匯入檔怎麼命名，選項卡與橫幅都要抓得到，而且不能誤抓。**
+
+   為什麼需要這一組：偵測原本是關鍵字清單（opt-card／choice／radio-card…），
+   換一份命名不同的檔案就整組漏抓，使用者看到的就是「這個版型根本沒被比對」。
+   改成特徵指紋之後，必須有測試釘住它，否則下次重構會悄悄退回命名式而沒人發現。
+
+   樣本刻意用「魔王級命名」：CSS-in-JS 風格的亂數 class（.sc-9ka3f／.sc-c77／.zz-on），
+   完全沒有 opt／tab／hero／banner 任何關鍵字，沒有 <ul><li>，也沒有 label+radio——
+   換句話說，命名式偵測在這份樣本上必定 0 命中。
+
+   一次性通行證：頁面載入會清掉上次設定，只有帶著發給自己、10 秒內的票才保留。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+
+var IMG="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%23cbd5e1'/></svg>";
+
+/* 樣本 A：亂數命名。橫幅＝滿版含背景圖；選項卡＝flex 並排、恰好一個 .zz-on、子項可互動。 */
+var SAMPLE_A='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>x</title><style>'
+ +'body{margin:0;font-family:system-ui}'
+ +'.sc-9ka3f{width:100%;height:280px;background:url("'+IMG+'") center/cover}'
+ +'.sc-9ka3f h2{margin:0;padding:110px 0 0 40px;color:#fff}'
+ +'.sc-b21x{display:flex;gap:8px;padding:16px 40px}'
+ +'.sc-b21x>.sc-c77{display:inline-block;padding:10px 18px;border:1px solid #cbd5e1;cursor:pointer}'
+ +'.sc-b21x>.sc-c77.zz-on{background:#e11d48;color:#fff}'
+ +'</style></head><body>'
+ +'<div class="sc-9ka3f"><h2>春季課程</h2></div>'
+ +'<div class="sc-b21x">'
+ +'<span class="sc-c77 zz-on" tabindex="0">全部</span>'
+ +'<span class="sc-c77" tabindex="0">數學</span>'
+ +'<span class="sc-c77" tabindex="0">英文</span>'
+ +'</div>'
+ +'<div class="sc-p0"><p>課程說明文字。</p></div>'
+ +'<div class="sc-ft">© 2026</div></body></html>';
+
+/* 樣本 B：誤判防線。導覽列在視覺上與選項卡完全一樣（水平並排＋恰好一個 active＋全部可點），
+   但它是全站共用的固定佈局，不該被當成選項卡改寫。 */
+var SAMPLE_B='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>y</title><style>'
+ +'body{margin:0;font-family:system-ui}'
+ +'.tn{display:flex;gap:12px;padding:14px 24px;background:#fff}'
+ +'.tn>.lnk{display:inline-block;padding:8px 14px}'
+ +'.tn>.lnk.on{color:#e11d48;font-weight:700}'
+ +'</style></head><body>'
+ +'<header><nav class="tn">'
+ +'<a class="lnk on" href="#a">首頁</a><a class="lnk" href="#b">課程</a><a class="lnk" href="#c">關於</a>'
+ +'</nav></header>'
+ +'<div class="mainx"><h2>公告</h2><p>系統將於本週維護。</p></div>'
+ +'<footer>© 2026</footer></body></html>';
+
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+async function apply(sample){
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({
+    theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    contrast:'auto',logoLight:2,
+    groups:{hd:1,ft:2,hero:0,fm:0,opt:0,tblsty:0,icon:0},
+    controls:{btn:true,select:true,label:true,seg:true},memberEntry:true
+  }));
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  sessionStorage.setItem('hanlin-session','1');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,700)};ticket('import.html');fr.src='import.html';});
+  D().getElementById('importJson').value=sample;
+  D().getElementById('importApply').click();
+  await wait(2800);
+  var f2=D().getElementById('frameBranded');
+  /* 一定要數「渲染後文件裡的真實元素」，不可以數 srcdoc 字串：
+     注入的 #hl-final-override CSS 本身就含 [data-hl-optcard] 這串選擇器，
+     用字串比對會永遠是 3，看起來像有抓到，其實一個元素都沒標記。 */
+  return {d:f2.contentDocument,rep:(D().getElementById('impReport').textContent||'')};
+}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+
+  /* ── 樣本 A：魔王級命名也要抓得到 ── */
+  var a=await apply(SAMPLE_A);
+  if(!a.d||!a.d.body){T('樣本A：套用後有渲染內容',false,'iframe 無內容');}
+  else{
+    var cards=a.d.querySelectorAll('[data-hl-optcard]');
+    T('亂數命名的選項卡群組被實際套用（命名式必定 0 命中）',cards.length>=2,
+      '實際標記 '+cards.length+' 個元素');
+    var hero=a.d.querySelectorAll('[data-hl-hero]');
+    T('亂數命名的橫幅被偵測到',hero.length>=1,'標記 '+hero.length+' 個');
+    /* 稽核不可再說「頁面沒有選項卡區塊」——那正是先前使用者看到的「沒比對到」 */
+    var hasOptLine=a.rep.indexOf('橫向選項卡')>-1;
+    var saysNone=/橫向選項卡[^｜]*沒有選項卡區塊/.test(a.rep);
+    R.push('◽ '+((/套用時被吞掉的例外[^◽\n]*/.exec(a.rep)||['套用時被吞掉的例外：無'])[0]));
+    R.push('◽ '+((/選項卡偵測帳[^◽\n]*/.exec(a.rep)||['選項卡偵測帳：（報告未提供）'])[0]));
+    T('稽核有輸出「橫向選項卡」且不再回報「頁面沒有選項卡區塊」',hasOptLine&&!saysNone,
+      hasOptLine?(saysNone?'仍回報沒有選項卡區塊':'已比對'):'報告完全沒提到橫向選項卡');
+  }
+
+  /* ── 樣本 B：誤判防線 ── */
+  var b=await apply(SAMPLE_B);
+  if(!b.d||!b.d.body){T('樣本B：套用後有渲染內容',false,'iframe 無內容');}
+  else{
+    /* 導覽列與選項卡在視覺特徵上完全一樣（水平並排＋恰好一個 active＋全部可點），
+       靠排除 nav/header/footer 才不會被改寫成選項卡。 */
+    var navLinks=b.d.querySelectorAll('nav a,header a');
+    var wrong=0;
+    Array.prototype.forEach.call(navLinks,function(el){
+      if(el.hasAttribute('data-hl-optcard')||el.hasAttribute('data-hl-opt'))wrong++;
+    });
+    T('導覽列不得被誤判成選項卡（水平並排＋一個 active 的干擾樣本）',wrong===0,
+      '導覽連結 '+navLinks.length+' 個，其中被誤標 '+wrong+' 個');
+    var anyCard=b.d.querySelectorAll('[data-hl-optcard]');
+    T('純導覽頁不應產生任何選項卡標記',anyCard.length===0,'標記 '+anyCard.length+' 個');
+  }
+
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='FUZZ-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='FUZZ-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

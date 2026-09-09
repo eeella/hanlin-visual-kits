@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="defaults.js?v=16974f4afe52"></script>
 <script src="importbase.js?v=1"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
-<script src="kits.js?v=39caefe7862e"></script>
+<script src="kits.js?v=cd67361477e4"></script>
 <style>
 /* 與品牌規範 / 版型預覽統一內容寬度 1160px */
 .imp-tabs{display:inline-flex;gap:8px}
@@ -151,6 +151,14 @@
   <div class="imp-step" id="stepPreview" style="display:none">
     <div class="step-head">對照預覽<span class="en">COMPARE</span><span class="pick-note" id="previewSource" style="margin-left:auto"></span></div>
     <div id="impOpts" style="display:none;align-items:center;gap:20px;flex-wrap:wrap;font-size:13px;margin:0 0 12px;background:#fff;border:1px solid #EDF0F4;border-radius:12px;padding:12px 18px">
+      <!-- 版面型態：自動判定猜不中時，使用者可以直接指定。
+           應用型版面（側欄＋工作區）套版時不補歡迎橫幅、不動佈局結構，
+           一般頁面才走完整套版。判錯的代價是整片版面被橫幅蓋掉。 -->
+      <span style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">版面型態</b>
+        <label style="cursor:pointer"><input type="radio" name="layoutOpt" value="auto" checked> 自動<span id="layoutAuto" style="color:var(--gray-2);font-size:12px"></span></label>
+        <label style="cursor:pointer" title="一般的文件流頁面：行銷頁、官網、文章頁"><input type="radio" name="layoutOpt" value="page"> 一般頁面</label>
+        <label style="cursor:pointer" title="側欄＋主工作區的應用型版面：後台、編輯器、工具頁。套版時不補歡迎橫幅、不動佈局"><input type="radio" name="layoutOpt" value="appshell"> 應用型版面</label>
+      </span>
       <span style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">主色強度</b>
         <label style="cursor:pointer"><input type="radio" name="toneOpt" value="standard" checked> 標準</label>
         <label style="cursor:pointer"><input type="radio" name="toneOpt" value="soft"> 低調（大面積底色改柔色）</label>
@@ -904,6 +912,65 @@ hlStampAssets();
     }
     var tone=opts.tone||'standard';
     var iconCount=0,logoCount=0,compCounts=null,LAYOUT_APPLIED=null,hdAddedCount=0,IS_APPSHELL=false,APPSHELL_NO_HERO=false;
+    /* 結構判定（側欄／app shell／頁首／橫幅）整段掛在「語意結構」這個選項下面，
+       而它預設是不勾的。沒跑過判定時，回報一定要說「未判定」，
+       不能拿初始值 false 去講「一般頁面（文件流）」——那是把沒發生的判斷講成結論，
+       使用者正是靠這個面板診斷版面問題的。 */
+    var STRUCT_RAN=false;
+  /* 【選項卡列不是頁首】(2026-08-31)
+     實測：一列 3 個 button 的橫向選項卡完全符合下面 header fallback 的條件
+     （前段、文字短、無 h1~h4、含按鈕），於是整條被塗成頁首配色，
+     接著又因為身上多了 data-hl-hd，被選項卡偵測自己的排除條款踢掉——
+     一個誤判連鎖成兩個。這支只做「排除」，不改任何既有計分或判定。
+     條件從嚴，避免把真正的頁首誤排除掉。
+
+     【定義必須放在函式層，不能放在 if(ON('semantic')) 裡】(2026-09-09 實測)
+     原本定義在 semantic 區塊內，但區塊外還有一個呼叫點（選項卡列的保護）。
+     `var f=function(){}` 只提升宣告、不提升賦值，所以「語意樣式層」沒勾
+     （＝預設值）時 isTabStrip 是 undefined，那個呼叫直接拋
+     `isTabStrip is not a function`，又被 SWALLOW 吞掉。
+     代價不是少一個判斷：那一行的保護動作是 return（跳過、不要塗成頁首），
+     拋錯讓 return 沒執行 → 保護失效 → 選項卡列照樣被塗成頁首配色，
+     等於 2026-08-31 修好的 bug 只在預設設定下復活，而且沒有任何症狀指向這裡。 */
+  function isTabStrip(el){
+    if(!el||!el.children||el.children.length<2)return false;
+    try{
+      if((el.getAttribute('role')||'').toLowerCase()==='tablist')return true;
+      var kids=el.children,n=0;
+      for(var ti=0;ti<kids.length;ti++){
+        var r=(kids[ti].getAttribute('role')||'').toLowerCase();
+        if(r==='tab'||kids[ti].hasAttribute('aria-selected'))n++;
+      }
+      if(n>=2&&n>=Math.ceil(kids.length/2))return true;
+      /* 詞界 token（沿用既有的 hasToken，非子字串）：
+         tablist 補上以涵蓋「有 class 沒有 role」的寫法；
+         實測 27 份樣本無任何元素帶此 token，補上不影響既有結果。 */
+      return hasToken(el,'tab')||hasToken(el,'tabs')
+           ||hasToken(el,'tablist')||hasToken(el,'segmented');
+    }catch(e){return false}
+  }
+
+  /* 【注入點必須避開 <script>／<style> 裡的假 </body>】(使用者回報 2026-09-09)
+     原本三處都寫 html.replace(/<\/body>/i, X+'</body>')。String.replace 配
+     非全域正則只換「第一個」，而使用者的檔案在 JS 裡用樣板字面量組了一份完整的
+     HTML 文件（Word 匯出功能），裡面也有 </body></html>，而且排在真正的 </body> 之前。
+     於是三段注入全部插進他的 JavaScript 字串中 —— 插入的內容含 <\/script>，
+     （這行的斜線刻意跳脫：註解裡寫字面的結束標籤，HTML 剖析器一樣會在那裡
+      把本頁的 script 結束掉——我自己就先踩了一次。）
+     HTML 剖析器看到就提前結束整個 <script>，後面的 JS 全部變成畫面上的純文字，
+     使用者看到的就是「右邊一片空白／整頁亂掉」。
+     改成：先把 <script>／<style> 區段遮蔽，只在真正的標記區找「最後一個」</body>。 */
+  function injectBeforeBody(html, frag){
+    if(!frag) return html;
+    /* 用同長度的佔位字元遮蔽 script／style 內容，位置索引才能直接對回原字串 */
+    var masked = html.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, function(m){
+      return '\u0000'.repeat(m.length);
+    });
+    var idx = masked.toLowerCase().lastIndexOf('</body>');
+    if(idx < 0) return html + frag;          /* 沒有 body 收尾就附在最後 */
+    return html.slice(0, idx) + frag + html.slice(idx);
+  }
+
     /* 原檔的 CSS 是否已替橫幅設計了背景（漸層／底圖／實色）——決定我們可不可以把它洗成空白預留位 */
     var HERO_SRC_STYLED=false;
     /* ══ 不新建元件（使用者指定，2026-08-28）════════════════════════════
@@ -2581,12 +2648,124 @@ hlStampAssets();
         var doc=new DOMParser().parseFromString(html,'text/html');
         /* 結構偵測：不依賴 AI 的命名——找不到標準命名就依 DOM 結構推斷並加上標記 */
         if(ON('semantic')){
+          STRUCT_RAN=true;
           /* ── AI 生成頁面手法：側邊欄佈局 ──
              後台／AI 助手類頁面常用 <aside class="sidebar"> 取代頂部 header，
              側欄內同樣有品牌區與按鈕，會被誤判成 header（曾把 .sb-brand 當成 header）。
              因此先認出側欄，把它排除在 header 候選之外，並改在主內容區頂端補 header。 */
-          var SBEL=doc.querySelector('aside,[class*=sidebar],[class*=side-nav],[class*=sidenav],[class*=side-bar],[class*=drawer]');
-          if(SBEL&&(SBEL.querySelectorAll('a,button').length<2||(SBEL.textContent||'').trim().length<10))SBEL=null;
+          /* 【側欄只認 aside 與含 sidebar 的命名，其他一律漏掉】(2026-09-09 實測)
+             上一輪把「滿版高度」與「欄數」兩個門檻都放寬了，使用者那邊卻毫無變化——
+             因為那三條放寬全部掛在 hasShellStructure（＝有側欄＋雙欄）之下，
+             而側欄自己的選擇器沒動。實測 class="side"／"left-panel"／"q-list"、
+             <nav class="side">、role=navigation 全部認不出來 → 側欄 null →
+             放寬條件一條都不會生效 → 照樣補 hero 蓋掉工作區。
+             這裡改成三段式，只放寬不收緊，且守門條件（可點擊≥2 或同層項目≥3、
+             文字≥10）維持原樣，app shell 判定仍另外要求雙欄結構。 */
+          var SBSTYLE='';
+          Array.prototype.forEach.call(doc.querySelectorAll('style'),function(s){SBSTYLE+=s.textContent||''});
+          var SBEL=(function(){
+            /* 用詞界 token 比對 class／id，不用 [class*=]：後者會讓 outside、beside、
+               wide-panel 這種名字誤中，反而製造新的誤判。 */
+            var NAMES=/^(?:sidebar|side|side-?bar|side-?nav|sidenav|drawer|rail|leftbar|left|left-?panel|panel-?left|nav-?panel|navpanel|list-?panel|listpanel|toc|channels?|threads?|thread-?list|q-?list|question-?list|item-?list|menu-?panel)$/i;
+            function named(el){
+              var toks=((el.getAttribute('class')||'')+' '+(el.getAttribute('id')||''))
+                       .split(/[\s_]+/).filter(Boolean);
+              for(var i=0;i<toks.length;i++) if(NAMES.test(toks[i])) return true;
+              return false;
+            }
+            function kidsOf(el){
+              return Array.prototype.filter.call(el&&el.children||[],function(c){
+                return !/^(SCRIPT|STYLE|LINK|TEMPLATE|NOSCRIPT)$/.test(c.tagName);
+              });
+            }
+            /* 側欄至少要像個清單／導覽，否則任何窄欄都會被當側欄 */
+            function listLike(el){
+              if(!el)return false;
+              if(el.querySelectorAll('a,button,[role=button],[role=link],[role=tab],[role=option],[role=menuitem]').length>=2)return true;
+              if(el.querySelectorAll('li').length>=3)return true;
+              return kidsOf(el).filter(function(c){return (c.textContent||'').trim().length>0}).length>=3;
+            }
+            /* ① 明確命名／語意標籤（信心最高，維持原本行為） */
+            var hit=doc.querySelector('aside,[class*=sidebar],[class*=side-nav],[class*=sidenav],[class*=side-bar],[class*=drawer]');
+            if(hit)return hit;
+            /* ② 詞界 token 命中，且本身像清單 */
+            var all=doc.querySelectorAll('body *');
+            for(var i=0;i<all.length;i++){
+              if(named(all[i])&&listLike(all[i]))return all[i];
+            }
+            /* ③ 結構推斷：分欄容器（CSS 有 flex／grid 或 Tailwind flex）的第一欄，
+               而且那一欄在 CSS 裡是固定窄寬（≤420px 或 Tailwind w-\d+）。
+               不做「最窄的那一欄」這種純猜測——沒有寬度線索就不認。 */
+            var FIXED=/(?:^|[;{\s])(?:width|flex-basis)\s*:\s*(\d{2,3})px/i;
+            /* 「在 CSS 裡被限成窄欄」是側欄與橫向列的關鍵差別：
+               左側欄幾乎一定寫死寬度（或 Tailwind w-64），橫向選項卡列不會。 */
+            function narrowOf(el){
+              var fcls=(el.getAttribute('class')||'');
+              if(/\bw-\d+\b|\bbasis-\d+\b/.test(fcls))return true;
+              var t=fcls.split(/\s+/).filter(Boolean);
+              for(var k=0;k<t.length;k++){
+                var re=new RegExp('\\.'+t[k].replace(/[^\w-]/g,'')+'[^{}]*\\{([^}]*)\\}','i'),m=re.exec(SBSTYLE);
+                if(m){var w=FIXED.exec(m[1]); if(w&&parseInt(w[1],10)<=420)return true;}
+              }
+              return false;
+            }
+            /* 【橫向選項卡列不是側欄】(2026-09-09 實測迴歸抓到)
+               放寬成「認所有 <nav>」之後，demo/hanlin-baihuawen 的
+               <nav class="tabs" role="tablist"> 立刻被標成側欄。
+               它是一列橫向章節分頁，被當側欄會讓 logo 換到它裡面、
+               並把它排除在頁首候選之外 —— 與 2026-08-31 那次
+               「選項卡列被塗成頁首配色」是同一個坑的反面。 */
+            function tabLike(el){
+              var r=(el.getAttribute('role')||'').toLowerCase();
+              if(r==='tablist'||r==='menubar'||r==='toolbar')return true;
+              var toks=((el.getAttribute('class')||'')+' '+(el.getAttribute('id')||'')).toLowerCase();
+              return /\btabs?\b|\btab-bar\b|\bbreadcrumbs?\b|\bpagination\b|\bsegmented\b|\bpills?\b/.test(toks);
+            }
+            for(var j=0;j<all.length;j++){
+              var box=all[j];
+              var cls=(box.getAttribute('class')||'');
+              var isRow=/\bflex\b|\bgrid\b/.test(cls)
+                     || (function(){
+                          var t=cls.split(/\s+/).filter(Boolean).map(function(c){return '.'+c}).join('|');
+                          if(!t)return false;
+                          var re=new RegExp('(?:'+t.replace(/[.]/g,'\\.')+')[^{}]*\\{[^}]*display\\s*:\\s*(?:flex|grid)','i');
+                          return re.test(SBSTYLE);
+                        })();
+              if(!isRow)continue;
+              var ks=kidsOf(box).filter(function(c){return (c.textContent||'').trim().length>0});
+              if(ks.length<2)continue;
+              var first=ks[0];
+              if(!tabLike(first)&&narrowOf(first)&&listLike(first))return first;
+            }
+            /* ④ 不在頁首／頁尾裡、且 CSS 限成窄欄的 <nav>／role=navigation。
+               「窄欄」這個條件不能省：少了它就會把橫向選項卡列也收進來。 */
+            var navs=doc.querySelectorAll('nav,[role=navigation]');
+            for(var n=0;n<navs.length;n++){
+              var nv=navs[n];
+              if(nv.closest&&nv.closest('header,footer'))continue;
+              if(tabLike(nv))continue;
+              if(narrowOf(nv)&&listLike(nv))return nv;
+            }
+            return null;
+          })();
+          /* 【側欄不一定用連結做】(使用者回報 2026-09-09)
+             原本要求側欄裡有 ≥2 個 <a> 或 <button>。但後台類頁面的側欄常常是
+             純清單（<li>、<div class="row">、role=option 的項目），
+             一個連結都沒有 → 側欄認不出來 → app shell 判定失敗 →
+             被當成一般頁面補上 hero，把主工作區整片擠掉。
+             改成「可點擊元素 ≥2」或「結構相似的子項 ≥3」，兩者皆可。 */
+          if(SBEL){
+            var sbClick=SBEL.querySelectorAll('a,button,[role=button],[role=link],[role=tab],[role=option],[role=menuitem]').length;
+            var sbItems=SBEL.querySelectorAll('li').length;
+            if(!sbItems){
+              /* 純 div 清單：看直屬子元素有沒有 ≥3 個帶文字的同層項目 */
+              var kids=Array.prototype.filter.call(SBEL.children||[],function(c){
+                return !/^(SCRIPT|STYLE|TEMPLATE)$/.test(c.tagName)&&(c.textContent||'').trim().length>0;
+              });
+              sbItems=kids.length>=3?kids.length:0;
+            }
+            if((sbClick<2&&sbItems<3)||(SBEL.textContent||'').trim().length<10)SBEL=null;
+          }
           if(SBEL)SBEL.setAttribute('data-hl-sb','1');
           /* ── AI 生成頁面手法：應用程式外殼（app shell）佈局 ──
              固定視窗高度、多欄 flex/grid、各欄內部各自捲動（後台、AI 助手、編輯器都是這型）。
@@ -2596,7 +2775,13 @@ hlStampAssets();
           var APPSHELL=IS_APPSHELL=(function(){
             var css='';
             Array.prototype.forEach.call(doc.querySelectorAll('style'),function(s){css+=s.textContent||''});
-            if(!css)return false;
+            /* 【沒有 <style> 就直接判 false，等於 Tailwind 那條放寬是死碼】(2026-09-09 實測)
+               純 utility class 的頁面（<body class="h-screen overflow-hidden flex">）
+               CSS 完全在外部檔案，doc 裡一條 style 都沒有 —— 偏偏 ③ utilShell
+               就是為這種頁面寫的，卻在它前面先被這一行擋掉。實測變體 F
+               （h-screen overflow-hidden flex）判 false 並補上 hero。
+               改成：沒有 css 時不放棄，只是 body 規則相關的判斷自然全部落空，
+               仍讓 class 特徵那條有機會生效。 */
             /* body 規則常拆成好幾條（html,body{height:100vh} 另寫一條），要全部合併再判斷 */
             /* 排除 .xxx-body 這類 class：改用「比對後手動檢查前一個字元」，
                不用 lookbehind——Safari ≤16.3 連 regex literal 都過不了解析階段，
@@ -2614,37 +2799,102 @@ hlStampAssets();
             var bodyHidden=/overflow\s*:\s*hidden/i.test(bodyRules);
             var bodyFlex=/display\s*:\s*(?:flex|grid)/i.test(bodyRules);
             /* 欄數改用「body 直屬且有實質內容的區塊」，不靠 class 命名（命名每份檔案都不同） */
-            var cols=0;
-            Array.prototype.forEach.call(doc.body.children,function(c){
-              if(/^(SCRIPT|STYLE|LINK|TEMPLATE|SVG|NOSCRIPT)$/.test(c.tagName))return;
-              if((c.textContent||'').trim().length>100)cols++;
-            });
-            return (vh&&(bodyHidden||bodyFlex))||(bodyHidden&&!!SBEL&&cols>=2);
+            /* 【cols 只看 body 直屬子元素，包一層就失效】(使用者回報 2026-09-09)
+               app shell 常包一層 <div class="app"> 或 <div id="root">，
+               那時 body 只有一個孩子，cols 永遠是 1，判定必然失敗。
+               改成往下找「真正的分欄那一層」：只要目前這層只有一個有內容的孩子，
+               就繼續往下鑽（最多 4 層，避免鑽進清單裡）。 */
+            var cols=(function(){
+              function realKids(el){
+                return Array.prototype.filter.call(el&&el.children||[],function(c){
+                  return !/^(SCRIPT|STYLE|LINK|TEMPLATE|SVG|NOSCRIPT)$/.test(c.tagName);
+                });
+              }
+              /* 【100 字元的門檻對中文太高】(使用者回報 2026-09-09)
+                 原本要求子元素文字 >100 字元才算一欄。後台介面的側欄項目、
+                 題號、按鈕文字都很短——實測側欄 89 字、工作區 60 字，
+                 兩欄都算不進去，cols 永遠是 1，app shell 判定必然失敗。
+                 門檻降到 30，並且側欄存在時直接數它父層（分欄結構就在那裡，
+                 不必從 body 往下猜）。 */
+              var TH=30;
+              function countCols(el){
+                var n=0;
+                realKids(el).forEach(function(c){
+                  if((c.textContent||'').trim().length>TH)n++;
+                });
+                return n;
+              }
+              /* ① 側欄的父層就是分欄層 */
+              if(SBEL&&SBEL.parentElement){
+                var sibs=realKids(SBEL.parentElement).filter(function(c){
+                  return (c.textContent||'').trim().length>0;
+                });
+                if(sibs.length>=2)return sibs.length;
+              }
+              /* ② 沒有側欄時，從 body 往下鑽過「只有一個有內容的孩子」的包裝層 */
+              var el=doc.body,best=countCols(el),guard=0;
+              while(el&&guard++<4){
+                var kids=realKids(el);
+                var withText=kids.filter(function(c){return (c.textContent||'').trim().length>TH});
+                if(withText.length!==1)break;
+                el=withText[0];
+                var n=countCols(el);
+                if(n>best)best=n;
+              }
+              return best;
+            })();
+            /* 【判定只看 body 一條規則，漏掉太多寫法】(使用者回報 2026-09-09：
+               app shell 被補上 hero，側欄與工作區整片消失)
+               app shell 的滿版高度常常不寫在 body 上：
+                 .app{height:100vh}／.layout{height:100dvh}   ← 寫在內層容器
+                 html,body{height:100%}                        ← 用百分比
+                 <body class="h-screen flex overflow-hidden">  ← Tailwind，CSS 裡根本沒有這些字
+               這些一律判不出來，於是被當成一般頁面補上 hero，把主工作區擠掉。
+
+               下面三條都是「額外認可」，只放寬不收緊，而且每一條都要求
+               同時具備側欄（SBEL）與雙欄結構（cols>=2）——
+               一般的長頁面不會有側欄，不會因此被誤判成 app shell。 */
+            var hasShellStructure = !!SBEL && cols>=2;
+            /* 頁面裡所有 class 合起來（Tailwind 的滿版高度常寫在中層 wrapper，
+               不只 body 與 body 的直屬子元素）。 */
+            var allCls=(function(){
+              try{
+                return Array.prototype.map.call(doc.querySelectorAll('body,body *'),function(c){
+                  return c.getAttribute?(c.getAttribute('class')||''):'';
+                }).join(' ');
+              }catch(e){return ''}
+            })();
+            /* 【三條放寬都硬要 overflow:hidden，等於只認一種寫法】(2026-09-09 實測)
+               app shell 的定義是「固定視窗高度、各欄內部各自捲動」——
+               「各欄各自捲動」實際寫出來多半是 .side{overflow:auto}／overflow-y:scroll，
+               分欄層根本不寫 overflow:hidden。實測變體 A（內層 100vh + pane overflow:auto）
+               與 G（overflow-y:scroll）都判 false 並補上 hero。
+               改成認 hidden／auto／scroll／overlay 任一種捲動收束；
+               收緊的部分仍在 hasShellStructure（側欄＋雙欄）沒有放鬆。 */
+            var scrollContained = /overflow(?:-[xy])?\s*:\s*(?:hidden|auto|scroll|overlay|clip)/i.test(css)
+                               || /\boverflow(?:-[xy])?-(?:hidden|auto|scroll|clip)\b/.test(allCls);
+            /* ① 滿版高度寫在任何選擇器上（不限 body） */
+            var anyFullHeight = /(?:^|[;{\s])height\s*:\s*100(?:vh|dvh|svh)/i.test(css)
+                             && scrollContained;
+            /* ② html,body{height:100%} 這種百分比寫法 */
+            var pctFullHeight = /(?:^|[;{,\s])(?:html|body)[^{}]*\{[^}]*height\s*:\s*100%/i.test(css)
+                             && scrollContained;
+            /* ③ Tailwind／utility class：CSS 裡沒有規則，特徵在 class 屬性上 */
+            var utilShell = /\bh-screen\b|\bmin-h-screen\b|\bh-dvh\b/.test(allCls)
+                         && /\bflex\b|\bgrid\b/.test(allCls);
+            var auto=(vh&&(bodyHidden||bodyFlex))
+                || (bodyHidden&&hasShellStructure)
+                || (hasShellStructure&&(anyFullHeight||pctFullHeight||utilShell));
+            /* 【自動判定失敗時要有得救】(使用者回報 2026-09-09)
+               版面型態的自動判定再怎麼放寬，都一定有猜不中的寫法——
+               猜錯的代價是整片版面被 hero 蓋掉，而使用者只能等我改判定。
+               opts.layoutMode 讓他自己指定：'appshell'／'page'／不給就自動。
+               自動判定的結果仍會回報出去（見 appShellAuto），讓他知道預設是什麼。 */
+            if(opts&&opts.layoutMode==='appshell')return true;
+            if(opts&&opts.layoutMode==='page')return false;
+            return auto;
           })();
           function inSB(el){return !!(SBEL&&el&&SBEL.contains(el))}
-          /* 【選項卡列不是頁首】(2026-08-31)
-             實測：一列 3 個 button 的橫向選項卡完全符合下面 header fallback 的條件
-             （前段、文字短、無 h1~h4、含按鈕），於是整條被塗成頁首配色，
-             接著又因為身上多了 data-hl-hd，被選項卡偵測自己的排除條款踢掉——
-             一個誤判連鎖成兩個。這支只做「排除」，不改任何既有計分或判定。
-             條件從嚴，避免把真正的頁首誤排除掉。 */
-          var isTabStrip=function(el){
-            if(!el||!el.children||el.children.length<2)return false;
-            try{
-              if((el.getAttribute('role')||'').toLowerCase()==='tablist')return true;
-              var kids=el.children,n=0;
-              for(var ti=0;ti<kids.length;ti++){
-                var r=(kids[ti].getAttribute('role')||'').toLowerCase();
-                if(r==='tab'||kids[ti].hasAttribute('aria-selected'))n++;
-              }
-              if(n>=2&&n>=Math.ceil(kids.length/2))return true;
-              /* 詞界 token（沿用既有的 hasToken，非子字串）：
-                 tablist 補上以涵蓋「有 class 沒有 role」的寫法；
-                 實測 27 份樣本無任何元素帶此 token，補上不影響既有結果。 */
-              return hasToken(el,'tab')||hasToken(el,'tabs')
-                   ||hasToken(el,'tablist')||hasToken(el,'segmented');
-            }catch(e){return false}
-          };
           var hdEl=doc.querySelector('header,nav,[class*=navbar],[class*=topbar]');
           if(inSB(hdEl))hdEl=null;
           if(hdEl&&isTabStrip(hdEl))hdEl=null;   /* nav.tabs／role=tablist 不當頁首 */
@@ -4391,8 +4641,7 @@ hlStampAssets();
       });
       var tag='<style id="hl-applied">'+sandbox+STYLE_RULES.join('')+'</style>'
              +'<style id="hl-final-override">'+css2+'</style>'+guard;
-      if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,tag+'</body>');
-      else html=html+tag;
+      html=injectBeforeBody(html,tag);
     })();
     /* 會員入口的互動：新增的元件要能真的用，不是死組件。
        用事件委派綁在 document 上，動態插入的節點也吃得到。 */
@@ -4669,8 +4918,7 @@ hlStampAssets();
     }
     var RUNTIME_ALL=RUNTIME_ICON+RUNTIME_TILE+RUNTIME_MEMBER+RUNTIME_LOGO+RUNTIME_FORMOPT+RUNTIME_A11Y;
     if(RUNTIME_ALL){
-      if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,RUNTIME_ALL+'</body>');
-      else html+=RUNTIME_ALL;
+      html=injectBeforeBody(html,RUNTIME_ALL);
     }
     /* ── 對照表結算：管線的最後一關 ──────────────────────────────
        四項核心套入的最終狀態，同時寫到三個地方：
@@ -4710,10 +4958,9 @@ hlStampAssets();
         +'console.log("%c版型設定 實際讀取值","font-weight:bold");'
         +'if(console.table)console.table(V);else console.log(V);'
         +'}catch(e){}})();<\/script>';
-      if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,ckLog+'</body>');
-      else html+=ckLog;
+      html=injectBeforeBody(html,ckLog);
     }catch(e){SWALLOW(e)}
-    return {html:html,checklist:ckRows,checklistMissing:ckMissing,map:toneMap,logoSwapped:logoSwapped,logoCount:logoCount,iconCount:iconCount,det:det,authoring:AUTHORING,comps:compCounts,framework:FRAMEWORK.name,varRole:{hits:VAR_HITS,defs:Object.keys(VAR_ROLE).length},appShell:IS_APPSHELL,appShellNoHero:APPSHELL_NO_HERO,cfgState:CFG_STATE,vs:VS,cfgSeen:CFG_SEEN,ruleTrace:{writes:HL_WRITES,overrides:HL_OVR},optDbg:OPT_DBG,swallowed:SWALLOWED};
+    return {html:html,checklist:ckRows,checklistMissing:ckMissing,map:toneMap,logoSwapped:logoSwapped,logoCount:logoCount,iconCount:iconCount,det:det,authoring:AUTHORING,comps:compCounts,framework:FRAMEWORK.name,varRole:{hits:VAR_HITS,defs:Object.keys(VAR_ROLE).length},appShell:IS_APPSHELL,appShellNoHero:APPSHELL_NO_HERO,structRan:STRUCT_RAN,layoutMode:(opts&&opts.layoutMode)||'auto',cfgState:CFG_STATE,vs:VS,cfgSeen:CFG_SEEN,ruleTrace:{writes:HL_WRITES,overrides:HL_OVR},optDbg:OPT_DBG,swallowed:SWALLOWED};
   }
   function applyThemeVars(t){
     if(!t||!t.p)return;
@@ -4745,6 +4992,26 @@ hlStampAssets();
     var r=(window.HL_rebaseHtml)?window.HL_rebaseHtml(html,importSourceUrl):{html:html,count:0};
     f.srcdoc=r.html;
     if(r.count)lastRebase=r;
+    /* 追蹤（只在 ?hlmon=1 時作用）：光看「有沒有設 srcdoc」不夠——
+       真正要知道的是它渲染出什麼。空白畫面的成因可能在任何一層：
+       原始碼是空的／引擎吐出空的／樣式被擋掉／腳本把內容清掉了。
+       這裡把每一格的實際結果記下來，才分得出是哪一層。 */
+    if(window.HL_trace){
+      var fid=f.id||'(無 id)';
+      window.HL_trace('設定預覽內容 '+fid,{
+        傳入長度:String(html||'').length,
+        改寫後長度:String(r.html||'').length,
+        相對路徑資源:r.count||0
+      });
+      setTimeout(function(){
+        /* 只檢查畫面上那兩格。compareWithRaw 與渲染驗證各會建一個臨時 iframe，
+           用完就 remove()——延遲檢查在那之後才跑，抓到的必然是全 0，
+           會誤報成「這一格是空的」。不在 DOM 裡就不記。 */
+        if(!f.isConnected)return;
+        var info=diagnoseFrame(f);
+        window.HL_trace('預覽渲染結果 '+fid,info);
+      },1500);
+    }
     return r;
   }
   /* 上一次套用時所依據的採用設定原文，用來判斷「使用者是不是又重新勾選過」 */
@@ -4755,9 +5022,20 @@ hlStampAssets();
   /* 原本這裡有「匯出閘門」與它的狀態列，只服務三顆已移除的控制項：
      另存套用後 HTML、在預覽中標示待處理項目、以及那行匯出狀態說明。
      依使用者指定一併移除，不留無作用的死碼。 */
-  /* 載入新來源時，清掉上一次的紀錄 */
+  /* 使用者有沒有「主動挑過視覺套版」——判斷依據是採用設定能不能對到 kits.js 的某一組。
+     從檔案猜出來的「匯入樣式」對不到任何一組，預設組合「翰林藍」也對不到，
+     只有真的去挑過才會對得上。 */
+  function hasPickedKit(){
+    try{return !!(window.HL_adoptedKitId&&window.HL_adoptedKitId())}catch(e){return false}
+  }
+
+  /* 【先挑套版再匯入檔案時，不要把他挑的洗掉】(使用者回報 2026-09-09)
+     原本這裡無條件 clearStyled()，理由是「換一份檔案就回到還沒挑樣式」。
+     那個假設只對「單獨匯入一份檔案」成立；使用者若是先在套版詳細挑好、
+     再回來匯入檔案，這一清就讓右邊不套版，畫面看起來像「選了卻沒帶出來」。
+     判斷改成：他真的挑過某一組就保留，沒挑過才回到「還沒挑」。 */
   function clearPrevious(){
-    clearStyled();   /* 換一份檔案就回到「還沒挑樣式」 */
+    if(!hasPickedKit())clearStyled();
     try{sessionStorage.removeItem('hanlin-import-done')}catch(e){}
     localStorage.removeItem('hanlin-import-html');
     localStorage.removeItem('hanlin-skill-blocks');
@@ -4766,6 +5044,8 @@ hlStampAssets();
   function currentOpts(){
     var o={tone:(document.querySelector('input[name=toneOpt]:checked')||{}).value||'standard'};
     document.querySelectorAll('#impOpts [data-opt]').forEach(function(c){o[c.dataset.opt]=c.checked});
+    var lm=(document.querySelector('input[name=layoutOpt]:checked')||{}).value||'auto';
+    if(lm!=='auto')o.layoutMode=lm;   /* auto 就不傳，讓引擎自己判定 */
     return o;
   }
   /* 套用檢查：把套用結果實際渲染在隱藏 iframe，用 computedStyle 逐項驗證「真的生效」，不是只看規則有沒有寫入 */
@@ -6275,8 +6555,97 @@ hlStampAssets();
     setFrameHtml(f,res.html);
     document.body.appendChild(f);
   }
+  /* 預覽是白的時候，要能講出為什麼。實測會渲染成空白的檔案型態有四種，
+     成因都不在平台，但不講的話使用者只會看到一片白，以為套版壞了：
+       ① 檔案自己的腳本把 body 清空（SPA 的 root、或缺後端資料時的清理）
+       ② <meta http-equiv="refresh"> 把頁面導走
+       ③ 只有 head 沒有 body
+       ④ body 被樣式藏起來（display:none／opacity:0／height:0），
+          很多網站靠 JS 加 class 才顯示，在 iframe 裡那段 JS 沒有正常環境 */
+  function diagnoseFrame(f){
+    var info={};
+    try{
+      var d=null,W=null;
+      try{d=f.contentDocument;W=f.contentWindow}catch(e){}
+      if(!d||!d.body){
+        /* 拿不到文件多半是被導到外站了（跨域）。回頭看原始碼講得出原因 */
+        var raw=String(f.srcdoc||'');
+        if(/<meta[^>]+http-equiv\s*=\s*["']?refresh/i.test(raw))
+          info.判定='⚠ 檔案裡有 meta refresh，一載入就被導到其他網址';
+        else
+          info.判定='⚠ 取不到預覽內容（可能被導到其他網址）';
+        return info;
+      }
+      var cs=W.getComputedStyle(d.body);
+      info.body子節點=d.body.children.length;
+      info.可見文字=(d.body.innerText||'').replace(/\s+/g,'').length;
+      info.高度=d.body.scrollHeight;
+      info.body底色=cs.backgroundColor;
+      info.樣式表數=d.styleSheets.length;
+      var hidden=(cs.display==='none')||(parseFloat(cs.opacity)===0)||(cs.visibility==='hidden');
+      var refresh=!!d.querySelector('meta[http-equiv="refresh" i]');
+      if(refresh)info.判定='⚠ 檔案裡有 meta refresh，頁面被導走了';
+      else if(!info.body子節點&&d.head&&d.head.children.length)
+        info.判定='⚠ 只有 head 沒有 body 內容';
+      else if(!info.body子節點)
+        info.判定='⚠ body 是空的（可能被檔案自己的腳本清掉）';
+      else if(hidden)
+        info.判定='⚠ body 被樣式藏起來（'+cs.display+'／opacity '+cs.opacity+'）';
+      else if(!info.高度&&f.clientHeight>0)
+        /* iframe 自己還沒有高度時（剛設 srcdoc、還沒跑 fitCompareFrames），
+           body 的 scrollHeight 本來就會是 0，那不是問題。
+           只有「iframe 有高度、內容卻量不出高度」才是真的被壓扁了。 */
+        info.判定='⚠ 有內容但高度是 0（外層容器可能被樣式壓成 0）';
+    }catch(e){info.錯誤=e.message}
+    return info;
+  }
+
+  /* 把診斷結果放到畫面上，不要只記在追蹤裡——使用者看的是畫面。 */
+  function showFrameDiag(f,label){
+    if(!f||!f.isConnected)return;
+    var info=diagnoseFrame(f);
+    var box=document.getElementById('frameDiag');
+    if(!info.判定){ if(box)box.remove(); return; }
+    if(!box){
+      box=document.createElement('p');
+      box.id='frameDiag';
+      box.className='same-note';
+      var grid=document.getElementById('cmpGrid');
+      if(grid&&grid.parentNode)grid.parentNode.insertBefore(box,grid.nextSibling);
+      else return;
+    }
+    var isRight=/右邊/.test(label);
+    box.innerHTML='<span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">'
+      +'info</span> <b>'+label+'看起來是空白的。</b>'+info.判定.replace('⚠ ','')
+      +(isRight
+         ? '。左邊的原檔是正常的，所以問題出在套版之後的渲染——'
+           +'多半是原檔的腳本在套版後的頁面上把內容清掉或藏起來了。'
+           +'請把這一行連同 console 的 HL_diagnose(\'frameBranded\') 結果回報。'
+         : '。這不是套版造成的——原檔在瀏覽器裡單獨開也會是這樣。'
+           +'套版結果仍可正常下載，畫面預覽受限於這份檔案的寫法。');
+  }
+
+  /* 掛到 window：測試要用，使用者也能在 console 自己查
+       HL_diagnose('frameRaw')  → 這一格為什麼是空的 */
+  window.HL_diagnose=function(id){
+    var f=document.getElementById(id||'frameRaw');
+    return f?diagnoseFrame(f):{錯誤:'找不到 '+id};
+  };
+  window.HL_showDiag=function(id,label){
+    showFrameDiag(document.getElementById(id||'frameRaw'),label||'左邊的原始樣式');
+  };
+
   function fitCompareFrames(){
     var fa=document.getElementById('frameRaw'),fb=document.getElementById('frameBranded');
+    /* 兩格都量完高度之後診斷一次。兩邊都要看：
+       左邊空 → 原檔本身的寫法（腳本清空、樣式藏起來、被導走…）
+       左邊正常但右邊空 → 那才是套版這一側的問題，要分得出來。 */
+    setTimeout(function(){
+      var a=diagnoseFrame(fa), b=diagnoseFrame(fb);
+      if(a.判定)showFrameDiag(fa,'左邊的原始樣式');
+      else if(b.判定)showFrameDiag(fb,'右邊的套版結果');
+      else{var box=document.getElementById('frameDiag');if(box)box.remove()}
+    },1600);
     function hOf(f){try{
       var d=f.contentDocument;if(!d||!d.body)return 0;
       f.style.height='60px';void f.offsetHeight;
@@ -6346,6 +6715,84 @@ hlStampAssets();
     setFrameHtml(document.getElementById('frameBranded'),res.html);
     document.getElementById('sameNote').style.display=(Object.keys(res.map).length||res.logoSwapped)?'none':'block';
     var el=document.getElementById('impReport');
+    /* 【平台看到什麼，就要講出來】(使用者回報 2026-09-09)
+       引擎其實把結構偵測得很細（側欄、頁首、分欄、框架、app shell），
+       但這些判定只留在內部。使用者看到版面壞掉時，無從得知平台把他的檔案
+       當成什麼類型，只能猜；要回報問題也拿不出東西。全部列出來。 */
+    var structHtml=(function(){
+      try{
+        var rows=[];
+        function add(k,v,warn){
+          rows.push('<div style="display:flex;gap:10px;padding:2px 0">'
+            +'<span style="flex:none;width:120px;color:var(--gray-1)">'+k+'</span>'
+            +'<span style="'+(warn?'color:#B4241F;font-weight:500':'')+'">'+v+'</span></div>');
+        }
+        var isShell=!!res.appShell;
+        var lm=res.layoutMode||'auto';
+        var ran=res.structRan!==false;
+        /* 【沒判定就不要講成判定結果】(2026-09-09 實測)
+           結構判定整段在「語意結構」選項底下，而它預設不勾。
+           先前這裡直接讀 res.appShell（初始值 false），於是沒勾的時候
+           面板照樣寫「一般頁面（文件流）」＋「這是自動判定的」，
+           連手動指定「應用型版面」也被覆蓋成「一般頁面　← 你手動指定的」。
+           那是三重誤導：沒判定、講成判定過、還把使用者的指定顯示成相反的結果。 */
+        if(!ran){
+          add('版面型態','未判定'
+            +(lm==='auto'?'':'（你指定了「'+(lm==='appshell'?'應用型版面':'一般頁面')+'」，本次不生效）'),
+            lm!=='auto');
+          add('為什麼沒判定','「套用項目」裡的「語意結構」沒有勾選：本次不做結構判定，'
+            +'也不會補歡迎橫幅、不會改動佈局。要讓版面型態生效請勾選它。',false);
+        }else{
+          /* 【括號要包住整個三元式】(2026-09-09 實測)
+             原本寫 isShell?A:B+suffix —— `+` 比 `?:` 先算，等於 isShell?A:(B+suffix)，
+             所以手動指定「應用型版面」時「← 你手動指定的」永遠不會出現，
+             偏偏那正是這個標記存在的理由（使用者要知道現在是自動還是他指定的）。 */
+          add('版面型態',
+            (isShell?'應用型版面（側欄＋主工作區）':'一般頁面（文件流）')
+            +(lm==='auto'?'':'　← 你手動指定的'));
+          if(lm==='auto')
+            add('這是自動判定的','判斷錯的話，把上面的「版面型態」改成手動指定即可',
+                false);
+        }
+        add('補歡迎橫幅',
+            !ran?'不補（本次沒做結構判定）'
+               :(isShell?'不補（app shell 補了會蓋掉工作區）':'依採用設定'),
+            ran&&!isShell&&!!res.appShellNoHero);
+        var fw=(res.framework&&res.framework!=='none')?res.framework:'未偵測到';
+        add('前端框架', fw);
+        if(res.det){
+          add('Tailwind', res.det.tailwind?'是':'否');
+          add('Bootstrap', res.det.bootstrap?'是':'否');
+        }
+        if(res.comps){
+          /* 【巢狀的計數不能直接串成字串】(2026-09-09 實測)
+             comps.semanticDetail 是 {status,metric,action,heading} 這種物件，
+             物件恆為真值，於是過了 filter，再被 '＋' 轉成 '[object Object]'，
+             面板就顯示「semanticDetail × [object Object]」。
+             改成：數字才直接顯示，物件展開它自己不為 0 的子項，
+             其餘型別一律略過（寧可少一列，不要顯示一個沒有意義的字串）。 */
+          var cs=[];
+          Object.keys(res.comps).forEach(function(k){
+            var v=res.comps[k];
+            if(typeof v==='number'){ if(v)cs.push(k+' × '+v); return; }
+            if(v&&typeof v==='object'){
+              Object.keys(v).forEach(function(k2){
+                if(typeof v[k2]==='number'&&v[k2])cs.push(k+'／'+k2+' × '+v[k2]);
+              });
+            }
+          });
+          add('認出的元件', cs.length?cs.join('、'):'（沒有認出任何元件）', !cs.length);
+        }
+        add('換掉的色碼', Object.keys(res.map||{}).length+' 組');
+        add('換掉的 Logo', (res.logoCount||0)+' 個');
+        add('寫入樣式的元素', (res.ruleTrace&&res.ruleTrace.writes)||0);
+        if(res.swallowed&&res.swallowed.length)
+          add('套用時被吞掉的例外', res.swallowed.length+' 筆（見下）', true);
+        return '<div style="margin:0 0 12px;padding:10px 14px;background:#F7F9FC;border-radius:10px">'
+          +'<b style="display:block;font-weight:500;color:var(--gray-1);margin-bottom:6px">'
+          +'平台怎麼看這份檔案</b>'+rows.join('')+'</div>';
+      }catch(e){return ''}
+    })();
     var keys=Object.keys(res.map);
     var chips=keys.slice(0,10).map(function(k){
       return '<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px;white-space:nowrap">'
@@ -6353,7 +6800,7 @@ hlStampAssets();
         +'<i style="display:inline-block;width:13px;height:13px;border-radius:3px;background:'+res.map[k]+';border:1px solid #E6E8EC"></i>'
         +'<span style="font-family:Consolas,monospace;font-size:11px">'+res.map[k]+'</span></span>';
     }).join('');
-    el.innerHTML='<b style="color:var(--gray-1);font-weight:500">替換報告：</b>共替換 '+keys.length+' 種色碼、'
+    el.innerHTML=structHtml+'<b style="color:var(--gray-1);font-weight:500">替換報告：</b>共替換 '+keys.length+' 種色碼、'
       +res.logoCount+' 個 Logo、約 '+res.iconCount+' 個 icon。&ensp;'+chips+(keys.length>10?'…等':'')
       +'&ensp;<b style="color:var(--gray-1);font-weight:500">套版模型：</b>'+(res.framework||'未使用框架')
       +'&ensp;<b style="color:var(--gray-1);font-weight:500">寫法分析：</b>'+((res.authoring&&res.authoring.desc)||'—')
@@ -6462,6 +6909,13 @@ hlStampAssets();
     pendingState=st;
     lastRawMarkup=rawMarkup||null;
     updateSrcWarn(lastRawMarkup);
+    if(window.HL_trace)window.HL_trace('showPreview',{
+      來源:src,
+      原始碼長度:String(rawMarkup||'').length,
+      採用的組:(st&&st.theme&&st.theme.n)||'(無)',
+      有無groups:!!(st&&st.groups),
+      已挑樣式:(function(){try{return sessionStorage.getItem('hanlin-import-styled')==='1'}catch(e){return '讀不到'}})()
+    });
     document.getElementById('previewSource').textContent='來源：'+src
       +(st.groups?' · 完整設定（含版型與元件選取）':' · 從內容解析出的品牌色');
     var cmp=document.getElementById('cmpGrid');
@@ -6597,10 +7051,34 @@ hlStampAssets();
         var mk=('__markup' in st)?st.__markup:(isJsonText(reader.result)?null:reader.result);
         delete st.__markup;
         clearPrevious();
-        showPreview(st,'檔案 '+f.name,mk);
+        showPreview(keepPickedTheme(st),'檔案 '+f.name,mk);
       }catch(e){alert('匯入失敗：'+e.message);fileInput.value=''}
     };
     reader.readAsText(f);
+  }
+
+  /* 從檔案猜出來的 theme 只在「使用者還沒挑過套版」時採用。
+     他已經挑好了就用他的——他要的是「我的頁面套上這一組」，
+     不是「我的頁面套上它自己原本的顏色」。
+     檔案解析出的色票仍留在 __parsedTheme，報告要用得到。 */
+  function keepPickedTheme(st){
+    if(!st||typeof st!=='object')return st;
+    if(!hasPickedKit())return st;
+    var mine=null;
+    try{mine=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||null}catch(e){}
+    if(!mine||!mine.theme)return st;
+    st.__parsedTheme=st.theme;
+    st.theme=mine.theme;
+    if(mine.contrast)st.contrast=mine.contrast;
+    if(mine.groups)st.groups=mine.groups;
+    if(mine.controls)st.controls=mine.controls;
+    if(typeof mine.logoLight==='number')st.logoLight=mine.logoLight;
+    if(typeof mine.logoDark==='number')st.logoDark=mine.logoDark;
+    if(typeof mine.logoInv==='boolean')st.logoInv=mine.logoInv;
+    if(window.HL_trace)window.HL_trace('保留使用者已挑的套版',{
+      改用:(mine.theme&&mine.theme.n)||'(無)',
+      原本解析出:(st.__parsedTheme&&st.__parsedTheme.n)||'(無)'});
+    return st;
   }
 
   /* ===== 來源：貼上內容 / 上次儲存 ===== */
@@ -6611,7 +7089,7 @@ hlStampAssets();
       var mk=('__markup' in st)?st.__markup:(isJsonText(txt)?null:txt);
       delete st.__markup;
       clearPrevious();
-      showPreview(st,'貼上的內容',mk);
+      showPreview(keepPickedTheme(st),'貼上的內容',mk);
     }catch(e){alert('匯入失敗：'+e.message)}
   });
   document.getElementById('importSaved').addEventListener('click',function(){
@@ -6622,6 +7100,7 @@ hlStampAssets();
 
   /* ===== 下一步 ===== */
   function saveTheme(){
+    if(window.HL_trace)window.HL_trace('匯入頁 saveTheme（合併寫入）',{來源:'pendingState',pendingTheme:(pendingState&&pendingState.theme&&pendingState.theme.n)||'(無 theme.n)'});
     /* 合併而非覆寫：匯入的主題蓋上去，但保留既有的版型採用（groups/controls）不被丟掉 */
     var prev={};try{prev=JSON.parse(localStorage.getItem('hanlin-brand-theme'))||{}}catch(e){}
     var merged={};
@@ -6649,6 +7128,7 @@ hlStampAssets();
   }
   document.getElementById('importConfirm').addEventListener('click',function(){
     if(!pendingState)return;
+    if(window.HL_trace)window.HL_trace('按下「調整樣式」（寫入前）');
     saveTheme();
     localStorage.setItem('hanlin-import-pending','1');
     /* 導到「套版詳細」（使用者指定）：直接進採用中那一組的細節頁調整。
@@ -6728,15 +7208,29 @@ hlStampAssets();
   })});
 })();
 </script>
-<script src="km-monitor.js"></script>
-<script src="km-panel.js"></script>
 <script>
-/* 套用比對監測：面板由 km-panel.js 產生，量測走 km-monitor.js 的 KM.measure，
-   與預覽頁完全同一份實作 —— 兩邊數字才有可比性。點擊後才重新套用並量測。 */
+/* 【套用比對監測預設不出現】(使用者要求 2026-09-09)
+   km-monitor.js／km-panel.js 是除錯工具，先前兩頁都無條件載入，
+   正常使用時面板一直浮在右下角擋住預覽，而且一般使用者根本用不到。
+   改成只有網址帶 ?hlmon=1 才載入並掛載 —— 與流程追蹤面板同一個開關，
+   不必記兩套。不載入時 KMPanel 不存在，掛載那段自然不執行。
+   要完全移除的話，把這整段連同下面的掛載一起刪掉即可。 */
 (function(){
-  var f=document.getElementById('frameBranded');
-  if(f&&window.KMPanel)KMPanel.mount({frame:f,sourceOfTruth:true,
-    rerender:function(){if(typeof window.__hlRender==='function')window.__hlRender()}});
+  if(!/[?&]hlmon=1/.test(location.search))return;
+  var q=Promise.resolve();
+  ['km-monitor.js','km-panel.js'].forEach(function(src){
+    q=q.then(function(){return new Promise(function(res){
+      var s=document.createElement('script');
+      s.src=src; s.onload=res; s.onerror=res;   /* 載不到也不要卡住後面 */
+      document.body.appendChild(s);
+    })});
+  });
+  q.then(function(){
+    /* 量測走 km-monitor.js 的 KM.measure，與預覽頁完全同一份實作，兩邊數字才有可比性。 */
+    var f=document.getElementById('frameBranded');
+    if(f&&window.KMPanel)KMPanel.mount({frame:f,sourceOfTruth:true,
+      rerender:function(){if(typeof window.__hlRender==='function')window.__hlRender()}});
+  });
 })();
 </script>
 </body>

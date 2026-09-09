@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=5fb9bddef70d"></script>
+<script src="defaults.js?v=16974f4afe52"></script>
 <style>
 /* ===== 預覽頁專用 ===== */
 .pv-toolbar{position:sticky;top:0;z-index:120;background:#fff;box-shadow:var(--shadow-sm)}
@@ -444,7 +444,7 @@ hlStampAssets();
 </script>
 <!-- 引擎單一真相源：套用一律走 engine.js（由 import.html 產生），
      本頁內嵌的舊引擎僅在產物載入失敗時作為退路，不再是預設路徑。 -->
-<script src="engine.js?v=184934a81530"></script>
+<script src="engine.js?v=b3dd876e26b2"></script>
 <script>
 (function(){
   /* ===== 重新整理即清掉之前的紀錄(瀏覽頁面間跳轉不清) ===== */
@@ -861,12 +861,32 @@ hlStampAssets();
 })();
 </script>
 
-<script src="km-monitor.js"></script>
-<script src="km-panel.js"></script>
 <script>
-/* 面板由 km-panel.js 統一產生與量測；本頁只提供「重新套用」的入口。 */
-KMPanel.mount({frame:document.getElementById("importPageFrame"),
-  rerender:function(){if(typeof window.__hlRender==="function")window.__hlRender()}});
+/* 【套用比對監測預設不出現】(使用者要求 2026-09-09)
+   km-monitor.js／km-panel.js 是除錯工具，先前兩頁都無條件載入，
+   正常使用時面板一直浮在右下角擋住預覽，而且一般使用者根本用不到。
+   改成只有網址帶 ?hlmon=1 才載入並掛載 —— 與流程追蹤面板同一個開關，
+   不必記兩套。不載入時 KMPanel 不存在，掛載那段自然不執行。
+   要完全移除的話，把這整段連同下面的掛載一起刪掉即可。 */
+(function(){
+  if(!/[?&]hlmon=1/.test(location.search))return;
+  var q=Promise.resolve();
+  ['km-monitor.js','km-panel.js'].forEach(function(src){
+    q=q.then(function(){return new Promise(function(res){
+      var s=document.createElement('script');
+      s.src=src; s.onload=res; s.onerror=res;   /* 載不到也不要卡住後面 */
+      document.body.appendChild(s);
+    })});
+  });
+  q.then(function(){
+    /* 面板由 km-panel.js 統一產生與量測；本頁只提供「重新套用」的入口。
+       原本這裡直接呼叫 KMPanel.mount，腳本沒載入就會 ReferenceError，
+       所以改成先檢查再掛載。 */
+    var fr=document.getElementById("importPageFrame");
+    if(fr&&window.KMPanel)KMPanel.mount({frame:fr,
+      rerender:function(){if(typeof window.__hlRender==="function")window.__hlRender()}});
+  });
+})();
 </script>
 </body>
 </html>

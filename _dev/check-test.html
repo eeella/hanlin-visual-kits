@@ -1,0 +1,127 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>CHECK</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<script>
+/* ══ 勾選控制項精準比對與 :checked 成對綁定 ═══════════════════════════
+   固定夾具：samples-check.html（刻意涵蓋三種常見寫法）
+     A. input 視覺隱藏 + 緊鄰 span.box 當打勾方塊（input:checked + span.box）
+     B. input + label[for=id] 藥丸（input:checked + label.pill）
+     C. <label><input><i></i></label> 包住式（input:checked ~ i）
+   這份樣本在專案的 22 個既有樣本裡完全沒有對應 —— 全部 0 個 checkbox／radio，
+   所以這個面向以前從來沒有被驗過。
+
+   驗三件事：
+     ① 識別：input 判成 check，成對的顯示標籤判成 checkmark
+     ② 保護：我們不對這兩類寫 background／color 等視覺屬性，
+             也不讓 [data-hl-hd] * 這種通則掃到它們
+     ③ 動態：實際點擊切換勾選，打勾樣式必須跟著變（沒有被 !important 切斷） */
+var R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+var fr=document.createElement('iframe');
+fr.style.cssText='width:1400px;height:800px;position:absolute;left:-99999px';
+document.body.appendChild(fr);
+function D(){return fr.contentDocument}
+
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  var SRC=await (await fetch('samples-check.html')).text();
+  T('夾具前提：樣本含 checkbox／radio',(SRC.match(/type="(checkbox|radio)"/g)||[]).length>=5,
+    (SRC.match(/type="(checkbox|radio)"/g)||[]).length+' 個');
+  T('夾具前提：樣本含 :checked 動態規則',(SRC.match(/:checked/g)||[]).length>=3,
+    (SRC.match(/:checked/g)||[]).length+' 條');
+
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({
+    theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},
+    contrast:'auto',logoLight:2,groups:{hd:1,ft:2,hero:0,fm:0,tblsty:0,icon:0},
+    controls:{btn:true,select:true,label:true},memberEntry:true}));
+  localStorage.removeItem('hanlin-import-html');
+  await new Promise(function(res){fr.onload=function(){setTimeout(res,800)};ticket('import.html');fr.src='import.html'});
+  D().getElementById('importJson').value=SRC;
+  D().getElementById('importApply').click();
+  await wait(4200);
+
+  var f2=D().getElementById('frameBranded');
+  var dd=f2.contentDocument,W=f2.contentWindow;
+  if(!dd||!dd.body){T('套用後有渲染內容',false,'iframe 無內容');}
+  else{
+    /* ── ① 識別 ── */
+    var inputs=dd.querySelectorAll('input[type=checkbox],input[type=radio]');
+    var marked=0;Array.prototype.forEach.call(inputs,function(i){if(i.getAttribute('data-hl-k')==='check')marked++});
+    T('識別：每個 checkbox／radio 都判定為 check',marked===inputs.length&&inputs.length>0,marked+'/'+inputs.length);
+    T('識別：不再被混進一般 input 類',
+      dd.querySelectorAll('input[type=checkbox][data-hl-k=input],input[type=radio][data-hl-k=input]').length===0,
+      '混判 '+dd.querySelectorAll('input[type=checkbox][data-hl-k=input],input[type=radio][data-hl-k=input]').length+' 個');
+
+    var marks=dd.querySelectorAll('[data-hl-k=checkmark]');
+    T('成對綁定：找到顯示打勾樣式的標籤',marks.length>=5,marks.length+' 個');
+    var boxOK=dd.querySelector('span.box')&&dd.querySelector('span.box').getAttribute('data-hl-k')==='checkmark';
+    var pillOK=dd.querySelector('label.pill')&&dd.querySelector('label.pill').getAttribute('data-hl-k')==='checkmark';
+    var wrapOK=dd.querySelector('.wrapped i')&&dd.querySelector('.wrapped i').getAttribute('data-hl-k')==='checkmark';
+    T('成對綁定：緊鄰兄弟 span 被納入',!!boxOK,boxOK?'span.box':'未納入');
+    T('成對綁定：label[for] 關聯被納入',!!pillOK,pillOK?'label.pill':'未納入');
+    T('成對綁定：label 包住式被納入',!!wrapOK,wrapOK?'.wrapped i':'未納入');
+
+    /* ── ② 保護 ── */
+    var dirty=[];
+    Array.prototype.forEach.call(dd.querySelectorAll('[data-hl-k=check],[data-hl-k=checkmark]'),function(e){
+      var st=e.getAttribute('style')||'';
+      if(/background|color|opacity|visibility|display/i.test(st))dirty.push(e.tagName.toLowerCase()+' '+st.slice(0,40));
+    });
+    T('保護：我們沒在勾選組件上寫視覺屬性',dirty.length===0,dirty.length?dirty.slice(0,2).join('｜'):'乾淨');
+
+    var hdChk=dd.querySelector('#hdchk');
+    var hdMark=hdChk&&hdChk.parentElement.querySelector('span.box');
+    var hdMain=dd.querySelector('#c1')&&dd.querySelector('#c1').parentElement.querySelector('span.box');
+    if(hdMark&&hdMain){
+      /* 頁首通則 [data-hl-hd] *{color:#fff} 不得掃到勾選方塊：
+         掃到的話頁首那顆的樣式會跟主內容那顆不一致 */
+      var a=W.getComputedStyle(hdMark),b=W.getComputedStyle(hdMain);
+      T('保護：頁首通則沒有切斷勾選方塊的樣式',
+        a.borderTopWidth===b.borderTopWidth&&a.width===b.width,
+        '頁首 '+a.borderTopWidth+'/'+a.width+' vs 內文 '+b.borderTopWidth+'/'+b.width);
+    }else R.push('◽ 頁首勾選框未渲染，略過通則檢查');
+
+    T('政策：勾選組件沒有被加上圓角',
+      Array.prototype.every.call(dd.querySelectorAll('[data-hl-k=check],[data-hl-k=checkmark]'),
+        function(e){var v=W.getComputedStyle(e).borderRadius;return !v||v==='0px'||v==='50%'}),
+      '皆為 0px 或原檔的 50%');
+
+    /* ── ③ 動態切換 ── */
+    var c2=dd.querySelector('#c2'),c2box=c2&&c2.parentElement.querySelector('span.box');
+    if(c2&&c2box){
+      var before=W.getComputedStyle(c2box).backgroundColor;
+      c2.click();
+      await wait(120);
+      var after=W.getComputedStyle(c2box).backgroundColor;
+      T('動態：點擊勾選後打勾樣式有變化',before!==after,before+' → '+after);
+      c2.click();
+      await wait(120);
+      var back=W.getComputedStyle(c2box).backgroundColor;
+      T('動態：取消勾選後回到原樣',back===before,after+' → '+back);
+    }else R.push('◽ 找不到 #c2 勾選框，略過動態檢查');
+
+    var c1=dd.querySelector('#c1'),c1box=c1&&c1.parentElement.querySelector('span.box');
+    var u=dd.querySelector('#c2'),ubox=u&&u.parentElement.querySelector('span.box');
+    if(c1box&&ubox){
+      T('狀態：已勾選與未勾選在視覺上可區分',
+        W.getComputedStyle(c1box).backgroundColor!==W.getComputedStyle(ubox).backgroundColor,
+        W.getComputedStyle(c1box).backgroundColor+' vs '+W.getComputedStyle(ubox).backgroundColor);
+    }
+
+    var one=inputs[0];
+    if(one){
+      var ac=W.getComputedStyle(one).accentColor||'';
+      T('品牌化：勾選控制項套上 accent-color（不涉及邊線與圓角）',
+        /0,\s*136,\s*210|#0088[dD]2/.test(ac),ac||'（空）');
+    }
+  }
+  document.getElementById('out').textContent=R.join('\n')+'\n\n'+(fails?('未通過 '+fails+' 項'):'全部通過');
+  document.title='CHECK-'+fails+'-FAIL';
+}catch(e){
+  document.getElementById('out').textContent=R.join('\n')+'\n\n例外：'+e.message+'\n'+(e.stack||'');
+  document.title='CHECK-'+(fails+1)+'-FAIL';
+}
+})();
+</script></body></html>

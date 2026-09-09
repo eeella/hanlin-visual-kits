@@ -1,0 +1,58 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>FORCE</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fb" style="width:1300px;height:800px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0,S="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>\u7c21\u6613\u984c\u5eab</title><style>\nbody{margin:0;font-family:system-ui;background:#fff;color:#222}\n.bar{background:#0d9488;color:#fff;padding:12px 24px;display:flex;gap:16px;align-items:center}\n.bar a{color:#fff;text-decoration:none}\n.list{display:flex;gap:16px;padding:30px 24px}\n.item{flex:1;border:1px solid #e5e5e5;border-radius:8px;padding:18px}\n.item i{color:#0d9488;font-size:20px}\ntable{width:calc(100% - 48px);margin:0 24px 30px;border-collapse:collapse}\nth{background:#f0fdfa;text-align:left;padding:10px}td{padding:10px;border-top:1px solid #eee}\nfooter{background:#134e4a;color:#ccc;padding:18px;text-align:center}\n</style></head><body>\n<div class=\"bar\"><b>\u7c21\u6613\u984c\u5eab</b><a href=\"#\">\u984c\u76ee</a><a href=\"#\">\u8a2d\u5b9a</a></div>\n<div class=\"list\"><div class=\"item\"><i class=\"fa-solid fa-book\"></i><h3>\u55ae\u5143\u984c\u5eab</h3><p>\u4f9d\u8ab2\u6b21\u700f\u89bd</p></div><div class=\"item\"><i class=\"fa-solid fa-pen\"></i><h3>\u81ea\u8a02\u984c\u76ee</h3><p>\u624b\u52d5\u65b0\u589e</p></div></div>\n<table><thead><tr><th>\u984c\u865f</th><th>\u96e3\u5ea6</th></tr></thead><tbody><tr><td>001</td><td>\u6613</td></tr><tr><td>002</td><td>\u4e2d</td></tr></tbody></table>\n<footer>\u00a9 2026 \u7c21\u6613\u984c\u5eab</footer></body></html>";
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fb=document.getElementById('fb'),BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function until(fn,ms){return new Promise(function(res){var t=0;(function c(){var v=false;try{v=fn()}catch(e){}if(v||t>=(ms||8000))return res(v);t+=120;setTimeout(c,120)})()})}
+function lum(c){var m=/(\d+), (\d+), (\d+)/.exec(c||'');return m?(0.2126*+m[1]+0.7152*+m[2]+0.0722*+m[3])/255:null}
+async function run(g){
+  localStorage.setItem('hanlin-import-html',S);
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',logoLight:2,groups:g,controls:{btn:true},memberEntry:true}));
+  sessionStorage.setItem('hanlin-session','1');
+  await new Promise(function(res){fb.onload=function(){setTimeout(res,600)};(ticket('preview.html'),fb.src=BASE+'preview.html')});
+  var f2=fb.contentDocument.getElementById('importPageFrame');
+  await until(function(){var d2=f2.contentDocument;return d2&&d2.body&&d2.body.children.length>0},8000);
+  return {d:f2.contentDocument,W:f2.contentWindow};
+}
+(async function(){
+try{
+  /* 原頁完全沒有 hero 區塊 */
+  var r=await run({hd:1,ft:2,hero:0,fm:0,tblsty:2,icon:0});
+  var hero=r.d.querySelector('[data-hl-hero]');
+  T('無 hero 的頁面：強制補上歡迎橫幅',!!hero,hero?('補上 '+hero.tagName.toLowerCase()+(hero.hasAttribute('data-hl-inserted')?'（自動補）':'（既有）')):'仍然沒有');
+  if(hero){
+    var c=r.W.getComputedStyle(hero);
+    T('補上的橫幅套用採用版型（漸層＋白字）',c.backgroundImage.indexOf('gradient')>-1&&lum(c.color)>0.8,(c.backgroundImage.indexOf('gradient')>-1?'漸層':c.backgroundColor)+' 字'+c.color);
+    T('橫幅文字取自頁面既有標題（未虛構內容）',(hero.textContent||'').indexOf('簡易題庫')>-1,(hero.textContent||'').trim().slice(0,20));
+  }
+  /* 只有兩張卡也要套到 */
+  var items=r.d.querySelectorAll('.item');
+  /* STYLEGUIDE 3.12：色塊底色是單色白底，四張一致；輪替的是圖示／標題「文字色」。
+     所以要比 color 才看得出輪替，另外獨立斷言底色維持單色白。 */
+  var cols=[],bgs=[];items.forEach(function(it){var ic=it.querySelector('.material-symbols-rounded,svg');
+    if(ic){var c=r.W.getComputedStyle(ic);cols.push(c.color);bgs.push(c.backgroundColor)}});
+  T('只有兩張卡片：仍套用輪替配色（圖示文字色）',cols.length===2&&cols[0]!==cols[1],cols.join(' / ')||'未取得');
+  T('色塊底色維持單色白底（不隨輪替變色）',bgs.length===2&&bgs[0]==='rgb(255, 255, 255)'&&bgs[1]==='rgb(255, 255, 255)',bgs.join(' / ')||'未取得');
+  /* 表格樣式(主色表頭) */
+  var th=r.d.querySelector('table th');
+  T('表格採用主色表頭：實際套用',!!th&&r.W.getComputedStyle(th).backgroundColor==='rgb(0, 136, 210)',th?r.W.getComputedStyle(th).backgroundColor:'無表格');
+  /* 換 hero 版型應有不同結果 */
+  var r2=await run({hd:1,ft:2,hero:1,fm:1,tblsty:2,icon:0});
+  var hero2=r2.d.querySelector('[data-hl-hero]');
+  var c2=hero2?r2.W.getComputedStyle(hero2):null;
+  T('切換橫幅版型後樣式不同',!!c2&&!!hero&&c2.backgroundImage!==r.W.getComputedStyle(hero).backgroundImage,'不同='+(c2&&c2.backgroundImage!==r.W.getComputedStyle(hero).backgroundImage));
+  var items2=r2.d.querySelectorAll('.item');
+  var ic2=items2[0]?items2[0].querySelector('.material-symbols-rounded,svg'):null;
+  T('切換功能選單為純 icon 版：圖示放大無色塊',!!ic2&&r2.W.getComputedStyle(ic2).backgroundColor==='rgba(0, 0, 0, 0)'&&parseFloat(r2.W.getComputedStyle(ic2).fontSize)>=34,
+    ic2?(r2.W.getComputedStyle(ic2).fontSize+' / '+r2.W.getComputedStyle(ic2).backgroundColor):'無');
+}catch(e){T('例外:'+e.message,false)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='FORCE-'+fails+'-FAIL';
+})();
+</script></body></html>

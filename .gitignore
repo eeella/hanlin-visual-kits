@@ -1,2 +1,12 @@
 .DS_Store
 *.bak-*
+
+# 本機備份，不上雲端
+bak-archive/
+
+# Python 快取
+__pycache__/
+*.pyc
+
+# 測試報告產出
+_dev/reports/

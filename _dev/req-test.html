@@ -1,0 +1,128 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>REQ</title></head><body>
+<pre id="out" style="font:13px/1.7 monospace">run</pre>
+<iframe id="fr" style="width:1280px;height:1000px;position:absolute;left:-99999px"></iframe>
+<script>
+var R=[],fr=document.getElementById('fr'),BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function T(n,ok,detail){R.push((ok?'✅':'❌')+' '+n+(detail?('  〔'+detail+'〕'):''))}
+function D(){return fr.contentDocument}function W(){return fr.contentWindow}
+function cs(el){return W().getComputedStyle(el)}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function nav(p){return new Promise(function(res){fr.onload=function(){setTimeout(res,700)};fr.src=BASE+p})}
+function px(v){return Math.round(parseFloat(v))}
+(async function(){
+try{
+/* ===== brand.html 相關需求 ===== */
+await nav('brand.html');
+var d=D();
+
+/* R1 勾選 logo → hd/ft 示範同步替換（實際操作＋檢查 src） */
+var tabsAll=[].slice.call(d.querySelectorAll('.cat-tab'));
+(tabsAll.filter(function(x){return (x.dataset.cat||'')==='identity'})[0]||{click:function(){}}).click();
+await wait(350);
+var before=d.querySelector('.pick-box[data-group="hd"] .demo-logo').getAttribute('src');
+d.querySelectorAll('.logo-sel')[3].click(); await wait(400);
+var after=d.querySelector('.pick-box[data-group="hd"] .demo-logo').getAttribute('src');
+T('R1 勾選 Logo 連動 hd 示範', before!==after && /logo-mark-only/.test(after), before+' → '+after);
+d.querySelectorAll('.logo-sel')[0].click(); await wait(400);
+var after2=d.querySelector('.pick-box[data-group="hd"] .demo-logo').getAttribute('src');
+T('R1b 再換一種 Logo 也連動', /logo\.svg/.test(after2), after2);
+
+/* R3/R6 說明文與用詞（實際文字） */
+var secDesc=d.querySelector('#logo .sec-desc').textContent.trim();
+T('R3 Logo 說明白話且短（'+secDesc.length+' 字）', secDesc.length<60 && secDesc.indexOf('擇一')>-1, secDesc);
+var subs=[].map.call(d.querySelectorAll('#logo .sub-title'),function(e){return e.textContent.trim()});
+T('R6 標準版/反白版用詞對稱', subs.length===2 && subs[0].indexOf('標準版')===0 && subs[1].indexOf('反白版')===0, subs.join(' / '));
+
+await showCat('colorsys');
+/* R4 淡色圖示方塊（實際標題文字） */
+var st=d.querySelector('[data-key="softtile"] .pick-head').textContent;
+T('R4 「柔色 tile」已改白話', st.indexOf('淡色圖示方塊')>-1 && st.indexOf('柔色 tile')<0, st.replace(/\s+/g,' ').slice(0,40));
+
+/* 切到各分類頁籤，讓所有區塊都渲染後再量測 */
+async function showCat(name){
+  var tabs=[].slice.call(d.querySelectorAll('.cat-tab'));
+  var t=tabs.filter(function(x){return (x.dataset.cat||x.getAttribute('data-cat'))===name})[0];
+  if(t)t.click(); await wait(350);
+}
+await showCat('layout');
+/* R12 規範條文標籤（渲染可見） */
+var seenTags=[],catNames=['colorsys','identity','comps','layout'];
+for(var ci=0;ci<catNames.length;ci++){
+  await showCat(catNames[ci]);
+  [].forEach.call(d.querySelectorAll('.spec-tag'),function(e){
+    if(cs(e).display!=='none'&&e.getBoundingClientRect().width>0&&seenTags.indexOf(e)<0)seenTags.push(e);
+  });
+}
+var tagOwners=seenTags.map(function(e){return (e.closest('.pick-box')||{}).dataset?e.closest('.pick-box').dataset.key:'?'});
+var offBox=d.querySelector('[data-key="principles"]');
+var offClosed=offBox&&W().getComputedStyle(offBox.closest('section')).display==='none';
+T('R12 「規範條文」標籤在啟用中的區塊全部顯示（'+seenTags.length+' 個）', seenTags.length===3&&offClosed, tagOwners.join(',')+'；principles 區塊為關閉狀態='+offClosed);
+
+/* R8 body 行距/字距（computedStyle） */
+var bs=cs(d.body);
+T('R8 body 行距≥1.85 且有字距', parseFloat(bs.lineHeight)/parseFloat(bs.fontSize)>=1.85 && parseFloat(bs.letterSpacing)>0, 'line-height '+bs.lineHeight+' / font '+bs.fontSize+' / spacing '+bs.letterSpacing);
+
+await showCat('comps');
+/* R5 彈窗標題（實際開啟後量測） */
+d.querySelector('[data-modal="m-confirm"]').click(); await wait(400);
+var mh=d.querySelector('#m-confirm .modal h4'), mp=d.querySelector('#m-confirm .modal p');
+var mhs=cs(mh), mps=cs(mp);
+T('R5 彈窗標題比內文大且粗且異色', px(mhs.fontSize)>=20 && +mhs.fontWeight>=700 && px(mhs.fontSize)-px(mps.fontSize)>=5 && mhs.color!==mps.color,
+  '標題 '+mhs.fontSize+'/'+mhs.fontWeight+' '+mhs.color+' vs 內文 '+mps.fontSize+' '+mps.color);
+d.querySelector('#m-confirm .close-x').click(); await wait(200);
+
+await showCat('comps');
+/* R10 圖示有底色版不跑版（渲染後量測溢出） */
+var grid=d.querySelector('.icon-grid.bg'), gp=grid.parentElement;
+var gr=grid.getBoundingClientRect(), pr=gp.getBoundingClientRect();
+var overflow=Math.max(0,Math.round(gr.right-pr.right));
+var circles=grid.querySelectorAll('.ic');
+var lastC=circles[circles.length-1].getBoundingClientRect();
+T('R10 icon 有底色版無水平溢出', overflow<=1 && lastC.right<=pr.right+1, '溢出 '+overflow+'px，共 '+circles.length+' 顆');
+
+await showCat('comps');
+/* R11 書籤側欄行距（實際間距） */
+var lis=d.querySelectorAll('.bm-side li');
+var gap=Math.round(lis[1].getBoundingClientRect().top-lis[0].getBoundingClientRect().bottom);
+T('R11 書籤側欄項目有間距', gap>=4, '相鄰間距 '+gap+'px');
+
+/* R13 專案卡 icon 淡底深色（實際色值對比） */
+var tile=d.querySelector('.pj-card .tile'), ic=tile.querySelector('.material-symbols-rounded');
+function lum(c){var m=/(\d+), (\d+), (\d+)/.exec(c);return m?(0.2126*+m[1]+0.7152*+m[2]+0.0722*+m[3])/255:0}
+var bgL=lum(cs(tile).backgroundColor), fgL=lum(cs(ic).color);
+T('R13 專案卡 icon＝淡底深色（非反白）', bgL>0.7 && fgL<0.6, '底亮度 '+bgL.toFixed(2)+' / 圖示亮度 '+fgL.toFixed(2));
+
+/* R9 標點全形（掃描實際文字節點） */
+function scanPunc(doc){
+  var bad=[],re=/[一-鿿][,;:?!]|[,;:?!][一-鿿]/;
+  var w=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
+    var p=n.parentElement;
+    while(p){if(/^(SCRIPT|STYLE|TEMPLATE|NOSCRIPT)$/.test(p.tagName))return NodeFilter.FILTER_REJECT;p=p.parentElement}
+    return NodeFilter.FILTER_ACCEPT;
+  }});
+  while(w.nextNode()){var t=w.currentNode.nodeValue;if(re.test(t))bad.push(t.trim().slice(0,24))}
+  return bad;
+}
+var badP=scanPunc(d);
+T('R9 中文語境無半形標點', badP.length===0, badP.length?badP.slice(0,3).join(' | '):'0 處');
+
+/* R25 自訂頁初始帶預設組合（狀態列實際內容） */
+var bar=d.getElementById('adoptStatus');
+var barTxt=bar?bar.textContent:'';
+T('R25 初始狀態列顯示完整採用組合', !!bar && barTxt.indexOf('未選')<0 && barTxt.indexOf('Header：')>-1, barTxt.replace(/\s+/g,'').slice(6,60));
+
+/* ===== preview.html 相關 ===== */
+await nav('preview.html');
+d=D();
+/* R7 純圖片版橫幅不用金色（實際背景） */
+var hp=d.querySelector('.hero-photo');
+var hpBg=cs(hp).backgroundImage;
+T('R7 純圖片版橫幅為品牌色系（非金棕）', hpBg.indexOf('200, 155, 107')<0 && /rgb\(/.test(hpBg), hpBg.slice(0,70));
+/* R9b 預覽頁標點 */
+var badP2=scanPunc(d);
+T('R9b 預覽頁中文語境無半形標點', badP2.length===0, badP2.length?badP2.slice(0,3).join(' | '):'0 處');
+}catch(e){R.push('❌ 例外：'+e.message+' @'+(e.stack||'').split('\n')[1])}
+document.getElementById('out').textContent=R.join('\n');
+document.title='REQ-'+R.filter(function(x){return x.charAt(0)==='❌'}).length+'-FAIL';
+})();
+</script></body></html>

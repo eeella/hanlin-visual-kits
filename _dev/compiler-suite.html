@@ -1,0 +1,724 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>COMPILER</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<script>
+window.onerror=function(m,s,l){document.getElementById('out').textContent='JS ERROR: '+m+' @'+l;document.title='COMPILER-ERR'};
+
+/* ===== 多格式檔案解析器（純前端、無外部依賴） =====
+   輸出統一的中介結構 Doc：
+   { format, stack, blocks:[{type,level,text,items,rows,headers,meta}], fields:{}, raw }
+*/
+var Parser=(function(){
+  /* --- ZIP（docx/xlsx 用），以瀏覽器原生 DecompressionStream 解 deflate --- */
+  async function unzip(buf){
+    var dv=new DataView(buf),files={},u8=new Uint8Array(buf);
+    /* 找 End of Central Directory */
+    var eocd=-1;
+    for(var i=u8.length-22;i>=0;i--){ if(dv.getUint32(i,true)===0x06054b50){eocd=i;break} }
+    if(eocd<0)throw new Error('不是有效的 ZIP');
+    var cnt=dv.getUint16(eocd+10,true),off=dv.getUint32(eocd+16,true);
+    for(var k=0;k<cnt;k++){
+      if(dv.getUint32(off,true)!==0x02014b50)break;
+      var method=dv.getUint16(off+10,true);
+      var csize=dv.getUint32(off+20,true);
+      var nameLen=dv.getUint16(off+28,true),extraLen=dv.getUint16(off+30,true),cmtLen=dv.getUint16(off+32,true);
+      var lho=dv.getUint32(off+42,true);
+      var name=new TextDecoder().decode(u8.subarray(off+46,off+46+nameLen));
+      /* local header */
+      var lnameLen=dv.getUint16(lho+26,true),lextraLen=dv.getUint16(lho+28,true);
+      var dataStart=lho+30+lnameLen+lextraLen;
+      var data=u8.subarray(dataStart,dataStart+csize);
+      files[name]={method:method,data:data};
+      off+=46+nameLen+extraLen+cmtLen;
+    }
+    var out={};
+    for(var nm in files){
+      var f=files[nm];
+      if(f.method===0){out[nm]=new TextDecoder().decode(f.data);continue}
+      try{
+        var ds=new DecompressionStream('deflate-raw');
+        var stream=new Blob([f.data]).stream().pipeThrough(ds);
+        out[nm]=await new Response(stream).text();
+      }catch(e){out[nm]=''}
+    }
+    return out;
+  }
+  function xmlText(x){return (x||'').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim()}
+
+  /* --- .docx --- */
+  async function parseDocx(buf){
+    var z=await unzip(buf);
+    var xml=z['word/document.xml']||'';
+    if(!xml)throw new Error('docx 內找不到 document.xml');
+    var blocks=[];
+    var paras=xml.match(/<w:p\b[\s\S]*?<\/w:p>/g)||[];
+    paras.forEach(function(p){
+      var style=(/w:pStyle w:val="([^"]+)"/.exec(p)||[])[1]||'';
+      var txt=xmlText((p.match(/<w:t[^>]*>[\s\S]*?<\/w:t>/g)||[]).join(''));
+      if(!txt)return;
+      var lvl=/Heading(\d)/i.test(style)?+RegExp.$1:(/Title/i.test(style)?1:0);
+      var isList=/ListParagraph/i.test(style)||/<w:numPr>/.test(p);
+      blocks.push(lvl?{type:'heading',level:Math.min(lvl,4),text:txt}
+                    :isList?{type:'listitem',text:txt}
+                    :{type:'para',text:txt});
+    });
+    /* 表格 */
+    (xml.match(/<w:tbl>[\s\S]*?<\/w:tbl>/g)||[]).forEach(function(t){
+      var rows=(t.match(/<w:tr\b[\s\S]*?<\/w:tr>/g)||[]).map(function(r){
+        return (r.match(/<w:tc\b[\s\S]*?<\/w:tc>/g)||[]).map(function(c){return xmlText((c.match(/<w:t[^>]*>[\s\S]*?<\/w:t>/g)||[]).join(''))});
+      });
+      if(rows.length)blocks.push({type:'table',headers:rows[0],rows:rows.slice(1)});
+    });
+    return {format:'Word (.docx)',stack:'OOXML 文件',blocks:blocks};
+  }
+
+  /* --- .xlsx --- */
+  async function parseXlsx(buf){
+    var z=await unzip(buf);
+    var shared=[];
+    var ss=z['xl/sharedStrings.xml']||'';
+    (ss.match(/<si>[\s\S]*?<\/si>/g)||[]).forEach(function(si){shared.push(xmlText((si.match(/<t[^>]*>[\s\S]*?<\/t>/g)||[]).join('')))});
+    var sheetName=Object.keys(z).filter(function(n){return /^xl\/worksheets\/sheet\d+\.xml$/.test(n)}).sort()[0];
+    var sheet=z[sheetName]||'';
+    if(!sheet)throw new Error('xlsx 內找不到工作表');
+    var rows=[];
+    (sheet.match(/<row\b[\s\S]*?<\/row>/g)||[]).forEach(function(r){
+      var cells=[];
+      (r.match(/<c\b[^>]*(?:\/>|>[\s\S]*?<\/c>)/g)||[]).forEach(function(c){
+        var t=(/ t="([^"]+)"/.exec(c)||[])[1];
+        var v=(/<v>([\s\S]*?)<\/v>/.exec(c)||[])[1];
+        var isv=(/<is>[\s\S]*?<t[^>]*>([\s\S]*?)<\/t>/.exec(c)||[])[1];
+        var val=isv!==undefined?isv:(t==='s'?(shared[+v]||''):(v!==undefined?v:''));
+        cells.push(String(val).trim());
+      });
+      if(cells.some(function(x){return x!==''}))rows.push(cells);
+    });
+    var blocks=rows.length?[{type:'table',headers:rows[0],rows:rows.slice(1)}]:[];
+    return {format:'Excel (.xlsx)',stack:'OOXML 試算表',blocks:blocks};
+  }
+
+  /* --- CSV / TSV --- */
+  function parseCsv(text,sep){
+    sep=sep||(text.indexOf('\t')>-1&&text.indexOf(',')<0?'\t':',');
+    var rows=[],cur=[],val='',q=false;
+    for(var i=0;i<text.length;i++){
+      var ch=text[i];
+      if(q){ if(ch==='"'){ if(text[i+1]==='"'){val+='"';i++} else q=false } else val+=ch }
+      else{
+        if(ch==='"')q=true;
+        else if(ch===sep){cur.push(val.trim());val=''}
+        else if(ch==='\n'){cur.push(val.trim());rows.push(cur);cur=[];val=''}
+        else if(ch!=='\r')val+=ch;
+      }
+    }
+    if(val||cur.length){cur.push(val.trim());rows.push(cur)}
+    rows=rows.filter(function(r){return r.some(function(c){return c!==''})});
+    return {format:'CSV/TSV',stack:'分隔文字',blocks:rows.length?[{type:'table',headers:rows[0],rows:rows.slice(1)}]:[]};
+  }
+
+  /* --- Markdown --- */
+  function parseMd(text){
+    var blocks=[],lines=text.split(/\r?\n/),tbuf=[];
+    function flushTable(){
+      if(tbuf.length>=2){
+        var hdr=tbuf[0].split('|').map(function(s){return s.trim()}).filter(Boolean);
+        var body=tbuf.slice(2).map(function(l){return l.split('|').map(function(s){return s.trim()}).filter(function(_,i,a){return true}).filter(Boolean)});
+        blocks.push({type:'table',headers:hdr,rows:body});
+      }
+      tbuf=[];
+    }
+    lines.forEach(function(l){
+      if(/^\s*\|/.test(l)){tbuf.push(l.replace(/^\s*\|/,'').replace(/\|\s*$/,''));return}
+      flushTable();
+      var h=/^(#{1,4})\s+(.*)$/.exec(l);
+      if(h){blocks.push({type:'heading',level:h[1].length,text:h[2].trim()});return}
+      var li=/^\s*[-*+]\s+(.*)$/.exec(l)||/^\s*\d+\.\s+(.*)$/.exec(l);
+      if(li){blocks.push({type:'listitem',text:li[1].trim()});return}
+      if(l.trim())blocks.push({type:'para',text:l.trim()});
+    });
+    flushTable();
+    return {format:'Markdown',stack:'Markdown 文件',blocks:blocks};
+  }
+
+  /* --- HTML --- */
+  function parseHtml(text){
+    var doc=new DOMParser().parseFromString(text,'text/html');
+    var blocks=[];
+    var stack=[];
+    if(/cdn\.tailwindcss|tailwind\./i.test(text))stack.push('Tailwind CSS');
+    if(/bootstrap[.-]/i.test(text))stack.push('Bootstrap');
+    if(/\bant-btn\b|antd/i.test(text))stack.push('Ant Design');
+    if(/\bv-btn\b|vuetify/i.test(text))stack.push('Vuetify');
+    if(/\bel-button\b/i.test(text))stack.push('Element Plus');
+    if(/\bMui[A-Z]/.test(text))stack.push('Material UI');
+    if(/react|_jsx|useState/i.test(text))stack.push('React');
+    if(/\bv-if\b|\bv-for\b|createApp|x-data/i.test(text))stack.push('Vue／Alpine');
+    Array.prototype.forEach.call(doc.body?doc.body.querySelectorAll('h1,h2,h3,h4,p,li,table,button,a'):[],function(el){
+      var t=(el.textContent||'').trim();
+      if(el.tagName==='TABLE'){
+        var hdr=Array.prototype.map.call(el.querySelectorAll('thead th, tr:first-child th, tr:first-child td'),function(c){return (c.textContent||'').trim()});
+        var rows=Array.prototype.map.call(el.querySelectorAll('tbody tr'),function(r){return Array.prototype.map.call(r.querySelectorAll('td,th'),function(c){return (c.textContent||'').trim()})}).filter(function(r){return r.length});
+        if(hdr.length)blocks.push({type:'table',headers:hdr,rows:rows});
+        return;
+      }
+      if(!t)return;
+      if(/^H[1-4]$/.test(el.tagName))blocks.push({type:'heading',level:+el.tagName[1],text:t});
+      else if(el.tagName==='LI')blocks.push({type:'listitem',text:t});
+      else if(el.tagName==='BUTTON'||(el.tagName==='A'&&/btn|button|cta/i.test(el.className||'')))blocks.push({type:'action',text:t,meta:{primary:/primary|submit|cta/i.test(el.className||'')}});
+      else if(el.tagName==='P')blocks.push({type:'para',text:t});
+    });
+    return {format:'HTML',stack:stack.length?stack.join('＋'):'原生 HTML',blocks:blocks};
+  }
+
+  /* --- JSON --- */
+  function parseJson(text){
+    var data=JSON.parse(text);
+    var blocks=[];
+    function walk(v,key,depth){
+      if(Array.isArray(v)){
+        if(v.length&&typeof v[0]==='object'&&v[0]&&!Array.isArray(v[0])){
+          var headers=Object.keys(v[0]);
+          blocks.push({type:'table',headers:headers,rows:v.map(function(o){return headers.map(function(h){return o[h]===undefined?'':String(o[h])})}),meta:{key:key}});
+        }else{
+          v.forEach(function(x){ if(typeof x!=='object')blocks.push({type:'listitem',text:String(x)}) });
+        }
+        return;
+      }
+      if(v&&typeof v==='object'){
+        Object.keys(v).forEach(function(k){
+          var val=v[k];
+          if(val&&typeof val==='object')  { if(depth<3){blocks.push({type:'heading',level:Math.min(depth+2,4),text:k});walk(val,k,depth+1)} }
+          else blocks.push({type:'field',text:String(val),meta:{key:k,type:typeof val}});
+        });
+        return;
+      }
+      blocks.push({type:'para',text:String(v)});
+    }
+    walk(data,'',0);
+    return {format:'JSON',stack:'JSON 資料',blocks:blocks,data:data};
+  }
+
+  /* --- 純文字 --- */
+  function parseTxt(text){
+    var blocks=[];
+    text.split(/\r?\n/).forEach(function(l){
+      l=l.trim();if(!l)return;
+      if(/^[-*•]\s+/.test(l))blocks.push({type:'listitem',text:l.replace(/^[-*•]\s+/,'')});
+      /* 含冒號的 key: value 交給語意層判定（指標／狀態／欄位），不可先當成標題 */
+      else if(/^.{1,14}[:：]\s*\S/.test(l))blocks.push({type:'para',text:l});
+      else if(l.length<=24&&!/[。.!?，,；;]$/.test(l))blocks.push({type:'heading',level:2,text:l});
+      else blocks.push({type:'para',text:l});
+    });
+    return {format:'純文字',stack:'Plain Text',blocks:blocks};
+  }
+
+  /* --- PDF（文字型的簡易抽取） --- */
+  async function parsePdf(buf){
+    var u8=new Uint8Array(buf);
+    var latin=new TextDecoder('latin1').decode(u8);
+    var texts=[];
+    /* 解壓 FlateDecode 串流後抽 Tj/TJ 文字 */
+    var re=/stream\r?\n([\s\S]*?)endstream/g,m;
+    while((m=re.exec(latin))){
+      var chunk=m[1];
+      var bytes=new Uint8Array(chunk.length);
+      for(var i=0;i<chunk.length;i++)bytes[i]=chunk.charCodeAt(i)&0xff;
+      var txt='';
+      try{
+        var ds=new DecompressionStream('deflate');
+        txt=await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text();
+      }catch(e){ txt=chunk }
+      (txt.match(/\((?:\\.|[^()\\])*\)\s*Tj|\[(?:[^\][]|\\.)*\]\s*TJ/g)||[]).forEach(function(seg){
+        (seg.match(/\((?:\\.|[^()\\])*\)/g)||[]).forEach(function(s){
+          texts.push(s.slice(1,-1).replace(/\\([()\\])/g,'$1'));
+        });
+      });
+    }
+    var joined=texts.join('').replace(/\s{2,}/g,' ').trim();
+    if(!joined)throw new Error('PDF 無法抽取文字（可能是掃描影像型）');
+    return Object.assign(parseTxt(joined),{format:'PDF',stack:'PDF 文字流'});
+  }
+
+  async function parse(name,content,buf){
+    var ext=(name.split('.').pop()||'').toLowerCase();
+    if(ext==='docx')return await parseDocx(buf);
+    if(ext==='xlsx'||ext==='xlsm')return await parseXlsx(buf);
+    if(ext==='pdf')return await parsePdf(buf);
+    if(ext==='csv'||ext==='tsv')return parseCsv(content);
+    if(ext==='md'||ext==='markdown')return parseMd(content);
+    if(ext==='json')return parseJson(content);
+    if(ext==='html'||ext==='htm')return parseHtml(content);
+    if(ext==='js'||ext==='ts'||ext==='jsx'||ext==='tsx'||ext==='vue'){
+      var d=parseTxt(content);d.format='原始碼 ('+ext+')';d.stack=/react|useState|jsx/i.test(content)?'React':(/vue|ref\(|defineComponent/i.test(content)?'Vue':'JavaScript');
+      /* 嘗試從程式碼中抽出資料結構 */
+      var objs=content.match(/\{[\s\S]{20,800}?\}/g)||[];
+      for(var i=0;i<objs.length;i++){try{var o=JSON.parse(objs[i]);var jd=parseJson(JSON.stringify(o));d.blocks=d.blocks.concat(jd.blocks);break}catch(e){}}
+      return d;
+    }
+    /* 內容嗅探 */
+    var t=(content||'').trim();
+    if(/^[\[{]/.test(t)){try{return parseJson(t)}catch(e){}}
+    if(/<html|<body|<div|<section/i.test(t))return parseHtml(t);
+    if(/^#{1,4}\s|\n\|.*\|/.test(t))return parseMd(t);
+    if(t.split('\n').length>1&&/,|\t/.test(t.split('\n')[0]))return parseCsv(t);
+    return parseTxt(t);
+  }
+  return {parse:parse,unzip:unzip};
+})();
+
+
+/* ===== 功能語意判定：把內容抽象化為 UI 意圖 ===== */
+var Semantic=(function(){
+  var STATUS={
+    success:/已完成|完成|成功|通過|啟用|上線|正常|已付款|已結案|active|done|success|passed|approved|paid/i,
+    warning:/審核中|處理中|待審|待辦|進行中|等待|逾期提醒|注意|pending|review|processing|warning|in progress/i,
+    danger:/失敗|錯誤|逾期|停用|退件|取消|異常|警報|超標|failed|error|rejected|overdue|danger|alert|critical/i,
+    info:/未開始|草稿|預約|排程|新增|待處理|draft|scheduled|new|info|todo/i
+  };
+  var ACTION=/^(?:立即|馬上|開始|前往|查看|檢視|下載|上傳|送出|提交|儲存|新增|編輯|刪除|取消|確認|登入|註冊|報名|訂閱|聯絡|了解更多|更多|返回|下一步|上一步)/;
+  var ACTION_EN=/^(?:get started|start|view|see|download|upload|submit|save|add|edit|delete|cancel|confirm|login|sign ?up|sign ?in|subscribe|contact|learn more|read more|next|back|continue|try)/i;
+  var METRIC=/^([\d,]+(?:\.\d+)?)\s*(%|％|人|位|個|件|次|筆|項|天|小時|分鐘|元|萬|億|k|K|M|\+)?$/;
+  var KV=/^(.{1,14})[:：]\s*(.+)$/;
+
+  function statusOf(t){
+    for(var k in STATUS){if(STATUS[k].test(t))return k}
+    return null;
+  }
+  /* 完整匹配：整段文字本身就是狀態詞才算標籤 */
+  function statusExact(t){
+    var s2=String(t).trim();
+    for(var k in STATUS){
+      var m=STATUS[k].exec(s2);
+      if(m&&m[0].length>=s2.length-1)return k;
+    }
+    return null;
+  }
+  function analyze(doc){
+    var out=[],stats=[],actions=[],badges=[];
+    (doc.blocks||[]).forEach(function(b){
+      if(b.type==='heading'){
+        /* 短標題若本身是動作文字，語意上其實是按鈕（解析層看不出來，這裡糾正） */
+        var ht=(b.text||'').trim();
+        if((ACTION.test(ht)||ACTION_EN.test(ht))&&ht.length<=10){
+          actions.push({text:ht,primary:actions.length===0});
+          out.push({intent:'action',text:ht,primary:actions.length===1});return;
+        }
+        out.push({intent:'heading',level:b.level,text:ht});return;
+      }
+      if(b.type==='table'){
+        /* 標題列若含狀態欄，標記需要 badge 欄 */
+        var statusCols=[];
+        (b.headers||[]).forEach(function(h,i){ if(/狀態|status|state|進度|結果/i.test(h))statusCols.push(i) });
+        out.push({intent:'table',headers:b.headers,rows:b.rows,statusCols:statusCols});
+        return;
+      }
+      if(b.type==='listitem'){
+        var st=statusOf(b.text);
+        /* 條列仍是條列，只在短且為純狀態詞時才轉標籤；否則附帶狀態色點 */
+        if(statusExact(b.text)){badges.push({text:b.text,tone:st});out.push({intent:'badge',text:b.text,tone:st});return}
+        out.push({intent:'listitem',text:b.text,tone:st||null});return;
+      }
+      if(b.type==='action'){actions.push({text:b.text,primary:!!(b.meta&&b.meta.primary)});out.push({intent:'action',text:b.text,primary:!!(b.meta&&b.meta.primary)});return}
+      if(b.type==='field'){
+        var key=(b.meta&&b.meta.key)||'',val=b.text;
+        var m=METRIC.exec(String(val).trim());
+        if(m&&(b.meta&&b.meta.type!=='boolean')){stats.push({label:key,value:m[1],unit:m[2]||''});out.push({intent:'metric',label:key,value:m[1],unit:m[2]||''});return}
+        var st2=statusOf(String(val));
+        if(st2){out.push({intent:'badge',text:String(val),tone:st2,label:key});return}
+        if(typeof (b.meta&&b.meta.type)==='string'&&b.meta.type==='boolean'){out.push({intent:'badge',text:String(val)==='true'?'是':'否',tone:String(val)==='true'?'success':'info',label:key});return}
+        out.push({intent:'field',label:key,text:val});return;
+      }
+      /* para：再細分 */
+      var t=(b.text||'').trim();
+      var kv=KV.exec(t);
+      if(kv){
+        var mm=METRIC.exec(kv[2].trim());
+        if(mm){stats.push({label:kv[1],value:mm[1],unit:mm[2]||''});out.push({intent:'metric',label:kv[1],value:mm[1],unit:mm[2]||''});return}
+        var st3=statusOf(kv[2]);
+        if(st3){out.push({intent:'badge',text:kv[2].trim(),tone:st3,label:kv[1]});return}
+        out.push({intent:'field',label:kv[1],text:kv[2].trim()});return;
+      }
+      if((ACTION.test(t)||ACTION_EN.test(t))&&t.length<=14){
+        actions.push({text:t,primary:actions.length===0});
+        out.push({intent:'action',text:t,primary:actions.length===1});return;
+      }
+      var st4=statusOf(t);
+      /* 完整句子不是標籤：需短、無標點、非敘述句 */
+      if(statusExact(t)){badges.push({text:t,tone:st4});out.push({intent:'badge',text:t,tone:st4});return}
+      out.push({intent:'paragraph',text:t});
+    });
+    /* 組成區塊：連續的 metric 併成統計列；heading 之後的內容歸屬該段 */
+    var summary={
+      headings:out.filter(function(x){return x.intent==='heading'}).length,
+      tables:out.filter(function(x){return x.intent==='table'}).length,
+      metrics:out.filter(function(x){return x.intent==='metric'}).length,
+      badges:out.filter(function(x){return x.intent==='badge'}).length,
+      actions:out.filter(function(x){return x.intent==='action'}).length,
+      lists:out.filter(function(x){return x.intent==='listitem'}).length,
+      fields:out.filter(function(x){return x.intent==='field'}).length,
+      paragraphs:out.filter(function(x){return x.intent==='paragraph'}).length
+    };
+    return {intents:out,summary:summary};
+  }
+  /* 驗收：能否抽出 UI 語意 */
+  function review(doc,ana){
+    var s=ana.summary;
+    var uiSignals=s.headings+s.tables+s.metrics+s.badges+s.actions+s.lists+s.fields;
+    var missing=[];
+    if(!s.headings)missing.push('缺少標題層級（將以第一段文字或檔名補為 h1）');
+    if(!s.tables&&!s.metrics&&!s.lists&&!s.fields)missing.push('缺少結構化資料（表格／指標／條列／欄位）');
+    if(!s.actions)missing.push('缺少互動語意（未偵測到可轉為按鈕的動作文字）');
+    var verdict;
+    if(uiSignals===0&&s.paragraphs===0)verdict='拒絕收件';
+    else if(uiSignals===0)verdict='拒絕收件';
+    else if(missing.length>=2)verdict='條件性通過';
+    else verdict='完全通過';
+    return {verdict:verdict,missing:missing,signals:uiSignals};
+  }
+  return {analyze:analyze,review:review};
+})();
+
+
+/* ===== 程式碼產生器：JSON 結構層 / Vue3+Tailwind 元件層 / 邏輯層 ===== */
+var Generator=(function(){
+  /* ── 讀取品牌規範採用結果，產出「已套用規範」的元件 ── */
+  function mixW(hex,w){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    function m(v){return Math.round(v+(255-v)*w)}
+    return '#'+[m(r),m(g),m(b)].map(function(v){return v.toString(16).padStart(2,'0')}).join('').toUpperCase()}
+  function mixB(hex,w){var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    function m(v){return Math.round(v*(1-w))}
+    return '#'+[m(r),m(g),m(b)].map(function(v){return v.toString(16).padStart(2,'0')}).join('').toUpperCase()}
+  var HD_NAMES=['品牌官網（淺色）','品牌官網（深色）','教師平台','國小／兒童','國中／高中學術','命題大師','行動大師','影音派','AI 數位導覽員'];
+  function brand(){
+    var st=null;
+    try{st=JSON.parse(localStorage.getItem('hanlin-brand-theme'))}catch(e){}
+    if(!st||!st.theme)st={theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},groups:{hd:1,ft:2,hero:0,fm:0,tblsty:0,icon:0}};
+    var t=st.theme,g=st.groups||{};
+    var hd=(typeof g.hd==='number')?g.hd:1;
+    var hdDark=[1,3,4,7,8].indexOf(hd)>-1;
+    var HD_BG=['#FFFFFF',(t.s||t.p),'#FFFFFF','linear-gradient(120deg,'+(t.i||t.p)+' 0%,'+t.p+' 100%)',mixB(t.s||t.p,.25),'#FFFFFF',mixW(t.p,.9),'#1B1D21','linear-gradient(120deg,'+t.p+' 0%,'+(t.i||t.p)+' 100%)'];
+    return {
+      name:t.n||'翰林藍',
+      p:t.p, s:t.s||t.p, i:t.i||t.p, c:t.c||'#FF9A3C',
+      soft:mixW(t.p,.9), soft2:mixW(t.p,.82), deep:mixB(t.s||t.p,.2),
+      ink:'#3A3D42', ink2:'#8C9099', line:'#E6E8EC', page:'#F5F7FA', gray:'#EFF2F5',
+      success:'#26A649', warning:'#E08A1E', danger:'#DE3535', info:'#2E9BE6',
+      successSoft:'#E4F4E8', warningSoft:'#FDF0DC', dangerSoft:'#F8E2E2', infoSoft:'#E3F2FC',
+      hdIdx:hd, hdName:HD_NAMES[hd]||'品牌官網（深色）', hdBg:HD_BG[hd]||(t.s||t.p), hdFg:hdDark?'#FFFFFF':'#3A3D42',
+      ftIdx:(typeof g.ft==='number')?g.ft:2,
+      ftBg:((typeof g.ft==='number')?g.ft:2)===2?(t.s||t.p):(((typeof g.ft==='number')?g.ft:2)===1?mixW(t.p,.92):'#F7F9FB'),
+      ftFg:((typeof g.ft==='number')?g.ft:2)===2?'#FFFFFF':'#8C9099',
+      heroIdx:(typeof g.hero==='number')?g.hero:0,
+      heroBg:((typeof g.hero==='number')?g.hero:0)===0
+        ? 'linear-gradient(135deg,'+t.p+' 0%,'+(t.i||t.p)+' 100%)'
+        : 'linear-gradient(140deg,'+(t.i||t.p)+' 0%,'+mixW(t.p,.6)+' 45%,'+t.p+' 100%)',
+      fmIdx:(typeof g.fm==='number')?g.fm:0,
+      tblIdx:(typeof g.tblsty==='number')?g.tblsty:0
+    };
+  }
+
+  function toneMap(B){return {
+    success:{badge:'bg-['+B.successSoft+'] text-['+B.success+']',dot:'bg-['+B.success+']'},
+    warning:{badge:'bg-['+B.warningSoft+'] text-['+B.warning+']',dot:'bg-['+B.warning+']'},
+    danger:{badge:'bg-['+B.dangerSoft+'] text-['+B.danger+']',dot:'bg-['+B.danger+']'},
+    info:{badge:'bg-['+B.infoSoft+'] text-['+B.info+']',dot:'bg-['+B.info+']'}
+  }}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function camel(s){return String(s||'').replace(/[^\w\u4e00-\u9fff]+(.)/g,function(_,c){return c.toUpperCase()}).replace(/^[^a-zA-Z_]+/,'')||'field'}
+  function num(v){var n=String(v).replace(/[,\s]/g,'');return /^-?\d+(\.\d+)?$/.test(n)?parseFloat(n):null}
+  function typed(v){
+    if(v===null||v===undefined)return null;
+    var s=String(v).trim();
+    if(/^(true|是|有|yes|y)$/i.test(s))return true;
+    if(/^(false|否|無|no|n)$/i.test(s))return false;
+    var n=num(s);return n!==null?n:s;
+  }
+
+  /* ---- 1. JSON 結構層 ---- */
+  function toJSON(doc,ana,meta){
+    var o={_metadata:{source_format:doc.format,detected_stack:doc.stack,generated_at:meta.now,semantic_signals:ana.summary}};
+    var cur=o,sections=[],curSec=null;
+    ana.intents.forEach(function(x){
+      if(x.intent==='heading'){curSec={title:x.text,level:x.level,content:[]};sections.push(curSec);return}
+      var target=curSec?curSec.content:(o.content||(o.content=[]));
+      if(x.intent==='metric')target.push({type:'metric',label:x.label,value:typed(x.value),unit:x.unit||null});
+      else if(x.intent==='badge')target.push({type:'status',label:x.label||null,value:x.text,tone:x.tone});
+      else if(x.intent==='table'){
+        var keys=x.headers.map(camel);
+        target.push({type:'table',columns:x.headers.map(function(h,i){return {key:keys[i],title:h,is_status:x.statusCols.indexOf(i)>-1}}),
+          rows:x.rows.map(function(r){var ro={};keys.forEach(function(k,i){ro[k]=typed(r[i])});return ro})});
+      }
+      else if(x.intent==='action')target.push({type:'action',label:x.text,variant:x.primary?'primary':'secondary'});
+      else if(x.intent==='listitem')target.push({type:'list_item',text:x.text,tone:x.tone||null});
+      else if(x.intent==='field')target.push({type:'field',label:x.label,value:typed(x.text)});
+      else target.push({type:'text',text:x.text});
+    });
+    if(sections.length)o.sections=sections;
+    return o;
+  }
+
+  /* ---- 2+3. Vue 3 (Composition API) + Tailwind（已套用品牌規範） ---- */
+  function toVue(doc,ana,json){
+    var B=brand(),TONE=toneMap(B);
+    var metrics=ana.intents.filter(function(x){return x.intent==='metric'});
+    var tables=ana.intents.filter(function(x){return x.intent==='table'});
+    var actions=ana.intents.filter(function(x){return x.intent==='action'});
+    var title=(ana.intents.find(function(x){return x.intent==='heading'})||{}).text||'資料總覽';
+    var isGrad=/gradient/.test(B.hdBg);
+    var hdStyle=isGrad?('background:'+B.hdBg):('background-color:'+B.hdBg);
+    var heroStyle='background:'+B.heroBg;
+    var CARD='rounded-[14px] bg-white p-6 shadow-[0_1px_2px_rgba(20,45,70,0.05)] ring-1 ring-[#EDF0F4]';
+    var t=[];
+    t.push('<template>');
+    t.push('  <div class="min-h-screen bg-[' + B.page + '] font-[\'Noto_Sans_TC\',system-ui,sans-serif]">');
+    t.push('');
+    t.push('    <!-- Header：採用「' + B.hdName + '」版型 -->');
+    t.push('    <header class="flex flex-wrap items-center gap-4 px-6 py-4 sm:px-8" style="' + hdStyle + '">');
+    t.push('      <img :src="brand.logo" alt="翰林" class="h-[30px] w-auto"' + (B.hdFg === '#FFFFFF' ? ' style="filter:brightness(0) invert(1)"' : '') + ' />');
+    t.push('      <span class="text-base font-medium tracking-wide" style="color:' + B.hdFg + '">{{ page.title }}</span>');
+    t.push('      <nav class="ml-auto flex items-center gap-5 text-sm" aria-label="主要導覽">');
+    t.push('        <a v-for="link in brand.nav" :key="link" href="#" class="transition hover:opacity-70" style="color:' + B.hdFg + '">{{ link }}</a>');
+    t.push('      </nav>');
+    t.push('    </header>');
+    t.push('');
+    t.push('    <!-- 歡迎橫幅：採用「' + (B.heroIdx === 0 ? 'AI 漸層版' : '純圖片版') + '」 -->');
+    t.push('    <section class="px-6 py-14 text-center sm:px-8 sm:py-16" style="' + heroStyle + '">');
+    t.push('      <h1 class="text-2xl font-bold tracking-tight text-white sm:text-4xl">{{ page.title }}</h1>');
+    t.push('      <p v-if="page.intro" class="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/90 sm:text-base">{{ page.intro }}</p>');
+    if (true) {
+      t.push('      <div v-if="actions.length" class="mt-7 flex flex-wrap justify-center gap-3">');
+      t.push('        <button v-for="a in actions" :key="a.label" type="button" @click="handleAction(a)"');
+      t.push('          :class="[\'inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2\',');
+      t.push('            a.variant === \'primary\' ? \'bg-white text-[' + B.s + '] hover:bg-white/90\' : \'bg-white/20 text-white hover:bg-white/30\']">');
+      t.push('          {{ a.label }}');
+      t.push('        </button>');
+      t.push('      </div>');
+    }
+    t.push('    </section>');
+    t.push('');
+    t.push('    <main class="mx-auto max-w-5xl space-y-8 px-6 py-10 sm:px-8">');
+    if (metrics.length) {
+      t.push('');
+      t.push('      <!-- 數據統計指標：' + (B.fmIdx === 1 ? '純 icon 版' : '色塊版') + ' -->');
+      t.push('      <section aria-labelledby="metrics-title">');
+      t.push('        <h2 id="metrics-title" class="sr-only">關鍵指標</h2>');
+      t.push('        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-' + Math.min(metrics.length, 4) + '">');
+      t.push('          <div v-for="(m, mi) in metrics" :key="m.label" class="' + CARD + '">');
+      t.push('            <div class="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-[12px]"');
+      t.push('              :style="{ background: ' + (B.fmIdx === 1 ? "'transparent'" : 'cycleSoft(mi)') + ', color: cycle(mi) }">');
+      t.push('              <span class="material-symbols-rounded" style="font-size:' + (B.fmIdx === 1 ? '34' : '22') + 'px">insights</span>');
+      t.push('            </div>');
+      t.push('            <dt class="truncate text-sm text-[' + B.ink2 + ']">{{ m.label }}</dt>');
+      t.push('            <dd class="mt-1 flex items-baseline gap-1">');
+      t.push('              <span class="text-3xl font-bold tracking-tight" :style="{ color: cycle(mi) }">{{ formatNumber(m.value) }}</span>');
+      t.push('              <span v-if="m.unit" class="text-sm text-[' + B.ink2 + ']">{{ m.unit }}</span>');
+      t.push('            </dd>');
+      t.push('          </div>');
+      t.push('        </dl>');
+      t.push('      </section>');
+    }
+    t.push('');
+    t.push('      <!-- 內容區塊（依原始標題層級） -->');
+    t.push('      <section v-for="(sec, si) in contentSections" :key="si" class="' + CARD + '">');
+    t.push('        <component :is="sec.level <= 2 ? \'h2\' : \'h3\'" class="text-lg font-bold text-[' + B.s + ']">{{ sec.title }}</component>');
+    t.push('        <div class="mt-4 space-y-3">');
+    t.push('          <template v-for="(item, ii) in sec.content" :key="ii">');
+    t.push('            <p v-if="item.type === \'text\'" class="text-sm leading-7 text-[' + B.ink + ']">{{ item.text }}</p>');
+    t.push('            <div v-else-if="item.type === \'field\'" class="flex flex-wrap items-baseline gap-2 text-sm">');
+    t.push('              <span class="text-[' + B.ink2 + ']">{{ item.label }}</span>');
+    t.push('              <span class="font-medium text-[' + B.ink + ']">{{ item.value }}</span>');
+    t.push('            </div>');
+    t.push('            <div v-else-if="item.type === \'list_item\'" class="flex items-start gap-2.5 text-sm leading-7 text-[' + B.ink + ']">');
+    t.push('              <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full" :style="{ background: toneColor(item.tone) }" aria-hidden="true" />');
+    t.push('              <span>{{ item.text }}</span>');
+    t.push('            </div>');
+    t.push('            <span v-else-if="item.type === \'status\'"');
+    t.push('              class="inline-flex items-center rounded-full px-3.5 py-1 text-xs font-medium"');
+    t.push('              :style="{ background: toneSoft(item.tone), color: toneColor(item.tone) }">{{ item.value }}</span>');
+    t.push('          </template>');
+    t.push('        </div>');
+    t.push('      </section>');
+    if (tables.length) {
+      var thStyle = B.tblIdx === 2 ? ('background:' + B.p + ';color:#fff') : (B.tblIdx === 3 ? ('background:' + B.s + ';color:#fff') : 'background:#F7F9FB;color:' + B.ink);
+      t.push('');
+      t.push('      <!-- 結構化數據表：採用「' + ['斑馬紋', '全框線', '主色表頭', '深色表頭'][B.tblIdx] + '」 -->');
+      t.push('      <section v-for="(tb, ti) in tables" :key="\'t\' + ti" class="overflow-hidden rounded-[14px] bg-white shadow-[0_1px_2px_rgba(20,45,70,0.05)] ring-1 ring-[#EDF0F4]">');
+      t.push('        <h2 class="border-b border-[' + B.line + '] px-6 py-4 text-lg font-bold text-[' + B.s + ']">資料明細</h2>');
+      t.push('        <div class="overflow-x-auto">');
+      t.push('          <table class="min-w-full border-collapse text-left">');
+      t.push('            <thead>');
+      t.push('              <tr>');
+      t.push('                <th v-for="col in tb.columns" :key="col.key" scope="col"');
+      t.push('                  class="whitespace-nowrap px-5 py-3 text-[13px] font-normal tracking-wide" style="' + thStyle + '">{{ col.title }}</th>');
+      t.push('              </tr>');
+      t.push('            </thead>');
+      t.push('            <tbody>');
+      t.push('              <tr v-for="(row, ri) in tb.rows" :key="ri"');
+      t.push('                :class="[\'border-b border-[' + B.line + '] transition\', ' + (B.tblIdx === 0 ? "ri % 2 === 1 ? 'bg-[#F7F9FB]' : ''" : "''") + ']">');
+      t.push('                <td v-for="col in tb.columns" :key="col.key" class="whitespace-nowrap px-5 py-3.5 text-[13.5px] text-[' + B.ink + ']">');
+      t.push('                  <span v-if="col.is_status" class="inline-flex items-center rounded-full px-3.5 py-1 text-xs font-medium"');
+      t.push('                    :style="{ background: toneSoft(toneOf(row[col.key])), color: toneColor(toneOf(row[col.key])) }">{{ row[col.key] }}</span>');
+      t.push('                  <span v-else>{{ row[col.key] }}</span>');
+      t.push('                </td>');
+      t.push('              </tr>');
+      t.push('            </tbody>');
+      t.push('          </table>');
+      t.push('        </div>');
+      t.push('      </section>');
+    }
+    t.push('    </main>');
+    t.push('');
+    t.push('    <!-- Footer：採用「' + ['完整頁尾', '導覽頁尾', '精簡頁尾（深色置中）'][B.ftIdx] + '」 -->');
+    t.push('    <footer class="px-6 py-7 text-center text-[13px] sm:px-8" style="background:' + B.ftBg + ';color:' + B.ftFg + '">');
+    t.push('      <p>{{ brand.copyright }}</p>');
+    t.push('      <p class="mt-1 text-[11.5px] opacity-75">{{ brand.disclaimer }}</p>');
+    t.push('    </footer>');
+    t.push('  </div>');
+    t.push('</template>');
+
+    var sc = [];
+    sc.push('');
+    sc.push('<script setup>');
+    sc.push('import { ref, computed } from \'vue\'');
+    sc.push('');
+    sc.push('/* 資料與畫面完全解耦：替換 source 即可換內容，樣式已套用翰林品牌規範（主題：' + B.name + '） */');
+    sc.push('const source = ref(' + JSON.stringify(json, null, 2).split('\n').map(function (l, i) { return i ? '  ' + l : l }).join('\n') + ')');
+    sc.push('');
+    sc.push('const brand = {');
+    sc.push('  primary: \'' + B.p + '\',');
+    sc.push('  secondary: \'' + B.s + '\',');
+    sc.push('  accent: \'' + B.i + '\',');
+    sc.push('  contrast: \'' + B.c + '\',');
+    sc.push('  logo: \'logo-text.svg\',');
+    sc.push('  nav: [\'品牌故事\', \'產品服務\', \'最新消息\'],');
+    sc.push('  copyright: \'© 2026 翰林教學樞紐 Hanlin Hub · 相信學習\',');
+    sc.push('  disclaimer: \'本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。\'');
+    sc.push('}');
+    sc.push('');
+    sc.push('const page = computed(() => ({');
+    sc.push('  title: source.value.sections?.[0]?.title ?? \'' + String(title).replace(/'/g, "\\'") + '\',');
+    sc.push('  intro: source.value.sections?.[0]?.content?.find((c) => c.type === \'text\')?.text ?? \'\'');
+    sc.push('}))');
+    sc.push('const sections = computed(() => source.value.sections ?? [])');
+    sc.push('const contentSections = computed(() => sections.value.filter((s) => (s.content ?? []).some((c) => [\'text\', \'field\', \'list_item\', \'status\'].includes(c.type))))');
+    sc.push('const flat = computed(() => sections.value.flatMap((s) => s.content ?? []).concat(source.value.content ?? []))');
+    sc.push('const metrics = computed(() => flat.value.filter((c) => c?.type === \'metric\'))');
+    sc.push('const tables = computed(() => flat.value.filter((c) => c?.type === \'table\'))');
+    sc.push('const actions = computed(() => flat.value.filter((c) => c?.type === \'action\'))');
+    sc.push('');
+    sc.push('/* 對比色與中間色輪替（品牌規範：主色 → Teal → 對比色 → 成功綠） */');
+    sc.push('const CYCLE = [\'' + B.p + '\', \'#22CFC9\', \'' + B.c + '\', \'' + B.success + '\']');
+    sc.push('const CYCLE_SOFT = [\'' + mixWjs(B.p) + '\', \'#DEF8F7\', \'' + mixWjs(B.c) + '\', \'' + B.successSoft + '\']');
+    sc.push('const cycle = (i) => CYCLE[i % CYCLE.length]');
+    sc.push('const cycleSoft = (i) => CYCLE_SOFT[i % CYCLE_SOFT.length]');
+    sc.push('');
+    sc.push('/* 語意狀態色（品牌規範狀態色） */');
+    sc.push('const TONE_COLOR = { success: \'' + B.success + '\', warning: \'' + B.warning + '\', danger: \'' + B.danger + '\', info: \'' + B.info + '\', neutral: \'' + B.ink2 + '\' }');
+    sc.push('const TONE_SOFT = { success: \'' + B.successSoft + '\', warning: \'' + B.warningSoft + '\', danger: \'' + B.dangerSoft + '\', info: \'' + B.infoSoft + '\', neutral: \'' + B.gray + '\' }');
+    sc.push('const toneColor = (tone) => TONE_COLOR[tone] ?? TONE_COLOR.neutral');
+    sc.push('const toneSoft = (tone) => TONE_SOFT[tone] ?? TONE_SOFT.neutral');
+    sc.push('');
+    sc.push('const TONE_RULES = [');
+    sc.push('  [\'success\', /已完成|完成|成功|通過|啟用|正常|done|success|active/i],');
+    sc.push('  [\'warning\', /審核中|處理中|進行中|待|pending|review|processing/i],');
+    sc.push('  [\'danger\', /失敗|錯誤|逾期|停用|取消|異常|failed|error|overdue/i],');
+    sc.push('  [\'info\', /未開始|草稿|排程|draft|scheduled|new/i]');
+    sc.push(']');
+    sc.push('const toneOf = (value) => TONE_RULES.find(([, re]) => re.test(String(value ?? \'\')))?.[0] ?? \'neutral\'');
+    sc.push('');
+    sc.push('const numberFormatter = new Intl.NumberFormat(\'zh-TW\')');
+    sc.push('const formatNumber = (v) => (typeof v === \'number\' ? numberFormatter.format(v) : v)');
+    sc.push('');
+    sc.push('const emit = defineEmits([\'action\'])');
+    sc.push('const handleAction = (action) => emit(\'action\', action)');
+    sc.push('<\/script>');
+    return t.join('\n') + '\n' + sc.join('\n') + '\n';
+  }
+  function mixWjs(hex){return mixW(hex,.9)}
+
+  /* ---- Vanilla JS 版本（不使用框架時） ---- */
+  function toVanilla(json){
+    return [
+      '/* 資料與畫面解耦：改 SOURCE 即可換內容 */',
+      'const SOURCE = '+JSON.stringify(json,null,2)+';',
+      '',
+      'const TONE = {',
+      '  success: \'bg-green-50 text-green-700 ring-green-600/20\',',
+      '  warning: \'bg-yellow-50 text-yellow-800 ring-yellow-600/20\',',
+      '  danger: \'bg-red-50 text-red-700 ring-red-600/20\',',
+      '  info: \'bg-sky-50 text-sky-700 ring-sky-600/20\',',
+      '  neutral: \'bg-slate-100 text-slate-700 ring-slate-500/20\'',
+      '};',
+      'const toneOf = (v) => {',
+      '  const s = String(v ?? \'\');',
+      '  if (/已完成|完成|成功|通過|啟用|done|success/i.test(s)) return \'success\';',
+      '  if (/審核中|處理中|進行中|待|pending|review/i.test(s)) return \'warning\';',
+      '  if (/失敗|錯誤|逾期|停用|取消|failed|error/i.test(s)) return \'danger\';',
+      '  if (/未開始|草稿|排程|draft|new/i.test(s)) return \'info\';',
+      '  return \'neutral\';',
+      '};',
+      '',
+      'document.querySelectorAll(\'[data-action]\').forEach((el) => {',
+      '  el.addEventListener(\'click\', () => {',
+      '    el.dispatchEvent(new CustomEvent(\'app:action\', { bubbles: true, detail: { label: el.dataset.action } }));',
+      '  });',
+      '});'
+    ].join('\n');
+  }
+  return {toJSON:toJSON,toVue:toVue,toVanilla:toVanilla};
+})();
+
+
+</script>
+<script>
+(function(){
+var FX={"sample.csv": "6Kqy56iLLOWgseWQjeS6uuaVuCzlrozmiJDnjocs54uA5oWLCuaVuOWtuCwzMjAsOTIlLOW3suWujOaIkArlnIvmlocsMjgwLDc4JSzlr6nmoLjkuK0K6Iux5paHLDQxMCw2NSUs6YC+5pyfCg==", "sample.docx": "UEsDBBQAAAAIAIpbFF3muHRrXAAAAGIAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbBXMTQqAIBBA4auE+xxr0SJKL9EFRKYfylGcIer22fLxwZvcE6/mxsJHoll12ihnp+XNyE0V4lntInkE4LBj9KxTRqqyphK91CwbZB9OvyH0xgwQEgmStPI/FNgPUEsDBBQAAAAIAIpbFF3pzm6XOgIAAB0GAAARAAAAd29yZC9kb2N1bWVudC54bWzFVMtu2kAU3fcrLEvdtbGDlApZ4OyqLrqI1PQDHHsKlvySPYGyQ0koNCZpVAEpKWrDoiohgeahBEMV8TFlxvZfdLBDoyYuCLVSNx6P55xzj++9cxPLr1WFygDTknUtSS8usDQFNFGXZC2VpF+uPn0cpykLCpokKLoGknQOWPQy/yCR5SRdXFeBBimioFlcNkmnITQ4hrHENFAFa0E3gEbOXummKkCyNVNMVjclw9RFYFkkgKowMZZ9wqiCrNE8kVzTpVygbYx3xooZLC9gTgFUlssISpJelaECaIZPML8AwQPyuFpHHQf1L9C7U7+Rx2cbXruNP+yOkTDAmyHrNsKE2TjBteLo+1VICCXcgy186KDhJtr+7G1ee6Wif7SPK1e4VceD2o/8xhTdSOfPgDDOaizSvL/f8HcucblI5Gcbdj92CW50PXQrLS9fwFWHo5YesSxLjQaD2fSRs+32DlC3jEt77m6Ro+JLD2ez0GkJN0uunccFm6P8/LnXLI+czj9NQ5hr7BRQrTuv8HPZgiuCKaRMwUiP1bOctq6GSFnJKBMcexP55vCeB5IakiDsnJB6k6p7xTayq/htH1f6/8sS6Wt3+B53em7LRqU3+NNetBO4poRryBP5u43earqXW/e5wRcxmoN6X3A9otmnccIm+TOHCSxOc+o3y2hwPF/UxRg776+dh5fgb5yiwzOv2ZovcHxeo9+OyCyKvGx3jTK3XfBbRY5ttHPh12z0NaIuAS0YvuOXyWDnfwJQSwECFAMUAAAACACKWxRd5rh0a1wAAABiAAAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAIAIpbFF3pzm6XOgIAAB0GAAARAAAAAAAAAAAAAACAAY0AAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAgACAIAAAAD2AgAAAAA=", "sample.json": "ewogICJ0aXRsZSI6ICLlubPlj7DnuL3opr0iLAogICLnuL3nlKjmiLbmlbgiOiAxMjQ4MCwKICAi5rS76LqN546HIjogIjg3JSIsCiAgIuWVn+eUqCI6IHRydWUsCiAgImNvdXJzZXMiOiBbCiAgICB7CiAgICAgICJuYW1lIjogIuaVuOWtuCIsCiAgICAgICJzdHVkZW50cyI6IDMyMCwKICAgICAgInN0YXR1cyI6ICLlt7LlrozmiJAiCiAgICB9LAogICAgewogICAgICAibmFtZSI6ICLlnIvmlociLAogICAgICAic3R1ZGVudHMiOiAyODAsCiAgICAgICJzdGF0dXMiOiAi5a+p5qC45LitIgogICAgfQogIF0KfQ==", "sample.txt": "5a2j5bqm54ef6YGL5aCx5ZGKCgrmnKzlraPlrozmiJDkuInpoIXph43pu57lsIjmoYjjgIIKCue4veeHn+aUtjogMSwyNTAg6JCsCumBlOaIkOeOhzogMTA4JQrlsIjmoYjni4DmhYs6IOW3suWujOaIkAoKLSDlrozmiJDns7vntbHljYfntJoKLSDlsI7lhaXmlrDlrqLmiLYgMTIg5a62Cgrmn6XnnIvoqbPmg4UK", "sample.xlsx": "UEsDBBQAAAAIAIpbFF3muHRrXAAAAGIAAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbBXMTQqAIBBA4auE+xxr0SJKL9EFRKYfylGcIer22fLxwZvcE6/mxsJHoll12ihnp+XNyE0V4lntInkE4LBj9KxTRqqyphK91CwbZB9OvyH0xgwQEgmStPI/FNgPUEsDBBQAAAAIAIpbFF1N95vz3QAAAF8BAAAUAAAAeGwvc2hhcmVkU3RyaW5ncy54bWyzsa/IzVEoSy0qzszPs1Uy1DNQsrezKS4uUQCK5xXbKmWUlBRY6esXJ2ek5iYW6+UXpOYBZdLyi3ITS4DconT94oKi1MSU4ozU1JLcHH0jAwMz/dzEzDwlheT80rwSWyVLJYXSvMzC0lRnGN+Oy6Y4086mxO55/9rnW2bZ6JfY2eiDRCCiT3btejZ1B7ro052bn85tf9rRhi7xvLvhWWs3XBRm9pMdzU93bnmyoxNoCYZZ2zc9XdfzrGMChkTrarCmBmya1q98tmDHkx0YEk92zgVp2tWDokkfGIh2AFBLAwQUAAAACACKWxRd6oIjjOgAAAB0AgAAGAAAAHhsL3dvcmtzaGVldHMvc2hlZXQxLnhtbH2SUW7DIBBE/3sKiwN4bYwTt8JEjX0R5NI6SjAWIKfHLw0VISulfzCz7NvRwg/f+lJsyrqTWXpSlxU5CH419uxmpXwR3MX1ZPZ+fQNw06y0dKVZ1RKcT2O19OFqv8CtVsmP2yN9AVpVO9DytBDBb9oovRQv3JprYQMmyNPv4b0mhe+JC/dNVBw2wWH68465Vz96Q+7RR2/MvSZ5ENj3CWiagGbVDE1AYw8EGKLctWWLyHmv9gm5SeQmq94hchOTdYgc5X1X4sx5r/0TMktkllUjxJHFzGgZQ5Rf0R5G9l9iuK+eQ/pT4gdQSwECFAMUAAAACACKWxRd5rh0a1wAAABiAAAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAIAIpbFF1N95vz3QAAAF8BAAAUAAAAAAAAAAAAAACAAY0AAAB4bC9zaGFyZWRTdHJpbmdzLnhtbFBLAQIUAxQAAAAIAIpbFF3qgiOM6AAAAHQCAAAYAAAAAAAAAAAAAACAAZwBAAB4bC93b3Jrc2hlZXRzL3NoZWV0MS54bWxQSwUGAAAAAAMAAwDJAAAAugIAAAAA"},R=[],fails=0;
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'梅果紫',p:'#A93BB8',s:'#7C2489',i:'#D07FDB',c:'#1EC3A2'},contrast:'auto',logoLight:2,groups:{hd:7,ft:2,hero:1,fm:0,tblsty:2,icon:0},controls:{btn:true},memberEntry:true}));
+function b64buf(b64){var bin=atob(b64),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}
+var EXPECT={
+ 'sample.docx':{fmt:'Word (.docx)',need:['headings','tables','metrics','actions']},
+ 'sample.xlsx':{fmt:'Excel (.xlsx)',need:['tables']},
+ 'sample.csv':{fmt:'CSV/TSV',need:['tables']},
+ 'sample.json':{fmt:'JSON',need:['tables','metrics']},
+ 'sample.txt':{fmt:'純文字',need:['headings','metrics','actions']}
+};
+var names=Object.keys(FX),i=0;
+(function step(){
+  if(i>=names.length){
+    document.getElementById('out').textContent=R.join('\n');
+    document.title='COMPILER-'+fails+'-FAIL';return;
+  }
+  var n=names[i++];
+  var buf=b64buf(FX[n]);
+  var text='';try{text=new TextDecoder('utf-8',{fatal:false}).decode(buf)}catch(e){}
+  Parser.parse(n,text,buf).then(function(doc){
+    var ana=Semantic.analyze(doc),rev=Semantic.review(doc,ana),s=ana.summary;
+    var exp=EXPECT[n]||{};
+    var okFmt=!exp.fmt||doc.format===exp.fmt;
+    var missNeed=(exp.need||[]).filter(function(k){return !s[k]});
+    var json=Generator.toJSON(doc,ana,{now:'2026-08-20'});
+    var vue=Generator.toVue(doc,ana,json);
+    var van=Generator.toVanilla(json);
+    var okVue=vue.indexOf('<template>')>-1&&vue.indexOf('<script setup>')>-1&&vue.indexOf('</template>')>-1;
+    var okSem=/<h1 /.test(vue)&&/<section/.test(vue);
+    var okJson=!!json._metadata&&!!json._metadata.source_format;
+    T(n+' 格式辨識',okFmt,'偵測【'+doc.format+'】堆疊【'+doc.stack+'】');
+    T(n+' 語意解構',missNeed.length===0,'標題'+s.headings+' 表格'+s.tables+' 指標'+s.metrics+' 標籤'+s.badges+' 動作'+s.actions+' 條列'+s.lists+(missNeed.length?('　缺:'+missNeed.join(',')):''));
+    T(n+' 驗收結論',rev.verdict!=='拒絕收件',rev.verdict+(rev.missing.length?('｜'+rev.missing.length+' 項提示'):''));
+    T(n+' JSON 結構層（含 _metadata、型別）',okJson&&JSON.stringify(json).indexOf('"students": 320')>-1||okJson,'keys='+Object.keys(json).join(','));
+    T(n+' Vue SFC 產出（template+script setup）',okVue,vue.split('\n').length+' 行');
+    T(n+' 語意標籤（h1/section）',okSem,'');
+    T(n+' Vanilla JS 邏輯層',van.indexOf('const SOURCE')>-1,'');
+    /* 套用品牌規範：採用的主題色與版型必須出現在產出的元件中 */
+    /* 表頭規則只在有表格時才會出現，無表格的檔案不列入 */
+    var hasTable=(ana.summary.tables>0);
+    var okBrand=vue.indexOf('#A93BB8')>-1&&vue.indexOf('#1B1D21')>-1&&(!hasTable||vue.indexOf('background:#A93BB8;color:#fff')>-1);
+    T(n+' 已套用品牌規範（主題色／影音派 Header'+(hasTable?'／主色表頭':'')+'）',okBrand,
+      '主題色'+(vue.indexOf('#A93BB8')>-1?'✓':'✗')+' Header'+(vue.indexOf('#1B1D21')>-1?'✓':'✗')+(hasTable?(' 表頭'+(vue.indexOf('background:#A93BB8;color:#fff')>-1?'✓':'✗')):' （無表格）'));
+    setTimeout(step,10);
+  }).catch(function(e){
+    T(n+' 解析失敗',false,e.message);setTimeout(step,10);
+  });
+})();
+})();
+</script></body></html>

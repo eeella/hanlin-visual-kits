@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>S</title></head><body>
+<pre id="out">run</pre><iframe id="fr" style="width:1200px;height:700px;position:absolute;left:-99999px"></iframe>
+<script>
+var R=[];function T(n,ok,d){R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}   /* 第三個參數＝實得值，失敗時才看得出是什麼 */
+var fr=document.getElementById('fr'),BASE='file:///Users/ellalin/Desktop/work/web/study/uiux/';
+function D(){return fr.contentDocument}function W(){return fr.contentWindow}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function nav(p){return new Promise(function(res){fr.onload=function(){setTimeout(res,500)};fr.src=BASE+p})}
+function waitNav(){return new Promise(function(res){fr.onload=function(){setTimeout(res,500)}})}
+(async function(){
+try{
+  /* 1. 模擬「使用者新開分頁」：先寫入舊設定，再以全新 session 載入 */
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'舊主題',p:'#A93BB8'},groups:{hd:5,ft:1,hero:1,fm:1}}));
+  await nav('brand.html');
+  try{W().sessionStorage.removeItem('hanlin-session')}catch(e){}
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'舊主題',p:'#A93BB8'},groups:{hd:5,ft:1,hero:1,fm:1}}));
+  await nav('brand.html');
+  /* 規格變更：採用設定改為永久保存。原本「沒有一次性通行證的載入就清空設定」
+     會讓按 F5、用上一頁回來、直接貼網址開啟都把剛勾好的設定清光，
+     畫面退回預設值，使用者看到的就是「換了勾選卻完全沒讀到」。
+     現在只清一次性交接旗標，設定要留到使用者自己按「清除紀錄」。 */
+  var st1=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  /* 比對色碼而不是主題名：brand.html 的 applyState 會用色碼去對規範色票，
+     對得到就換成正式名稱（#A93BB8 → 梅果紫）。那是正規化，不是設定遺失。 */
+  T('新工作階段：使用者設定保留（永久保存，不再自動清空）',
+    !!(st1.theme&&st1.theme.p==='#A93BB8'),
+    '實得 '+((st1.theme&&(st1.theme.n+' '+st1.theme.p))||'（已被清除）'));
+  var bar=D().getElementById('adoptStatus');
+  T('自訂頁狀態列反映已保存的設定（不是退回預設的翰林藍）',
+    !!bar&&!!(st1.theme&&st1.theme.n)&&bar.textContent.indexOf(st1.theme.n)>-1,
+    bar?bar.textContent.slice(0,40):'找不到狀態列');
+  /* 2. 同一 session 內勾選 → 跳頁應保留 */
+  D().querySelectorAll('#theme-row .theme-dot')[4].click();  /* 紫羅蘭 */
+  await wait(600);
+  var picked=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
+  T('勾選後已存檔（'+(picked&&picked.theme.n)+'）',!!picked&&picked.theme.n==='紫羅蘭');
+  /* 走真實流程：點「確認採用」才會發出一次性通行證；直接改網址視同新開頁面，設定應清除 */
+  var p1=waitNav();D().getElementById('goPreview').click();await p1;
+  var kept=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('同 session 跳頁：設定保留',kept.theme&&kept.theme.n==='紫羅蘭');
+  T('預覽頁實際套用該主題',D().querySelector('main').style.getPropertyValue('--brand')==='#7C3AED');
+  /* 3. 重新整理 → 設定必須still在（這條先前是反過來的，正是使用者遇到的死穴：
+        我叫他「重新整理測試」，一重整設定就沒了，換什麼勾選都讀不到） */
+  localStorage.setItem('hanlin-show-result','1');   /* 一次性旗標，重整後應被清掉 */
+  var p2=waitNav();W().location.reload();await p2;
+  var st2=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('重新整理：採用設定保留（不再清除）',st2.theme&&st2.theme.n==='紫羅蘭',
+    '實得 '+((st2.theme&&st2.theme.n)||'（已被清除）'));
+  T('重新整理：一次性交接旗標仍會被清掉（沒有連這個一起放行）',
+    !localStorage.getItem('hanlin-show-result'),
+    localStorage.getItem('hanlin-show-result')||'已清除');
+  /* 4. 再次新 session：設定同樣要留著（使用者關掉瀏覽器隔天回來，勾選不該不見） */
+  localStorage.setItem('hanlin-brand-theme',JSON.stringify({theme:{n:'跨階段保留',p:'#123456'}}));
+  try{W().sessionStorage.removeItem('hanlin-session')}catch(e){}
+  await nav('index.html');
+  var st3=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  T('首頁新 session：設定跨工作階段保留',st3.theme&&st3.theme.n==='跨階段保留',
+    '實得 '+((st3.theme&&st3.theme.n)||'（已被清除）'));
+}catch(e){R.push('❌ 例外：'+e.message)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='SESSION-'+R.filter(function(x){return x.charAt(0)==='❌'}).length+'-FAIL';
+})();
+</script></body></html>

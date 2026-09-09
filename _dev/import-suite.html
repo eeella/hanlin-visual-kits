@@ -1,0 +1,112 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>IMPORT</title></head><body>
+<pre id="out" style="font:12px/1.7 monospace">running</pre>
+<iframe id="fr" style="width:1400px;height:1100px;position:absolute;left:-99999px"></iframe>
+<script>
+/* 一次性通行證（2026-08-25 起頁面載入時會清掉上次設定，只有帶著發給自己、10 秒內的票才保留）。
+   測試要模擬「同一次操作中的跳頁」，所以每次載入目標頁前都要先發票。 */
+function ticket(p){try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:String(p).split('?')[0].split('/').pop(),t:Date.now()}))}catch(e){}}
+
+var R=[],fails=0,SAMPLE="<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>\u5feb\u901f\u5b78\u5802</title></head><body style=\"margin:0;font-family:'Segoe UI',sans-serif\">\n<div id=\"root\">\n<header style=\"background:#e11d48;color:white;padding:18px 36px;display:flex;justify-content:space-between;align-items:center\">\n<div style=\"font-size:22px;font-weight:bold\">\u5feb\u901f\u5b78\u5802</div><nav style=\"display:flex;gap:20px\"><a href=\"#\" style=\"color:white;text-decoration:none\">\u8ab2\u7a0b</a><a href=\"#\" style=\"color:white;text-decoration:none\">\u95dc\u65bc</a></nav></header>\n<div style=\"background:linear-gradient(120deg,#e11d48,#f43f5e);color:#fff;padding:70px 36px;text-align:center\">\n<span style=\"font-size:13px;letter-spacing:3px\">FAST LEARNING</span><h1 style=\"font-size:44px;margin:12px 0\">\u4e09\u5341\u5929\u901f\u6210</h1><p>\u6bcf\u5929\u53ea\u8981 20 \u5206\u9418 \u23f0</p>\n<button style=\"margin-top:24px;background:#fff;color:#e11d48;border:2px solid #fff;padding:12px 32px;border-radius:6px;font-size:16px\">\u514d\u8cbb\u8a66\u807d</button></div>\n<div style=\"display:flex;gap:24px;padding:56px 36px\">\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83d\udcda</span><h3 style=\"color:#e11d48\">\u7cfb\u7d71\u8ab2\u7a0b</h3><p style=\"color:#64748b\">\u5faa\u5e8f\u6f38\u9032</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\u270d\ufe0f</span><h3 style=\"color:#e11d48\">\u96a8\u5802\u7df4\u7fd2</h3><p style=\"color:#64748b\">\u5373\u6642\u56de\u994b</p></div>\n<div style=\"flex:1;background:#fef2f2;padding:28px;border-radius:10px;border:1px solid #fecaca\"><span style=\"font-size:30px\">\ud83c\udfc6</span><h3 style=\"color:#e11d48\">\u7d50\u696d\u8b49\u66f8</h3><p style=\"color:#64748b\">\u5c65\u6b77\u52a0\u5206</p></div>\n</div>\n<div style=\"background:#1f2937;color:#9ca3af;padding:28px;text-align:center\">\u00a9 2026 \u5feb\u901f\u5b78\u5802</div>\n</div></body></html>",FULLJSON={"theme": {"n": "梅果紫", "p": "#A93BB8", "s": "#7C2489", "i": "#D07FDB", "c": "#1EC3A2"}, "contrast": "auto", "logoLight": 0, "logoDark": 0, "logoInv": false, "groups": {"hd": 4, "ft": 1, "hero": 1, "fm": 1, "tblsty": 3, "icon": 1}, "controls": {"btn": true}, "memberEntry": false},CSSSRC=":root{--brand:#16a34a;--accent:#f59e0b}\n.btn{background:var(--brand)}";
+function T(n,ok,d){if(!ok)fails++;R.push((ok?'✅':'❌')+' '+n+(d?('  〔'+d+'〕'):''))}
+var fr=document.getElementById('fr');
+function D(){return fr.contentDocument}function W(){return fr.contentWindow}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function load(){
+  localStorage.removeItem('hanlin-import-html');
+  localStorage.removeItem('hanlin-import-pending');
+  sessionStorage.setItem('hanlin-session','1');
+  return new Promise(function(res){fr.onload=function(){setTimeout(res,600)};(ticket('import.html'),fr.src='import.html')});
+}
+function reload(){return new Promise(function(res){fr.onload=function(){setTimeout(res,600)};fr.contentWindow.location.reload()})}
+function setTheme(t){localStorage.setItem('hanlin-brand-theme',JSON.stringify(t))}
+(async function(){
+try{
+  sessionStorage.setItem('hanlin-session','1');
+  /* 1. 來源:貼上 HTML */
+  setTheme("{\"theme\": {\"n\": \"\u7ff0\u6797\u85cd\", \"p\": \"#0088D2\", \"s\": \"#005696\", \"i\": \"#40B4E5\", \"c\": \"#FF9A3C\"}, \"contrast\": \"auto\", \"logoLight\": 2, \"groups\": {\"hd\": 2, \"ft\": 2, \"hero\": 0, \"fm\": 0, \"opt\": 0, \"tblsty\": 2, \"icon\": 0}, \"controls\": {\"btn\": true, \"select\": true, \"label\": true}, \"memberEntry\": true}");
+  await load();
+  D().getElementById('importJson').value=SAMPLE;
+  D().getElementById('importApply').click();
+  await wait(2200);
+  T('來源①貼上 HTML → 進入對照預覽',D().getElementById('cmpGrid').style.display==='grid'&&D().getElementById('stepPreview').style.display==='block');
+  var branded=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  var raw=D().getElementById('frameRaw').getAttribute('srcdoc')||'';
+  T('對照左右皆有內容',raw.length>500&&branded.length>500,'原始 '+raw.length+' / 套用 '+branded.length);
+  T('套用後原色已消失、品牌色出現',branded.indexOf('#e11d48')<0&&branded.indexOf('#0088D2')>-1);
+  /* 2. 替換報告 */
+  var rep=D().getElementById('impReport').textContent||'';
+  T('替換報告顯示色碼/Logo/icon 統計',/共替換 \d+ 種色碼/.test(rep)&&/個 Logo/.test(rep)&&/個 icon/.test(rep),rep.slice(0,46));
+  T('報告顯示採用組合',rep.indexOf('目前採用組合')>-1);
+  T('報告顯示規則追蹤',rep.indexOf('規則追蹤')>-1);
+  /* 3. 套用檢查 */
+  /* 要同時滿足兩件事才算過：①符合率 100% ②標題是「全面比對」而非「抽樣比對」。
+     只驗符合率會漏掉「只掃了一部分卻回報 100%」的情況——分母被前置過濾縮小後，
+     符合率本來就容易是 100%。 */
+  var _covLine=(rep.match(/配色(?:全面|抽樣)比對[^✅❌⚠◽]*/)||['?'])[0];
+  T('套用檢查:配色比對完整且符合率 100%',
+    /配色全面比對：符合率 100%/.test(rep)&&_covLine.indexOf('抽樣')<0,
+    _covLine.slice(0,72));
+  T('套用檢查:無紅字警告',rep.indexOf('⚠')<0,rep.indexOf('⚠')>-1?rep.slice(rep.indexOf('⚠'),rep.indexOf('⚠')+60):'無');
+  /* 失敗時要看得出缺哪一項，否則只知道「四項沒過」無從查起 */
+  var _iron=['script 原封不動','事件屬性不變','連結數不減','原文逐段仍在'];
+  var _missIron=_iron.filter(function(k){return rep.indexOf(k)<0});
+  T('套用檢查:鐵律四項皆過',_missIron.length===0,_missIron.length?('缺：'+_missIron.join('、')):'四項齊全');
+  /* 4. 選項:關閉 icon */
+  var icOpt=D().querySelector('#impOpts [data-opt=icon]');
+  icOpt.click();await wait(1800);
+  var b2=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('選項:關閉 icon → 不再替換圖示',(b2.match(/material-symbols-rounded/g)||[]).length<(branded.match(/material-symbols-rounded/g)||[]).length);
+  icOpt.click();await wait(1500);
+  /* 5. 選項:低調模式 */
+  D().querySelector('#impOpts input[value=soft]').click();await wait(1800);
+  var b3=D().getElementById('frameBranded').getAttribute('srcdoc')||'';
+  T('選項:低調模式 → 主色底轉柔色',b3.indexOf('#D9EDF8')>-1||b3.indexOf('#24526B')>-1);
+  D().querySelector('#impOpts input[value=standard]').click();await wait(1500);
+  /* 6. 匯出 */
+  var blob=null;
+  (function(){var OB=W().Blob;W().Blob=function(p,o){try{blob=p.join('')}catch(e){}return new OB(p,o)}})();
+  W().URL.createObjectURL=function(){return 'blob:x'};
+  W().HTMLAnchorElement.prototype.click=function(){};
+  D().getElementById('exportBranded').click();await wait(300);
+  T('動作:另存套用後 HTML 內容正確',!!blob&&blob.indexOf('#0088D2')>-1&&blob.indexOf('#e11d48')<0&&blob.length>1000,blob?('長度 '+blob.length):'未取得');
+  /* 7. 調整樣式 → 保留既有採用 */
+  /* 明確設定採用狀態,再驗證「匯入確認採用」是否保留它 */
+  setTheme({theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',logoLight:2,groups:{hd:5,ft:1,hero:1,fm:1,tblsty:3,icon:1},controls:{btn:true,select:false},memberEntry:false});
+  var before=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  D().getElementById('importConfirm').click();
+  await wait(1200);
+  var after=JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}');
+  var bg=(before.groups||{}),ag=(after.groups||{});
+  T('動作:調整樣式後保留原採用版型(合併不覆寫)',ag.hd===bg.hd&&ag.tblsty===bg.tblsty&&ag.ft===bg.ft&&after.memberEntry===false,
+    '前 hd='+bg.hd+',tblsty='+bg.tblsty+',ft='+bg.ft+' → 後 hd='+ag.hd+',tblsty='+ag.tblsty+',ft='+ag.ft);
+  /* 8. 來源:JSON 完整還原 */
+  sessionStorage.setItem('hanlin-session','1');
+  await load();
+  D().getElementById('importJson').value=JSON.stringify(FULLJSON);
+  D().getElementById('importApply').click();await wait(1200);
+  T('來源②貼上 JSON → 辨識為完整設定',(D().getElementById('previewSource').textContent||'').indexOf('完整設定')>-1,(D().getElementById('previewSource').textContent||'').slice(0,40));
+  D().getElementById('importConfirm').click();await wait(800);
+  var restored=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
+  T('JSON 完整還原:主題與版型索引正確',restored.theme.p==='#A93BB8'&&restored.groups.hd===4&&restored.groups.tblsty===3,'主色 '+restored.theme.p+' hd='+restored.groups.hd);
+  /* 9. 來源:CSS 變數抓主色 */
+  sessionStorage.setItem('hanlin-session','1');
+  await load();
+  D().getElementById('importJson').value=CSSSRC;
+  D().getElementById('importApply').click();await wait(1200);
+  var srcTxt=D().getElementById('previewSource').textContent||'';
+  T('來源③貼上 CSS → 解析出品牌色',srcTxt.indexOf('品牌色')>-1,srcTxt.slice(0,40));
+  /* 10. 錯誤處理 */
+  sessionStorage.setItem('hanlin-session','1');
+  await load();
+  var alerted='';W().alert=function(m){alerted=m};
+  D().getElementById('importJson').value='這不是有效的內容';
+  D().getElementById('importApply').click();await wait(600);
+  T('錯誤處理:無法辨識的內容給出提示',alerted.indexOf('匯入失敗')>-1,alerted.slice(0,40));
+  /* 11. 分頁切換 */
+  D().getElementById('tabSource').click();await wait(200);
+  T('分頁:可切回「匯入來源」',D().getElementById('stepSource').style.display!=='none');
+}catch(e){T('例外:'+e.message,false)}
+document.getElementById('out').textContent=R.join('\n');
+document.title='IMPORT-'+fails+'-FAIL';
+})();
+</script></body></html>

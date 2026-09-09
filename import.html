@@ -4603,16 +4603,13 @@ hlStampAssets();
          寫的是能看見的顏色。若要求絕對不碰 element.style，代價是這些文字會隱形。 */
       +'function ownText(el){for(var i=0;i<el.childNodes.length;i++){var n=el.childNodes[i];'
         +'if(n.nodeType===3&&n.nodeValue.replace(/\\s+/g,"").length>=2)return true}return false}'
-      /* sweep() 會寫 el.style，而下面那個 observer 正好監聽 style——
-         自己的寫入會再觸發自己一輪全掃（querySelectorAll("body *") ＋ 逐個
-         getComputedStyle）。第二輪不會再寫入所以會收斂，不是無限迴圈，
-         但每次 DOM 變動都白付一輪。改成掃描期間先斷開監聽，
-         掃完 takeRecords() 丟掉這段期間累積的記錄再接回去。 */
-      +'var __hlMo=null;'
-      +'var __hlMoCfg={childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]};'
-      +'function sweep(){'
-        +'if(__hlMo){try{__hlMo.disconnect()}catch(e){}}'
-        +'try{'
+      /* 註：曾經改成「掃描期間先斷開 observer、掃完再接回」，想省掉
+         sweep 寫 el.style 再觸發自己一輪的成本。實測三種樣本後還原——
+         getComputedStyle 次數兩版完全相同，observer 觸發次數反而多 3 次。
+         原因是第二輪 sweep 不會再寫入（值已正確），本來就收斂在一輪，
+         而且那一輪常被 80ms 的 debounce 併掉。沒有解決任何實際問題的
+         複雜度就是負債，所以維持原樣。 */
+      +'function sweep(){try{'
         +'var all=document.querySelectorAll("body *");'
         +'for(var i=0;i<all.length;i++){var e=all[i];'
           +'var isIc=/material-symbols|material-icons/.test(String(e.className||""));'
@@ -4623,14 +4620,11 @@ hlStampAssets();
            不該有的 element.style，違反成對綁定的保護契約。 */
         +'var own=document.querySelectorAll("input:not([type=checkbox]):not([type=radio]),select,textarea,[data-hl-member-btn],[data-hl-member-item],[data-hl-formopt],[data-hl-sb]");'
         +'for(var j=0;j<own.length;j++)fix(own[j],4.5);'
-      +'}catch(e){}'
-        /* 這段期間的記錄全是自己造成的，丟掉再接回去 */
-        +'if(__hlMo){try{__hlMo.takeRecords();__hlMo.observe(document.body,__hlMoCfg)}catch(e){}}'
-      +'}'
+      +'}catch(e){}}'
       +'sweep();setTimeout(sweep,300);setTimeout(sweep,1200);'
       +'document.addEventListener("click",function(){setTimeout(sweep,60)},true);'
-      +'try{var t=null;__hlMo=new MutationObserver(function(){clearTimeout(t);t=setTimeout(sweep,80)});'
-        +'__hlMo.observe(document.body,__hlMoCfg)}catch(e){}'
+      +'try{var t=null;var mo=new MutationObserver(function(){clearTimeout(t);t=setTimeout(sweep,80)});'
+        +'mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]})}catch(e){}'
     +'})();<\/script>';
     /* 【前置的 Logo 不要自己佔掉一整行】(使用者回報 2026-09-03：匯入檔跑版)
        把 <img> 接在使用者 header 的最前面，它就成了一個 flex item。

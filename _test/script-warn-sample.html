@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>匯入警示測試檔｜共 5 段 script</title>
+<!-- ① 外部引用（不會真的載到，只是要讓計數認得） -->
+<script src="./vendor/analytics.js"></script>
+<!-- ② 有屬性的外部引用 -->
+<script defer type="module" src="https://cdn.example.com/widget.js"></script>
+<style>
+  body{font-family:system-ui,"Noto Sans TC",sans-serif;margin:0;background:#F4F7FB;color:#1E3D60}
+  .wrap{max-width:720px;margin:0 auto;padding:48px 24px}
+  h1{font-size:28px;margin:0 0 12px}
+  p{line-height:1.9;color:#3E4C5A}
+  .box{background:#fff;border:1px solid #E1E8F0;border-radius:14px;padding:20px 24px;margin:18px 0}
+  button{background:#0088D2;color:#fff;border:0;border-radius:14px;padding:11px 22px;font-size:15px;cursor:pointer}
+</style>
+<!-- ③ 內聯腳本：這一段會示範「同源 iframe 裡的腳本能碰到平台資料」 -->
+<script>
+  window.__IMPORT_TEST__ = { ran: [], at: Date.now() };
+  window.__IMPORT_TEST__.ran.push('head-inline');
+</script>
+</head>
+<body>
+<div class="wrap">
+  <h1>匯入警示測試檔</h1>
+  <p>這份檔案刻意放了 <b>5 段 script</b>：2 段外部引用、3 段內聯。
+     把它貼進匯入頁之後，琥珀色警示應該亮起，並顯示「這份檔案裡有 <b>5</b> 段 JavaScript」。</p>
+
+  <div class="box">
+    <b>相對路徑資源測試</b>
+    <p>下面這張圖用的是相對路徑 <code>img/nothing.png</code>。
+       修好之後它應該落在 <code>__imported-assets-not-uploaded__/</code> 底下，
+       <b>不會</b>打到平台自己的目錄。</p>
+    <img src="img/nothing.png" alt="（這張圖本來就不存在，用來看路徑落點）">
+  </div>
+
+  <div class="box">
+    <b>互動元件</b>
+    <p>這顆按鈕靠內聯腳本運作，用來確認「不砍 script」時互動仍然正常。</p>
+    <button id="btn">點我</button>
+    <span id="out"></span>
+  </div>
+</div>
+
+<!-- ④ 內聯腳本：互動 -->
+<script>
+  document.getElementById('btn').addEventListener('click', function(){
+    window.__IMPORT_TEST__.ran.push('button-click');
+    document.getElementById('out').textContent = '　✓ 內聯腳本有跑到';
+  });
+  window.__IMPORT_TEST__.ran.push('body-inline');
+</script>
+
+<!-- ⑤ 內聯腳本：示範同源存取（只讀不寫，不會弄壞你的設定） -->
+<script>
+  try{
+    var keys = Object.keys(window.parent.localStorage || {});
+    window.__IMPORT_TEST__.parentKeys = keys;           // 讀得到＝同源沒有隔離
+    window.__IMPORT_TEST__.ran.push('same-origin-probe');
+  }catch(e){
+    window.__IMPORT_TEST__.parentKeys = 'blocked: ' + e.name;  // 讀不到＝隔離生效
+  }
+</script>
+</body>
+</html>

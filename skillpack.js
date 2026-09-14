@@ -32,7 +32,7 @@
       icon:['純圖示 · 品牌色','色底圓形容器']
     };
     var LOGO_N=['① 完整組合','② 中英組合','③ 標準字','④ 品牌標誌'];
-    var CTL_N={btn:'按鈕 Button',seg:'選取狀態 Selectable',select:'下拉 Select',label:'標籤 Label',principles:'設計方針',midcolor:'中間色 / 輔助色',gray:'灰階',softtile:'淡色圖示方塊',rwd:'RWD 斷點',type:'文字級距',shape:'形狀與間距'};
+    var CTL_N={btn:'按鈕 Button',seg:'選取狀態 Selectable',select:'下拉 Select',label:'標籤 Label',input:'輸入框 Input',choice:'選擇控制 Checkbox / Radio / Switch',tabs:'頁籤 Tabs',btnstate:'按鈕變體與狀態',rescard:'教材卡片 Resource Card',principles:'設計方針',midcolor:'中間色 / 輔助色',gray:'灰階',softtile:'淡色圖示方塊',rwd:'RWD 斷點',type:'文字級距',shape:'形狀與間距'};
     var g=st.groups||{},c=st.controls||{};
     function pickName(key){return (N[key]||[])[g[key]||0]||''}
     var adopted=Object.keys(CTL_N).filter(function(k){return c[k]!==false}).map(function(k){return CTL_N[k]});
@@ -90,6 +90,21 @@
       '## 採用元件 Components',
       adopted.map(function(x){return '- '+x}).join('\n'),
       '',
+      /* 元件功能規範：來源 hanlin-design-system/UI.md §7–13、§18（2026-09-14 併入預設規範）。
+         這些是行為與可及性的硬規則，不隨色版變；換色版只換 token。 */
+      '## 元件功能規範 Component Behavior（不隨色版變）',
+      '- 通用：所有元件只引用語意 token，不得寫死色碼；每個互動元件都要有 default / hover / focus-visible / active / disabled / loading / error 七種狀態；觸控目標 ≥ 44×44px；鍵盤可操作、focus-visible 必須看得到（3px 品牌色外框＋2px 偏移）',
+      '- Button：主要（品牌色實心白字）／次要（品牌色外框）／文字／危險（#DE3535）四種變體；一個畫面只有一顆主要按鈕；loading 時 aria-busy=true、保留原寬度、不可重複觸發；按鈕名稱用具體動詞（「開始命題」「儲存草稿」），禁止只寫「確定」',
+      '- FormField（Input / Textarea）：Label 一律顯示，不得用 placeholder 代替；必填以「*」＋aria-required 標示；錯誤狀態同時具備紅色外框、錯誤文字、aria-invalid=true 與 aria-describedby；錯誤訊息格式＝發生什麼事＋如何修正＋資料是否保留；輸入內容不得因錯誤被清空；最小高度 48px',
+      '- Select / Combobox：原生 select 優先；自訂下拉需 role=listbox＋aria-expanded、方向鍵移動、Enter 選取、Esc 關閉；選項超過 8 個提供搜尋',
+      '- Checkbox / Radio / Switch：用原生 input 配 accent-color；Switch 用 role=switch＋aria-checked；整列（含文字）可點；狀態不得只靠顏色分辨',
+      '- Tabs：role=tablist / tab / tabpanel；目前頁籤以品牌色底線標示並 aria-selected=true；方向鍵切換、Home／End 跳首尾；不得以邊框分辨頁籤',
+      '- Card / Resource Card：固定欄位契約（封面、標題、標籤、動作）；標題單行省略或最多兩行；長標題不得覆蓋操作區；整張可點時只放一個連結，不得巢狀連結；不得依賴固定高度',
+      '- Dialog / Drawer：role=dialog＋aria-modal＋aria-labelledby；開啟時焦點移入、Esc 關閉、關閉後焦點回到觸發元件；背景不可捲動；行動版 Drawer 全寬',
+      '- Toast / Alert：Toast 用 role=status（aria-live=polite）、3–5 秒自動消失且可手動關閉；Alert 用 role=alert；語意色固定（成功 / 警告 / 危險 / 資訊）不隨色版變，且必須同時有圖示與文字',
+      '- Empty / Loading：空狀態要有說明＋下一步動作；載入用 Skeleton 保留內容尺寸，不得造成版面位移；動效 120 / 200 / 320ms，尊重 prefers-reduced-motion',
+      '- 防破版：文字溢位依欄位契約（標題可限行數、URL 與代碼不中斷字串用 overflow-wrap:anywhere）；卡片格 minmax(320px,1fr)；320 / 768 / 1280px 不得水平溢出',
+      '',
       '## 字體與級距 Typography',
       '- 字體：Noto Sans TC（fallback:PingFang TC、Microsoft JhengHei）',
       '- H1 36px / H2 28px / H3 22px / Body 18px / 副文字 13px / 標籤 11px',
@@ -134,7 +149,7 @@
       '  - 重複元件群組（同層同 class ≥3 個，如功能卡、步驟）：icon 與色塊依「主色 '+t.p+' → 亮色 '+t.i+' → 對比色 '+((st.contrast&&st.contrast!=='auto')?st.contrast:t.c)+(_EX.length?(' → 裝飾色 '+_EX[0][1]):' → 成功綠 #26A649')+'」輪替'+_fromPal,
       '  - 標籤 / 徽章（tag / badge / chip / pill）：輪替柔色底＋同色字',
       '  - 小標 eyebrow / kicker → 對比色；統計數字、步驟編號 → 色盤輪替；清單勾號 → 成功綠；mark 高亮 → 對比色柔底',
-      '  - 區塊節奏：section 交替「白 → 主色淡底 → 中間色淡底」',
+      '  - 區塊節奏：原本沒有底色的 section 交替「白 → 主色淡底」，自帶底色的區塊（hero 等）不計；白底至少保留一半',
       '- icon 替換：空的 fa-/bi- 元素與可辨識檔名的圖檔 icon 轉 Material Symbols 對應圖示；emoji 與符號字元（★✓☰►）轉對應圖示；猜不到語意的圖檔 icon 套灰階融入',
       '- 外部圖檔 icon、background-image、canvas 圖形無法語意替換，保留原樣',
       '',
@@ -203,7 +218,21 @@
     zip.file('SKILL.md',pk.md);
     zip.file('theme.json',JSON.stringify(pk.theme,null,2));
     zip.file('tokens.css',buildTokensCss(pk.theme.theme||{}));
-    zip.generateAsync({type:'blob'}).then(function(blob){
+    /* 元件總覽頁（設計系統 component-example.html）一併打包：
+       tokens.css 與這一組 kit 都內嵌進去，解壓後單檔就能開、就是套好這一組色的樣子。
+       抓不到檔案（例如離線開本機檔）就只打包規範，不擋下載。 */
+    var kitNow=null;try{var _t=pk.theme.theme||{};kitNow=(window.HL_KITS||[]).filter(function(k){return k.n===_t.n})[0]||null}catch(e){}
+    var extra=Promise.all([fetch('hanlin-web-starter/components.html').then(function(r){return r.ok?r.text():''}),
+                           fetch('hanlin-web-starter/tokens.css').then(function(r){return r.ok?r.text():''})])
+      .then(function(rs){
+        var html=rs[0],css=rs[1];
+        if(!html)return;
+        html=html.replace('<link rel="stylesheet" href="./tokens.css" />','<style>\n'+css+'\n</style>');
+        html=html.replace('<script src="../kits.js"></script>',
+          '<script>window.HL_KITS='+JSON.stringify(kitNow?[kitNow]:[])+';window.HL_KIT_ID='+JSON.stringify(kitNow?kitNow.id:'')+';</script>');
+        zip.file('components.html',html);
+      }).catch(function(){});
+    extra.then(function(){return zip.generateAsync({type:'blob'})}).then(function(blob){
       dlBlob(blob,'hanlin-'+(pk.slug||'kit')+'-kit.zip');
     }).catch(function(){
       alert('打包時發生問題，請重新整理後再試一次。');

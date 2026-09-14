@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>匯入檔自我檢查</title>
+<link rel="stylesheet" href="style.css">
+<script src="kits.js?v=a3392013147f"></script>
+<script src="engine.js?v=0aea27e174d0"></script>
+<script src="importbase.js"></script>
+<style>
+.wrap{max-width:1280px;margin:0 auto;padding:26px 24px 60px}
+h1{font-size:24px;margin:0 0 6px;color:#16202B}
+.lead{font-size:13.5px;color:#5C6A78;line-height:1.9;margin:0 0 20px}
+.drop{border:2px dashed #C6D3E2;border-radius:14px;padding:34px;text-align:center;
+  background:#fff;cursor:pointer;color:#5C6A78;font-size:14px}
+.drop:hover{border-color:#0088D2;color:#0088D2}
+.drop.on{border-color:#0088D2;background:#F2F8FD}
+.verdict{margin:20px 0;padding:16px 20px;border-radius:14px;font-size:14px;line-height:1.9}
+.verdict.ok{background:#E8F6EC;color:#155724}
+.verdict.file{background:#F8EDE0;color:#5C5248}
+.verdict.plat{background:#FDECEC;color:#8A1F1F}
+.verdict b{display:block;font-size:16px;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13px;background:#fff;
+  border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid #EDF0F4}
+th{background:#F7F9FC;font-weight:500;color:#3A3D42;width:180px}
+td.bad{color:#B4241F;font-weight:500}
+td.good{color:#1B6B3A}
+.frames{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.frames > div{background:#fff;border:1px solid #E1E8F0;border-radius:14px;overflow:hidden}
+.frames b{display:block;padding:9px 14px;font-size:13px;background:#F7F9FC;border-bottom:1px solid #EDF0F4}
+iframe{width:100%;height:420px;border:0;display:block;background:#fff}
+</style>
+</head>
+<body class="tpl">
+<div class="wrap">
+  <h1>匯入檔自我檢查</h1>
+  <p class="lead">把你那份「預覽會空白」的 HTML 丟進來。這一頁不會改動任何設定，
+     只做一件事：分別把<b>原檔</b>和<b>套版後</b>畫出來，然後告訴你空白是檔案本身造成的、還是平台的問題。</p>
+
+  <div class="drop" id="drop">拖曳 HTML 檔到這裡，或點擊選擇<input type="file" id="file" accept=".html,.htm,text/html" hidden></div>
+
+  <div id="out" hidden>
+    <div class="verdict" id="verdict"></div>
+    <div style="margin:14px 0">
+      <button class="btn primary" id="copyReport" style="border-radius:14px">複製診斷資料</button>
+      <span id="copied" style="margin-left:10px;font-size:13px;color:#1B6B3A"></span>
+      <p style="font-size:12.5px;color:#8C9099;margin:8px 0 0;line-height:1.8">
+        只包含<b>結構與佈局規則</b>（標籤、class 名稱、height／overflow／display 這類 CSS），
+        不含任何頁面文字或圖片。貼給我就能精準重現。</p>
+    </div>
+    <pre id="report" style="display:none;background:#0F1621;color:#D8E4F0;padding:14px 16px;
+      border-radius:12px;font:11px/1.6 Consolas,Menlo,monospace;white-space:pre-wrap;
+      max-height:300px;overflow:auto"></pre>
+    <table id="tbl"></table>
+    <div class="frames">
+      <div><b>① 原檔直接畫（沒有套版）</b><iframe id="fRaw" sandbox="allow-same-origin allow-scripts"></iframe></div>
+      <div><b>② 套版後</b><iframe id="fNew" sandbox="allow-same-origin allow-scripts"></iframe></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var drop=document.getElementById('drop'),file=document.getElementById('file');
+  drop.addEventListener('click',function(){file.click()});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('on')});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('on')});
+  drop.addEventListener('drop',function(e){
+    e.preventDefault();drop.classList.remove('on');
+    if(e.dataTransfer.files[0])read(e.dataTransfer.files[0]);
+  });
+  file.addEventListener('change',function(){if(file.files[0])read(file.files[0])});
+
+  function read(f){
+    var r=new FileReader();
+    r.onload=function(){run(f.name,r.result)};
+    r.readAsText(f);
+  }
+
+  /* 一格畫完之後量它到底有沒有東西。判斷條件跟匯入頁那一份一致。 */
+  function look(fr){
+    var o={};
+    try{
+      var d=fr.contentDocument,W=fr.contentWindow;
+      if(!d||!d.body){o.err='取不到文件（可能被導到其他網址）';return o}
+      var cs=W.getComputedStyle(d.body);
+      o.節點=d.body.children.length;
+      o.文字=(d.body.innerText||'').replace(/\s+/g,'').length;
+      o.高=d.body.scrollHeight;
+      o.樣式表=d.styleSheets.length;
+      o.display=cs.display; o.opacity=cs.opacity;
+      o.iframe高=Math.round(fr.getBoundingClientRect().height);
+      /* 高度 0 不一定是問題：iframe 自己還沒排版時，裡面的 body 本來就量不到高度。
+         只有「iframe 有高度、內容卻是 0」才算被壓扁。
+         真正可靠的判準是「有沒有節點、有沒有文字、是不是被藏起來」。 */
+      var squashed=(!o.高 && o.iframe高>0);
+      o.空=(!o.節點||!o.文字||squashed||cs.display==='none'||parseFloat(cs.opacity)===0);
+      if(!o.空&&!o.高)o.註='高度量不到（iframe 尚未排版），不影響判定';
+    }catch(e){o.err=e.message}
+    return o;
+  }
+
+  /* 只輸出結構與佈局，不輸出任何頁面文字 */
+  function buildReport(name,html,branded,engineErr,reb,a,b){
+    var L=[];
+    L.push('=== 匯入檔診斷 ===');
+    L.push('檔名（僅副檔名）: .'+(name.split('.').pop()||'?'));
+    L.push('原始大小: '+html.length+' bytes');
+    L.push('引擎產出: '+(engineErr?('✗ '+engineErr):(branded.length+' bytes')));
+    L.push('相對路徑資源: '+reb.count);
+    L.push('');
+    L.push('--- 渲染結果 ---');
+    function line(t,o){
+      L.push(t+': 區塊 '+(o.節點!==undefined?o.節點:'-')
+        +' / 文字 '+(o.文字!==undefined?o.文字:'-')
+        +' / 高 '+(o.高!==undefined?o.高:'-')+'px'
+        +' / display '+(o.display||'-')+' / opacity '+(o.opacity||'-')
+        +(o.err?(' / 錯誤 '+o.err):''));
+    }
+    line('① 原檔',a); line('② 套版後',b);
+    L.push('');
+    L.push('--- body 前三層結構（只有標籤與 class）---');
+    try{
+      var doc=new DOMParser().parseFromString(html,'text/html');
+      (function walk(el,depth,prefix){
+        if(depth>3)return;
+        Array.prototype.forEach.call(el.children,function(c){
+          if(/^(SCRIPT|STYLE|LINK|META|TEMPLATE|NOSCRIPT)$/.test(c.tagName))return;
+          var cls=(typeof c.className==='string'&&c.className)?('.'+c.className.trim().split(/\s+/).slice(0,3).join('.')):'';
+          var kids=c.children?c.children.length:0;
+          L.push(prefix+c.tagName.toLowerCase()+cls+'  ('+kids+' 個子元素, '+
+            (c.textContent||'').trim().length+' 字)');
+          walk(c,depth+1,prefix+'  ');
+        });
+      })(doc.body,1,'  ');
+    }catch(e){L.push('  解析失敗: '+e.message)}
+    L.push('');
+    L.push('--- 佈局相關的 CSS 規則（不含顏色與內容）---');
+    try{
+      var css='';
+      var d2=new DOMParser().parseFromString(html,'text/html');
+      Array.prototype.forEach.call(d2.querySelectorAll('style'),function(s){css+=s.textContent+'\n'});
+      var seen=0;
+      css.replace(/([^{}]+)\{([^}]*)\}/g,function(all,sel,body){
+        if(seen>=40)return all;
+        var keep=body.split(';').filter(function(d){
+          return /^\s*(height|min-height|max-height|width|min-width|overflow|display|position|flex|grid|grid-template|inset|top|bottom|left|right)\s*:/i.test(d);
+        });
+        if(keep.length){seen++;L.push('  '+sel.trim().replace(/\s+/g,' ').slice(0,70)+' { '+keep.join(';').trim()+' }')}
+        return all;
+      });
+      if(!seen)L.push('  （沒有內嵌 <style>，樣式可能在外部 CSS 檔）');
+      var bodyCls=d2.body?(d2.body.className||''):'';
+      L.push('');
+      L.push('body 的 class: '+(bodyCls||'（無）'));
+      L.push('有 <link rel=stylesheet>: '+d2.querySelectorAll('link[rel~=stylesheet i]').length+' 個');
+      L.push('有 <script>: '+d2.querySelectorAll('script').length+' 個');
+    }catch(e){L.push('  '+e.message)}
+    return L.join('\n');
+  }
+
+  function run(name,html){
+    document.getElementById('out').hidden=false;
+    var kit=(window.HL_KITS||[])[0];
+    var branded='';
+    var engineErr='';
+    try{
+      var res=window.HL_ENGINE.brandifyHtml(html,{theme:kit,contrast:kit.c});
+      branded=(res&&res.html)||'';
+    }catch(e){engineErr=e.message}
+
+    var reb=window.HL_rebaseHtml?window.HL_rebaseHtml(html,null):{html:html,count:0};
+    document.getElementById('fRaw').srcdoc=reb.html;
+    document.getElementById('fNew').srcdoc=branded||'<p style="padding:20px;color:#B4241F">引擎沒有產出內容</p>';
+
+    setTimeout(function(){
+      var a=look(document.getElementById('fRaw')),b=look(document.getElementById('fNew'));
+      var rows=[
+        ['檔名',name],
+        ['原始大小',html.length+' bytes'],
+        ['引擎產出',engineErr?('✗ 拋錯：'+engineErr):(branded.length+' bytes')],
+        ['相對路徑資源',reb.count+' 個'+(reb.count?'（沒跟著上傳，預覽時載不到）':'')],
+        ['① 原檔：區塊/文字/高度',(a.err||(a.節點+' / '+a.文字+' / '+a.高+'px'+(a.註?'（'+a.註+'）':'')))],
+        ['① 原檔：display/opacity',(a.err?'-':(a.display+' / '+a.opacity))],
+        ['② 套版後：區塊/文字/高度',(b.err||(b.節點+' / '+b.文字+' / '+b.高+'px'+(b.註?'（'+b.註+'）':'')))],
+        ['② 套版後：display/opacity',(b.err?'-':(b.display+' / '+b.opacity))]
+      ];
+      document.getElementById('tbl').innerHTML=rows.map(function(r){
+        var bad=/✗|取不到/.test(String(r[1]))||/^0 \//.test(String(r[1]));
+        return '<tr><th>'+r[0]+'</th><td class="'+(bad?'bad':'')+'">'+
+          String(r[1]).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</td></tr>';
+      }).join('');
+
+      var v=document.getElementById('verdict'),cls,msg;
+      if(engineErr){
+        cls='plat';msg='<b>平台的問題：套版引擎拋錯</b>錯誤訊息在下表。請把這一頁的截圖給我。';
+      }else if(a.空&&b.空){
+        cls='file';msg='<b>這是檔案本身的特性，不是平台的問題</b>'+
+          '原檔單獨畫出來就已經是空的了（'+(a.err||('display '+a.display+'、opacity '+a.opacity+'、高度 '+a.高+'px'))+'）。'+
+          '常見原因：檔案的腳本在載入後把內容清掉、body 預設隱藏要靠 JS 才顯示、'+
+          '或整頁內容靠後端／外部 JS 產生。這種檔案在任何 iframe 裡都會是空的，'+
+          '但<b style="display:inline">套版結果仍然可以正常下載使用</b>。';
+      }else if(!a.空&&b.空){
+        cls='plat';msg='<b>平台的問題：原檔正常，套版後變空白</b>'+
+          '這是真的 bug。請把這一頁截圖給我，我會直接從引擎那一層查。';
+      }else if(a.空&&!b.空){
+        cls='ok';msg='<b>原檔是空的，但套版後有內容</b>'+
+          '通常表示原檔靠腳本產生內容，而套版後的版本把結構補上了。可以正常使用。';
+      }else{
+        cls='ok';msg='<b>兩邊都正常</b>'+
+          '這份檔案在這一頁畫得出來。如果匯入頁仍然空白，那就是匯入頁的流程問題，請告訴我。';
+      }
+      v.className='verdict '+cls;v.innerHTML=msg;
+
+      /* 結構摘要：只取標籤、class 與佈局相關的 CSS，不含任何內容文字。
+         有這些就能在本機造出同構的檔案重現問題。 */
+      var rep=buildReport(name,html,branded,engineErr,reb,a,b);
+      document.getElementById('report').textContent=rep;
+      document.getElementById('report').style.display='';
+      document.getElementById('copyReport').onclick=function(){
+        var ta=document.createElement('textarea');ta.value=rep;
+        ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();
+        try{document.execCommand('copy');document.getElementById('copied').textContent='已複製，貼給我即可'}
+        catch(e){document.getElementById('copied').textContent='複製失敗，請手動選取下方文字'}
+        ta.remove();
+      };
+    },2200);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+/* Hanlin Design System — semantic tokens. Components must reference these variables. */
+:root,
+[data-theme="hanlin-blue"] {
+  --color-action-bg: #003DA6;
+  --color-action-bg-hover: #2563EB;
+  --color-action-bg-active: #1E3D6B;
+  --color-action-fg: #FFFFFF;
+  --color-page-bg: #F4F7FB;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1E3D6B;
+  --color-text-secondary: #62778F;
+  --color-border: #BECAD7;
+  --color-focus: #2563EB;
+  --color-success: #16834A;
+  --color-warning: #A84D0D;
+  --color-danger: #C7353A;
+  --color-decor-contrast: #F5D35B;
+  --color-decor-warm: #EF9D78;
+  /* normalized semantic aliases */
+  --action-primary: var(--color-action-bg);
+  --action-primary-hover: var(--color-action-bg-hover);
+  --action-primary-active: var(--color-action-bg-active);
+  --surface-page: var(--color-page-bg);
+  --surface-base: var(--color-surface);
+  --surface-subtle: #EEF3F8;
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --border-default: #E6EBEC;
+  --border-strong: var(--color-border);
+  --status-success: var(--color-success);
+  --status-warning: var(--color-warning);
+  --status-danger: var(--color-danger);
+  --decor-contrast: var(--color-decor-contrast);
+  --decor-warm: var(--color-decor-warm);
+}
+
+[data-theme="hanlin-gray"] {
+  --color-action-bg: #3A3D42;
+  --color-action-bg-hover: #5E636B;
+  --color-action-bg-active: #24262A;
+  --color-page-bg: #F1F2F4;
+  --color-text-primary: #3A3D42;
+  --color-text-secondary: #646970;
+  --color-border: #D7D9DE;
+  --color-focus: #2563EB;
+  --color-decor-contrast: #BECAD7;
+  --color-decor-warm: #9499A2;
+}
+
+/* Additional brand themes override only these variables. */
+[data-theme="warm"] {
+  --color-action-bg: #8B3A2F;
+  --color-action-bg-hover: #A84D3E;
+  --color-action-bg-active: #6E2C24;
+  --color-focus: #A84D3E;
+}
+
+/* Named themes: dark brand/action paired with light reading surfaces. */
+[data-theme="midnight-finance-blue"] { --color-action-bg:#123B73; --color-action-bg-hover:#1D5A9C; --color-action-bg-active:#0B2A52; --color-page-bg:#F3F7FC; --color-text-primary:#102A4A; --color-text-secondary:#536B84; --color-border:#C7D7E8; --color-decor-contrast:#E9B949; --color-decor-warm:#8FB7E8; }
+[data-theme="mustard-publication"] { --color-action-bg:#806000; --color-action-bg-hover:#A67C08; --color-action-bg-active:#5C4400; --color-page-bg:#FCFAF4; --color-text-primary:#3F3215; --color-text-secondary:#6F6245; --color-border:#E5DAB8; --color-decor-contrast:#D9A928; --color-decor-warm:#B7795A; }
+[data-theme="forest-christmas"] { --color-action-bg:#1F5B4A; --color-action-bg-hover:#2C8067; --color-action-bg-active:#153D32; --color-page-bg:#F2F8F5; --color-text-primary:#183D32; --color-text-secondary:#54766A; --color-border:#C6DDD4; --color-decor-contrast:#D8A83E; --color-decor-warm:#C96F5B; }
+[data-theme="avocado-lime"] { --color-action-bg:#4E6B2C; --color-action-bg-hover:#6D8C3A; --color-action-bg-active:#354A1E; --color-page-bg:#F6FAF0; --color-text-primary:#2F421D; --color-text-secondary:#647451; --color-border:#D6E2C2; --color-decor-contrast:#C5D94A; --color-decor-warm:#D79B55; }
+[data-theme="academy-purple"] { --color-action-bg:#5A4A8A; --color-action-bg-hover:#7968B3; --color-action-bg-active:#403466; --color-page-bg:#F7F5FC; --color-text-primary:#332957; --color-text-secondary:#6C6482; --color-border:#D9D3EA; --color-decor-contrast:#D9B85A; --color-decor-warm:#C887A6; }
+[data-theme="public-gold"] { --color-action-bg:#765B12; --color-action-bg-hover:#9B771D; --color-action-bg-active:#51400C; --color-page-bg:#FCFAF2; --color-text-primary:#3E3315; --color-text-secondary:#6E6348; --color-border:#E6DDBE; --color-decor-contrast:#D9B342; --color-decor-warm:#B88356; }
+[data-theme="blue-night-neon"] { --color-action-bg:#163B66; --color-action-bg-hover:#2167A5; --color-action-bg-active:#0C2542; --color-page-bg:#F1F7FF; --color-text-primary:#102A4A; --color-text-secondary:#58728E; --color-border:#C9DDF3; --color-decor-contrast:#8DEBFF; --color-decor-warm:#FF7AD9; }

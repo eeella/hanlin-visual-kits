@@ -10,12 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609061100">
+<link rel="stylesheet" href="style.css?v=202609141900">
 <style>
 /* ===== 基本規範（獨立頁） =====
    不挑視覺套版、不交給 AI 的那條路。版面沿用站上的 .pin／.sec 尺度，
    樣式集中在這裡，不動 style.css。 */
-.pin{width:100%;max-width:1160px;margin:0 auto;padding:0 24px}
+.pin{width:100%;max-width:1280px;margin:0 auto;padding:0 24px}
 .sec{padding:30px 0 60px}
 /* 標題區不再限寬，內文一路延伸到 .pin 的右緣 */
 .sec-hd{margin-bottom:36px}
@@ -65,6 +65,23 @@
 .sw-cr.ok{color:#14653C;background:#E8F3EC}
 .sw-cr.no{color:#8C2018;background:#FDF1F0}
 /* 字級：只列數字看不出級距差多少，樣本一律用規範的 Kumbh Sans 照真尺寸渲染。 */
+
+/* ===== 圖示 ===== */
+.ic-duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ic-card{background:#fff;border:1px solid #E1E8F0;border-radius:10px;padding:18px 20px 20px}
+.ic-card.dark{background:#064EA4;border-color:#064EA4}
+.ic-card h4{font-size:13.5px;font-weight:700;color:var(--gray-1);margin:0 0 2px}
+.ic-card p{font-size:11.5px;color:var(--gray-2);margin:0 0 12px;line-height:1.65}
+.ic-card.dark h4{color:#fff}.ic-card.dark p{color:rgba(255,255,255,.75)}
+.ic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:14px 8px}
+.ic-grid .ic{display:flex;align-items:center;justify-content:center;color:#064EA4}
+.ic-grid .ic .material-symbols-rounded{font-size:26px;font-variation-settings:'wght' 400,'opsz' 24}
+.ic-grid.bg .ic{width:44px;height:44px;border-radius:50%;background:#064EA4;color:#fff;margin:0 auto}
+.ic-card.dark .ic-grid .ic{color:#fff}
+.ic-card.dark .ic-grid.bg .ic{background:#fff;color:#064EA4}
+.ic-rules{font-size:12.5px;color:var(--gray-2);line-height:1.9;margin:14px 0 0;padding-left:18px;max-width:760px}
+.ic-rules code{font-size:11.5px;color:var(--brand-dark);background:var(--blue-50);padding:1px 6px;border-radius:5px}
+@media(max-width:700px){.ic-duo{grid-template-columns:1fr}}
 .type-row{display:grid;grid-template-columns:1fr 178px;gap:16px;align-items:baseline;
   padding:11px 0;border-bottom:1px solid var(--gray-3)}
 .type-row:last-child{border-bottom:0}
@@ -122,7 +139,7 @@
       <h2>基本 Guideline 套版範例</h2>
       <p>
         翰林基本規範的「現成起始範例」在這裡！裡面已經幫你準備好所有的設計 Token、
-        元件樣式、品牌 Logo 與頁籤 Icon。零相依、免建置，只要解壓縮，就能立刻開工！
+        元件樣式、元件總覽頁（Button／Form／Tabs／Card／Dialog 等）、UI 開發規範、品牌 Logo 與頁籤 Icon。零相依、免建置，只要解壓縮，就能立刻開工！
       </p>
     </div>
 
@@ -133,6 +150,8 @@
                   data-src="hanlin-web-starter/index.html">示範頁</button>
           <button class="live-tab" role="tab" type="button" aria-selected="false"
                   data-src="hanlin-web-starter/styleguide.html">視覺樣本</button>
+          <button class="live-tab" role="tab" type="button" aria-selected="false"
+                  data-src="hanlin-web-starter/components.html">元件總覽</button>
         </div>
         <a class="btn soft live-open" id="liveOpen" href="hanlin-web-starter/index.html"
            target="_blank" rel="noopener" style="font-size:12.5px;padding:7px 15px;border-radius:999px"><span class="material-symbols-rounded" style="font-size:16px">open_in_new</span>開新分頁</a>
@@ -266,6 +285,49 @@
         <p class="type-sample" style="font-size:13px;line-height:1.6;font-weight:400">讓每個孩子都能找到自己的學習節奏。</p>
         <p class="type-meta"><code>font.size.xs</code><b>標籤、日期、學制</b>13px／行高 1.6／字重 400</p>
       </div>
+   </div>
+  </section>
+
+  <!-- ══════ 圖示 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <span class="eyebrow">Icons</span>
+      <h2>圖示系統</h2>
+      <p>取自 <code>STYLEGUIDE.md</code> §3.10。圖示一律用 <b>Google Material Symbols Rounded</b>，
+         圓角端點、線寬 1.6px 的風格與翰林的字體、圓角尺度一致；不混用其他圖示庫。</p>
+    </div>
+
+    <h3 class="sub-hd">兩種呈現 STYLES</h3>
+    <p class="sub-note">有背景色＝色底圓形容器，用在功能選單、步驟、統計等要「站出來」的位置；沒背景色＝純圖示，用在按鈕、表單、列表、導覽等內文層級。同一頁擇一為主，不混用。</p>
+    <div class="ic-duo">
+      <div class="ic-card">
+        <h4>純圖示 · 品牌色</h4><p>淺色底：<code>currentColor</code> 或 <code>color.surface.strong</code> #064EA4</p>
+        <div class="ic-grid"><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">school</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit_note</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">event_available</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">description</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">quiz</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">checklist</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">star</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">grid_view</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">functions</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">science</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">biotech</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">translate</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">public</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">palette</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">groups</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">person</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">cast</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">videocam</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">play_circle</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">headphones</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">mic</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">work</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">smart_toy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">campaign</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trophy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span></span></div>
+      </div>
+      <div class="ic-card">
+        <h4>色底圓形容器</h4><p>淺色底：圓形 44px、底 #064EA4、圖示白色</p>
+        <div class="ic-grid bg"><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">school</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit_note</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">event_available</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">description</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">quiz</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">checklist</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">star</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">grid_view</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">functions</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">science</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">biotech</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">translate</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">public</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">palette</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">groups</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">person</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">cast</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">videocam</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">play_circle</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">headphones</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">mic</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">work</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">smart_toy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">campaign</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trophy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span></span></div>
+      </div>
+      <div class="ic-card dark">
+        <h4>純圖示 · 反白</h4><p>深色底：<code>.icon--inverse</code>，圖示改白色</p>
+        <div class="ic-grid"><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">school</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit_note</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">event_available</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">description</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">quiz</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">checklist</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">star</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">grid_view</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">functions</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">science</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">biotech</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">translate</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">public</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">palette</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">groups</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">person</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">cast</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">videocam</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">play_circle</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">headphones</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">mic</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">work</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">smart_toy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">campaign</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trophy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span></span></div>
+      </div>
+      <div class="ic-card dark">
+        <h4>色底圓形容器 · 反白</h4><p>深色底：容器改白色、圖示改主色</p>
+        <div class="ic-grid bg"><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">school</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">menu_book</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">auto_stories</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit_note</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">event_available</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">description</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">quiz</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">checklist</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">star</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">format_list_bulleted</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">edit</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">grid_view</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">functions</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">science</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">biotech</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">translate</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">public</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">palette</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">groups</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">person</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">cast</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">videocam</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">play_circle</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">headphones</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">mic</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">work</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">smart_toy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">lightbulb</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trending_up</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">campaign</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">trophy</span></span><span class="ic"><span class="material-symbols-rounded" aria-hidden="true">calendar_month</span></span></div>
+      </div>
+    </div>
+
+    <h3 class="sub-hd">使用規則 RULES</h3>
+    <ul class="ic-rules">
+      <li>尺寸 24×24px（<code>font-size: 24px</code>），按鈕內 20px、頁首與功能磚 28px；線寬 1.6px、端點與轉角圓角（Rounded 字重 400、光學尺寸 24）。</li>
+      <li>顏色只用 <code>currentColor</code> 或 <code>color.surface.strong</code>；深色底一律 <code>.icon--inverse</code> 反白。</li>
+      <li>純裝飾圖示必須加 <code>aria-hidden="true"</code>；圖示是按鈕唯一內容時，按鈕必須另外提供 <code>aria-label</code>。</li>
+      <li>色底圓形容器：白底頁面用主色底＋白圖示；不得改用柔色底、不得加陰影或邊線。</li>
+      <li>功能磚輪替色只作用在圖示與標題文字，容器維持白底（見 §3.12 功能選單）。</li>
+      <li>不使用 emoji、不使用其他圖示庫（Font Awesome、Bootstrap Icons）；既有頁面套版時將其替換為對應的 Material Symbols。</li>
+    </ul>
    </div>
   </section>
 

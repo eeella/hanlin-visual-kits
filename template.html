@@ -10,9 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609061100">
-<script src="defaults.js?v=5fb9bddef70d"></script>
-<script src="kits.js?v=39caefe7862e"></script>
+<link rel="stylesheet" href="style.css?v=202609141900">
+<script src="defaults.js?v=16974f4afe52"></script>
+<script src="kits.js?v=a3392013147f"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
 <script src="skillpack.js?v=d4cfcf18a0a1"></script>
@@ -24,6 +24,82 @@
      --k-bg:#FFFFFF;--k-ln:#E6E8EC;--k-mu:#8C9099;--k-ink:#3A3D42;
      --k-rd:14px;--k-rd-card:14px;--k-rd-box:14px;--k-sh:none;--k-bd:none}
 
+
+/* ===== 基本控制項：從設計系統 component-example.html 補進來的元件（2026-09-14） =====
+   輸入框／選擇控制／頁籤／按鈕變體與狀態／教材卡片。顏色全部走 --brand／--k-* 變數，不寫死色碼。 */
+.cx{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.cx-lab{font-size:13px;font-weight:500;color:var(--k-ink)}
+.cx-lab em{color:#DE3535;font-style:normal}
+.cx-in{display:block;width:100%;max-width:340px;font:inherit;font-size:14px;padding:11px 16px;border-radius:var(--k-rd);
+  border:1.5px solid var(--k-ln);background:#fff;color:var(--k-ink);outline:0;transition:.15s}
+.cx-in::placeholder{color:var(--k-mu)}
+.cx-in:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--blue-50)}
+.cx-in.err{border-color:#DE3535;box-shadow:0 0 0 3px rgba(222,53,53,.12)}
+.cx-help{font-size:12px;color:var(--k-mu)}
+.cx-help.err{color:#DE3535}
+.duo-card.dark .cx-lab{color:#fff}
+.duo-card.dark .cx-in{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+.duo-card.dark .cx-in::placeholder{color:rgba(255,255,255,.6)}
+.duo-card.dark .cx-in:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+.duo-card.dark .cx-help{color:rgba(255,255,255,.7)}
+/* 選擇控制 */
+.cx-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;font-size:14px}
+.cx-row label{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.cx-row input[type=checkbox],.cx-row input[type=radio]{width:18px;height:18px;accent-color:var(--brand);cursor:pointer}
+.duo-card.dark .cx-row input[type=checkbox],.duo-card.dark .cx-row input[type=radio]{accent-color:#fff}
+.cx-sw{position:relative;width:44px;height:24px;border-radius:999px;background:var(--k-ln);transition:.2s;flex:none}
+.cx-sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s}
+.cx-sw.on{background:var(--brand)}
+.cx-sw.on::after{left:23px}
+.duo-card.dark .cx-sw{background:rgba(255,255,255,.3)}
+.duo-card.dark .cx-sw.on{background:#fff}
+.duo-card.dark .cx-sw.on::after{background:var(--brand-dark)}
+/* 頁籤 */
+.cx-tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--k-ln)}
+.cx-tabs span{padding:10px 18px;font-size:14px;color:var(--k-mu);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:.15s}
+.cx-tabs span:hover{color:var(--k-ink)}
+.cx-tabs span.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:500}
+.duo-card.dark .cx-tabs{border-bottom-color:rgba(255,255,255,.3)}
+.duo-card.dark .cx-tabs span{color:rgba(255,255,255,.7)}
+.duo-card.dark .cx-tabs span.on{color:#fff;border-bottom-color:#fff}
+/* 按鈕變體與狀態 */
+.cx-btns{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cx-btn{font:inherit;font-size:14px;padding:10px 20px;border-radius:var(--k-rd);border:1.5px solid transparent;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+.cx-btn.pri{background:var(--brand);color:#fff}
+.cx-btn.sec{background:transparent;color:var(--brand);border-color:var(--brand)}
+.cx-btn.txt{background:transparent;color:var(--brand);padding-left:8px;padding-right:8px}
+.cx-btn.dgr{background:#DE3535;color:#fff}
+.cx-btn.hov{background:var(--brand-dark)}
+.cx-btn.foc{background:var(--brand);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--brand)}
+.cx-btn.dis{background:var(--k-ln);color:var(--k-mu);cursor:not-allowed}
+.cx-btn .spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:cxspin .8s linear infinite}
+@keyframes cxspin{to{transform:rotate(360deg)}}
+.cx-state{font-size:12px;color:var(--k-mu);margin-right:-4px}
+.duo-card.dark .cx-btn.pri{background:#fff;color:var(--brand-dark)}
+.duo-card.dark .cx-btn.sec{color:#fff;border-color:rgba(255,255,255,.7)}
+.duo-card.dark .cx-btn.txt{color:#fff}
+.duo-card.dark .cx-btn.hov{background:rgba(255,255,255,.85);color:var(--brand-dark)}
+.duo-card.dark .cx-btn.foc{background:#fff;color:var(--brand-dark);box-shadow:0 0 0 3px var(--brand-dark),0 0 0 6px #fff}
+.duo-card.dark .cx-btn.dis{background:rgba(255,255,255,.2);color:rgba(255,255,255,.55)}
+.duo-card.dark .cx-btn .spin{border-color:rgba(0,0,0,.15);border-top-color:var(--brand-dark)}
+.duo-card.dark .cx-state{color:rgba(255,255,255,.7)}
+/* 教材卡片 */
+.cx-card{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:14px;align-items:center;max-width:420px;
+  padding:14px 16px;border-radius:var(--k-rd-card);background:#fff;border:1px solid var(--k-ln);box-shadow:var(--k-sh)}
+.cx-card .cv{width:48px;height:48px;border-radius:10px;background:var(--blue-50);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.cx-card b{display:block;font-size:15px;color:var(--k-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cx-card .meta{display:flex;gap:6px;margin-top:4px}
+.cx-card .meta span{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--blue-50);color:var(--brand)}
+.cx-card .go{color:var(--brand)}
+.duo-card.dark .cx-card{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.duo-card.dark .cx-card .cv{background:rgba(255,255,255,.18);color:#fff}
+.duo-card.dark .cx-card b{color:#fff}
+.duo-card.dark .cx-card .meta span{background:rgba(255,255,255,.18);color:#fff}
+.duo-card.dark .cx-card .go{color:#fff}
+/* 套版詳細：pick-box 的內容區改用頁面底色，淺色底示範卡（白）才不會跟外框白底黏在一起；
+   深色底卡本來就分得開。標題列維持白。（使用者回報 2026-09-14：底色跟區塊顏色太近） */
+main .pick-body{background:var(--page)}
+main .pick-box{overflow:hidden}
 .crumb-line{font-size:12.5px;color:var(--gray-2);letter-spacing:.03em;margin-bottom:10px}
 .crumb-line a{color:var(--brand);text-decoration:none}
 /* ===== 已存採用列：固定在畫面底部 =====
@@ -252,7 +328,7 @@ main .opt-dot.on{border-color:#0088D2}
    不再散在區塊各處用行內 margin 硬喬。 */
 .tpl main.wrap{gap:56px;padding:30px 24px 60px}  /* 上下內距照匯入頁 */
 .tpl .pagehead{background:#F6F9FC;border-bottom:1px solid #E4EBF2;padding:40px 0 36px;margin-bottom:8px}
-.tpl .pin{max-width:1160px;margin:0 auto;padding:0 24px}
+.tpl .pin{max-width:1280px;margin:0 auto;padding:0 24px}
 .tpl .blk-hd{margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--k-p)}
 .tpl .blk-hd h2{font-size:21px;font-weight:700;color:var(--gray-1);letter-spacing:.02em}
 .tpl .blk-hd h2 .en{font-size:12px;font-weight:400;color:#A6AEBB;letter-spacing:.18em;margin-left:10px}
@@ -339,7 +415,7 @@ main .opt-dot.on{border-color:#0088D2}
   <div class="nav-chips">
     <!-- <div class="nav-group" data-cat="brand"><a href="#principles">設計方針</a></div> -->
     <div class="nav-group" data-cat="identity"><a href="#logo">Logo 組合</a><a href="#header">Header 版型</a><a href="#login">登入系統</a><a href="#footer">Footer 版型</a></div>
-    <div class="nav-group" data-cat="comps"><a href="#hero">歡迎橫幅</a><a href="#controls">基本控制項</a><a href="#table">表格 Table</a><a href="#project">專案清單</a><a href="#bookmark">書籤收藏</a><a href="#popup">彈出視窗</a><a href="#toast">系統 Toast</a><a href="#feature">功能選單</a><a href="#brandcomps">品牌元件</a></div>
+    <div class="nav-group" data-cat="comps"><a href="#hero">Hero Banner</a><a href="#controls">基本控制項</a><a href="#table">表格 Table</a><a href="#project">專案清單</a><a href="#bookmark">書籤收藏</a><a href="#popup">彈出視窗</a><a href="#toast">系統 Toast</a><a href="#feature">功能選單</a><a href="#brandcomps">品牌元件</a></div>
     <div class="nav-group" data-cat="layout"><a href="#colorsys">色彩系統</a><a href="#adopt">採用設定</a><a href="#typo">字體排版</a><a href="#kitshape">形狀數值</a><a href="#rwd">RWD 斷點</a><a href="#type">文字級距</a><a href="#shape">形狀與間距</a></div>
   </div>
 </div>
@@ -636,11 +712,11 @@ main .opt-dot.on{border-color:#0088D2}
   </section>
 
 
-  <!-- 歡迎橫幅 -->
+  <!-- Hero Banner -->
 
   <!-- 基本控制項 -->
   <section class="sec" data-cat="comps" id="hero">
-    <div class="sec-head"><h2>歡迎橫幅</h2><span class="note">WELCOME HERO</span></div>
+    <div class="sec-head"><h2>Hero Banner</h2><span class="note">HERO BANNER</span></div>
     <p class="sec-desc">「歡迎回來」兩種版型，點選採用其一（存進 theme，首頁即套用）。</p>
     <div class="grid-2">
       <div class="pick-box" data-group="hero" style="margin-bottom:0">
@@ -710,6 +786,51 @@ main .opt-dot.on{border-color:#0088D2}
       </div>
     </div>
 
+    <div class="pick-box adopted" data-multi="1" data-key="input">
+      <div class="pick-head"><span class="pick-state"></span>輸入框 Input<span class="adopt-tag">採用中</span><span class="pick-note">Label 一律顯示（不得用 placeholder 代替）；錯誤狀態同時具備色彩、文字、aria-invalid 與 aria-describedby；輸入內容不得因錯誤被清空。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
+    </div>
+      </div>
+    </div>
+    <div class="pick-box adopted" data-multi="1" data-key="choice">
+      <div class="pick-head"><span class="pick-state"></span>選擇控制 Checkbox / Radio / Switch<span class="adopt-tag">採用中</span><span class="pick-note">原生 input 配 accent-color 走品牌色；Switch 用 role=switch＋aria-checked；點擊區含文字整列可點，最小 44px。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div class="cx-row"><label><input type="checkbox" checked>核取方塊</label><label><input type="checkbox">未勾選</label><label><input type="radio" name="cxr" checked>單選按鈕</label><label><input type="radio" name="cxr">另一個</label></div><div class="cx-row"><label><span class="cx-sw on" role="switch" aria-checked="true"></span>開關（開）</label><label><span class="cx-sw" role="switch" aria-checked="false"></span>開關（關）</label></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div class="cx-row"><label><input type="checkbox" checked>核取方塊</label><label><input type="checkbox">未勾選</label><label><input type="radio" name="cxr" checked>單選按鈕</label><label><input type="radio" name="cxr">另一個</label></div><div class="cx-row"><label><span class="cx-sw on" role="switch" aria-checked="true"></span>開關（開）</label><label><span class="cx-sw" role="switch" aria-checked="false"></span>開關（關）</label></div></div></div>
+    </div>
+      </div>
+    </div>
+    <div class="pick-box adopted" data-multi="1" data-key="tabs">
+      <div class="pick-head"><span class="pick-state"></span>頁籤 Tabs<span class="adopt-tag">採用中</span><span class="pick-note">role=tablist；目前頁籤以品牌色底線標示，方向鍵可切換，Home／End 跳首尾；不得以邊框分辨。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div class="cx-tabs"><span class="on">教材</span><span>評量</span><span>學習歷程</span><span>設定</span></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div class="cx-tabs"><span class="on">教材</span><span>評量</span><span>學習歷程</span><span>設定</span></div></div></div>
+    </div>
+      </div>
+    </div>
+    <div class="pick-box adopted" data-multi="1" data-key="btnstate">
+      <div class="pick-head"><span class="pick-state"></span>按鈕變體與狀態 Button Variants & States<span class="adopt-tag">採用中</span><span class="pick-note">主要／次要／文字／危險四種變體；每顆按鈕都要有 default、hover、focus-visible、active、disabled、loading、error 七種狀態；loading 時 aria-busy 並保留寬度。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div class="cx-btns"><button class="cx-btn pri">主要按鈕</button><button class="cx-btn sec">次要按鈕</button><button class="cx-btn txt">文字按鈕</button><button class="cx-btn dgr">危險按鈕</button></div><div class="cx-btns"><span class="cx-state">Default</span><button class="cx-btn pri">開始命題</button><span class="cx-state">Hover</span><button class="cx-btn pri hov">開始命題</button><span class="cx-state">Focus</span><button class="cx-btn pri foc">開始命題</button><span class="cx-state">Disabled</span><button class="cx-btn pri dis" disabled>開始命題</button><span class="cx-state">Loading</span><button class="cx-btn pri" aria-busy="true"><span class="spin"></span>處理中</button></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div class="cx-btns"><button class="cx-btn pri">主要按鈕</button><button class="cx-btn sec">次要按鈕</button><button class="cx-btn txt">文字按鈕</button><button class="cx-btn dgr">危險按鈕</button></div><div class="cx-btns"><span class="cx-state">Default</span><button class="cx-btn pri">開始命題</button><span class="cx-state">Hover</span><button class="cx-btn pri hov">開始命題</button><span class="cx-state">Focus</span><button class="cx-btn pri foc">開始命題</button><span class="cx-state">Disabled</span><button class="cx-btn pri dis" disabled>開始命題</button><span class="cx-state">Loading</span><button class="cx-btn pri" aria-busy="true"><span class="spin"></span>處理中</button></div></div></div>
+    </div>
+      </div>
+    </div>
+    <div class="pick-box adopted" data-multi="1" data-key="rescard">
+      <div class="pick-head"><span class="pick-state"></span>教材卡片 Resource Card<span class="adopt-tag">採用中</span><span class="pick-note">固定欄位：封面圖示、標題（單行省略）、學制／科目／版本標籤、右側動作；長標題不得覆蓋操作區；整張可點時用單一連結。</span></div>
+      <div class="pick-body">
+    <div class="duo">
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div class="cx-card"><div class="cv"><span class="material-symbols-rounded">menu_book</span></div><div><b>國中數學 第三冊</b><div class="meta"><span>國中</span><span>數學</span><span>翰林版</span></div></div><span class="material-symbols-rounded go">chevron_right</span></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div class="cx-card"><div class="cv"><span class="material-symbols-rounded">menu_book</span></div><div><b>國中數學 第三冊</b><div class="meta"><span>國中</span><span>數學</span><span>翰林版</span></div></div><span class="material-symbols-rounded go">chevron_right</span></div></div></div>
+    </div>
+      </div>
+    </div>
     <h3 class="sub-title">圖示 Icon <span class="en">MATERIAL SYMBOLS</span></h3>
     <p class="sub-desc">採用 Google Material Symbols 基本樣式；有背景色=色底圓形容器，沒背景色=純圖示。點選採用其一。</p>
     <div class="duo">
@@ -1088,7 +1209,7 @@ main .opt-dot.on{border-color:#0088D2}
       </div>
     </div>
     <div class="confirm-strip" style="margin-top:30px">
-      <p>選好品牌規範（主色 / Logo / Header / Footer / 歡迎橫幅 / 元件...）後，按下確認存進採用設定，並回到視覺套版列表。</p>
+      <p>選好品牌規範（主色 / Logo / Header / Footer / Hero Banner / 元件...）後，按下確認存進採用設定，並回到視覺套版列表。</p>
       <button class="btn primary" id="goPreview"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用，套入匯入頁</button>
       <button class="btn soft" id="exportTheme" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">download</span>匯出 theme JSON</button>
       <button class="btn soft" id="exportSkillMd" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">description</span>匯出 skill.md</button>
@@ -1570,8 +1691,7 @@ main .opt-dot.on{border-color:#0088D2}
      tk:['主要藍','深藍（hover 態）','淺藍灰','裝飾黃'],
      tkEn:['surface.strong','action.bg.hover','text.tertiary','decor.sun'],
      rd:['100px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* 文件寫明：radius.md 100px 給按鈕／chip／輸入框，xs 12px 卡片，sm 20px 大區塊 */
-     /* 範本頁＝「技國_白話文小老師」用這一組實際套過的結果（走 engine.js，不是手改） */
-     demoFile:'demo/hanlin-baihuawen-hanlin.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
      btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
      p:'#064EA4',s:'#05407F',i:'#BECAD7',c:'#F5D35B',
@@ -1596,7 +1716,7 @@ main .opt-dot.on{border-color:#0088D2}
      tkEn:['surface.strong','text.primary','surface.muted','text.inverse'],
      rd:['30px','4px','27px'],sh:[null,null],bd:null,  /* 文件只給 xs4／sm27／md30 沒寫用途，判斷：md 給按鈕、xs 給卡片、sm 給區塊 */
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
-     demoFile:'demo/hanlin-cloud-musical.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['深灰','#454545']],
      btn:'#268270',  /* 風格色版按鈕底色：Musical surface.strong 綠松石（＝主色） */
      p:'#268270',s:'#314D4A',i:'#FDEEBF',c:'#F3A93A',
@@ -1626,7 +1746,7 @@ main .opt-dot.on{border-color:#0088D2}
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
         註：這份頁面的形狀特徵（2px 邊線＋無模糊硬投影）有套到，
         但色票大多仍是 STYLEGUIDE 的藍，不是這一組的金融藍／橘紅。 */
-     demoFile:'demo/hanlin-cloud-istockapp.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      btn:'#FF5933',  /* 風格色版按鈕底色：istockapp surface.strong 橘紅（使用者指定） */
      p:'#2C89D8',s:'#08284C',i:'#04FDBC',c:'#FF5933',
      d:'金融藍配深海軍藍，亮色是螢光薄荷，對比為橘紅。反差最強的一組。'},
@@ -1650,7 +1770,7 @@ main .opt-dot.on{border-color:#0088D2}
      tkEn:['navy','navy.deep','ivory','gold'],
      rd:['10px','16px','22px'],sh:['0 1px 2px rgba(2,27,57,.05)','0 12px 32px -16px rgba(2,27,57,.24)'],bd:null,  /* 文件寫明：s10 按鈕／輸入框，m16 卡片，l22 大區塊 */
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
-     demoFile:'demo/hanlin-edcafe-navy.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['沙色','#DED5C6'],['次深藍','#153252'],['石灰褐','#6B6455']],
      btn:'#0E2A48',  /* 風格色版按鈕底色：navy-ivory-gold navy 深藍（＝主色） */
      p:'#0E2A48',s:'#021B39',i:'#F7F0E8',c:'#F4A910',
@@ -1689,7 +1809,7 @@ main .opt-dot.on{border-color:#0088D2}
      lay:{nav:'#171315',navFg:'#FBF5E9',hero:'#FBE472',cta:'#F2BBDB',footer:'#171315'},
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
         沒有這一欄的組就用 demo.html?kit= 產生。 */
-     demoFile:'demo/hanlin-expo-dopamine.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      /* 第三欄是用途，照來源文件的 token 表寫，不是自己編的 */
      ex:[['surface.card','#FFFFFF','卡片底'],
          ['surface.muted','#EEECFB','安靜區段的底'],
@@ -1883,7 +2003,7 @@ main .opt-dot.on{border-color:#0088D2}
      rd:['999px','20px','20px'],sh:[null,null],bd:null,
      lay:{nav:'#0F3A38',navFg:'#FFFFFF',hero:'#C0DFD5',cta:'#DEAF5F',footer:'#0F3A38'},
      /* 這一組有一份實際套好的頁面，範本頁直接用它 */
-     demoFile:'demo/map-history-trail.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['mint','#C0DFD5','次級區塊底。切分章節'],
          ['lemon','#E8E6AD','第三層區塊底'],
          ['sage','#618C81','次要文字、圖說'],
@@ -2131,13 +2251,30 @@ main .opt-dot.on{border-color:#0088D2}
   var DEFAULT_ADOPT={theme:{n:'翰林藍',p:'#0088D2',s:'#005696',i:'#40B4E5',c:'#FF9A3C'},contrast:'auto',
     logoLight:2,logoDark:2,logoInv:false,
     groups:{hd:1,ft:2,hero:1,fm:1,opt:1,tblsty:0,icon:0},
-    controls:{btn:true,seg:true,select:true,label:true,principles:true,midcolor:true,gray:true,softtile:true,rwd:true,type:true,shape:true},
+    controls:{btn:true,seg:true,select:true,label:true,input:true,choice:true,tabs:true,btnstate:true,rescard:true,principles:true,midcolor:true,gray:true,softtile:true,rwd:true,type:true,shape:true},
     memberEntry:true};
   try{
     var draft=JSON.parse(localStorage.getItem('hanlin-brand-theme'));
     /* 只在畫面上套預設，不寫回 localStorage——否則重整清空後又立刻長出一筆，
        使用者會看成「紀錄沒清掉」，其他頁也會誤判成「已有採用設定」而跳出覆蓋確認 */
-    applyState((draft&&draft.groups)?draft:DEFAULT_ADOPT);
+
+    /* 【缺 groups 不等於整組不要】(使用者回報 2026-09-09：選了套版卻跑出翰林藍)
+       原本是 (draft&&draft.groups)?draft:DEFAULT_ADOPT —— 二選一。
+       但從視覺套版列表按「匯入套版」寫進去的設定只有 theme 與 contrast，
+       沒有 groups；條件不成立就把使用者剛選的那一組整個丟掉，
+       改用 DEFAULT_ADOPT，而它的 theme.n 是「翰林藍」。
+       結果就是「我明明選了 A，點進去卻是翰林藍那一版」。
+       改成逐項補齊：使用者有的就用他的，只有缺的欄位才拿預設值填。 */
+    var base=draft&&typeof draft==='object'?draft:null;
+    var merged=DEFAULT_ADOPT;
+    if(base){
+      merged={};
+      Object.keys(DEFAULT_ADOPT).forEach(function(k){merged[k]=DEFAULT_ADOPT[k]});
+      Object.keys(base).forEach(function(k){
+        if(base[k]!==undefined&&base[k]!==null)merged[k]=base[k];
+      });
+    }
+    applyState(merged);
   }catch(e){try{applyState(DEFAULT_ADOPT)}catch(e2){}}
   syncDemoLogos();
   updateAdoptStatus();
@@ -2145,6 +2282,7 @@ main .opt-dot.on{border-color:#0088D2}
   /* ===== 從首頁「匯入」進來時，還原存下的品牌規範 ===== */
   function applyState(st){
     if(!st||typeof st!=='object')throw new Error('沒有可套用的資料');
+    if(window.HL_trace)window.HL_trace('套版詳細 applyState（還原匯入設定）',{傳入:(st.theme&&st.theme.n)||'(無)',目前curTheme:(curTheme&&curTheme.n)||'(無)'});
     if(st.theme&&st.theme.p){
       var matched=THEMES.filter(function(x){return x.p===st.theme.p})[0];
       curTheme=matched||st.theme;
@@ -2217,6 +2355,7 @@ main .opt-dot.on{border-color:#0088D2}
   }
   function saveTheme(){
     var st=buildState();
+    if(window.HL_trace)window.HL_trace('套版詳細 saveTheme',{curTheme:(curTheme&&curTheme.n)||'(無)',存入:(st.theme&&st.theme.n)||'(無)'});
     localStorage.setItem('hanlin-brand-theme',JSON.stringify(st));
     return st;
   }
@@ -2333,6 +2472,12 @@ main .opt-dot.on{border-color:#0088D2}
   function saveAndPreview(){
     saveTheme();
     try{localStorage.setItem('hanlin-show-result','1')}catch(e){}
+    /* 【從這一頁過去就是「已經挑過樣式」】(使用者回報 2026-09-09)
+       匯入頁用 hanlin-import-styled 決定對照預覽的右邊要不要套版；
+       沒有這個旗標，右邊就維持原檔，並顯示「還沒挑視覺套版，所以左右兩邊一樣」。
+       但使用者是在這一頁把版型挑完才按「套入匯入頁」的——他已經挑過了。
+       首頁與視覺套版列表的兩顆按鈕本來就有設，只有這條路徑漏了。 */
+    try{sessionStorage.setItem('hanlin-import-styled','1')}catch(e){}
     var to='import.html';
     try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:to,t:Date.now()}))}catch(e){}
     location.href=to;
@@ -2355,6 +2500,10 @@ main .opt-dot.on{border-color:#0088D2}
   })();
   /* 規範封包的產生邏輯已移到 skillpack.js，AI 指令頁共用同一份。
      這裡只負責把「目前畫面上的勾選」交給它。 */
+  /* saveTheme 定義在這個 script 區塊裡，但「下載範例檔」在另一個區塊，
+     直接呼叫會 ReferenceError（實測就是這樣失敗的）。掛到 window 共用，
+     不要在另一邊複製第二份存檔邏輯——採用設定只能有一個真相源。 */
+  window.HL_saveTheme=saveTheme;
   function downloadKitZip(btn){window.HL_downloadKitZip(btn,saveTheme())}
   document.getElementById('exportSkillMd').addEventListener('click',function(){
     var pk=window.HL_buildSkillPack(saveTheme());
@@ -2407,6 +2556,13 @@ main .opt-dot.on{border-color:#0088D2}
       pg.querySelectorAll('a').forEach(function(x){x.classList.remove('on')});
       a.classList.add('on');
     })});
+  });
+  document.querySelectorAll('.cx-tabs').forEach(function(g){
+    g.addEventListener('click',function(e){var s=e.target.closest('span');if(!s||s.parentElement!==g)return;
+      [].forEach.call(g.children,function(x){x.classList.remove('on')});s.classList.add('on')});
+  });
+  document.querySelectorAll('.cx-sw').forEach(function(sw){
+    sw.addEventListener('click',function(e){e.preventDefault();var on=!sw.classList.contains('on');sw.classList.toggle('on',on);sw.setAttribute('aria-checked',String(on))});
   });
   document.querySelectorAll('.sel-demo').forEach(function(sd){
     sd.addEventListener('click',function(){sd.classList.toggle('open')});
@@ -2474,6 +2630,7 @@ main .opt-dot.on{border-color:#0088D2}
   /* ── 頁首 ── */
   /* 整頁照這一組畫：中間色、灰階、淡色圖示方塊與所有元件示範都跟著換，
      不是只有上面那排色票變。這裡只做預覽；採用設定由頁面互動自動存草稿，或按「套入匯入頁」寫入。 */
+  if(window.HL_trace)window.HL_trace('套版詳細載入',{網址kit:id||'(沒帶)',實際用:k.n});
   if(window.HL_previewKit)window.HL_previewKit(k);
 
   document.title='翰林產品版型平台|'+k.n;
@@ -2611,45 +2768,37 @@ main .opt-dot.on{border-color:#0088D2}
        範本頁的效果全部寫在 DOM（documentElement.style、element.style、textContent）上，
        所以把 <script> 拿掉之後仍然是同一個畫面，也不需要 kits.js。
        三個相對路徑的 SVG 轉成 data URI，下載後單獨一個檔也開得起來。 */
+    /* 【「下載範例檔」給的是規範，不是套好的頁面】(使用者要求 2026-09-09)
+       原本這裡把 iframe 裡套好的範本頁存成 hanlin-sample-<kit>.html。
+       實際要的是規範本體：使用者拿到手要餵給 AI，HTML 給不了那個用途。
+       改成輸出 SKILL.md 單檔，內容沿用 skillpack.js 的 buildSkillPack ——
+       與右上角「確認採用，下載規範檔」zip 裡的 SKILL.md 是同一份，
+       不另外寫第二套產生器（先前兩份分岔過，數字對不起來）。 */
     var dl=document.getElementById('dlSample');
     if(dl)dl.addEventListener('click',function(){
-      var doc=null;
-      try{doc=fr.contentDocument}catch(_){}
-      if(!doc||!doc.body||!doc.body.children.length){
-        alert('範本頁還在載入，請稍候一下再按一次。');return;
+      if(typeof window.HL_buildSkillPack!=='function'){
+        alert('規範產生器沒有載入，請重新整理後再試一次。');return;
       }
       var lab=dl.innerHTML;
       dl.disabled=true;
-      dl.innerHTML='<span class="material-symbols-rounded" style="font-size:18px">hourglass_top</span>產生中…';
-      var root=doc.documentElement.cloneNode(true);
-      root.querySelectorAll('script').forEach(function(x){x.remove()});
-      /* 相對路徑的圖檔逐一轉成 data URI；轉不成就原樣留著，不讓一張圖擋掉整份下載 */
-      var imgs=[].slice.call(root.querySelectorAll('img[src],link[rel~="icon"][href]'));
-      Promise.all(imgs.map(function(el){
-        var at=el.tagName==='IMG'?'src':'href',v=el.getAttribute(at)||'';
-        if(/^(https?:|data:|#)/.test(v))return Promise.resolve();
-        return fetch(v).then(function(r){return r.ok?r.blob():null}).then(function(b){
-          if(!b)return;
-          return new Promise(function(res){
-            var fnr=new FileReader();
-            fnr.onload=function(){el.setAttribute(at,fnr.result);res()};
-            fnr.onerror=function(){res()};
-            fnr.readAsDataURL(b);
-          });
-        }).catch(function(){});
-      })).then(function(){
-        var html='<!DOCTYPE html>\n'+root.outerHTML;
-        var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-        var a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download='hanlin-sample-'+String(k.id||'kit').replace(/[^\w-]+/g,'-')+'.html';
-        document.body.appendChild(a);a.click();
-        setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
-      }).catch(function(){
-        alert('產生範例檔時發生問題，請重新整理後再試一次。');
-      }).then(function(){
-        dl.disabled=false;dl.innerHTML=lab;
-      });
+      dl.innerHTML='<span class="material-symbols-rounded" style="font-size:19px">hourglass_top</span>產生中…';
+      try{
+        if(typeof window.HL_saveTheme!=='function')
+          throw new Error('HL_saveTheme 未掛載（採用設定取不到）');
+        var pk=window.HL_buildSkillPack(window.HL_saveTheme());
+        /* 檔名用 kit 的 id（ASCII）。先前用 pk.slug，那是中文組名，
+           被 [^\w-] 洗成單一個 '-'，檔名變成 hanlin-skill--.md。 */
+        var slug=String((k&&k.id)||pk.slug||'kit').replace(/[^\w-]+/g,'-')
+                 .replace(/^-+|-+$/g,'')||'kit';
+        window.HL_dlBlob(new Blob([pk.md],{type:'text/markdown;charset=utf-8'}),
+          'hanlin-skill-'+slug+'.md');
+      }catch(e){
+        /* 使用者看到的訊息保持簡短，但原因一定要留在 console，
+           否則就是又一個「按了沒反應、查不出為什麼」的無聲失敗。 */
+        try{console.error('[下載範例檔] 產生 SKILL.md 失敗：',e);}catch(_){}
+        alert('產生規範檔時發生問題，請重新整理後再試一次。\n（詳細原因已記在瀏覽器主控台）');
+      }
+      dl.disabled=false;dl.innerHTML=lab;
     });
   })();
 

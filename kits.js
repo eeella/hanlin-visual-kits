@@ -1,5 +1,5 @@
 /* 自動產生，請勿手改。來源：template.html 的 var PALETTES／產生器：build-kits.py
-   指紋 cd67361477e4　共 15 組
+   指紋 a3392013147f　共 15 組
 
    為什麼要有這個檔：index.html（套版列表）與 template.html（套版詳細）也要用同一份風格資料。
    若各自存一份，就會重演「兩邊各存一份、改了不同步」的問題。
@@ -38,8 +38,7 @@ window.HL_KITS=[
      tk:['主要藍','深藍（hover 態）','淺藍灰','裝飾黃'],
      tkEn:['surface.strong','action.bg.hover','text.tertiary','decor.sun'],
      rd:['100px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* 文件寫明：radius.md 100px 給按鈕／chip／輸入框，xs 12px 卡片，sm 20px 大區塊 */
-     /* 範本頁＝「技國_白話文小老師」用這一組實際套過的結果（走 engine.js，不是手改） */
-     demoFile:'demo/hanlin-baihuawen-hanlin.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
      btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
      p:'#064EA4',s:'#05407F',i:'#BECAD7',c:'#F5D35B',
@@ -64,7 +63,7 @@ window.HL_KITS=[
      tkEn:['surface.strong','text.primary','surface.muted','text.inverse'],
      rd:['30px','4px','27px'],sh:[null,null],bd:null,  /* 文件只給 xs4／sm27／md30 沒寫用途，判斷：md 給按鈕、xs 給卡片、sm 給區塊 */
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
-     demoFile:'demo/hanlin-cloud-musical.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['深灰','#454545']],
      btn:'#268270',  /* 風格色版按鈕底色：Musical surface.strong 綠松石（＝主色） */
      p:'#268270',s:'#314D4A',i:'#FDEEBF',c:'#F3A93A',
@@ -94,7 +93,7 @@ window.HL_KITS=[
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
         註：這份頁面的形狀特徵（2px 邊線＋無模糊硬投影）有套到，
         但色票大多仍是 STYLEGUIDE 的藍，不是這一組的金融藍／橘紅。 */
-     demoFile:'demo/hanlin-cloud-istockapp.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      btn:'#FF5933',  /* 風格色版按鈕底色：istockapp surface.strong 橘紅（使用者指定） */
      p:'#2C89D8',s:'#08284C',i:'#04FDBC',c:'#FF5933',
      d:'金融藍配深海軍藍，亮色是螢光薄荷，對比為橘紅。反差最強的一組。'},
@@ -118,7 +117,7 @@ window.HL_KITS=[
      tkEn:['navy','navy.deep','ivory','gold'],
      rd:['10px','16px','22px'],sh:['0 1px 2px rgba(2,27,57,.05)','0 12px 32px -16px rgba(2,27,57,.24)'],bd:null,  /* 文件寫明：s10 按鈕／輸入框，m16 卡片，l22 大區塊 */
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html */
-     demoFile:'demo/hanlin-edcafe-navy.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['沙色','#DED5C6'],['次深藍','#153252'],['石灰褐','#6B6455']],
      btn:'#0E2A48',  /* 風格色版按鈕底色：navy-ivory-gold navy 深藍（＝主色） */
      p:'#0E2A48',s:'#021B39',i:'#F7F0E8',c:'#F4A910',
@@ -157,7 +156,7 @@ window.HL_KITS=[
      lay:{nav:'#171315',navFg:'#FBF5E9',hero:'#FBE472',cta:'#F2BBDB',footer:'#171315'},
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
         沒有這一欄的組就用 demo.html?kit= 產生。 */
-     demoFile:'demo/hanlin-expo-dopamine.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      /* 第三欄是用途，照來源文件的 token 表寫，不是自己編的 */
      ex:[['surface.card','#FFFFFF','卡片底'],
          ['surface.muted','#EEECFB','安靜區段的底'],
@@ -351,7 +350,7 @@ window.HL_KITS=[
      rd:['999px','20px','20px'],sh:[null,null],bd:null,
      lay:{nav:'#0F3A38',navFg:'#FFFFFF',hero:'#C0DFD5',cta:'#DEAF5F',footer:'#0F3A38'},
      /* 這一組有一份實際套好的頁面，範本頁直接用它 */
-     demoFile:'demo/map-history-trail.html',
+     /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['mint','#C0DFD5','次級區塊底。切分章節'],
          ['lemon','#E8E6AD','第三層區塊底'],
          ['sage','#618C81','次要文字、圖說'],
@@ -446,4 +445,4 @@ window.HL_KITS=[
      d:'米白底配深褐文字，磚橘撐結構，金黃只做主要行動。金黃底一律配近黑字，文件實測白字只有 1.57:1。'},
 
 ];
-window.HL_KITS_VERSION='cd67361477e4';
+window.HL_KITS_VERSION='a3392013147f';

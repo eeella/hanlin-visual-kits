@@ -115,3 +115,31 @@
     --motion-duration-normal:  0.01ms;
   }
 }
+
+/* ── 設計系統（hanlin-design-system/tokens.css）命名別名 ──
+   components.html 與 UI.md 用這組名字；值全部指回上面 STYLEGUIDE 的 token，不另存色碼。
+   注意：STYLEGUIDE 的 text.primary＝正文、text.secondary＝標題，寫元件請用 --text-body／--text-heading。 */
+:root {
+  --color-page-bg:        var(--color-page-bg-subtle);
+  --color-surface:        var(--color-surface-muted);
+  --color-focus:          var(--color-surface-strong);
+  --color-info:           var(--color-surface-strong);
+  --color-warning:        #8f4b00;   /* STYLEGUIDE 未定義；engine.js SG warning，白底 6.62:1 */
+  --color-decor-contrast: var(--color-decor-sun);
+  --border-default:       var(--color-border);
+  --border-strong:        var(--color-border-strong);
+  --text-heading:         var(--color-text-secondary);
+  --text-body:            var(--color-text-primary);
+  --surface-page:         var(--color-page-bg-subtle);
+  --surface-base:         var(--color-surface-muted);
+  --surface-subtle:       var(--color-disabled-bg);
+  --action-primary:       var(--color-action-bg);
+  --action-primary-hover: var(--color-action-bg-hover);
+  --action-primary-active:var(--color-action-bg-active);
+  --status-success:       var(--color-success);
+  --status-warning:       var(--color-warning);
+  --status-danger:        var(--color-danger);
+  --decor-contrast:       var(--color-decor-sun);
+  --decor-warm:           var(--color-decor-warm);
+  --radius-pill:          var(--radius-md);
+}

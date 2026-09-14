@@ -1,2 +1,26 @@
-.DS_Store
+# ── 建置產物（每次 ./run-all.sh 都會重新產生，不進版本歷史）────────────
+# build-tests.py 產生：
+engine-suite.html
+variant-suite.html
+audit-suite.html
+# build-edcafe.py 產生：
+edcafe-suite.html
+# build-kindmatch.py 產生（登入／選項卡判定比對）：
+kindmatch-suite.html
+# build-enginecmp.py 產生（兩份引擎逐樣本比對）：
+enginecmp-import.html
+enginecmp-preview.html
+# build-memberprobe.py 產生（登入系統注入探針）：
+memberprobe-*.html
+
+# ── 手動備份檔（git 的存在就是為了取代這些）───────────────────────────
+# 82 個 .bak 檔共約 21M；歷史都在 git 裡，不需要再靠檔名保存版本。
+*.bak
+*.bak[0-9]*
 *.bak-*
+
+# ── 系統與快取 ────────────────────────────────────────────────────
+.DS_Store
+__pycache__/
+*.pyc
+reports/

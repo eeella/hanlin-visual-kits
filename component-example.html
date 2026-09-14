@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="hanlin-blue">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>翰林 UI 元件範例</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <style>
+    :root {
+      --blue-700: var(--color-action-bg);
+      --blue-600: var(--color-action-bg-hover);
+      --blue-500: var(--color-action-bg-hover);
+      --yellow-400: var(--color-decor-contrast);
+      --coral-400: var(--color-decor-warm);
+      --slate-500: var(--color-text-secondary);
+      --slate-300: var(--border-strong);
+      --gray-200: var(--border-default);
+      --gray-100: var(--color-page-bg);
+      --white: #ffffff;
+      --navy-800: var(--color-text-primary);
+      --success-600: var(--color-success);
+      --warning-700: var(--color-warning);
+      --danger-600: var(--color-danger);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-low: 0 4px 16px rgb(30 61 107 / 0.08);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-12: 48px;
+      --canvas: var(--gray-100);
+      --surface: var(--white);
+      --surface-subtle: #eef3f8;
+      --text: var(--navy-800);
+      --text-muted: var(--slate-500);
+      --border: var(--gray-200);
+      --border-strong: var(--slate-300);
+      --primary: var(--blue-700);
+      --primary-hover: var(--blue-500);
+      --contrast: var(--yellow-400);
+      --warm: var(--coral-400);
+      --focus: var(--blue-500);
+    }
+
+    [data-theme="hanlin-gray"] {
+      --canvas: #f1f2f4;
+      --surface-subtle: #e6e8ec;
+      --text: #3a3d42;
+      --text-muted: #646970;
+      --border: #d7d9de;
+      --border-strong: #aeb2ba;
+      --primary: #3a3d42;
+      --primary-hover: #5e636b;
+      --contrast: #becad7;
+      --warm: #9499a2;
+      --focus: #2563eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--canvas);
+      color: var(--text);
+      font-family: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    button, input, select { font: inherit; }
+
+    button, a, input, select { outline: none; }
+
+    :focus-visible {
+      box-shadow: 0 0 0 3px var(--surface), 0 0 0 6px var(--focus);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: 64px;
+      padding: 0 clamp(16px, 4vw, 48px);
+      background: rgb(255 255 255 / 0.96);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand { font-size: 1.15rem; font-weight: 800; color: var(--blue-700); }
+
+    .theme-switcher { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+    .spec-navigation {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 0;
+      padding: 0 clamp(16px, 4vw, 48px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-tab {
+      min-height: 48px;
+      padding: 10px 16px;
+      color: var(--text-muted);
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .spec-tab:hover { color: var(--primary); }
+    .spec-tab.is-active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .spec-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: 12px clamp(16px, 4vw, 48px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-chip {
+      min-height: 36px;
+      padding: 6px 16px;
+      color: var(--text);
+      background: var(--surface-subtle);
+      border: 1px solid transparent;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .spec-chip:hover, .spec-chip.is-active { color: var(--primary); border-color: var(--primary); background: #e8f1ff; }
+
+    .reference-hero {
+      display: block;
+      padding: 10px 0 24px;
+    }
+
+    .reference-hero h1 { max-width: 32ch; }
+    .reference-note { display: none; }
+
+    .brand-strip {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: var(--space-4);
+      align-items: center;
+      margin-bottom: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .logo-lockup { display: inline-flex; align-items: center; gap: 10px; color: var(--primary); font-size: 1.2rem; font-weight: 850; }
+    .logo-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 10px 10px 10px 3px; background: var(--primary); color: white; font-size: 1rem; }
+    .logo-meta { display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 500; }
+    .header-variants { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .header-variant { min-width: 0; min-height: 72px; padding: 12px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.82rem; }
+    .header-variant strong { display: block; margin-bottom: 5px; color: var(--primary); font-size: 0.68rem; }
+    .header-variant .header-preview { display: flex; align-items: center; justify-content: space-between; gap: 6px; white-space: nowrap; }
+    .header-variant .header-preview b { color: var(--primary); font-size: 0.98rem; }
+    .header-variant .header-preview span { overflow: hidden; text-overflow: ellipsis; }
+    .header-variant.is-current { border-color: var(--primary); background: #f5f9ff; }
+
+    .foundation-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr 0.9fr;
+      gap: var(--space-4);
+    }
+
+    .foundation-card { min-width: 0; padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .foundation-card h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; color: var(--text); font-size: 1.15rem; }
+    .foundation-card h2:first-letter { color: var(--primary-hover); }
+    .foundation-card h2 small { color: var(--slate-500); font-size: .62rem; font-weight: 700; letter-spacing: .12em; }
+    .foundation-card p { margin: 0 0 var(--space-4); color: var(--text-muted); font-size: 0.875rem; }
+    .token-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+    .token { min-width: 0; }
+    .token-color { height: 42px; border-radius: 5px; border: 1px solid rgb(0 0 0 / 0.08); }
+    .token strong, .token code { display: block; overflow-wrap: anywhere; }
+    .token strong { margin-top: 4px; font-size: 0.74rem; }
+    .token code { color: var(--text-muted); font-size: 0.68rem; }
+    .type-list { display: grid; gap: 5px; }
+    .type-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .type-row strong { font-size: 1.2rem; }
+    .type-row span { color: var(--text-muted); font-size: 0.72rem; white-space: nowrap; }
+    .spacing-scale { display: flex; align-items: end; justify-content: space-between; gap: 6px; min-height: 98px; }
+    .spacing-item { display: grid; justify-items: center; gap: 4px; color: var(--text-muted); font-size: 0.72rem; }
+    .spacing-block { width: 22px; background: #91bff5; border-radius: 3px 3px 0 0; }
+
+    .reference-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-top: var(--space-4); }
+    .reference-components { min-width: 0; padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .reference-components > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: var(--space-3); }
+    .reference-components > header h2 { margin: 0; color: var(--text); font-size: 1.25rem; }
+    .reference-components > header h2:first-letter { color: var(--primary-hover); }
+    .reference-components > header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
+    .component-showcase { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+    .showcase-cell { min-width: 0; padding: var(--space-3); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .showcase-cell:nth-child(2n) { border-right: 1px solid var(--border); }
+    .showcase-cell:nth-child(1) { grid-column: span 7; }
+    .showcase-cell:nth-child(2) { grid-column: span 5; }
+    .showcase-cell:nth-child(3) { grid-column: span 7; }
+    .showcase-cell:nth-child(4) { grid-column: span 5; }
+    .showcase-cell:nth-child(5) { grid-column: span 5; }
+    .showcase-cell:nth-child(6) { grid-column: span 4; }
+    .showcase-cell:nth-child(7) { grid-column: span 3; }
+    .showcase-cell:nth-child(2), .showcase-cell:nth-child(4), .showcase-cell:nth-child(7), .showcase-cell:nth-child(8) { border-right: 0; }
+    .showcase-cell:nth-child(8) { grid-column: 1 / -1; }
+    .showcase-cell h3 { font-size: 0.9rem; }
+    .mini-resource-card { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+    .mini-resource-cover { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #cfe0f8; border-radius: 6px; background: #e8f1ff; color: var(--primary); font-size: 1.25rem; font-weight: 800; }
+    .showcase-cell .mini-resource-card strong, .showcase-cell .mini-resource-card small { display: block; overflow-wrap: anywhere; }
+    .showcase-cell .mini-resource-card small { color: var(--text-muted); font-size: 0.72rem; }
+    .mini-resource-card strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .82rem; }
+    .mini-resource-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+    .mini-resource-meta span { padding: 1px 5px; border-radius: 4px; background: var(--surface-subtle); color: var(--text-muted); font-size: .62rem; line-height: 1.35; }
+    .mini-resource-arrow { color: var(--primary); font-size: 1.35rem; font-weight: 700; }
+    .mini-resource-card.is-selected { border-color: var(--primary-hover); box-shadow: 0 0 0 2px #dbeafe; }
+    .dot-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: end; border-bottom: 1px solid var(--border); }
+    .dot-tabs button { min-width: 0; padding: 4px 6px 8px; color: var(--text-muted); background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer; font-size: .82rem; white-space: nowrap; }
+    .dot-tabs button.is-active { color: var(--primary); border-bottom-color: var(--primary-hover); font-weight: 800; }
+    .state-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .state-label { color: var(--text-muted); font-size: 0.72rem; }
+    .p0-panel { min-width: 0; padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .p0-panel .check-list { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+    .p0-panel h2 { margin: 0 0 var(--space-4); color: var(--primary); font-size: 1.15rem; }
+    .check-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+    .check-list li { display: grid; grid-template-columns: 24px 1fr; gap: 8px; align-items: start; }
+    .check { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 6px; background: var(--primary); color: white; font-size: 0.8rem; }
+    .check-list small { display: block; color: var(--text-muted); }
+    .reference-flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: center; gap: 12px; margin-top: var(--space-4); padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+    .flow-step { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .flow-icon { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-radius: 50%; background: #e8f1ff; color: var(--primary); font-weight: 800; }
+    .flow-step small { display: block; color: var(--text-muted); }
+    .flow-arrow { color: var(--border-strong); font-size: 1.35rem; }
+
+    main > .hero,
+    main > section[aria-labelledby="colors-title"],
+    main > section[aria-labelledby="components-title"],
+    main > section[aria-labelledby="cards-title"],
+    main > section[aria-labelledby="table-title"] { display: none; }
+    .footer-note { display: none; }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: var(--space-12) 0 64px;
+    }
+
+    .eyebrow {
+      margin: 0 0 var(--space-2);
+      color: var(--blue-600);
+      font-size: 0.875rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+    h1 { margin: 0; max-width: 22ch; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.16; }
+    h2 { margin: 0 0 var(--space-6); font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.25; }
+    h3 { margin: 0 0 var(--space-2); font-size: 1.1rem; }
+
+    .lead { max-width: 68ch; margin: var(--space-4) 0 0; color: var(--text-muted); font-size: 1.125rem; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: var(--space-8);
+      align-items: center;
+      padding: clamp(24px, 5vw, 56px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-low);
+    }
+
+    .hero-art {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      min-height: 220px;
+      padding: var(--space-6);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .hero-art div { border-radius: var(--radius-md); background: var(--primary); }
+    .hero-art div:nth-child(2) { background: var(--contrast); }
+    .hero-art div:nth-child(3) { background: var(--warm); }
+    .hero-art div:nth-child(4) { background: var(--border-strong); }
+
+    .section { margin-top: 56px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: var(--space-6);
+    }
+
+    .panel {
+      min-width: 0;
+      padding: var(--space-6);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .swatch {
+      min-width: 0;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .swatch-color { height: 76px; }
+    .swatch-copy { padding: var(--space-3); }
+    .swatch strong, .swatch code { display: block; }
+    .swatch code { color: var(--text-muted); font-size: 0.78rem; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 10px 18px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 750;
+      text-decoration: none;
+      transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .button-primary { background: var(--primary); color: white; }
+    .button-primary:hover { background: var(--primary-hover); }
+    .button-contrast { background: var(--contrast); color: #29344a; }
+    .button-secondary { background: var(--surface); color: var(--primary); border-color: var(--primary); }
+    .button-tertiary { background: transparent; color: var(--primary); }
+    .button-danger { background: var(--danger-600); color: white; }
+    .button:disabled { cursor: not-allowed; background: var(--border); color: var(--text-muted); }
+
+    .field { display: grid; gap: var(--space-2); }
+    .field + .field { margin-top: var(--space-4); }
+    .field label { font-weight: 750; }
+    .field small { color: var(--text-muted); }
+
+    .input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+    }
+    select.input { appearance: none; padding-right: 38px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m3 6 5 5 5-5' fill='none' stroke='%231e3d6b' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+
+    .control-row { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; margin-top: var(--space-4); }
+    .control-row label { display: inline-flex; gap: var(--space-2); align-items: center; }
+    .switch-control { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); }
+    .switch-control input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch-track { position: relative; width: 42px; height: 24px; border-radius: 999px; background: var(--border-strong); transition: background-color 160ms ease; }
+    .switch-track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgb(0 0 0 / .2); transition: transform 160ms ease; }
+    .switch-control input:checked + .switch-track { background: var(--primary-hover); }
+    .switch-control input:checked + .switch-track::after { transform: translateX(18px); }
+    .theme-modes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .theme-modes strong { margin-right: 8px; font-size: .85rem; }
+    .icon-strip { display: none; }
+    .icon-token { display: grid; justify-items: center; gap: 4px; min-width: 0; color: var(--text-muted); font-size: .72rem; text-align: center; }
+    .ui-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 9px; background: #e8f1ff; color: var(--primary); font-size: 1.15rem; font-weight: 850; }
+    .ui-icon.success { background: #e6f5ec; color: var(--success-600); }
+    .ui-icon.warning { background: #fff7d5; color: var(--warning-700); }
+    .ui-icon.danger { background: #fff0e9; color: var(--danger-600); }
+
+    .badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .badge-blue { background: #e8f1ff; color: var(--blue-700); }
+    .badge-yellow { background: #fff7d5; color: #695300; }
+    .badge-coral { background: #fff0e9; color: #8a381e; }
+    .badge-green { background: #e6f5ec; color: #12673b; }
+
+    .alert {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border: 1px solid #dbeafe;
+      border-radius: var(--radius-md);
+      background: #eaf3ff;
+    }
+
+    .alert-warning { border-color: #f5d8ca; background: #fff3ed; }
+
+    .resource-card {
+      display: flex;
+      min-width: 0;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .resource-cover {
+      aspect-ratio: 16 / 9;
+      display: grid;
+      place-items: center;
+      padding: var(--space-6);
+      background: var(--primary);
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .resource-content { display: flex; flex: 1; flex-direction: column; padding: var(--space-6); }
+    .resource-content .actions { margin-top: auto; padding-top: var(--space-4); }
+
+    .long-title {
+      margin: 0;
+      font-size: 1.25rem;
+      line-height: 1.35;
+    }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-md); }
+    table { width: 100%; min-width: 720px; border-collapse: collapse; background: var(--surface); }
+    th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; overflow-wrap: anywhere; }
+    th { background: var(--surface-subtle); }
+
+    .footer-note {
+      margin-top: 56px;
+      padding: var(--space-6);
+      border-radius: var(--radius-lg);
+      background: var(--navy-800);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .topbar { align-items: flex-start; flex-direction: column; padding-block: 12px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-art { min-height: 160px; }
+      .actions { flex-direction: column; }
+      .actions .button { width: 100%; }
+      .page { padding-top: var(--space-8); }
+      .reference-hero { display: block; }
+      .brand-strip { grid-template-columns: 1fr; }
+      .header-variants { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .icon-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .foundation-grid, .reference-body { grid-template-columns: 1fr; }
+      .p0-panel .check-list { grid-template-columns: 1fr; }
+      .token-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .component-showcase { grid-template-columns: 1fr; }
+      .showcase-cell, .showcase-cell:nth-child(n) { grid-column: 1 / -1; border-right: 0; }
+      .reference-flow { grid-template-columns: 1fr; }
+      .flow-arrow { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">翰林 Web Design System</div>
+    <div class="theme-switcher" aria-label="預覽主題">
+      <button class="button button-primary" type="button" data-theme-value="hanlin-blue">中階藍／輔色</button>
+      <button class="button button-secondary" type="button" data-theme-value="hanlin-gray">灰階輔助</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="reference-hero" aria-labelledby="reference-title">
+      <div>
+        <p class="eyebrow">SAME STANDARDS. A BRIGHTER LEARNING TOMORROW.</p>
+        <h1 id="reference-title">建立一致、可及、可維護的翰林數位體驗</h1>
+        <p class="lead">共用結構與元件，產品只需替換語意色彩與品牌內容。</p>
+      </div>
+      <p class="reference-note"><strong>好的設計，<br />讓每一個學習場景都更可能。</strong>從元件開始，放大教育的影響力。</p>
+    </section>
+
+    <section class="brand-strip" aria-label="Logo 與 Header 元件">
+      <div class="logo-lockup"><span>翰林 <span class="logo-meta">LogoLockup／正式品牌組合</span></span></div>
+      <div class="header-variants" aria-label="Header 變體">
+        <div class="header-variant is-current"><strong>Global Header</strong><div class="header-preview"><b>翰林</b><span>跨產品主導覽</span></div></div>
+        <div class="header-variant"><strong>Product Header</strong><div class="header-preview"><b>翰林</b><span>單一產品導覽</span></div></div>
+        <div class="header-variant"><strong>Context Header</strong><div class="header-preview"><b>章節內容</b><span>教材／流程上下文</span></div></div>
+        <div class="header-variant"><strong>Mobile Header</strong><div class="header-preview"><b>翰林</b><span>行動版導覽</span></div></div>
+      </div>
+    </section>
+
+    <section class="icon-strip" aria-label="圖示元件">
+      <div class="icon-token"><span class="ui-icon">⌂</span><span>首頁</span></div>
+      <div class="icon-token"><span class="ui-icon">◉</span><span>色彩</span></div>
+      <div class="icon-token"><span class="ui-icon">Tt</span><span>字體</span></div>
+      <div class="icon-token"><span class="ui-icon">▧</span><span>間距</span></div>
+      <div class="icon-token"><span class="ui-icon">◇</span><span>元件</span></div>
+      <div class="icon-token"><span class="ui-icon success">✓</span><span>完成</span></div>
+      <div class="icon-token"><span class="ui-icon warning">!</span><span>提醒</span></div>
+      <div class="icon-token"><span class="ui-icon danger">×</span><span>錯誤</span></div>
+    </section>
+
+    <section class="foundation-grid" aria-label="基礎規範">
+      <article class="foundation-card">
+        <h2>◉ 色彩系統 <small>COLOR SYSTEM</small></h2>
+        <p>語意化色彩，支援無障礙與多產品主題。</p>
+        <div class="token-grid">
+          <div class="token"><div class="token-color" style="background:#003da6"></div><strong>主要色</strong><code>#003DA6</code></div>
+          <div class="token"><div class="token-color" style="background:#2563eb"></div><strong>Hover</strong><code>#2563EB</code></div>
+          <div class="token"><div class="token-color" style="background:#becad7"></div><strong>輔助色</strong><code>#BECAD7</code></div>
+          <div class="token"><div class="token-color" style="background:#f5d35b"></div><strong>對比色</strong><code>#F5D35B</code></div>
+          <div class="token"><div class="token-color" style="background:#ef9d78"></div><strong>警告色</strong><code>#EF9D78</code></div>
+          <div class="token"><div class="token-color" style="background:#62778f"></div><strong>次要字</strong><code>#62778F</code></div>
+        </div>
+        <div class="theme-modes"><strong>主題模式</strong><button class="button button-primary" type="button" data-theme-value="hanlin-blue">亮色主題</button><button class="button button-secondary" type="button" data-theme-value="hanlin-gray">深色主題</button></div>
+      </article>
+      <article class="foundation-card">
+        <h2>Tt 字體系統</h2>
+        <p>清晰易讀，支援教育情境的層級資訊。</p>
+        <div class="type-list">
+          <div class="type-row"><strong>H1 翰林數位學習</strong><span>32 / Bold</span></div>
+          <div class="type-row"><strong>H2 打造更好的學習體驗</strong><span>24 / Bold</span></div>
+          <div class="type-row"><strong>H3 知識連結未來</strong><span>20 / Semibold</span></div>
+          <div class="type-row"><span>內文　讓學習發生在每一個日常</span><span>16 / Regular</span></div>
+          <div class="type-row"><span>輔助　這是一段輔助說明文字</span><span>14 / Regular</span></div>
+        </div>
+      </article>
+      <article class="foundation-card">
+        <h2>▧ 間距系統</h2>
+        <p>一致的間距節奏，建立清晰的版面結構。</p>
+        <div class="spacing-scale" aria-label="4、8、12、16、24、32 像素間距">
+          <div class="spacing-item"><div class="spacing-block" style="height:12px"></div><strong>4</strong><span>4px</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="height:24px"></div><strong>8</strong><span>8px</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="height:36px"></div><strong>12</strong><span>12px</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="height:48px"></div><strong>16</strong><span>16px</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="height:66px"></div><strong>24</strong><span>24px</span></div>
+          <div class="spacing-item"><div class="spacing-block" style="height:84px"></div><strong>32</strong><span>32px</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="reference-body" aria-label="核心元件與發布標準">
+      <article class="reference-components">
+        <header><div><h2>◇ 核心元件</h2><p>可重複使用的通用元件，支援一致的互動與無障礙體驗。</p></div></header>
+        <div class="component-showcase">
+          <div class="showcase-cell"><h3>按鈕（Button）</h3><div class="state-row"><button class="button button-primary" type="button">主要按鈕</button><button class="button button-secondary" type="button">次要按鈕</button><button class="button button-tertiary" type="button">文字按鈕</button><button class="button button-danger" type="button">危險按鈕</button></div></div>
+          <div class="showcase-cell"><h3>表單元件（Input / Select）</h3><div class="state-row"><input class="input" style="max-width:180px" aria-label="文字輸入" placeholder="請輸入關鍵字" /><select class="input" style="max-width:140px" aria-label="選擇選單"><option>請選擇</option><option>國文</option><option>數學</option></select></div></div>
+          <div class="showcase-cell"><h3>選擇控制</h3><div class="control-row" style="margin-top:0"><label><input type="checkbox" checked /> 核取方塊</label><label><input type="radio" name="demo-scope" checked /> 單選按鈕</label><label class="switch-control"><input type="checkbox" checked /><span class="switch-track" aria-hidden="true"></span> 開關</label></div></div>
+          <div class="showcase-cell"><h3>分頁（Tabs）</h3><div class="dot-tabs" role="tablist" aria-label="分頁"><button class="is-active" type="button" role="tab" aria-selected="true">教材</button><button type="button" role="tab" aria-selected="false">評量</button><button type="button" role="tab" aria-selected="false">學習歷程</button><button type="button" role="tab" aria-selected="false">設定</button></div></div>
+          <div class="showcase-cell"><h3>狀態標籤（Badge）</h3><div class="badges"><span class="badge">預設</span><span class="badge badge-blue">進行中</span><span class="badge badge-green">已完成</span><span class="badge badge-yellow">待確認</span><span class="badge badge-coral">異常</span></div></div>
+          <div class="showcase-cell"><h3>提示訊息（Alert）</h3><div class="alert" style="margin-top:0"><span aria-hidden="true">ⓘ</span><div>這是一則提示訊息，提供重要的操作資訊。</div></div></div>
+          <div class="showcase-cell"><h3>教材卡片（Resource Card）</h3><div class="mini-resource-card" role="button" tabindex="0" aria-label="選取國中數學第三冊"><span class="mini-resource-cover" aria-hidden="true">▤</span><div><strong>國中數學 第三冊</strong><div class="mini-resource-meta"><span>國中</span><span>數學</span><span>翰林版</span></div></div><span class="mini-resource-arrow" aria-hidden="true">›</span></div></div>
+          <div class="showcase-cell" style="grid-column:1/-1"><h3>元件狀態（Button States）</h3><div class="state-row"><span class="state-label">Default</span><button class="button button-primary" type="button">主要按鈕</button><span class="state-label">Hover</span><button class="button button-primary" type="button" style="background:var(--primary-hover)">主要按鈕</button><span class="state-label">Focus</span><button class="button button-primary" type="button" style="box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--focus)">主要按鈕</button><span class="state-label">Disabled</span><button class="button" type="button" disabled>主要按鈕</button><span class="state-label">Loading</span><button class="button button-primary" type="button">◌ 處理中</button></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="reference-flow" aria-label="設計系統流程"><div class="flow-step"><span class="flow-icon">◎</span><div><strong>Tokens</strong><small>設計語意與主題</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">◇</span><div><strong>元件</strong><small>可重複的介面積木</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">▤</span><div><strong>教育模式</strong><small>解決教學情境需求</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">▦</span><div><strong>產品</strong><small>打造一致的數位體驗</small></div></div></section>
+    <aside class="p0-panel"><h2>✓ P0 發布標準</h2><ul class="check-list"><li><span class="check">✓</span><div><strong>WCAG 2.2 AA</strong><small>符合無障礙規範</small></div></li><li><span class="check">✓</span><div><strong>鍵盤操作</strong><small>完整鍵盤導覽</small></div></li><li><span class="check">✓</span><div><strong>完整狀態</strong><small>涵蓋各種使用情境</small></div></li><li><span class="check">✓</span><div><strong>響應式</strong><small>支援多裝置與斷點</small></div></li><li><span class="check">✓</span><div><strong>自動測試</strong><small>確保品質與穩定性</small></div></li></ul></aside>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">HANLIN UI COMPONENT EXAMPLE</p>
+        <h1>一致、清楚，而且企劃套用也不會破版</h1>
+        <p class="lead">這個單頁範例展示語意色彩、共用元件、教育內容卡片與長文案處理。切換主題只會更換 Token，不會改變元件結構與操作。</p>
+        <div class="actions">
+          <button class="button button-contrast" type="button">開始使用元件</button>
+          <a class="button button-secondary" href="./UI.md">查看 UI.md</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="色彩系統示意">
+        <div></div><div></div><div></div><div></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="colors-title">
+      <h2 id="colors-title">色彩系統</h2>
+      <div class="palette">
+        <article class="swatch"><div class="swatch-color" style="background:#003da6"></div><div class="swatch-copy"><strong>主要藍</strong><code>#003DA6</code></div></article>
+        <article class="swatch"><div class="swatch-color" style="background:#2563eb"></div><div class="swatch-copy"><strong>Hover／Focus</strong><code>#2563EB</code></div></article>
+        <article class="swatch"><div class="swatch-color" style="background:#f5d35b"></div><div class="swatch-copy"><strong>視覺黃</strong><code>#F5D35B</code></div></article>
+        <article class="swatch"><div class="swatch-color" style="background:#ef9d78"></div><div class="swatch-copy"><strong>暖橘色</strong><code>#EF9D78</code></div></article>
+        <article class="swatch"><div class="swatch-color" style="background:#becad7"></div><div class="swatch-copy"><strong>淺藍灰</strong><code>#BECAD7</code></div></article>
+        <article class="swatch"><div class="swatch-color" style="background:#62778f"></div><div class="swatch-copy"><strong>次要文字</strong><code>#62778F</code></div></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="components-title">
+      <h2 id="components-title">核心元件</h2>
+      <div class="grid">
+        <article class="panel">
+          <h3>按鈕</h3>
+          <p>同一區塊只有一個主要操作，對比色只用在真正需要注意的行動。</p>
+          <div class="actions">
+            <button class="button button-primary" type="button">主要按鈕</button>
+            <button class="button button-secondary" type="button">次要按鈕</button>
+            <button class="button button-tertiary" type="button">文字按鈕</button>
+            <button class="button button-danger" type="button">危險按鈕</button>
+            <button class="button" type="button" disabled>停用狀態</button>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h3>表單</h3>
+          <div class="field">
+            <label for="keyword">搜尋教材</label>
+            <input class="input" id="keyword" type="search" placeholder="輸入課次、教材或關鍵字" aria-describedby="keyword-help" />
+            <small id="keyword-help">支援課次、冊別與教材名稱。</small>
+          </div>
+          <div class="field">
+            <label for="subject">科目</label>
+            <select class="input" id="subject"><option>請選擇</option><option>國文</option><option>數學</option><option>自然</option></select>
+          </div>
+          <div class="control-row">
+            <label><input type="checkbox" checked /> 包含補充教材</label>
+            <label><input type="radio" name="scope" checked /> 全部年級</label>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h3>狀態與提示</h3>
+          <div class="badges">
+            <span class="badge">預設</span>
+            <span class="badge badge-blue">進行中</span>
+            <span class="badge badge-green">已完成</span>
+            <span class="badge badge-yellow">待確認</span>
+            <span class="badge badge-coral">需注意</span>
+          </div>
+          <div class="alert" style="margin-top:16px"><span aria-hidden="true">ⓘ</span><div><strong>教材已更新</strong><br />已保留原本的篩選條件，可以繼續操作。</div></div>
+          <div class="alert alert-warning" style="margin-top:12px"><span aria-hidden="true">!</span><div><strong>內容較長</strong><br />行動版會自動換行，不會縮小文字或遮住按鈕。</div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cards-title">
+      <h2 id="cards-title">教材資源卡片</h2>
+      <div class="grid">
+        <article class="resource-card">
+          <div class="resource-cover">國中數學・第三冊</div>
+          <div class="resource-content">
+            <div class="badges"><span class="badge badge-blue">數學</span><span class="badge">七年級</span></div>
+            <h3 class="long-title">這是一個刻意使用較長標題的教材資源卡片，用來確認中文內容換行後仍然不會覆蓋操作按鈕</h3>
+            <p>卡片高度會隨內容增加，操作區維持在底部；企劃不需要加入空白或手動換行。</p>
+            <div class="actions"><button class="button button-primary" type="button">查看教材</button></div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <div class="resource-cover" style="background:var(--slate-500)">AI 評語產生</div>
+          <div class="resource-content">
+            <div class="badges"><span class="badge badge-yellow">AI 工具</span></div>
+            <h3 class="long-title">根據學生表現快速建立個人化學習評語</h3>
+            <p>即使說明文字較短，卡片仍會與同列內容自然齊高，不使用固定高度裁切文字。</p>
+            <div class="actions"><button class="button button-primary" type="button">開始產生</button></div>
+          </div>
+        </article>
+
+        <article class="resource-card">
+          <div class="resource-cover" style="background:var(--warm);color:#522514">命題流程</div>
+          <div class="resource-content">
+            <div class="badges"><span class="badge badge-coral">教師工具</span></div>
+            <h3 class="long-title">快速命題與試卷輸出</h3>
+            <p>選擇範圍、設定題型、預覽調整，最後輸出試卷。</p>
+            <div class="actions"><button class="button button-primary" type="button">開始命題</button></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="table-title">
+      <h2 id="table-title">資料表格</h2>
+      <div class="table-wrap" tabindex="0" aria-label="教材清單，可水平捲動">
+        <table>
+          <thead><tr><th>教材名稱</th><th>學制</th><th>科目</th><th>狀態</th><th>更新時間</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>國中數學第三冊教學資源與補充學習內容</td><td>國中</td><td>數學</td><td><span class="badge badge-green">已發布</span></td><td>2026-09-14</td><td><button class="button button-tertiary" type="button">查看</button></td></tr>
+            <tr><td>https://example.hle.com.tw/a-very-long-resource-address-that-must-not-break-the-layout</td><td>技高</td><td>英文</td><td><span class="badge badge-yellow">草稿</span></td><td>2026-09-13</td><td><button class="button button-tertiary" type="button">編輯</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <strong>元件責任原則</strong><br />在規範允許的輸入下發生破版，應視為元件缺陷，不應要求企劃用空白、手動換行或縮小必要內容來修補。
+    </footer>
+  </main>
+
+  <script>
+    document.querySelectorAll('[data-theme-value]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.documentElement.dataset.theme = button.dataset.themeValue;
+        document.querySelectorAll('[data-theme-value]').forEach((item) => {
+          item.className = 'button ' + (item === button ? 'button-primary' : 'button-secondary');
+          item.setAttribute('aria-pressed', String(item === button));
+        });
+      });
+    });
+
+    document.querySelectorAll('.spec-tab').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.spec-tab').forEach((item) => {
+          const active = item === button;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
+        });
+        const chipGroups = {
+          brand: ['色彩系統', '字體系統', '間距系統', '圖示'],
+          interface: ['按鈕', '表單', '選單', '卡片／對話框'],
+          layout: ['網格', '響應式', '狀態', '可及性']
+        };
+        document.querySelectorAll('.spec-chip').forEach((chip, index) => {
+          chip.textContent = chipGroups[button.dataset.group][index];
+        });
+      });
+    });
+
+    const initialChipLabels = ['色彩系統', '字體系統', '間距系統', '圖示'];
+    document.querySelectorAll('.spec-chip').forEach((chip, index) => { chip.textContent = initialChipLabels[index]; });
+
+    document.querySelectorAll('.spec-chip').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.spec-chip').forEach((item) => {
+          const active = item === button;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+      });
+    });
+
+    document.querySelectorAll('.dot-tabs').forEach((tabs) => {
+      tabs.querySelectorAll('[role="tab"]').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          tabs.querySelectorAll('[role="tab"]').forEach((item) => {
+            const active = item === tab;
+            item.classList.toggle('is-active', active);
+            item.setAttribute('aria-selected', String(active));
+          });
+        });
+      });
+    });
+
+    document.querySelectorAll('.header-variant').forEach((variant) => {
+      variant.setAttribute('role', 'button');
+      variant.setAttribute('tabindex', '0');
+      const select = () => {
+        document.querySelectorAll('.header-variant').forEach((item) => item.classList.toggle('is-current', item === variant));
+      };
+      variant.addEventListener('click', select);
+      variant.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
+    });
+
+    document.querySelectorAll('.mini-resource-card[role="button"]').forEach((card) => {
+      const select = () => card.classList.toggle('is-selected');
+      card.addEventListener('click', select);
+      card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(); } });
+    });
+  </script>
+</body>
+</html>

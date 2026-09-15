@@ -54,6 +54,12 @@ python3 -m http.server 8000
 | Header 導覽 | `.site-header > .container > .logo + .nav-toggle[data-nav-toggle aria-controls] + nav.site-nav-wrap > ul.site-nav`；≤860px 自動收成漢堡選單（點擊開合、Esc／點外面關閉） |
 | Footer | `.site-footer .footer-cols > .footer-col(h3+ul)`；桌機三欄，≤640px 每群變可展開列，版權置中 |
 | 表格 | `<div class="table-wrap"><table class="table table--stack">`；每個 `<td>` 加 `data-label="欄名"`；次要欄加 `data-priority="optional"`（≤860px 隱藏）；≤640px 每筆資料變成直式小表：每個 `<td>` 一列，左邊是 `data-label` 欄名（品牌色底白字、固定 92px）、右邊是內容；`data-mobile="title"` 的格加粗 |
+| Hero 區塊 | `section.section.section--subtle.hero` > `.hero-art`（四個 `<i>` 裝飾形狀）＋ `.container` > `.eyebrow`、`h1`（關鍵詞包 `<mark class="hl">`）、`p.lead`、`.row`（主要／次要按鈕） |
+| 內文區塊 | `section.section[.section--subtle]` > `.container.stack`；標題 `h2.accent`（對比色短底線）；橫排用 `.row`、直排用 `.stack` |
+| 手風琴 | `.accordion[data-single] > .accordion__item > h3 > button.accordion__trigger[aria-expanded aria-controls] + .accordion__panel`；淺底當分隔，每項白色塊 |
+| 空狀態 | `.empty-state`（h3 說明＋一顆次要按鈕），篩選無結果時顯示 |
+| 回到頂端 | `button.to-top[data-to-top]`，捲動超過一屏才出現 |
+| 手機重排 | 靠 class 自動：≤860px `.site-nav` 收成漢堡；≤640px `.table--stack` 直式小表、`.footer-cols` 單欄、`.card-grid` 單欄；不要另外寫縮小或橫向捲軸 |
 | 一般卡片 | `.card-grid > .card`（見示範頁「教學階段」）；封面 `.card__media` 自動輪替裝飾色形狀 |
 | 對比色 | 只用在裝飾形狀：Hero `.hero-art`、`.eyebrow` 短槓、`h2.accent` 底線、`mark.hl` 標題底線；不得當文字色或承載文字的底色 |
 

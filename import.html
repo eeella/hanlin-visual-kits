@@ -114,7 +114,7 @@
 </head>
 <body>
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -3794,14 +3794,21 @@ hlStampAssets();
         /* ── 表格 RWD：欄位多時，手機不是出現橫向捲軸、也不是等比縮小，而是每列重新排列成卡片（使用者指定 2026-09-15）
            作法：先把表頭文字寫進每格的 data-hl-label，再依角色排：第一欄＝標題（粗體、左上）、
            含 badge／狀態語意的格＝右上、純數字的格＝主要數字放大、其餘兩欄一列、欄名小字在前。
-           沒有 thead 的表格（版面用 table）不動。 */
+           沒有 th 的表格（版面用 table）不動。 */
         try{
           Array.prototype.forEach.call(doc.querySelectorAll('table'),function(tb){
-            var ths=tb.querySelectorAll('thead th,thead td');
+            var ths=tb.querySelectorAll('thead th,thead td'),hdrRow=null;
+            /* 沒有 <thead> 但第一列全是 <th> 的表格（常見手寫法）也要重排：第一列當表頭，手機時藏起來 */
+            if(!ths.length){var r0=tb.querySelector('tr');if(r0&&r0.querySelector('th')&&!r0.querySelector('td')){ths=r0.querySelectorAll('th');hdrRow=r0}}
+            /* 連 <th> 都沒有（表頭也是 <td>）：第一列每格都是短文字、不是數字，且後面還有資料列，就當它是表頭 */
+            if(!ths.length){var r1=tb.querySelector('tr'),rows=tb.querySelectorAll('tr');
+              if(r1&&rows.length>=2&&r1.children.length>=3&&Array.prototype.every.call(r1.children,function(c){var t=(c.textContent||'').trim();return t.length>=1&&t.length<=12&&!/^[\d.,%$￥\-]+$/.test(t)&&!c.querySelector('img,input,button,a')})){ths=r1.children;hdrRow=r1}}
             if(!ths.length||ths.length<3)return;
             var labels=Array.prototype.map.call(ths,function(th){return (th.textContent||'').trim()});
             tb.setAttribute('data-hl-rwd','card');
-            Array.prototype.forEach.call(tb.querySelectorAll('tbody tr'),function(tr){
+            if(hdrRow)hdrRow.setAttribute('data-hl-hdr','1');
+            Array.prototype.forEach.call(tb.querySelectorAll('tr'),function(tr){
+              if(tr===hdrRow||tr.closest('thead'))return;
               var cells=tr.children;
               Array.prototype.forEach.call(cells,function(td,i){
                 td.setAttribute('data-hl-label',labels[i]||'');
@@ -3984,7 +3991,7 @@ hlStampAssets();
     try{
       inject+='@media(max-width:640px){'
         +'table[data-hl-rwd=card],table[data-hl-rwd=card] tbody{display:block !important;width:100% !important}'
-        +'table[data-hl-rwd=card] thead{display:none !important}'
+        +'table[data-hl-rwd=card] thead,table[data-hl-rwd=card] tr[data-hl-hdr]{display:none !important}'
         +'table[data-hl-rwd=card] tbody{background:transparent !important;padding:0 !important}'
         +'table[data-hl-rwd=card] tbody tr{display:block !important;margin:0 0 12px !important;padding:0 !important;border:0 !important;border-radius:8px !important;overflow:hidden;background:'+(to.bg&&sgLum(normHex(to.bg))>.85?to.bg:'#F3F5F9')+' !important;box-shadow:0 1px 3px rgba(20,45,70,.08) !important}'
         +'table[data-hl-rwd=card] tbody tr:last-child{margin-bottom:0 !important}'
@@ -4535,7 +4542,7 @@ hlStampAssets();
       var wrap=function(out){return mediaPrefix?(mediaPrefix+out):out};
       if(/(?:^|[\s,>+~])(?:img|svg|picture|i|use)\b|\[alt=|material-symbols|material-icons/i.test(sel))return wrap(sel+'{'+body+'}');
       /* 表格手機重排（[data-hl-rwd]）是使用者指定的結構規則，display／grid／padding 就是它的本體，不濾 */
-      if(/\[data-hl-(?:rwd|cell|nav|navbtn|navbar|hasnav|ftm|herocta|h2acc|heroshape)[\]=]|#hl-navtoggle/.test(sel))return wrap(sel+'{'+body+'}');
+      if(/\[data-hl-(?:rwd|cell|hdr|nav|navbtn|navbar|hasnav|ftm|herocta|h2acc|heroshape)[\]=]|#hl-navtoggle/.test(sel))return wrap(sel+'{'+body+'}');
       var kept=body.split(';').filter(function(d){
         var k=(d.split(':')[0]||'').trim().toLowerCase();
         return k&&!LAYOUT_PROPS.test(k);

@@ -299,6 +299,7 @@
 
   window.HL_buildSkillPack=buildSkillPack;
   window.HL_buildTokensCss=buildTokensCss;
+  window.HL_mergeStarterTokens=mergeStarterTokens;   /* demo.html 也用同一份合併邏輯畫範本頁 */
   window.HL_dlBlob=dlBlob;
   window.HL_downloadKitZip=downloadKitZip;
 })();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>翰林產品版型平台</title>
+<title>翰林產品版型平台｜視覺風格</title>
 <link rel="icon" type="image/svg+xml" href="logo-mark-only.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,9 +25,9 @@
 
 /* 分類篩選 */
 /* 兩排篩選：風格說的是長相，網站類型說的是拿來做什麼，可以交叉篩 */
-.filter-rows{display:flex;flex-direction:column;gap:12px;margin-bottom:var(--block-gap)}
-.filter-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.filter-lab{flex:none;width:62px;font-size:12.5px;color:var(--gray-2);letter-spacing:.08em}
+.filter-rows{display:grid;grid-template-columns:max-content auto;gap:12px 14px;margin:0 0 var(--block-gap)}   /* 齊左、標籤欄對齊 */
+.filter-row{display:contents}
+.filter-lab{align-self:center;text-align:left;font-size:15px;font-weight:700;color:#16202B;letter-spacing:.06em}
 .filters{display:flex;flex-wrap:wrap;gap:8px}
 .filters .f{
   font-family:inherit;font-size:13px;letter-spacing:.05em;cursor:pointer;
@@ -83,7 +83,7 @@
 .kit-ui .in{flex:1;min-width:0;background:#fff;border:1px solid #D9E0E8;border-radius:8px;
   padding:8px 12px;font-size:12.5px;color:#9AA3AE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* 底部一顆整寬按鈕：採用中＝實心「目前使用」，其餘＝淺底「套用此風格」，進套版詳細頁 */
+/* 底部一顆整寬按鈕：採用中＝實心「使用中」，其餘＝淺底「切換此風格」，進套版詳細頁 */
 .kit-apply{display:block;text-align:center;font-size:16px;font-weight:700;border-radius:10px;padding:14px 12px;
   text-decoration:none;transition:filter .15s;letter-spacing:.04em;background:#E9EEF6;color:#1E5BC6}
 .kit-apply:hover{filter:brightness(.95)}
@@ -209,12 +209,12 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
 </head>
 <body class="home">
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">首頁</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">palette</span>
-    <h1>首頁<span class="sub">Hanlin Visual Kits</span></h1>
+    <h1>視覺風格<span class="sub">Hanlin Visual Kits</span></h1>
     <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
       <button class="btn soft" id="goImport" style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>匯入我的頁面</button>
     </span>
@@ -438,7 +438,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
         '<span class="tg" style="background:'+esc(light)+';color:'+tagTx+'">標題</span>'+
         '<span class="in">輸入內容…</span>'+
       '</div></div>'+
-      '<a class="kit-apply" href="'+url+'" data-act="detail" data-kit="'+esc(k.id)+'">'+(on?'目前使用':'套用此風格')+'</a>'+
+      '<a class="kit-apply" href="'+url+'" data-act="detail" data-kit="'+esc(k.id)+'">'+(on?'使用中':'切換此風格')+'</a>'+
     '</div>';
   }
 

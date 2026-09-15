@@ -584,7 +584,7 @@ h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 4
 
 /* ══ 表格 Table（含 RWD）══
    規範 §27.10：一律放在可橫向捲動容器內；第一欄保持可見；optional 欄在手機隱藏；長字串 overflow-wrap:anywhere。
-   860px 以下：.table--stack 把每列轉成卡片，儲存格前面印 data-label（欄名）。 */
+   640px 以下：.table--stack 把每列轉成直式小表，欄名來自 data-label；860px 以下先隱藏 optional 欄。 */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-xs); background: var(--color-surface-muted); box-shadow: var(--shadow-2); }
 .table { width: 100%; border-collapse: collapse; font-size: var(--font-size-lg); color: var(--color-text-secondary); }
 .table th, .table td { padding: var(--space-6) var(--space-9); text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
@@ -617,8 +617,6 @@ h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 4
   .table--stack td[data-mobile="title"] { font-weight: var(--font-weight-bold); }
   .table--stack td.num { text-align: left; }
   .table--stack td[data-priority="optional"] { display: grid; }   /* 直式小表空間夠，次要欄也顯示 */
-}
-}
 }
 
 /* ══ Header RWD：≤860px 導覽收成漢堡選單（抽屜由上往下展開）══

@@ -90,7 +90,7 @@
 </head>
 <body class="tpl">
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -101,8 +101,7 @@
 
 <main class="wrap">
   <section class="sec">
-    <div class="sec-head"><h2>把規範交給 AI</h2><span class="note">AI PROMPT</span></div>
-    <p class="sec-desc">三件事：準備檔案、交給 AI、確認它讀到了再讓它做。指令已經寫好「怎麼做、怎麼轉寫」，你只要複製、填一行需求。</p>
+    <div class="sec-head"><h2>AI 操作步驟</h2><span class="note">AI PROMPT</span></div>
 
     <div class="kit-now" id="kitNow">
       <span>目前依這一組產生：</span><b id="kitName">—</b>
@@ -112,16 +111,16 @@
 
     <!-- 流程一眼看完 -->
     <div class="ai-tabs" role="tablist" aria-label="AI 指令頁籤">
-      <button class="ai-tab on" role="tab" type="button" aria-selected="true" data-tab="how">怎麼做</button>
-      <button class="ai-tab" role="tab" type="button" aria-selected="false" data-tab="tools">各工具怎麼上傳</button>
+      <button class="ai-tab on" role="tab" type="button" aria-selected="true" data-tab="how">操作步驟</button>
       <button class="ai-tab" role="tab" type="button" aria-selected="false" data-tab="prompt">指令內容</button>
+      <button class="ai-tab" role="tab" type="button" aria-selected="false" data-tab="tools">AI 工具</button>
     </div>
     <div class="ai-panel" id="tab-how" role="tabpanel">
 
     <div class="way-grid">
       <div class="way">
         <div class="way-hd"><h3>步驟 1｜準備檔案</h3></div>
-        <p>在<b>套版詳細</b>按「下載範例檔」，解壓縮後拿出這四個：</p>
+        <p>在<b>套版詳細</b>按<b>下載範例檔</b>，解壓縮後拿出這四個：</p>
         <div class="files">
           <span><code>SKILL.md</code>規範</span>
           <span><code>tokens.css</code>顏色／圓角</span>
@@ -134,21 +133,21 @@
       <div class="way">
         <div class="way-hd"><h3>步驟 2｜交給 AI</h3></div>
         <ul class="pl-list">
-          <li><b>開新對話</b>（舊對話的前提會蓋掉規範）。</li>
-          <li>把四個檔<b>一次拖進輸入框</b>；要轉寫既有頁面，把那個 HTML 也一起拖進去。</li>
-          <li>按「複製指令」貼進<b>同一則訊息</b>。</li>
-          <li>指令最後「這次的需求」A／B／C 挑一種填好、另外兩行刪掉，送出。</li>
-          <li>各工具怎麼上傳，看「各工具怎麼上傳」頁籤。</li>
+          <li><b>開新對話</b>。</li>
+          <li>把四個檔<b>一次拖進輸入框</b>；要轉寫既有頁面，可以把那個 HTML 一起拖進去，不拖也行。</li>
+          <li>按<b>複製指令</b>貼進<b>同一則訊息</b>。</li>
+          <li>指令最後<b>這次的需求</b>A／B／C 挑一種填好、另外兩行刪掉，送出。</li>
+          <li>各工具怎麼上傳，看<b>AI 工具</b>頁籤。</li>
         </ul>
       </div>
 
       <div class="way">
-        <div class="way-hd"><h3>步驟 3｜確認它讀到了，再讓它做</h3></div>
+        <div class="way-hd"><h3>步驟 3｜複製命令貼上</h3></div>
         <ul class="pl-list">
           <li>AI 第一則會回四行：<b>風格名稱、主色、對比色、圓角</b>。</li>
-          <li><span class="ok">對得上</span>上面那組 → 回「確認，開始」。</li>
+          <li><span class="ok">對得上</span>上面那組 → 回<b>確認，開始</b>。</li>
           <li><span class="ng">對不上／說讀不到</span> → 檔案沒進去，回步驟 2 重傳。</li>
-          <li>做完看三件事：顏色是這一組的？按鈕圓角對？手機版有重排（漢堡選單、表格直式小表）？不對就回「照 SKILL.md 修正」。</li>
+          <li>做完看三件事：顏色是這一組的？按鈕圓角對？手機版有重排（漢堡選單、表格直式小表）？不對就回<b>照 SKILL.md 修正</b>。</li>
         </ul>
       </div>
     </div>
@@ -159,7 +158,7 @@
       <div class="way">
         <div class="way-hd"><h3>Claude（claude.ai）</h3></div>
         <ul class="pl-list">
-          <li>對話輸入框左下角「＋」→ 上傳檔案，一次可選多個。</li>
+          <li>對話輸入框左下角<b>＋</b>→ 上傳檔案，一次可選多個。</li>
           <li>要長期用：建一個 <b>Project</b>，把四個檔放進 Project knowledge，之後每次對話都自動讀到。</li>
         </ul>
       </div>
@@ -173,7 +172,7 @@
       <div class="way">
         <div class="way-hd"><h3>Gemini</h3></div>
         <ul class="pl-list">
-          <li>輸入框「＋」→ 上傳檔案。</li>
+          <li>輸入框<b>＋</b>→ 上傳檔案。</li>
           <li>Gemini 對 .md 有時只當文字；若它說讀不到，把 SKILL.md 的內容整段貼進訊息裡。</li>
         </ul>
       </div>
@@ -181,7 +180,7 @@
         <div class="way-hd"><h3>Claude Code／Cursor／Copilot（寫程式）</h3></div>
         <ul class="pl-list">
           <li>把解壓後的整個資料夾放進專案。</li>
-          <li>指令改成：「先讀 <code>./SKILL.md</code>、<code>./tokens.css</code>、<code>./hl-style.css</code>，以 <code>./index.html</code> 為底稿……」。</li>
+          <li>指令改成：<b>先讀 <code>./SKILL.md</code>、<code>./tokens.css</code>、<code>./hl-style.css</code>，以 <code>./index.html</code> 為底稿……</b>。</li>
           <li>AI 會直接沿用 class 與變數，不會另造一套。</li>
         </ul>
       </div>
@@ -243,9 +242,9 @@
   }
 
   function buildPrompt(){
-    var n=kit?(kit.n||''):'';
+    /* 風格名稱寫死不帶入：以附件 SKILL.md 為準，指令跟封包永遠不會對不上 */
     return [
-      '我要用翰林的品牌規範'+(n?('（風格：'+n+'）'):'')+'來做網頁，規範與樣式檔都在附件裡，請先讀完再照步驟進行。',
+      '我要用翰林的品牌規範來做網頁，風格以附件 SKILL.md 為準；規範與樣式檔都在附件裡，請先讀完再照步驟進行。',
       '',
       '━━ 步驟 1｜打開附件，先確認 ━━',
       '・附件有：SKILL.md（規範）、tokens.css（顏色／圓角變數）、hl-style.css（元件樣式）、app.js（互動）；若有 index.html，它是範例頁，class 怎麼用照它。',
@@ -276,7 +275,7 @@
   var box=document.getElementById('promptText');
   var PROMPT=buildPrompt();
   /* 畫面上排版過（段落標題粗體、子項縮排、長行懸掛縮排），複製出去的是純文字 PROMPT */
-  /* 畫面呈現跟「怎麼做」一樣：每個段落一張卡（編號＋標題＋條目），複製出去仍是純文字 PROMPT */
+  /* 畫面呈現跟「操作步驟」一樣：每個段落一張卡（編號＋標題＋條目），複製出去仍是純文字 PROMPT */
   var secs=[],cur=null,intro=[];
   PROMPT.split('\n').forEach(function(l){
     if(/^━━/.test(l)){cur={title:l.replace(/━━/g,'').trim(),lines:[]};secs.push(cur);return}
@@ -300,7 +299,7 @@
   box.innerHTML=out.join('');
 
 
-  /* 頁籤：怎麼做／各工具怎麼上傳／指令內容 */
+  /* 頁籤：操作步驟／指令內容／AI 工具 */
   (function(){
     var tabs=[].slice.call(document.querySelectorAll('.ai-tab'));
     function show(id){

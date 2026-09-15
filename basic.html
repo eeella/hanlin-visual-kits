@@ -28,17 +28,8 @@
    跟點進去看到的完全一致，不必另外維護截圖。做法沿用套版列表的縮圖。 */
 .live{border:1px solid var(--gray-3);border-radius:var(--r-lg);background:var(--card);
   box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:34px}
-.live-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  padding:12px 16px;border-bottom:1px solid var(--gray-3);background:#FBFCFE}
-.live-tabs{display:inline-flex;gap:6px}
-.live-tab{border:0;background:transparent;font-family:inherit;font-size:13px;
-  color:var(--gray-2);padding:7px 15px;border-radius:999px;cursor:pointer;
-  letter-spacing:.04em;transition:.18s}
-.live-tab:hover{background:var(--blue-50);color:var(--brand)}
-.live-tab[aria-selected="true"]{background:var(--brand);color:#fff}
-.live-open{margin-left:auto}
 .live-shot{position:relative;height:520px;overflow:hidden;background:#fff}
-.live-shot iframe{width:1280px;border:0;transform-origin:0 0;display:block;pointer-events:none}
+.live-shot iframe{width:1280px;border:0;transform-origin:0 0;display:block}
 .live-hint{padding:9px 16px;border-top:1px solid var(--gray-3);background:#FBFCFE;
   font-size:11.5px;color:var(--gray-2);letter-spacing:.04em}
 @media (max-width:640px){ .live-shot{height:380px} }
@@ -117,7 +108,7 @@
 </head>
 <body>
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="basic.html" class="on">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html" class="on">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -144,18 +135,10 @@
     </div>
 
     <div class="live">
-      <div class="live-bar">
-        <div class="live-tabs" role="tablist" aria-label="預覽哪一頁">
-          <button class="live-tab" role="tab" type="button" aria-selected="true"
-                  data-src="hanlin-web-starter/index.html">示範頁</button>
-        </div>
-        <a class="btn soft live-open" id="liveOpen" href="hanlin-web-starter/index.html"
-           target="_blank" rel="noopener" style="font-size:12.5px;padding:7px 15px;border-radius:999px"><span class="material-symbols-rounded" style="font-size:16px">open_in_new</span>開新分頁</a>
-      </div>
       <div class="live-shot">
         <iframe id="liveFrame" src="hanlin-web-starter/index.html" title="翰林 Web 基本範例 預覽" loading="lazy"></iframe>
       </div>
-      <p class="live-hint">這是實機畫面，不是截圖。預覽框內不接受點擊，要操作請開新分頁。</p>
+      <p class="live-hint">這是實機畫面，不是截圖，可以直接在框內點按操作。</p>
     </div>
 
    </div>
@@ -376,18 +359,6 @@
   }
   fit();
   window.addEventListener('resize',fit);
-
-  /* 分頁切換：換 src 之後高度要重算 */
-  var tabs=[].slice.call(document.querySelectorAll('.live-tab'));
-  var open=document.getElementById('liveOpen');
-  tabs.forEach(function(t){
-    t.addEventListener('click',function(){
-      tabs.forEach(function(x){x.setAttribute('aria-selected',String(x===t))});
-      frame.src=t.dataset.src;
-      open.href=t.dataset.src;
-      fit();
-    });
-  });
 
   /* 原本這裡是「點色卡複製色碼」：色票改成不可點（使用者指定），
      連帶的提示條與剪貼簿邏輯一併移除。 */

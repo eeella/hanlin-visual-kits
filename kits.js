@@ -1,5 +1,5 @@
 /* 自動產生，請勿手改。來源：template.html 的 var PALETTES／產生器：build-kits.py
-   指紋 a3392013147f　共 15 組
+   指紋 edb539f4d2ae　共 15 組
 
    為什麼要有這個檔：index.html（套版列表）與 template.html（套版詳細）也要用同一份風格資料。
    若各自存一份，就會重演「兩邊各存一份、改了不同步」的問題。
@@ -37,7 +37,7 @@ window.HL_KITS=[
      bg:'#F4F7FB',ln:'#EEF2F7',mu:'#62778F',ink:'#1E3D60',  /* page.bg.subtle / disabled.bg / text.primary / text.secondary */
      tk:['主要藍','深藍（hover 態）','淺藍灰','裝飾黃'],
      tkEn:['surface.strong','action.bg.hover','text.tertiary','decor.sun'],
-     rd:['100px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* 文件寫明：radius.md 100px 給按鈕／chip／輸入框，xs 12px 卡片，sm 20px 大區塊 */
+     rd:['14px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* radius.md 14px 給按鈕／輸入框／下拉（2026-09-15 由 100px 修正），xs 12px 卡片，sm 20px 大區塊 */
      /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
      btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
@@ -445,4 +445,4 @@ window.HL_KITS=[
      d:'米白底配深褐文字，磚橘撐結構，金黃只做主要行動。金黃底一律配近黑字，文件實測白字只有 1.57:1。'},
 
 ];
-window.HL_KITS_VERSION='a3392013147f';
+window.HL_KITS_VERSION='edb539f4d2ae';

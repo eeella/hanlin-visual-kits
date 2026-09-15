@@ -115,7 +115,11 @@
       (_SH[0]?('- 陰影：'+_SH[0]+(_SH[1]?(' / 大陰影 '+_SH[1]):'')+_fromPal):'- 陰影：shadow.1 柔和陰影，不使用邊線分隔'),
       (_BD?('- 邊線：'+_BD+_fromPal+'——這一組色版的元件帶邊線，屬於它的形狀特徵'):'- 邊線：元件一律無邊線，層次用色塊與陰影表達'),
       '- 間距刻度：4 的倍數(4 / 8 / 12 / 16 / 24 / 32)',
-      '- RWD 斷點(Tailwind):sm 640 / md 768 / lg 1024 / xl 1280；跨斷點時表格轉卡片、多欄轉單欄',
+      '- RWD 斷點(Tailwind):sm 640 / md 768 / lg 1024 / xl 1280；跨斷點時多欄轉單欄',
+      '- Header RWD：≤860px 導覽收成漢堡選單（Logo 左、漢堡右，展開後導覽整寬清單、每項 ≥44px、Esc／點外面關閉）；主要 CTA 保留在 header',
+      '- Footer RWD：≤640px 多欄收成單欄置中，連結群可展開、版權置中，每個連結 ≥44px',
+      '- 表格 RWD：欄位多時，手機**不是**出現橫向捲軸、也不是等比縮小，而是每筆資料變成一張直式小表——每個欄位一列，左邊是欄名格（品牌深色底白字、固定寬）、右邊是內容，一筆一卡、卡與卡之間留空；欄名必須清楚呈現，不可省略',
+      '- 層次一律用色塊表現，不把顏色用在邊線上，不可「色塊＋邊線」並用：次要按鈕＝柔色底不外框、輸入框＝淺底填色不外框、Tabs 當前態＝色塊、卡片＝白底＋陰影、表格手機卡＝色塊分隔；焦點態的 outline 為可及性需求可保留；色版本身以粗邊為識別者（bd token）除外',
       '',
       '## 套用前的檔案分析 Source Analysis',
       '套用前先分析來源檔案，再決定取得元件與改寫的方式：',
@@ -196,6 +200,59 @@
     return L.join('\n')+'\n';
   }
 
+
+  /* ── 基本範例 tokens.css × 風格色版 ＝ 合併後的 tokens.css ──
+     下載範例檔應該是「基本範例（index.html／hl-style.css／app.js）＋這一組的顏色」，
+     否則拿到 SKILL.md 也不知道怎麼套。作法：拿 starter 的 tokens.css 原文，
+     把 STYLEGUIDE 那幾個顏色／圓角／陰影變數的值換成這一組的，其餘（字級、間距、版面）不動。
+     後面再附上舊的 --brand／--warm 別名，既有引用不會斷。 */
+  function _lum(h){h=String(h||'').replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];if(!/^[0-9a-f]{6}$/i.test(h))return 1;
+    var c=[0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+  function _cr(a,b){var x=_lum(a)+.05,y=_lum(b)+.05;return x>y?x/y:y/x}
+  function _dk(h,f){h=h.replace('#','');return '#'+[0,2,4].map(function(i){return ('0'+Math.round(parseInt(h.substr(i,2),16)*f).toString(16)).slice(-2)}).join('')}
+  function _onWhite(h){var p=h,n=0;while(_cr(p,'#fff')<4.5&&n++<10)p=_dk(p,.88);return p}
+  function mergeStarterTokens(css,t){
+    if(!css||!t||!t.p)return css;
+    var RD=t.rd||[],SH=t.sh||[],EX=t.ex||[];
+    var dark=_lum(t.bg||'#fff')<.4;
+    var p=_onWhite(t.p), s=t.s||_dk(p,.85), a=_dk(s,.85);
+    var page=dark?((t.i&&_lum(t.i)>.6)?t.i:'#F4F7FB'):(t.bg||'#F4F7FB');
+    var heading=dark?'#1E3D60':(t.ink||'#1E3D60'), body=dark?'#62778F':(t.mu||'#62778F');
+    var line=dark?'#E1E8F0':(t.ln||'#E1E8F0');
+    /* 暖裝飾色：從裝飾色裡挑第一個有彩度的（灰、黑、白不算），沒有就用亮色 */
+    function _chroma(h){h=String(h||'').replace('#','');if(h.length!==6)return 0;var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return Math.max(r,g,b)-Math.min(r,g,b)}
+    var warm=null;EX.forEach(function(x){if(!warm&&x&&x[1]&&_chroma(x[1])>40)warm=x[1]});
+    warm=warm||((t.i&&_chroma(t.i)>40&&String(t.i).toUpperCase()!==String(t.bg||'').toUpperCase())?t.i:(t.s||t.c));   /* 亮色若就是頁面底（奶油底那種）畫不出形狀，退回輔色 */
+    var map={
+      '--color-surface-strong':p,'--color-action-bg':p,'--color-action-bg-hover':s,'--color-action-bg-active':a,
+      '--color-page-bg-subtle':page,'--color-decor-sun':t.c,'--color-decor-warm':warm,
+      '--color-text-secondary':heading,'--color-text-primary':_onWhite(body),'--color-text-tertiary':t.i||'#BECAD7',
+      '--color-border':line,'--color-border-strong':_onWhite(body),'--color-brand-ink':heading,
+      '--radius-md':RD[0]||'14px','--radius-xs':RD[1]||'12px','--radius-sm':RD[2]||'20px'
+    };
+    if(SH[0])map['--shadow-1']=SH[0];
+    if(SH[1])map['--shadow-2']=SH[1];
+    var out=css.split('\n').map(function(line){
+      var m=/^(\s*)(--[a-z0-9-]+)\s*:\s*([^;]*);(.*)$/i.exec(line);
+      if(!m||!map.hasOwnProperty(m[2]))return line;
+      return m[1]+m[2]+': '+map[m[2]]+';  /* 色版「'+(t.n||'')+'」 */';
+    }).join('\n');
+    return '/* 翰林視覺套版｜基本範例 tokens × 色版「'+(t.n||'')+'」'+(t.src?('　來源 '+t.src):'')+'　由套版詳細頁合併產出 */\n'
+      +out.replace(/^\/\*[\s\S]*?\*\/\n?/,'')+'\n'+buildTokensCss(t);
+  }
+
+  /* ── 把基本規範併進色版 SKILL.md ──
+     只取基本規範裡「色版沒有的」段落（使用說明、最高原則、無障礙、文案語氣、反模式、規範缺口、檢查清單、完整 UI 開發規範）；
+     色彩／Logo／字體／形狀／元件狀態兩邊都有，以色版那份為準，不重複放。 */
+  function mergeBasicSkill(kitMd,basicMd){
+    if(!basicMd)return kitMd;
+    var keep=['使用說明','最高原則','無障礙','文案語氣','反模式','已知的規範缺口','交付檢查清單','完整 UI 開發規範'];
+    var parts=basicMd.split(/\n(?=## )/);
+    var picked=parts.filter(function(p){var h=(p.match(/^## ([^\n]*)/)||[])[1]||'';return keep.some(function(k){return h.indexOf(k)===0})});
+    if(!picked.length)return kitMd;
+    return kitMd.replace(/\s*$/,'')+'\n\n---\n\n# 基本規範（通用，不隨色版變；來源 hanlin-web-starter/skill.md）\n\n'
+      +picked.map(function(p){return p.replace(/^## /,'## ')}).join('\n\n').replace(/^(#{2,4}) /gm,function(m,h){return h+'# '})+'\n';
+  }
   function dlBlob(blob,name){
     var a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
@@ -215,24 +272,23 @@
       btn.innerHTML='<span class="material-symbols-rounded" style="font-size:17px">hourglass_top</span>打包中…';}
     var pk=buildSkillPack(st);
     var zip=new JSZip();
-    zip.file('SKILL.md',pk.md);
     zip.file('theme.json',JSON.stringify(pk.theme,null,2));
-    zip.file('tokens.css',buildTokensCss(pk.theme.theme||{}));
-    /* 元件總覽頁（設計系統 component-example.html）一併打包：
-       tokens.css 與這一組 kit 都內嵌進去，解壓後單檔就能開、就是套好這一組色的樣子。
-       抓不到檔案（例如離線開本機檔）就只打包規範，不擋下載。 */
-    var kitNow=null;try{var _t=pk.theme.theme||{};kitNow=(window.HL_KITS||[]).filter(function(k){return k.n===_t.n})[0]||null}catch(e){}
-    var extra=Promise.all([fetch('hanlin-web-starter/components.html').then(function(r){return r.ok?r.text():''}),
-                           fetch('hanlin-web-starter/tokens.css').then(function(r){return r.ok?r.text():''})])
-      .then(function(rs){
-        var html=rs[0],css=rs[1];
-        if(!html)return;
-        html=html.replace('<link rel="stylesheet" href="./tokens.css" />','<style>\n'+css+'\n</style>');
-        html=html.replace('<script src="../kits.js"></script>',
-          '<script>window.HL_KITS='+JSON.stringify(kitNow?[kitNow]:[])+';window.HL_KIT_ID='+JSON.stringify(kitNow?kitNow.id:'')+';</script>');
-        zip.file('components.html',html);
-      }).catch(function(){});
-    extra.then(function(){return zip.generateAsync({type:'blob'})}).then(function(blob){
+    /* 基本範例檔（index.html／hl-style.css／app.js／favicon.svg／skill-basic.md）一起打包，
+       tokens.css 用「starter 原文 × 這一組色值」的合併版；抓不到 starter（離線開本機檔）就退回只給色版 tokens。 */
+    var theme=pk.theme.theme||{};
+    var files=['index.html','hl-style.css','app.js','favicon.svg','skill.md','tokens.css'];
+    Promise.all(files.map(function(f){return fetch('hanlin-web-starter/'+f).then(function(r){return r.ok?r.text():null}).catch(function(){return null})}))
+    .then(function(rs){
+      var starterTokens=rs[5];
+      zip.file('tokens.css',starterTokens?mergeStarterTokens(starterTokens,theme):buildTokensCss(theme));
+      if(rs[0])zip.file('index.html',rs[0]);
+      if(rs[1])zip.file('hl-style.css',rs[1]);
+      if(rs[2])zip.file('app.js',rs[2]);
+      if(rs[3])zip.file('favicon.svg',rs[3]);
+      /* SKILL.md ＝ 前半色版專屬（顏色、版型採用、Restyle）＋後半基本規範通用段落，一份就好 */
+      zip.file('SKILL.md',mergeBasicSkill(pk.md,rs[4]));
+      return zip.generateAsync({type:'blob'});
+    }).then(function(blob){
       dlBlob(blob,'hanlin-'+(pk.slug||'kit')+'-kit.zip');
     }).catch(function(){
       alert('打包時發生問題，請重新整理後再試一次。');

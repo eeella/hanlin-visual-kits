@@ -81,7 +81,8 @@
   /* ── 2.4 圓角 ─────────────────────────────────────────── */
   --radius-xs:   12px;    /* 卡片、選單、面板 */
   --radius-sm:   20px;    /* 大型區塊 */
-  --radius-md:   100px;   /* 按鈕、chip、輸入框 */
+  --radius-md:   14px;    /* 按鈕、輸入框、Select、Alert：2026-09-15 依規範修正為 14px（原 100px） */
+  --radius-pill-full: 100px;   /* 原 STYLEGUIDE radius.md 全圓；chip／badge／switch 仍用它 */
   --radius-lg:   1000px;  /* 圓形裝飾 */
 
   /* ── 2.4 陰影 ─────────────────────────────────────────── */
@@ -141,5 +142,5 @@
   --status-danger:        var(--color-danger);
   --decor-contrast:       var(--color-decor-sun);
   --decor-warm:           var(--color-decor-warm);
-  --radius-pill:          var(--radius-md);
+  --radius-pill:          var(--radius-pill-full);
 }

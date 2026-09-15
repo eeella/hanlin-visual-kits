@@ -174,3 +174,64 @@
     });
   }
 })();
+
+/* ── Tabs（.tabs[data-tabs] > .tab[aria-controls]）：點擊與左右方向鍵切換，面板用 hidden 收合 ── */
+document.querySelectorAll('[data-tabs]').forEach(function (tabs) {
+  var items = Array.prototype.slice.call(tabs.querySelectorAll('.tab'));
+  function pick(tab) {
+    items.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      var panel = t.getAttribute('aria-controls') && document.getElementById(t.getAttribute('aria-controls'));
+      if (panel) panel.hidden = !on;
+    });
+    tab.focus();
+  }
+  items.forEach(function (t, i) {
+    t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    t.addEventListener('click', function () { pick(t); });
+    t.addEventListener('keydown', function (e) {
+      var n = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1 : null;
+      if (n === null) return;
+      e.preventDefault();
+      pick(items[(n + items.length) % items.length]);
+    });
+  });
+});
+
+/* ── Switch（.switch[role=switch][data-switch]）：點擊或 Space／Enter 切換 aria-checked ── */
+document.querySelectorAll('[data-switch]').forEach(function (sw) {
+  function toggle() { sw.setAttribute('aria-checked', String(sw.getAttribute('aria-checked') !== 'true')); }
+  sw.addEventListener('click', function (e) { e.preventDefault(); toggle(); });
+  sw.addEventListener('keydown', function (e) { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); } });
+});
+
+/* ── 漢堡選單（.nav-toggle[data-nav-toggle] ↔ nav#id）：≤860px 才作用；點擊開合、Esc 關、點外面關、視窗變寬自動復原 ── */
+document.querySelectorAll('[data-nav-toggle]').forEach(function (btn) {
+  var nav = document.getElementById(btn.getAttribute('aria-controls'));
+  if (!nav) return;
+  var mq = window.matchMedia('(width <= 860px)');
+  function set(open) {
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? '關閉選單' : '開啟選單');
+    if (mq.matches) nav.hidden = !open; else nav.hidden = false;
+    if (open) { var first = nav.querySelector('a,button'); if (first) first.focus(); }
+  }
+  function sync() { if (mq.matches) nav.hidden = btn.getAttribute('aria-expanded') !== 'true'; else nav.hidden = false; }
+  btn.addEventListener('click', function () { set(btn.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); } });
+  document.addEventListener('click', function (e) { if (mq.matches && btn.getAttribute('aria-expanded') === 'true' && !nav.contains(e.target) && !btn.contains(e.target)) set(false); });
+  nav.addEventListener('click', function (e) { if (e.target.closest('a') && mq.matches) set(false); });
+  mq.addEventListener('change', sync);
+  sync();
+});
+
+/* ── 手機頁尾：.footer-col 在 ≤640px 變成可展開群組（用 open 屬性，CSS 依此顯示） ── */
+document.querySelectorAll('.footer-col > h3').forEach(function (h) {
+  var col = h.parentElement;
+  h.setAttribute('tabindex', '0');
+  function toggle() { if (!window.matchMedia('(width <= 640px)').matches) return; if (col.hasAttribute('open')) col.removeAttribute('open'); else col.setAttribute('open', ''); }
+  h.addEventListener('click', toggle);
+  h.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+});

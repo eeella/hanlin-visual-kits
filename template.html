@@ -12,10 +12,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=202609141900">
 <script src="defaults.js?v=16974f4afe52"></script>
-<script src="kits.js?v=a3392013147f"></script>
+<script src="kits.js?v=edb539f4d2ae"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
-<script src="skillpack.js?v=d4cfcf18a0a1"></script>
+<script src="skillpack.js?v=20260915a"></script>
 <style>
 /* ===== 套版詳細專用 =====
    這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
@@ -31,16 +31,16 @@
 .cx-lab{font-size:13px;font-weight:500;color:var(--k-ink)}
 .cx-lab em{color:#DE3535;font-style:normal}
 .cx-in{display:block;width:100%;max-width:340px;font:inherit;font-size:14px;padding:11px 16px;border-radius:var(--k-rd);
-  border:1.5px solid var(--k-ln);background:#fff;color:var(--k-ink);outline:0;transition:.15s}
+  border:0;background:#EFF2F5;color:var(--k-ink);outline:0;transition:.15s}   /* 填色不外框（全站規則） */
 .cx-in::placeholder{color:var(--k-mu)}
-.cx-in:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--blue-50)}
-.cx-in.err{border-color:#DE3535;box-shadow:0 0 0 3px rgba(222,53,53,.12)}
+.cx-in:focus{background:#fff;outline:3px solid var(--brand);outline-offset:2px}
+.cx-in.err{background:#FDF1F0}
 .cx-help{font-size:12px;color:var(--k-mu)}
 .cx-help.err{color:#DE3535}
 .duo-card.dark .cx-lab{color:#fff}
-.duo-card.dark .cx-in{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+.duo-card.dark .cx-in{background:rgba(255,255,255,.16);color:#fff}
 .duo-card.dark .cx-in::placeholder{color:rgba(255,255,255,.6)}
-.duo-card.dark .cx-in:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+.duo-card.dark .cx-in:focus{background:rgba(255,255,255,.28);outline-color:#fff}
 .duo-card.dark .cx-help{color:rgba(255,255,255,.7)}
 /* 選擇控制 */
 .cx-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap;font-size:14px}
@@ -55,18 +55,17 @@
 .duo-card.dark .cx-sw.on{background:#fff}
 .duo-card.dark .cx-sw.on::after{background:var(--brand-dark)}
 /* 頁籤 */
-.cx-tabs{display:flex;gap:4px;border-bottom:1.5px solid var(--k-ln)}
-.cx-tabs span{padding:10px 18px;font-size:14px;color:var(--k-mu);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:.15s}
+.cx-tabs{display:flex;gap:6px}
+.cx-tabs span{padding:8px 18px;font-size:14px;color:var(--k-mu);cursor:pointer;border-radius:999px;transition:.15s}
 .cx-tabs span:hover{color:var(--k-ink)}
-.cx-tabs span.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:500}
-.duo-card.dark .cx-tabs{border-bottom-color:rgba(255,255,255,.3)}
+.cx-tabs span.on{background:var(--brand);color:#fff;font-weight:500}
 .duo-card.dark .cx-tabs span{color:rgba(255,255,255,.7)}
-.duo-card.dark .cx-tabs span.on{color:#fff;border-bottom-color:#fff}
+.duo-card.dark .cx-tabs span.on{background:#fff;color:var(--brand-dark)}
 /* 按鈕變體與狀態 */
 .cx-btns{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .cx-btn{font:inherit;font-size:14px;padding:10px 20px;border-radius:var(--k-rd);border:1.5px solid transparent;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px}
 .cx-btn.pri{background:var(--brand);color:#fff}
-.cx-btn.sec{background:transparent;color:var(--brand);border-color:var(--brand)}
+.cx-btn.sec{background:var(--blue-50);color:var(--brand)}
 .cx-btn.txt{background:transparent;color:var(--brand);padding-left:8px;padding-right:8px}
 .cx-btn.dgr{background:#DE3535;color:#fff}
 .cx-btn.hov{background:var(--brand-dark)}
@@ -76,7 +75,7 @@
 @keyframes cxspin{to{transform:rotate(360deg)}}
 .cx-state{font-size:12px;color:var(--k-mu);margin-right:-4px}
 .duo-card.dark .cx-btn.pri{background:#fff;color:var(--brand-dark)}
-.duo-card.dark .cx-btn.sec{color:#fff;border-color:rgba(255,255,255,.7)}
+.duo-card.dark .cx-btn.sec{background:rgba(255,255,255,.18);color:#fff}
 .duo-card.dark .cx-btn.txt{color:#fff}
 .duo-card.dark .cx-btn.hov{background:rgba(255,255,255,.85);color:var(--brand-dark)}
 .duo-card.dark .cx-btn.foc{background:#fff;color:var(--brand-dark);box-shadow:0 0 0 3px var(--brand-dark),0 0 0 6px #fff}
@@ -85,13 +84,13 @@
 .duo-card.dark .cx-state{color:rgba(255,255,255,.7)}
 /* 教材卡片 */
 .cx-card{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:14px;align-items:center;max-width:420px;
-  padding:14px 16px;border-radius:var(--k-rd-card);background:#fff;border:1px solid var(--k-ln);box-shadow:var(--k-sh)}
+  padding:14px 16px;border-radius:var(--k-rd-card);background:#fff;box-shadow:var(--shadow-sm)}
 .cx-card .cv{width:48px;height:48px;border-radius:10px;background:var(--blue-50);color:var(--brand);display:flex;align-items:center;justify-content:center}
 .cx-card b{display:block;font-size:15px;color:var(--k-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cx-card .meta{display:flex;gap:6px;margin-top:4px}
 .cx-card .meta span{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--blue-50);color:var(--brand)}
 .cx-card .go{color:var(--brand)}
-.duo-card.dark .cx-card{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+.duo-card.dark .cx-card{background:rgba(255,255,255,.12)}
 .duo-card.dark .cx-card .cv{background:rgba(255,255,255,.18);color:#fff}
 .duo-card.dark .cx-card b{color:#fff}
 .duo-card.dark .cx-card .meta span{background:rgba(255,255,255,.18);color:#fff}
@@ -100,6 +99,70 @@
    深色底卡本來就分得開。標題列維持白。（使用者回報 2026-09-14：底色跟區塊顏色太近） */
 main .pick-body{background:var(--page)}
 main .pick-box{overflow:hidden}
+
+/* ===== 套版詳細：Header／Footer 版型本身就是 RWD =====
+   桌機看桌機版；把視窗縮到 ≤860px（或手機開這一頁），demo 自己收成漢堡＋抽屜、頁尾收單欄。
+   漢堡與抽屜由 JS 從 demo 的導覽項目產生，桌機寬度時隱藏。（使用者指定 2026-09-15：不要並排顯示，切到行動裝置才出現） */
+.hl-burger,.hl-drawer,.hl-sicon{display:none}
+@media(max-width:860px){
+  .hl-burger{margin-left:auto;width:36px;height:36px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex:none;cursor:pointer}
+  .hl-burger i{position:relative;display:block;width:20px;height:2px;background:currentColor;border-radius:2px}
+  .hl-burger i::before,.hl-burger i::after{content:"";position:absolute;left:0;width:20px;height:2px;background:currentColor;border-radius:2px}
+  .hl-burger i::before{top:-6px}.hl-burger i::after{top:6px}
+  .hl-sicon{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px}
+  .hl-sicon ~ .avatar,.hl-sicon ~ .hl-burger,.avatar ~ .hl-burger,.hl-keep ~ .hl-burger{margin-left:0}
+  .demo-bar.dark .hl-burger,.demo-bar.black .hl-burger,.acad-top .hl-burger,.kid-bar .hl-burger,.demo-bar.dark .hl-sicon,.demo-bar.black .hl-sicon{color:#fff}
+  .hl-keep{margin-left:auto;display:inline-flex !important}
+  /* header 類：藏導覽、搜尋、會員、頭像以外的東西，只留 Logo＋（搜尋圖示／頭像／主要動作）＋漢堡 */
+  #header .pick-body .demo-bar{padding:12px 16px !important;gap:10px}
+  #header .pick-body .demo-bar nav,#header .pick-body .member-pill,#header .pick-body .demo-search,#header .pick-body .demo-bar .grow,#header .pick-body .kid-bar .grow,#header .pick-body .acad-top nav,
+  #header .pick-body .demo-bar>span:not(.hl-burger):not(.demo-logo):not(.avatar):not(.hl-sicon):not(.hl-keep),#header .pick-body .demo-bar>b+span:not(.hl-keep){display:none !important}
+  #header .pick-body .avatar{margin-left:auto}
+  #header .pick-body .kid-bar{padding:12px 14px !important}
+  #header .pick-body .acad-tabs{overflow-x:auto;white-space:nowrap;flex-wrap:nowrap !important;scrollbar-width:none}
+  #header .pick-body .acad-tabs a{flex:none}
+  /* 抽屜：漢堡按下才展開 */
+  .hl-drawer{display:none;background:#F3F5F9;padding:6px 12px 12px;flex-direction:column;border-radius:0 0 14px 14px}
+  .hl-drawer.open{display:flex}
+  .hl-drawer a{display:block;padding:11px 10px;font-size:14px;color:var(--gray-1);text-decoration:none;border-radius:9px}
+  .hl-drawer a:first-child{background:var(--blue-50);color:var(--brand)}
+  .hl-drawer.dark{background:var(--brand-dark)}
+  .hl-drawer.dark a{color:#fff}.hl-drawer.dark a:first-child{background:rgba(255,255,255,.18);color:#fff}
+  .hl-burger.on i{background:transparent}.hl-burger.on i::before{top:0;transform:rotate(45deg)}.hl-burger.on i::after{top:0;transform:rotate(-45deg)}
+  /* footer 類：多欄收單欄置中、連結一列一個 */
+  #footer .pick-body .ft-full,#footer .pick-body .ft-dark,#footer .pick-body .ft-expo,#footer .pick-body [class*=ft-]{display:flex !important;flex-direction:column !important;align-items:center !important;text-align:center !important;gap:10px !important}
+  #footer .pick-body .ft-links{flex-direction:column !important;gap:2px !important}
+  #footer .pick-body .ft-links a{display:block;padding:9px 0}
+  #footer .pick-body .socials{justify-content:center}
+  #footer .pick-body > p,#footer .pick-body .ft-note,#footer .pick-body .ft-copy{text-align:center}
+}
+/* ===== 套版詳細：表格 demo 的 RWD（≤640px 每列變成一張直式小表：左邊藍色欄名格、右邊內容，不縮小、不橫向捲動） =====
+   參考使用者提供的樣式：每筆資料一張卡，卡內每一列＝「欄名（品牌色底白字，固定寬）｜內容」，卡與卡之間留空。 */
+@media(max-width:640px){
+  #table .tbl,#table .tbl tbody{display:block !important;width:100% !important}
+  #table .tbl thead{display:none !important}
+  #table .tbl tbody{background:transparent;padding:0}
+  #table .tbl tbody tr{display:block !important;margin:0 0 12px;border-radius:8px;overflow:hidden;background:#F3F5F9;box-shadow:var(--shadow-sm);padding:0}
+  #table .tbl.striped tbody tr:nth-child(even){background:#fff}
+  #table .tbl tbody tr:last-child{margin-bottom:0}
+  #table .tbl td{display:grid !important;grid-template-columns:92px minmax(0,1fr);column-gap:12px;align-items:center;padding:0 12px 0 0 !important;border:0 !important;margin-bottom:2px;background:#fff !important;white-space:normal !important;text-align:left !important;min-height:44px}
+  #table .tbl td:last-child{margin-bottom:0}
+  /* 左格：欄名（th） */
+  #table .tbl td::before{content:attr(data-label);display:flex;align-items:center;justify-content:center;align-self:stretch;min-height:44px;padding:8px 6px;background:var(--brand-dark);color:#fff;font-size:13px;font-weight:700;text-align:center}
+  #table .tbl td[data-mobile="check"]::before{content:"勾選"}
+  #table .tbl td[data-mobile="check"]{display:grid !important}
+  #table .tbl td[data-mobile="check"] input{margin:0 auto}
+  /* 右格：內容（文字節點靠 column-gap 留距離） */
+  #table .tbl td{font-size:14px;line-height:1.5}
+  #table .tbl td>*{justify-self:start}
+  #table .tbl tbody{padding:0 !important}
+  #table .tbl td[data-mobile="title"]{font-weight:700}
+  #table .tbl td[data-mobile="actions"]{display:grid !important}
+  #table .tbl td[data-mobile="actions"] .act{display:inline-flex;gap:10px;padding:8px 0}
+  #table .tbl-toolbar{padding:14px 16px;flex-direction:column;align-items:stretch;gap:10px}
+  #table .tbl-search{width:100%;justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #table .tbl-foot{flex-direction:column;align-items:center;gap:10px}
+}
 .crumb-line{font-size:12.5px;color:var(--gray-2);letter-spacing:.03em;margin-bottom:10px}
 .crumb-line a{color:var(--brand);text-decoration:none}
 /* ===== 已存採用列：固定在畫面底部 =====
@@ -510,6 +573,7 @@ main .opt-dot.on{border-color:#0088D2}
   <!-- Header 版型 -->
   <section class="sec" data-cat="identity" id="header">
     <div class="sec-head"><h2>Header 版型（依產品 / 族群）</h2><span class="note">HEADER LAYOUTS</span></div>
+    <p class="sec-desc">九種版型皆含 RWD：≤860px 導覽自動收成漢堡選單（Logo 左、漢堡右，展開為整寬清單），不縮小、不橫向捲動。</p>
 
     <div class="pick-box" data-group="hd">
       <div class="pick-head"><span class="pick-state"></span>品牌官網<span class="adopt-tag">採用中</span><span class="pick-note">日式極簡 · 留白（淺色）</span></div>
@@ -662,6 +726,7 @@ main .opt-dot.on{border-color:#0088D2}
   <!-- Footer 版型 -->
   <section class="sec" data-cat="identity" id="footer">
     <div class="sec-head"><h2>Footer 版型（點選採用）</h2><span class="note">FOOTER LAYOUTS</span></div>
+    <p class="sec-desc">三種版型皆含 RWD：≤640px 多欄收成單欄置中、連結一列一個（≥44px）、版權置中。</p>
 
     <div class="pick-box" data-group="ft">
       <div class="pick-head"><span class="pick-state"></span>完整頁尾<span class="adopt-tag">採用中</span><span class="pick-note">版權 + 社群連結（官網 / 產品站）</span></div>
@@ -885,7 +950,7 @@ main .opt-dot.on{border-color:#0088D2}
   <!-- 表格 -->
   <section class="sec" data-cat="comps" id="table">
     <div class="sec-head"><h2>表格 Table</h2><span class="note">DATATABLE / STYLING</span></div>
-    <p class="sec-desc">列表資料一律使用資料表格：工具列（每頁筆數+搜尋）+表身+頁尾（筆數資訊+分頁）；跨斷點時轉為卡片式。</p>
+    <p class="sec-desc">列表資料一律使用資料表格：工具列（每頁筆數+搜尋）+表身+頁尾（筆數資訊+分頁）。欄位多時手機不出現橫向捲軸、也不等比縮小，而是每筆資料變成直式小表：左邊品牌色欄名格、右邊內容，一筆一卡。</p>
 
     <div class="pick-box adopted" data-multi="1">
       <div class="pick-head"><span class="pick-state"></span>資料表格 DataTable<span class="adopt-tag">採用中</span><span class="pick-note">搜尋 / 分頁 / 操作</span></div>
@@ -1321,7 +1386,7 @@ main .opt-dot.on{border-color:#0088D2}
   <!-- RWD 斷點 -->
   <section class="sec" data-cat="layout" id="rwd">
     <div class="sec-head"><h2>RWD 斷點</h2><span class="note">RESPONSIVE</span></div>
-    <p class="sec-desc"><b>斷點沿用 Tailwind 標準；跨斷點時表格轉卡片、多欄轉單欄</b>(此為開發時要遵循的約定，勾選只代表納入規範，不是功能開關)</p>
+    <p class="sec-desc"><b>斷點沿用 Tailwind 標準；多欄轉單欄，表格在手機重新排列成卡片（不是橫向捲軸）</b>(此為開發時要遵循的約定，勾選只代表納入規範，不是功能開關)</p>
     <div class="pick-box adopted" data-multi="1" data-key="rwd" style="margin-bottom:0">
       <div class="pick-head"><span class="pick-state"></span>RWD 斷點 Responsive<span class="spec-tag">規範條文</span><span class="adopt-tag">採用中</span></div>
       <div class="pick-body">
@@ -1690,7 +1755,7 @@ main .opt-dot.on{border-color:#0088D2}
      bg:'#F4F7FB',ln:'#EEF2F7',mu:'#62778F',ink:'#1E3D60',  /* page.bg.subtle / disabled.bg / text.primary / text.secondary */
      tk:['主要藍','深藍（hover 態）','淺藍灰','裝飾黃'],
      tkEn:['surface.strong','action.bg.hover','text.tertiary','decor.sun'],
-     rd:['100px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* 文件寫明：radius.md 100px 給按鈕／chip／輸入框，xs 12px 卡片，sm 20px 大區塊 */
+     rd:['14px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* radius.md 14px 給按鈕／輸入框／下拉（2026-09-15 由 100px 修正），xs 12px 卡片，sm 20px 大區塊 */
      /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
      btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
@@ -2519,6 +2584,48 @@ main .opt-dot.on{border-color:#0088D2}
     a.click();
     URL.revokeObjectURL(a.href);
   });
+
+  /* ── 表格 demo：寫入 data-label 與手機角色（≤640px 由上面的 CSS 重排成卡片） ── */
+  (function(){
+    document.querySelectorAll('#table table.tbl').forEach(function(tb){
+      var ths=[].slice.call(tb.querySelectorAll('thead th'));
+      var labels=ths.map(function(th){return (th.textContent||'').trim()});
+      tb.querySelectorAll('tbody tr').forEach(function(tr){
+        var titleDone=false,leadDone=false;
+        [].forEach.call(tr.children,function(td,i){
+          var lab=labels[i]||'',tx=(td.textContent||'').trim();
+          td.setAttribute('data-label',lab);
+          var role='meta';
+          if(td.querySelector('input[type=checkbox]'))role='check';
+          else if(/操作/.test(lab)||td.querySelector('.act'))role='actions';
+          else if(/狀態/.test(lab)||td.querySelector('.tagx.green,.tagx.yellow,.tagx.gray,.tagx.red'))role='aside';
+          else if(!titleDone){role='title';titleDone=true}
+          else if(!leadDone&&/^[\d.,%]+$/.test(tx)&&tx.length<=6){role='lead';leadDone=true}
+          td.setAttribute('data-mobile',role);
+        });
+      });
+    });
+  })();
+  /* ── Header 版型：把漢堡與抽屜加進 demo 本身（桌機寬度隱藏，≤860px 才出現） ── */
+  (function(){
+    function label(el){var c=el.cloneNode(true);[].forEach.call(c.querySelectorAll('.material-symbols-rounded'),function(x){x.remove()});return (c.textContent||'').trim()}
+    document.querySelectorAll('#header .pick-box[data-group="hd"] > .pick-body').forEach(function(body){
+      var demo=body.firstElementChild; if(!demo) return;
+      var bar=demo.querySelector('.demo-bar,.kid-bar,.acad-top')||(/demo-bar|kid-bar|acad-top/.test(demo.className)?demo:null);
+      if(!bar) return;                                   /* 滿版主視覺型（EXPO）沒有導覽列：不加漢堡 */
+      var links=[].slice.call(demo.querySelectorAll('nav a, .kid-pill, .tool-tag, .chip, .demo-bar > span[style*="font-size:13.5px"]')).map(label).filter(Boolean).slice(0,6);
+      if(demo.querySelector('.demo-search')){var si=document.createElement('span');si.className='hl-sicon';si.innerHTML='<span class="material-symbols-rounded" style="font-size:22px">search</span>';bar.appendChild(si)}
+      var cta=demo.querySelector('.grow .pill-btn');if(cta){var keep=cta.cloneNode(true);keep.classList.add('hl-keep');bar.appendChild(keep)}
+      var av=demo.querySelector('.avatar');if(av)bar.appendChild(av);
+      var b=document.createElement('span'); b.className='hl-burger'; b.innerHTML='<i></i>'; b.setAttribute('role','button'); b.setAttribute('aria-label','選單'); bar.appendChild(b);
+      if(links.length){
+        var dr=document.createElement('div'); dr.className='hl-drawer'+(/dark|black|acad/.test((demo.className||'')+' '+(bar.className||''))?' dark':'');
+        dr.innerHTML=links.map(function(x){return '<a href="#header">'+x.replace(/[<>&]/g,'')+'</a>'}).join('');
+        (demo===bar?body:demo).appendChild(dr);
+        b.addEventListener('click',function(e){e.preventDefault();var on=!dr.classList.contains('open');dr.classList.toggle('open',on);b.classList.toggle('on',on)});
+      }
+    });
+  })();
   /* ===== 展示元件互動(讓 user 感受效果) ===== */
   document.querySelectorAll('.seg,.lab-tags,.pj-tabs').forEach(function(g){
     g.addEventListener('click',function(e){

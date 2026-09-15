@@ -12,7 +12,7 @@
 <script src="defaults.js?v=16974f4afe52"></script>
 <script src="importbase.js?v=1"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
-<script src="kits.js?v=a3392013147f"></script>
+<script src="kits.js?v=edb539f4d2ae"></script>
 <style>
 /* 與品牌規範 / 版型預覽統一內容寬度 1160px */
 .imp-tabs{display:inline-flex;gap:8px}
@@ -1021,7 +1021,7 @@ hlStampAssets();
       ink:'#1E3D60',body:'#62778F',tertiary:'#BECAD7',
       disabledBg:'#EEF2F7',disabledFg:'#62778F',
       danger:'#B3261E',dangerBg:'#FDF1F0',success:'#146C43',
-      rXs:'12px',rSm:'20px',rMd:'100px',rLg:'1000px',
+      rXs:'12px',rSm:'20px',rMd:'14px',rLg:'1000px',   /* radius.md 2026-09-15 由 100px 修正為 14px（按鈕／輸入框／下拉） */
       navFs:'16px',
       sh1:'rgba(30,61,96,.03) 0 5px 15px',
       sh2:'rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px',
@@ -2266,7 +2266,7 @@ hlStampAssets();
         var isSecondary=/secondary|outline|ghost|link|cancel|default|light|取消/i.test(cls+txt(el));
         var bg=isDanger?SG.danger:(isSecondary?SOFT:ACT);
         var fg=isSecondary?PS:'#fff';
-        setS(el,'background:'+bg+';color:'+fg+';border:none;border-radius:100px;padding:8px 16px;font-size:16px;min-height:44px;letter-spacing:.05em;font-family:inherit;cursor:pointer');
+        setS(el,'background:'+bg+';color:'+fg+';border:none;border-radius:14px;padding:8px 16px;font-size:16px;min-height:44px;letter-spacing:.05em;font-family:inherit;cursor:pointer');
         counts.btn++;
       });
       /* 表單元素 */
@@ -2321,26 +2321,26 @@ hlStampAssets();
             setS(el,css);if(cnt)counts[cnt]++;
           })}catch(e){SWALLOW(e)}
         }
-        fwEach(FS2.btnPrimary,'background:'+P+';color:#fff;border:none;border-radius:100px;padding:8px 16px;font-size:16px;min-height:44px','btn');
-        fwEach(FS2.btnSecondary,'background:'+SOFT+';color:'+PS+';border:none;border-radius:100px;padding:8px 16px;font-size:16px;min-height:44px','btn');
-        fwEach(FS2.btnDanger,'background:#B3261E;color:#fff;border:none;border-radius:100px;padding:8px 16px;font-size:16px;min-height:44px','btn');
+        fwEach(FS2.btnPrimary,'background:'+P+';color:#fff;border:none;border-radius:14px;padding:8px 16px;font-size:16px;min-height:44px','btn');
+        fwEach(FS2.btnSecondary,'background:'+SOFT+';color:'+PS+';border:none;border-radius:14px;padding:8px 16px;font-size:16px;min-height:44px','btn');
+        fwEach(FS2.btnDanger,'background:#B3261E;color:#fff;border:none;border-radius:14px;padding:8px 16px;font-size:16px;min-height:44px','btn');
         fwEach(FS2.input,'background:'+GRAYBG+';border:none;border-radius:12px;padding:10px 14px;font-size:16px','input');
         fwEach(FS2.select,'background:'+SOFT+';color:'+PS+';border:none;border-radius:12px;padding:12px 17px','input');
         fwEach(FS2.tag,'background:'+SOFT+';color:'+PS+';border:none;border-radius:100px;padding:6px 14px;font-size:13px','tag');
         fwEach(FS2.card,'border-radius:12px;border:1px solid '+LINE+';box-shadow:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px','card');
         fwEach(FS2.modal,'border-radius:12px;border:none;padding:32px;box-shadow:rgba(30,61,96,.03) 0 5px 15px','modal');
         fwEach(FS2.alert,'border-radius:12px;border:none;padding:17px 24px;background:'+SOFT+';color:'+IS,'alert');
-        fwEach(FS2.toast,'border-radius:100px;border:none;padding:12px 17px;box-shadow:rgba(30,61,96,.03) 0 5px 15px','alert');
+        fwEach(FS2.toast,'border-radius:14px;border:none;padding:12px 17px;box-shadow:rgba(30,61,96,.03) 0 5px 15px','alert');
       }
       /* 功能角色：role／aria／type 等屬性指定的元件（不依賴 class 命名） */
       Array.prototype.forEach.call(doc.querySelectorAll('[role=button],[type=submit],[type=button]'),function(el){
         if(el.closest&&el.closest('[data-hl-hd]'))return;
         if(/background:/.test(el.getAttribute('style')||''))return;
-        setS(el,'background:'+P+';color:#fff;border:none;border-radius:100px;padding:8px 16px;font-size:16px;min-height:44px;cursor:pointer');counts.btn++;
+        setS(el,'background:'+P+';color:#fff;border:none;border-radius:14px;padding:8px 16px;font-size:16px;min-height:44px;cursor:pointer');counts.btn++;
       });
       Array.prototype.forEach.call(doc.querySelectorAll('[type=search],[aria-label*=搜],[aria-label*=earch]'),function(el){
         if(el.closest&&el.closest('[data-hl-hd]'))return;
-        setS(el,'background:'+GRAYBG+';border:none;border-radius:100px;padding:10px 17px;font-size:16px');counts.input++;
+        setS(el,'background:'+GRAYBG+';border:none;border-radius:14px;padding:10px 17px;font-size:16px');counts.input++;
       });
       Array.prototype.forEach.call(doc.querySelectorAll('[role=alert],[role=status],[aria-live]'),function(el){
         setS(el,'border-radius:12px;border:none;padding:17px 24px;background:'+SOFT+';color:'+IS);counts.alert++;
@@ -2364,7 +2364,7 @@ hlStampAssets();
       /* 警示條／Toast */
       Array.prototype.forEach.call(doc.querySelectorAll('[class*=alert],[class*=callout],[class*=toast],[class*=snackbar],[role=alert]'),function(el){
         var isToast=/toast|snackbar/i.test(el.getAttribute('class')||'');
-        setS(el,isToast?('border-radius:100px;border:none;padding:12px 17px;font-size:15px;box-shadow:rgba(30,61,96,.03) 0 5px 15px')
+        setS(el,isToast?('border-radius:14px;border:none;padding:12px 17px;font-size:15px;box-shadow:rgba(30,61,96,.03) 0 5px 15px')
                        :('border-radius:12px;border:none;padding:17px 24px;background:'+SOFT+';color:'+IS));
         counts.alert++;
       });
@@ -3224,7 +3224,7 @@ hlStampAssets();
              取消勾選＝輪替只用品牌色家族（主色／深色／淺色／墨色），不帶中間色。
              這個設定先前在套用端完全沒被讀，勾不勾結果一樣。 */
         var CYCLE=CTLON('midcolor')
-          ?[to.p,SG.decorWarm,(to.c||SG.decorSun),SG.ink]
+          ?[to.p,(to.c||SG.decorSun),(to.i||SG.decorWarm),SG.ink]   /* 輪替只用這一組的色：主色→對比色→亮色 */
           :[to.p,(to.s||to.p),(to.i||to.p),SG.ink];
         /* 裝飾色只作底色與形狀；當文字色時一律取達 4.5:1 的深色版本（規範 2.1 對比度限制） */
         var ACC=[SG.decorSun,SG.decorWarm];
@@ -3501,8 +3501,8 @@ hlStampAssets();
           var slot=(bi++)%3;
           el.setAttribute('data-hl-tag','1');   /* 供稽核比對：這是被當成標籤處理的元素 */
           if(slot===0){imp(el,'background',mixW(to.p,.85));imp(el,'color',sgTextOn(to.p,mixW(to.p,.85)))}
-          else if(slot===1){imp(el,'background',CTLON('midcolor')?SG.decorSun:mixW(to.s||to.p,.85));imp(el,'color',SG.ink)}
-          else{imp(el,'background',CTLON('midcolor')?SG.decorWarm:mixW(to.i||to.p,.85));imp(el,'color',SG.ink)}
+          else if(slot===1){var _c1=to.c||SG.decorSun;imp(el,'background',CTLON('midcolor')?mixW(_c1,.7):mixW(to.s||to.p,.85));imp(el,'color',CTLON('midcolor')?sgTextOn(_c1,mixW(_c1,.7)):SG.ink)}
+          else{var _c2=to.i||SG.decorWarm;imp(el,'background',CTLON('midcolor')?mixW(_c2,.7):mixW(to.i||to.p,.85));imp(el,'color',CTLON('midcolor')?sgTextOn(_c2,mixW(_c2,.7)):SG.ink)}
         });
         /* 小標 eyebrow / kicker → 對比色（行內強調的規範定位） */
         Array.prototype.forEach.call(doc.querySelectorAll('[class*=eyebrow],[class*=overline],[class*=kicker],[class*=section-label],[class*=subtitle],[class*=sub-title]'),function(el){
@@ -3790,6 +3790,73 @@ hlStampAssets();
         });
         }
         if(ON('semantic'))compCounts=applyComponentsByStructure(doc);
+        /* 表格 RWD 不掛在「語意樣式層」底下：那個開關預設關閉，表格在手機重排是結構規則，一律套。 */
+        /* ── 表格 RWD：欄位多時，手機不是出現橫向捲軸、也不是等比縮小，而是每列重新排列成卡片（使用者指定 2026-09-15）
+           作法：先把表頭文字寫進每格的 data-hl-label，再依角色排：第一欄＝標題（粗體、左上）、
+           含 badge／狀態語意的格＝右上、純數字的格＝主要數字放大、其餘兩欄一列、欄名小字在前。
+           沒有 thead 的表格（版面用 table）不動。 */
+        try{
+          Array.prototype.forEach.call(doc.querySelectorAll('table'),function(tb){
+            var ths=tb.querySelectorAll('thead th,thead td');
+            if(!ths.length||ths.length<3)return;
+            var labels=Array.prototype.map.call(ths,function(th){return (th.textContent||'').trim()});
+            tb.setAttribute('data-hl-rwd','card');
+            Array.prototype.forEach.call(tb.querySelectorAll('tbody tr'),function(tr){
+              var cells=tr.children;
+              Array.prototype.forEach.call(cells,function(td,i){
+                td.setAttribute('data-hl-label',labels[i]||'');
+                var tx=(td.textContent||'').trim(),cls=(td.getAttribute('class')||'')+' '+(td.innerHTML||'');
+                var role='meta';
+                if(i===0)role='title';
+                else if(/badge|tag|chip|pill|status|state|狀態/i.test(cls)||/狀態/.test(labels[i]||''))role='aside';
+                else if(/^[\d.,%]+$/.test(tx)&&tx.length<=6&&!tr.querySelector('[data-hl-cell=lead]'))role='lead';
+                td.setAttribute('data-hl-cell',role);
+              });
+            });
+          });
+        }catch(e){}
+        /* ── Header RWD：≤860px 導覽收成漢堡選單（使用者指定 2026-09-15）
+           不動使用者的 JS，所以用 CSS-only 的 checkbox 切換：<input id=hl-navtoggle> 插在導覽之前（同層），
+           <label for> 當漢堡鈕放在 header 最右，#hl-navtoggle:checked ~ [data-hl-nav] 展開。
+           導覽＝header 內含 ≥3 個連結的 nav／ul；找不到就不做。 */
+        try{
+          var _hd=doc.querySelector('[data-hl-hd]')||doc.querySelector('header');
+          if(_hd&&!_hd.querySelector('#hl-navtoggle')){
+            var _nav=null,_cands=_hd.querySelectorAll('nav,ul,[class*=nav],[class*=menu]');
+            for(var _i=0;_i<_cands.length&&!_nav;_i++){var _c=_cands[_i];if(_c.querySelectorAll('a').length>=3&&!_c.querySelector('nav,ul [class*=nav]'))_nav=_c}
+            if(_nav&&_nav.parentNode){
+              _nav.setAttribute('data-hl-nav','1');
+              var _cb=doc.createElement('input');_cb.type='checkbox';_cb.id='hl-navtoggle';_cb.setAttribute('data-hl-added','1');_cb.setAttribute('aria-label','開啟選單');
+              _cb.setAttribute('style','position:absolute;width:1px;height:1px;opacity:0;pointer-events:none');
+              _nav.parentNode.insertBefore(_cb,_nav);
+              var _lb=doc.createElement('label');_lb.setAttribute('for','hl-navtoggle');_lb.setAttribute('data-hl-navbtn','1');_lb.setAttribute('data-hl-added','1');_lb.setAttribute('title','選單');
+              _lb.innerHTML='<span data-hl-navbar></span>';
+              _hd.appendChild(_lb);
+              _hd.setAttribute('data-hl-hasnav','1');
+            }
+          }
+        }catch(e){}
+        /* 對比色沿用：hero 第一顆按鈕改對比色底；內文 h2 加對比色短底線（裝飾形狀，不當文字色） */
+        try{
+          var _he=doc.querySelector('[data-hl-hero]')||doc.querySelector('[class*=hero],[class*=banner],[class*=jumbotron],[class*=masthead]');
+          var _ccc=to.c||SG.decorSun,_ccTx0=(sgLum(normHex(_ccc))<0.35?'#fff':SG.ink);
+          function _rg(hex,a2){var h=normHex(hex);return 'rgba('+parseInt(h.slice(1,3),16)+','+parseInt(h.slice(3,5),16)+','+parseInt(h.slice(5,7),16)+','+a2+')'}
+          if(_he){
+            var _cta=_he.querySelector('a[class*=btn],button,a[class*=button],[class*=cta] a,[class*=cta] button');
+            /* 按鈕的底色是 inline !important 寫的，樣式表蓋不過；這裡也用 inline 寫，才會真的變成對比色 */
+            if(_cta){_cta.setAttribute('data-hl-herocta','1');imp(_cta,'background',_ccc);imp(_cta,'background-image','none');imp(_cta,'color',_ccTx0);imp(_cta,'border','none');
+              Array.prototype.forEach.call(_cta.querySelectorAll('*'),function(ch){imp(ch,'color','inherit')})}
+            /* 沒有整張照片的橫幅：右上角放一塊實心對比色圓形＋一個小圓點（裝飾形狀，約一成面積） */
+            /* 形狀畫在 ::before 上（注入 CSS），不寫 inline background-image——寫了會被字色守門當成淺底，整段標題變深字 */
+            if(!_he.querySelector('img,video,picture')&&!/url\(/.test(_he.getAttribute('style')||''))_he.setAttribute('data-hl-heroshape','1');
+          }
+          var _n=0;Array.prototype.forEach.call(doc.querySelectorAll('main h2,section h2,article h2,body>h2'),function(h){
+            if(_n>=8)return;if(h.closest&&(h.closest('[data-hl-hd],[data-hl-ft],header,footer,nav')))return;
+            if(!(h.textContent||'').trim())return;h.setAttribute('data-hl-h2acc','1');_n++;
+          });
+        }catch(e){}
+        /* Footer RWD：≤640px 多欄收成單欄置中，連結一列一個好按 */
+        try{var _ft=doc.querySelector('[data-hl-ft]')||doc.querySelector('footer');if(_ft)_ft.setAttribute('data-hl-ftm','1')}catch(e){}
         html='<!DOCTYPE html>'+doc.documentElement.outerHTML;
       }catch(e){SWALLOW(e)}
     }
@@ -3807,7 +3874,9 @@ hlStampAssets();
         /* 對比色光暈：原本是 alpha .55／半徑 46%，打在淺底橫幅上整片泛橘
            （實測使用者真實檔案，橘色 #FF9A3C 幾乎蓋住整個主視覺）。
            收斂成低透明度、半徑縮小，只在右上角留一抹，不搶主體。 */
-        _wash=_cc?('radial-gradient(circle at 86% 14%,'+_rgbaHex(_cc,.22)+' 0%,'+_rgbaHex(_cc,0)+' 34%),'):'';
+        /* 【對比色太弱】(使用者回報 2026-09-15) 22% 的光暈幾乎看不見。改成右上角一塊實心對比色圓形（邊緣硬切、約占橫幅一成面積），
+           再加一個小的暖色圓點錯開，讓對比色以「裝飾形狀」的身份站出來（STYLEGUIDE：裝飾色用於 Hero 與插圖形狀）。 */
+        _wash='';   /* 對比色形狀改由 [data-hl-heroshape]::before／::after 畫（2026-09-15），這裡不再疊光暈 */
     if(ON('font'))inject+='@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap");';
     if(ON('icon'))inject+='@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");@import url("https://fonts.googleapis.com/css2?family=Material+Icons");';
     if(ON('font'))inject+='body,body *:not(.material-symbols-rounded):not(.material-icons):not([class*="fa-"]):not([class*="bi-"]):not([class*="glyphicon"]):not([class*="mdi-"]):not([class*="ion-"]):not([class*="icon-"]):not(code):not(pre):not(kbd):not(samp){font-family:"Noto Sans TC","Source Han Sans TC","PingFang TC","Microsoft JhengHei",sans-serif !important}';
@@ -3845,7 +3914,7 @@ hlStampAssets();
     if(ON('semantic'))inject+='a{color:'+(tone==='soft'?softText:to.p)+'}'
       /* 圓角沒有 !important 時會被原檔的 class 規則壓過（.nav-tab{border-radius:9px}
          特異度 0,1,0 > 元素選擇器 0,0,1），實測就套不到規範的 100px。 */
-      +'button{font-family:inherit;border-radius:100px !important;cursor:pointer;border:none !important}'
+      +'button{font-family:inherit;border-radius:14px !important;cursor:pointer;border:none !important}'
       +'button:not([class*=primary]):not([class*=danger]):not([type=submit]){background:'+mixW(to.p,.9)+';color:'+(tone==="soft"?softText:to.p)+'}'
       +'input,textarea{font-family:inherit;border-radius:12px;border:none !important;background:#F4F7FB;padding:8px 12px;outline-color:'+to.p+'}'
       +'select{font-family:inherit;border-radius:12px;border:none !important;background:'+mixW(to.p,.9)+';color:'+(tone==="soft"?softText:to.p)+';padding:8px 12px}'
@@ -3863,7 +3932,7 @@ hlStampAssets();
          針對 span 的規則（例如響應式的 .user span{display:none}）連坐隱藏。 */
       +'[data-hl-ic]{display:inline-block !important;visibility:visible !important}'
       +'[data-hl-flat]::before,[data-hl-flat]::after{display:none !important;content:none !important}'
-      +'[class*=btn]{border-radius:100px !important;border:none !important}'
+      +'[class*=btn]{border-radius:14px !important;border:none !important}'
       +'[class*=card],[class*=panel],[class*=modal]{border-radius:12px}'
       +'[class*=tag]:not([class*=chips]):not([class*=tags]):not([class*=pills]):not([class*=cloud]):not([class*=group]):not([class*=list]):not([class*=wrap]):not([class*=row]):not(:has([class*=chip])):not(:has([class*=tag])):not(:has([class*=badge])):not(:has([class*=pill])):not(:has(input)):not(:has(button)):not([class*=brand]):not([class*=logo]):not([class*=mark]):not([class*=brand] *):not([class*=logo] *):not([data-hl-hd] *),[class*=badge]:not([class*=chips]):not([class*=tags]):not([class*=pills]):not([class*=cloud]):not([class*=group]):not([class*=list]):not([class*=wrap]):not([class*=row]):not(:has([class*=chip])):not(:has([class*=tag])):not(:has([class*=badge])):not(:has([class*=pill])):not(:has(input)):not(:has(button)):not([class*=brand]):not([class*=logo]):not([class*=mark]):not([class*=brand] *):not([class*=logo] *):not([data-hl-hd] *),[class*=chip]:not([class*=chips]):not([class*=tags]):not([class*=pills]):not([class*=cloud]):not([class*=group]):not([class*=list]):not([class*=wrap]):not([class*=row]):not(:has([class*=chip])):not(:has([class*=tag])):not(:has([class*=badge])):not(:has([class*=pill])):not(:has(input)):not(:has(button)):not([class*=brand]):not([class*=logo]):not([class*=mark]):not([class*=brand] *):not([class*=logo] *):not([data-hl-hd] *),[class*=pill]:not([class*=chips]):not([class*=tags]):not([class*=pills]):not([class*=cloud]):not([class*=group]):not([class*=list]):not([class*=wrap]):not([class*=row]):not(:has([class*=chip])):not(:has([class*=tag])):not(:has([class*=badge])):not(:has([class*=pill])):not(:has(input)):not(:has(button)):not([class*=brand]):not([class*=logo]):not([class*=mark]):not([class*=brand] *):not([class*=logo] *):not([data-hl-hd] *){border-radius:100px;border:none !important}'
       +'[class*=danger],[class*=error]{color:#B3261E}'
@@ -3872,6 +3941,60 @@ hlStampAssets();
       +'[class*=info],[class*=notice]{color:#064EA4}'
       +'button[class*=primary],a[class*=primary],[type=submit]{background:'+to.p+';color:#fff;border:none}'
       +'button[class*=primary] *,a[class*=primary] *,[type=submit] *{color:inherit}';
+    /* Header RWD 的 CSS：桌機看不到漢堡；≤860px 導覽藏起來、漢堡鈕在右、勾選後導覽整寬展開在 header 下方 */
+    try{
+      var _hdBg=(function(){try{return (typeof HS!=='undefined'&&HS&&HS.bg)||'#fff'}catch(e){return '#fff'}})();
+      inject+='[data-hl-navbtn]{display:none}'
+        +'@media(max-width:860px){'
+        +'[data-hl-hasnav]{position:relative !important}'
+        +'[data-hl-navbtn]{display:inline-flex !important;align-items:center;justify-content:center;width:44px;height:44px;margin-left:auto;cursor:pointer;border-radius:10px;order:99}'
+        +'[data-hl-navbar],[data-hl-navbar]::before,[data-hl-navbar]::after{display:block;width:22px;height:2px;border-radius:2px;background:currentColor}'
+        +'[data-hl-navbar]{position:relative}[data-hl-navbar]::before,[data-hl-navbar]::after{content:"";position:absolute;left:0}[data-hl-navbar]::before{top:-7px}[data-hl-navbar]::after{top:7px}'
+        +'[data-hl-nav]{display:none !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav]{display:flex !important;flex-direction:column !important;align-items:stretch !important;position:absolute !important;left:0 !important;right:0 !important;top:100% !important;z-index:50 !important;margin:0 !important;padding:8px 20px 20px !important;background:#fff !important;box-shadow:0 8px 24px rgba(0,0,0,.12) !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav] ul,#hl-navtoggle:checked ~ [data-hl-nav] ol,#hl-navtoggle:checked ~ [data-hl-nav] div{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:0 !important;width:100% !important;margin:0 !important;padding:0 !important;list-style:none !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav] li,#hl-navtoggle:checked ~ [data-hl-nav] a{display:block !important;width:100% !important;text-align:left !important;min-height:48px !important;line-height:48px !important;margin:0 !important;color:#1E3D60 !important;background:transparent !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav] a{padding:0 12px !important;border-radius:10px !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-navbtn] [data-hl-navbar]{background:transparent}'
+        +'#hl-navtoggle:checked ~ [data-hl-navbtn] [data-hl-navbar]::before{top:0;transform:rotate(45deg)}#hl-navtoggle:checked ~ [data-hl-navbtn] [data-hl-navbar]::after{top:0;transform:rotate(-45deg)}'
+        +'}';
+    }catch(e){}
+    /* 對比色沿用的 CSS：hero CTA、h2 底線 */
+    try{
+      var _ccTx=(function(){try{return sgLum(normHex(_cc))<0.35?'#fff':SG.ink}catch(e){return '#1E3D60'}})();
+      inject+='[data-hl-herocta]{background:'+_cc+' !important;background-image:none !important;color:'+_ccTx+' !important;border:0 !important}'
+        +'[data-hl-herocta] *{color:inherit !important}'
+        +'[data-hl-heroshape]{position:relative;overflow:hidden}'
+        +'[data-hl-heroshape]::before{content:"";position:absolute;right:-60px;top:-60px;width:300px;height:300px;clip-path:circle(50% at 50% 50%);background:'+_cc+';opacity:.95;pointer-events:none;z-index:0}'
+        +'[data-hl-heroshape]::after{content:"";position:absolute;right:120px;bottom:-40px;width:120px;height:120px;clip-path:circle(50% at 50% 50%);background:'+_cc+';opacity:.55;pointer-events:none;z-index:0}'
+        +'[data-hl-heroshape]>*{position:relative;z-index:1}'
+        +'[data-hl-h2acc]{position:relative;padding-bottom:12px}'
+        +'[data-hl-h2acc]::after{content:"";position:absolute;left:0;bottom:0;width:44px;height:5px;border-radius:3px;background:'+_cc+'}'
+        +'[data-hl-h2acc][style*="text-align:center"]::after,[data-hl-h2acc][align=center]::after{left:50%;transform:translateX(-50%)}';
+    }catch(e){}
+    /* Footer RWD 的 CSS */
+    inject+='@media(max-width:640px){'
+      +'[data-hl-ftm]{display:flex !important;flex-direction:column !important;align-items:center !important;text-align:center !important;gap:14px !important}'
+      +'[data-hl-ftm] > *{width:100% !important;max-width:100% !important;margin:0 !important}'
+      +'[data-hl-ftm] ul,[data-hl-ftm] ol,[data-hl-ftm] nav{display:flex !important;flex-direction:column !important;align-items:center !important;gap:4px !important;padding:0 !important;margin:0 !important;list-style:none !important}'
+      +'[data-hl-ftm] li{display:block !important;width:100% !important;margin:0 !important}'
+      +'[data-hl-ftm] a{display:inline-block !important;min-height:44px !important;line-height:44px !important;padding:0 12px !important}'
+      +'}';
+    /* 表格 RWD 的 CSS（DOM 標記在序列化之前那段做；這裡只注入樣式） */
+    try{
+      inject+='@media(max-width:640px){'
+        +'table[data-hl-rwd=card],table[data-hl-rwd=card] tbody{display:block !important;width:100% !important}'
+        +'table[data-hl-rwd=card] thead{display:none !important}'
+        +'table[data-hl-rwd=card] tbody{background:transparent !important;padding:0 !important}'
+        +'table[data-hl-rwd=card] tbody tr{display:block !important;margin:0 0 12px !important;padding:0 !important;border:0 !important;border-radius:8px !important;overflow:hidden;background:'+(to.bg&&sgLum(normHex(to.bg))>.85?to.bg:'#F3F5F9')+' !important;box-shadow:0 1px 3px rgba(20,45,70,.08) !important}'
+        +'table[data-hl-rwd=card] tbody tr:last-child{margin-bottom:0 !important}'
+        +'table[data-hl-rwd=card] td{display:grid !important;grid-template-columns:92px minmax(0,1fr);column-gap:12px;align-items:center;padding:0 12px 0 0 !important;border:0 !important;margin-bottom:2px !important;background:#fff !important;white-space:normal !important;text-align:left !important;min-height:44px;font-size:14px !important;line-height:1.5 !important}'
+        +'table[data-hl-rwd=card] td:last-child{margin-bottom:0 !important}'
+        +'table[data-hl-rwd=card] td>*{justify-self:start}'
+        +'table[data-hl-rwd=card] td::before{content:attr(data-hl-label);display:flex;align-items:center;justify-content:center;align-self:stretch;min-height:44px;padding:8px 6px;background:'+(to.s||to.p)+';color:#fff;font-size:13px;font-weight:700;text-align:center}'
+        +'table[data-hl-rwd=card] td[data-hl-cell=title]{font-weight:700 !important}'
+        +'}';
+    }catch(e){}
     if(ON('semantic')){
       var tblIdx=VS.tblsty;
       /* 斑馬紋底再淺一階：正文色 #62778F 在 #F4F7FB 上只有 4.29:1，達不到 AA */
@@ -3979,7 +4102,7 @@ hlStampAssets();
           +AVATAR+'{border-radius:50% !important;width:32px !important;height:32px !important;background:rgba(255,255,255,.2) !important}',  /* 圓形＝規範頁 hd4 示範的實際值 */
         /* 5 命題大師 精簡工具列 */
         NAVA+'{margin:0 10px !important;font-size:16px !important;text-decoration:none !important}'
-          +'[data-hl-hd] button,[data-hl-hd] [class*=btn]{padding:8px 16px !important;font-size:15px !important;border-radius:100px !important}',   /* 圓角跟隨 STYLEGUIDE 2.4 radius.md=100px，先前這裡還留著舊的 12px */
+          +'[data-hl-hd] button,[data-hl-hd] [class*=btn]{padding:8px 16px !important;font-size:15px !important;border-radius:14px !important}',   /* 圓角跟隨 STYLEGUIDE 2.4 radius.md=100px，先前這裡還留著舊的 12px */
         /* 6 行動大師 搜尋為主 */
         SEARCH+'{background:#fff !important;border:none !important;border-radius:12px !important;padding:10px 16px !important;min-width:320px !important;box-shadow:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px !important}'
           +NAVA+'{margin:0 10px !important;font-size:15px !important;text-decoration:none !important}',
@@ -4144,7 +4267,7 @@ hlStampAssets();
       var INK_SOFT=sgTextOn(INK,SOFT);          /* 品牌柔底上的正文 */
       layoutCss+=
       /* 按鈕：藥丸、無邊線、主要實心／次要柔色 */
-      'button,[class*=btn],[type=submit],[type=button],a[class*=button]{border:none !important;border-radius:100px !important;padding:8px 16px !important;font-size:16px !important;letter-spacing:.05em !important;cursor:pointer !important;font-family:inherit !important}'
+      'button,[class*=btn],[type=submit],[type=button],a[class*=button]{border:none !important;border-radius:14px !important;padding:8px 16px !important;font-size:16px !important;letter-spacing:.05em !important;cursor:pointer !important;font-family:inherit !important}'
       /* 主要按鈕：預設視為主要（實心）；只有明確標示 secondary/outline/ghost/text/link/cancel 才是次要 */
       /* cta 是「角色」不是「元件型別」：一個 CTA 可以是按鈕，也可以是整個區塊或容器。
          無標籤限定的 [class*=cta] 會把 <section class="cta-band"> 與 <div class="nav-cta">
@@ -4175,7 +4298,7 @@ hlStampAssets();
       +'[class*=modal],[class*=dialog],[class*=popup],[role=dialog]{border-radius:12px !important;border:none !important;padding:32px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important}'
       +'[class*=modal] h1,[class*=modal] h2,[class*=modal] h3,[class*=modal] h4,[class*=dialog] h1,[class*=dialog] h2,[class*=dialog] h3,[role=dialog] h2,[role=dialog] h3{font-size:20px !important;font-weight:700 !important;color:'+(to.s||to.p)+' !important}'
       /* Toast／通知：藥丸實心 */
-      +'[class*=toast],[class*=snackbar],[class*=notification]:not([class*=icon]){border-radius:100px !important;border:none !important;padding:12px 17px !important;font-size:15px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important}'
+      +'[class*=toast],[class*=snackbar],[class*=notification]:not([class*=icon]){border-radius:14px !important;border:none !important;padding:12px 17px !important;font-size:15px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important}'
       /* 警示條：柔色底、圓角 14 */
       +'[class*=alert],[class*=callout],[class*=banner-msg]{border-radius:12px !important;border:none !important;padding:17px 24px !important;background:'+SOFT+' !important;color:'+INK_SOFT+' !important}'
       /* 表格：規範內距與字級 */
@@ -4404,15 +4527,27 @@ hlStampAssets();
     inject+='html body [data-hl-k=check]{accent-color:'+(to.p||'#0088D2')+' !important}';
     inject=precisifySelectors(inject);
     inject=inject.replace(/([^{}@]+)\{([^}]*)\}/g,function(mm,sel,body){
-      if(/(?:^|[\s,>+~])(?:img|svg|picture|i|use)\b|\[alt=|material-symbols|material-icons/i.test(sel))return mm;
+      /* @media(...){ 第一條規則會被這個 regex 當成「選擇器＝media(...)、宣告＝[selector]{...」，
+         結果第一條規則的佈局屬性被誤濾（實測 footer 的 flex-direction 就這樣不見）。
+         遇到 media 前綴就把真正的選擇器切出來再判斷。 */
+      var mediaPrefix='';
+      if(/^media\s*\(/.test(sel.trim())){var cut=body.indexOf('{');if(cut>0){mediaPrefix=sel+'{';sel=body.slice(0,cut);body=body.slice(cut+1)}}
+      var wrap=function(out){return mediaPrefix?(mediaPrefix+out):out};
+      if(/(?:^|[\s,>+~])(?:img|svg|picture|i|use)\b|\[alt=|material-symbols|material-icons/i.test(sel))return wrap(sel+'{'+body+'}');
+      /* 表格手機重排（[data-hl-rwd]）是使用者指定的結構規則，display／grid／padding 就是它的本體，不濾 */
+      if(/\[data-hl-(?:rwd|cell|nav|navbtn|navbar|hasnav|ftm|herocta|h2acc|heroshape)[\]=]|#hl-navtoggle/.test(sel))return wrap(sel+'{'+body+'}');
       var kept=body.split(';').filter(function(d){
         var k=(d.split(':')[0]||'').trim().toLowerCase();
         return k&&!LAYOUT_PROPS.test(k);
       }).join(';');
-      return kept?(sel+'{'+kept+'}'):'';
+      return kept?wrap(sel+'{'+kept+'}'):(mediaPrefix||'');
     });
     /* 版型再用 inline style 寫一次（最高優先權，確保原站樣式蓋不掉） */
-    if(ON('semantic')&&LAYOUT_APPLIED){
+    /* 【色版的形狀特徵不掛在「語意樣式層」底下】(使用者回報 2026-09-15：套漫畫風，按鈕的粗邊與實心投影不見了)
+       那個開關預設關閉，但粗邊／大圓角／實心投影是使用者主動選的色版本身的識別，
+       跟版型 inline 是兩件事：形狀特徵一律跑，版型 inline 仍只在語意樣式層開啟時跑。 */
+    var _SHAPE_ONLY=!(ON('semantic')&&LAYOUT_APPLIED)&&!!(STYLE_BORDER||STYLE_RADIUS||STYLE_SHADOW);
+    if((ON('semantic')&&LAYOUT_APPLIED)||_SHAPE_ONLY){
       try{
         var doc2=new DOMParser().parseFromString(html,'text/html');
         markKinds(doc2);   /* 七階段精準判定：打上 data-hl-k 類型標記 */
@@ -4448,7 +4583,7 @@ hlStampAssets();
            就會解不出來而回傳 null，接著 if(he&&HERO_BG) 讓整段 inline 靜默跳過，
            畫面落回樣式表——「勾了純圖片版卻拿到漸層」正是從這裡穿透的。 */
         /* 鐵律①：未主動勾選就不傳 HERO_BASE，inline 層的守門會整段跳過，橫幅保持原樣 */
-        applyLayoutInline(doc2,LAYOUT_APPLIED.hdIdx,LAYOUT_APPLIED.ftIdx,LAYOUT_APPLIED.heroIdx,LAYOUT_APPLIED.HS,LAYOUT_APPLIED.FS,((VS._dflt&&VS._dflt.hero)?null:heroBaseOf(LAYOUT_APPLIED.heroIdx,to,isDarkPage)),isDarkPage,IS_APPSHELL);
+        if(!_SHAPE_ONLY)applyLayoutInline(doc2,LAYOUT_APPLIED.hdIdx,LAYOUT_APPLIED.ftIdx,LAYOUT_APPLIED.heroIdx,LAYOUT_APPLIED.HS,LAYOUT_APPLIED.FS,((VS._dflt&&VS._dflt.hero)?null:heroBaseOf(LAYOUT_APPLIED.heroIdx,to,isDarkPage)),isDarkPage,IS_APPSHELL);
         html='<!DOCTYPE html>'+doc2.documentElement.outerHTML;
       }catch(e){SWALLOW(e)}
     }

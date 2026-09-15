@@ -17,7 +17,7 @@
 
 <!-- tokens 必須排在 styles 之前 -->
 <link rel="stylesheet" href="tokens.css">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="hl-style.css">
 </head>
 <body>
 
@@ -50,7 +50,12 @@
       </svg>
     </a>
 
-    <nav aria-label="主要導覽">
+    <!-- 沿用方式：≤860px 導覽收進漢堡選單。按鈕 .nav-toggle 用 aria-expanded／aria-controls 指向 <nav id>；
+         app.js 負責開合、Esc 關閉、點外面關閉、開啟時焦點移入。 -->
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="開啟選單" data-nav-toggle>
+      <span class="nav-toggle__bar" aria-hidden="true"></span>
+    </button>
+    <nav aria-label="主要導覽" id="site-nav" class="site-nav-wrap">
       <ul class="site-nav">
         <li><a href="#main" aria-current="page">產品總覽</a></li>
         <li><a href="#categories">分類</a></li>
@@ -64,10 +69,14 @@
 <main id="main">
 
   <!-- ══════════════ Hero ══════════════ -->
-  <section class="section section--subtle">
+  <!-- 沿用方式：對比色（裝飾黃 --color-decor-sun／暖橘 --color-decor-warm）只用在 Hero 裝飾形狀、eyebrow 短槓、標題底線與卡片封面形狀；
+       不得當文字色、不得當承載文字的底色。 -->
+  <section class="section section--subtle hero">
+    <div class="hero-art" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i><i class="a4"></i></div>
     <div class="container stack">
       <div class="prose stack--tight" style="display:flex;flex-direction:column;gap:var(--space-9)">
-        <h1>備課、教學、測驗，一套介面走完</h1>
+        <span class="eyebrow">Hanlin Web Starter</span>
+        <h1>備課、教學、測驗，<mark class="hl">一套介面走完</mark></h1>
         <p class="lead">翰林數位教學產品依課前備課、課中教學、作業測驗三個階段整理，介面規則一致，鍵盤與螢幕閱讀器都走得通。</p>
       </div>
       <div class="row">
@@ -82,7 +91,7 @@
     <div class="container stack--loose" style="display:flex;flex-direction:column;gap:var(--space-11)">
 
       <div class="stack">
-        <h2>教學階段</h2>
+        <h2 class="accent">教學階段</h2>
 
         <!-- §3.3：role="tablist"，左右方向鍵循環，結果數量以 live region 播報 -->
         <div class="chip-group" role="tablist" aria-label="依教學階段篩選" data-chip-group="#filter-status">
@@ -150,6 +159,8 @@
         <button class="btn btn--secondary" type="button"><span class="btn__label">搜尋產品</span></button>
         <button class="btn btn--ghost" type="button"><span class="btn__label">瀏覽全部分類</span></button>
         <button class="btn btn--sm" type="button"><span class="btn__label">小尺寸</span></button>
+        <button class="btn btn--text" type="button"><span class="btn__label">文字按鈕</span></button>
+        <button class="btn btn--danger" type="button"><span class="btn__label">刪除試卷</span></button>
         <button class="btn" type="button" disabled><span class="btn__label">停用</span></button>
         <button class="btn" type="button" data-loading="true" aria-busy="true"><span class="btn__label">載入中</span></button>
       </div>
@@ -172,8 +183,26 @@
           <p class="error-text" id="email-error" role="alert"></p>
         </div>
 
+        <!-- 沿用方式：Select 外包 .select（畫箭頭），裡面放原生 <select> -->
+        <div class="field">
+          <label class="label" for="stage">學制</label>
+          <div class="select">
+            <select id="stage" name="stage">
+              <option value="">選擇學制</option><option>國小</option><option>國中</option><option>高中</option>
+            </select>
+          </div>
+          <p class="hint">用原生 select，鍵盤與螢幕閱讀器行為不用另外寫。</p>
+        </div>
+
+        <!-- 沿用方式：Checkbox／Radio 用 <label class="choice"> 包原生 input；Switch 用 <span class="switch" role="switch" aria-checked> -->
+        <div class="row" style="gap:var(--space-11)">
+          <label class="choice"><input type="checkbox" name="agree" checked>我同意收到教學資源通知</label>
+          <label class="choice"><span class="switch" role="switch" aria-checked="false" tabindex="0" data-switch></span>同時訂閱研習資訊</label>
+        </div>
+
         <div class="row">
           <button class="btn" type="submit"><span class="btn__label">訂閱</span></button>
+          <button class="btn btn--text" type="reset"><span class="btn__label">清除</span></button>
         </div>
 
         <p class="alert" data-form-result role="status" aria-live="polite" hidden></p>
@@ -181,10 +210,84 @@
     </div>
   </section>
 
+  <!-- ══════════════ 教材列表：Tabs＋Badge＋Alert＋Resource Card ══════════════
+       沿用方式：
+       - 分頁   <div class="tabs" role="tablist"> <button class="tab" role="tab" aria-selected="true">
+       - 標籤   <span class="badge badge--info|success|warning|danger">
+       - 提示   <div class="alert alert--success|warning|danger" role="status|alert"><span class="alert__icon">i</span><div>文字</div></div>
+       - 教材卡 <a class="resource-card"> .resource-card__cover / __title / __meta / __go -->
+  <section class="section" id="materials">
+    <div class="container stack">
+      <h2 class="accent">我的教材</h2>
+      <div class="tabs" role="tablist" aria-label="教材分類" data-tabs>
+        <button class="tab" role="tab" type="button" aria-selected="true" aria-controls="tab-materials">教材</button>
+        <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="tab-quiz">評量</button>
+        <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="tab-history">學習歷程</button>
+      </div>
+
+      <div class="alert" role="status"><span class="alert__icon" aria-hidden="true">i</span><div>本週新增 3 份教材，已依教學進度排序。</div></div>
+
+      <div class="stack" id="tab-materials" role="tabpanel" style="gap:var(--space-4)">
+        <a class="resource-card" href="#main">
+          <span class="resource-card__cover" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V5.5M8 7h8M8 11h6"/></svg></span>
+          <span><span class="resource-card__title">國中數學 第三冊 一元一次方程式</span><span class="resource-card__meta"><span>國中</span><span>數學</span><span>翰林版</span><span class="badge badge--success" style="min-height:22px">已完成</span></span></span>
+          <span class="resource-card__go" aria-hidden="true">›</span>
+        </a>
+        <a class="resource-card" href="#main">
+          <span class="resource-card__cover" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V5.5M8 7h8M8 11h6"/></svg></span>
+          <span><span class="resource-card__title">國中國文 第三冊 白話文選讀（這是一個刻意加長的標題，確認單行省略不會蓋到右側動作）</span><span class="resource-card__meta"><span>國中</span><span>國文</span><span class="badge badge--info" style="min-height:22px">進行中</span></span></span>
+          <span class="resource-card__go" aria-hidden="true">›</span>
+        </a>
+        <a class="resource-card" href="#main">
+          <span class="resource-card__cover" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V5.5M8 7h8M8 11h6"/></svg></span>
+          <span><span class="resource-card__title">國中自然 第三冊 光與熱</span><span class="resource-card__meta"><span>國中</span><span>自然</span><span class="badge badge--warning" style="min-height:22px">待審核</span></span></span>
+          <span class="resource-card__go" aria-hidden="true">›</span>
+        </a>
+      </div>
+      <div class="stack" id="tab-quiz" role="tabpanel" hidden style="gap:var(--space-4)">
+        <div class="alert alert--warning" role="alert"><span class="alert__icon" aria-hidden="true">!</span><div>有 1 份評量尚未儲存：離開前請先儲存草稿，內容已保留。</div></div>
+      </div>
+      <div class="stack" id="tab-history" role="tabpanel" hidden style="gap:var(--space-4)">
+        <div class="alert alert--success" role="status"><span class="alert__icon" aria-hidden="true">✓</span><div>本學期作答與訂正紀錄已同步。</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ 表格 Table（RWD）══════════════
+       沿用方式：<div class="table-wrap"><table class="table table--stack">；每個 <td> 加 data-label="欄名"；
+       非必要欄的 <th>／<td> 加 data-priority="optional"（≤860px 隱藏）；
+       ≤640px 每列變成直式小表（左：data-label 欄名，品牌色底；右：內容）；data-mobile="title" 的格內容加粗。 -->
+  <section class="section section--subtle" id="scores">
+    <div class="container stack">
+      <h2 class="accent">班級成績</h2>
+      <p>桌機是一般表格（可橫向捲動、第一欄固定）；手機不是縮小、不是橫向捲軸，而是每筆資料變成一張直式小表：左邊藍色欄名、右邊內容，欄名清楚、一筆一卡。</p>
+      <div class="table-wrap">
+        <table class="table table--stack">
+          <thead>
+            <tr>
+              <th scope="col">學生</th>
+              <th scope="col">科目</th>
+              <th scope="col" class="num">作答／題數</th>
+              <th scope="col" class="num">分數</th>
+              <th scope="col" data-priority="optional">最近作答</th>
+              <th scope="col">狀態</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="學生" data-mobile="title">王曉明</td><td data-label="科目" data-mobile="meta">數學</td><td class="num" data-label="作答／題數" data-mobile="meta">32 / 32</td><td class="num" data-label="分數" data-mobile="lead">92</td><td data-label="最近作答" data-priority="optional" data-mobile="meta">2026-09-12</td><td data-label="狀態" data-mobile="aside"><span class="badge badge--success">已完成</span></td></tr>
+            <tr><td data-label="學生" data-mobile="title">林佳蓉</td><td data-label="科目" data-mobile="meta">國文</td><td class="num" data-label="作答／題數" data-mobile="meta">30 / 32</td><td class="num" data-label="分數" data-mobile="lead">81</td><td data-label="最近作答" data-priority="optional" data-mobile="meta">2026-09-12</td><td data-label="狀態" data-mobile="aside"><span class="badge badge--info">進行中</span></td></tr>
+            <tr><td data-label="學生" data-mobile="title">陳冠宇</td><td data-label="科目" data-mobile="meta">英語</td><td class="num" data-label="作答／題數" data-mobile="meta">25 / 32</td><td class="num" data-label="分數" data-mobile="lead">78</td><td data-label="最近作答" data-priority="optional" data-mobile="meta">2026-09-11</td><td data-label="狀態" data-mobile="aside"><span class="badge badge--warning">待審核</span></td></tr>
+            <tr><td data-label="學生" data-mobile="title">張雅婷</td><td data-label="科目" data-mobile="meta">自然</td><td class="num" data-label="作答／題數" data-mobile="meta">12 / 32</td><td class="num" data-label="分數" data-mobile="lead">—</td><td data-label="最近作答" data-priority="optional" data-mobile="meta">2026-09-10</td><td data-label="狀態" data-mobile="aside"><span class="badge badge--danger">異常</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- ══════════════ Accordion ══════════════ -->
   <section class="section section--subtle" id="faq">
     <div class="container stack" style="max-width:var(--layout-prose-width)">
-      <h2>常見問題</h2>
+      <h2 class="accent">常見問題</h2>
 
       <!-- §3.5：標題必須是 button 並包在符合階層的標題元素內 -->
       <div class="accordion" data-single="true">
@@ -255,6 +358,21 @@
 				L227.8,98.6z"/>
       </svg>
     </a>
+    <!-- 沿用方式：頁尾連結群 .footer-cols > .footer-col（<h3> + <ul>）；≤640px 每群變成可展開的 <details>，版權置中 -->
+    <div class="footer-cols">
+      <section class="footer-col">
+        <h3>產品</h3>
+        <ul><li><a href="#main">備課資源中心</a></li><li><a href="#main">互動教學工具</a></li><li><a href="#main">診斷測驗系統</a></li></ul>
+      </section>
+      <section class="footer-col">
+        <h3>支援</h3>
+        <ul><li><a href="#faq">常見問題</a></li><li><a href="#main">使用教學</a></li><li><a href="#main">聯絡我們</a></li></ul>
+      </section>
+      <section class="footer-col">
+        <h3>關於</h3>
+        <ul><li><a href="#main">翰林教學樞紐</a></li><li><a href="#main">隱私權政策</a></li><li><a href="#main">服務條款</a></li></ul>
+      </section>
+    </div>
     <p>© 2026 翰林教學樞紐 Hanlin Hub　·　相信學習</p>
     <p class="footer-note">本產品生成之內容由生成式 AI 產出，可能受技術限制與外部資料影響，不保證百分之百正確與完整。</p>
   </div>

@@ -114,7 +114,7 @@
 </head>
 <body>
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="templates.html">視覺套版</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -7315,7 +7315,7 @@ hlStampAssets();
        退回第一組，不要把人丟回列表重挑——他在列表按「匯入套版」時就已經選過了。
        規則沿用 brand.html 那支轉址殼的既有做法：沒有採用過就給第一組。 */
     if(!kid){var _ks=window.HL_KITS||[];kid=_ks.length?_ks[0].id:'';}
-    var to=kid?('template.html?kit='+encodeURIComponent(kid)):'templates.html';
+    var to=kid?('template.html?kit='+encodeURIComponent(kid)):'index.html#kits';
     var file=to.split('?')[0];   /* 通行證比對檔名，不含查詢字串 */
     {try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:file,t:Date.now()}))}catch(e){}location.href=to;}
   });

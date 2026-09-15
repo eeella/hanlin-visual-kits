@@ -16,16 +16,60 @@
 /* 這一頁是獨立的操作說明，不是規範內容，所以沒有色版套色——
    整頁一律用 style.css 的平台原色。 */
 .way-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-.way{background:#fff;border:1px solid #E1E8F0;border-radius:14px;padding:24px 22px;
+.way{background:#fff;border-radius:14px;padding:24px 22px;
   display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow-sm)}
 .way-no{width:30px;height:30px;border-radius:50%;background:#0088D2;color:#fff;
   font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.way h3{margin:4px 0 0;font-size:17px;font-weight:700;color:#16202B}
+.way h3{margin:4px 0 0;font-size:17px;font-weight:700;color:#005696}
 .way p{margin:0;font-size:13.5px;line-height:1.9;color:#5C6A78}
 .way p b{color:#3A3D42;font-weight:500}
 .way-note{font-size:12.5px;color:#8C9099}
 /* 這一條是整頁最容易被忽略、但刪掉就會出事的提醒，用底色圈起來。
    #6E5200 on #FFF7E0 ＝ 6.84:1，12.5px 也達得到 AA。 */
+.steps{margin:0;padding:0 0 0 22px;font-size:14.5px;line-height:1.9;color:#3E4C5A;background:#fff;border-radius:14px;padding:22px 26px 22px 48px;box-shadow:var(--shadow-sm)}
+.steps>li{margin:0 0 10px}.steps>li:last-child{margin:0}
+.steps b{color:#16202B;font-weight:700}
+.steps ul{margin:4px 0 0;padding-left:18px;font-size:13.5px;color:#5C6A78}
+.steps code{font-size:13px;color:#005696;background:#E6F4FB;padding:1px 6px;border-radius:5px}
+.files{display:flex;flex-direction:column;gap:6px;margin:2px 0}
+.files span{display:flex;align-items:center;gap:10px;font-size:13px;color:#5C6A78;background:#F7F9FC;border-radius:10px;padding:8px 12px}
+.files code{font-size:12.5px;color:#005696;background:#E6F4FB;padding:2px 8px;border-radius:6px;font-weight:600}
+.way .ok{color:#146C43;font-weight:700}.way .ng{color:#B3261E;font-weight:700}
+.ai-prompt .pl-h{font-weight:800;color:#005696;font-size:17px;margin:10px 0 8px;padding:9px 14px;background:#E6F4FB;border-radius:8px;font-family:"Noto Sans TC",sans-serif;letter-spacing:.02em}
+.ai-prompt .pl-s{font-weight:700;color:#16202B;margin-top:6px;font-family:"Noto Sans TC",sans-serif}
+.ai-prompt .pl-i{padding-left:2.2em;text-indent:-1.1em;color:#3E4C5A}
+.ai-prompt .pl-i2{padding-left:2.2em;color:#3E4C5A}
+.ai-prompt .pl-b{padding-left:1.4em;text-indent:-1.4em}
+.ai-prompt .pl-p{color:#16202B}
+.ai-prompt .pl-gap{height:10px}
+.ai-prompt .pl-intro{margin:0 0 18px;font-size:14.5px;color:#3E4C5A;line-height:1.8}
+.prompt-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:900px){.prompt-cards{grid-template-columns:1fr}}
+.prompt-cards .way{gap:6px}
+.prompt-cards .way h3{margin-bottom:4px}
+.prompt-cards .way.warn{background:#FFF8EE;grid-column:1/-1}   /* 注意事項橫跨整排，右下角不留缺 */
+.prompt-cards .way.warn .pl-list{columns:2;column-gap:32px}
+.prompt-cards .way.warn .pl-list li{break-inside:avoid}
+@media(max-width:900px){.prompt-cards .way.warn .pl-list{columns:1}}
+.prompt-cards .way.warn h3{color:#8F4B00}
+.prompt-cards .way.warn .pl-line{color:#6B4632}
+.prompt-cards .pl-line{margin:0;font-size:13.5px;line-height:1.85;color:#5C6A78}
+.pl-list{margin:0;padding-left:1.2em;font-size:13.5px;line-height:1.85;color:#5C6A78}
+.pl-list li{margin:0 0 4px}
+.pl-list code{font-size:12.5px;color:#005696;background:#E6F4FB;padding:1px 6px;border-radius:5px}
+.prompt-cards .way.warn .pl-list{color:#6B4632}
+.ai-tabs{display:flex;gap:8px;margin:0 0 20px}
+.ai-tab{font-family:inherit;font-size:14px;padding:9px 20px;border-radius:999px;border:0;background:#fff;color:#3A3D42;cursor:pointer;transition:.15s;box-shadow:var(--shadow-sm)}
+.ai-tab:hover{background:#E6F4FB;color:#005696}
+.ai-tab.on{background:#005696;color:#fff;font-weight:500}
+.ai-panel[hidden]{display:none}
+.way{min-width:0}   /* grid 子項預設 min-width:auto，長 code 會把卡撐出邊 */
+.pl-list li,.way p{overflow-wrap:anywhere}
+.pl-list code{white-space:normal;overflow-wrap:anywhere}
+.way-hd{display:flex;align-items:center;gap:10px}
+.way-hd h3{margin:0}
+.way-grid.tools .way{padding:18px 20px}
+.way-grid.tools .way h3{font-size:15px}
 .way-note.warn{
   background:#FFF7E0;border-radius:8px;
   padding:10px 13px;color:#6E5200;line-height:1.85;
@@ -33,9 +77,7 @@
 .way .btn{margin-top:auto;border-radius:14px;border:none;box-shadow:none}
 .way .btn.primary{background:#0088D2;color:#fff}
 /* 指令框：等寬字、可捲動 */
-.ai-prompt{margin:0;padding:20px 22px;background:#F7F9FC;border:1px solid #E1E8F0;border-radius:14px;
-  font-family:"SF Mono",Consolas,Menlo,monospace;font-size:12.5px;line-height:1.95;
-  color:#3A3D42;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+.ai-prompt{margin:0;padding:0;background:transparent;font-family:inherit;white-space:normal}
 /* 目前選用的那一組：講清楚指令與規範檔是依哪一組產生的 */
 .kit-now{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   background:#E6F4FB;border-radius:14px;padding:14px 20px;margin-bottom:26px;font-size:13.5px;color:#005696}
@@ -48,7 +90,7 @@
 </head>
 <body class="tpl">
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="templates.html">視覺套版</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -60,44 +102,95 @@
 <main class="wrap">
   <section class="sec">
     <div class="sec-head"><h2>把規範交給 AI</h2><span class="note">AI PROMPT</span></div>
-    <p class="sec-desc">下載規範檔、上傳給 AI、貼上指令——三步做完，AI 產出的頁面就會照這一組的長相。不需要任何技術背景。</p>
+    <p class="sec-desc">三件事：準備檔案、交給 AI、確認它讀到了再讓它做。指令已經寫好「怎麼做、怎麼轉寫」，你只要複製、填一行需求。</p>
 
     <div class="kit-now" id="kitNow">
       <span>目前依這一組產生：</span><b id="kitName">—</b>
       <span class="sw" id="kitSw"></span>
-      <a href="templates.html">換一組 →</a>
+      <a href="index.html#kits">換一組 →</a>
     </div>
+
+    <!-- 流程一眼看完 -->
+    <div class="ai-tabs" role="tablist" aria-label="AI 指令頁籤">
+      <button class="ai-tab on" role="tab" type="button" aria-selected="true" data-tab="how">怎麼做</button>
+      <button class="ai-tab" role="tab" type="button" aria-selected="false" data-tab="tools">各工具怎麼上傳</button>
+      <button class="ai-tab" role="tab" type="button" aria-selected="false" data-tab="prompt">指令內容</button>
+    </div>
+    <div class="ai-panel" id="tab-how" role="tabpanel">
 
     <div class="way-grid">
       <div class="way">
-        <span class="way-no">1</span>
-        <h3>下載規範檔</h3>
-        <p>到<b>套版詳細</b>走完勾選，最後一頁按「確認採用，下載規範檔」，
-           瀏覽器就會下載一個 zip。<b>雙擊解壓縮</b>，裡面的 <b>SKILL.md</b>
-           就是要交給 AI 的那一個檔案。</p>
-        <p class="way-note">另外兩個（tokens.css、theme.json）是給工程用的，企劃可以先不管。</p>
+        <div class="way-hd"><h3>步驟 1｜準備檔案</h3></div>
+        <p>在<b>套版詳細</b>按「下載範例檔」，解壓縮後拿出這四個：</p>
+        <div class="files">
+          <span><code>SKILL.md</code>規範</span>
+          <span><code>tokens.css</code>顏色／圓角</span>
+          <span><code>hl-style.css</code>元件樣式</span>
+          <span><code>app.js</code>互動（漢堡、Tabs…）</span>
+        </div>
+        <p class="way-note">想直接在範例頁上改，再多拿 <code>index.html</code>。favicon、theme.json 不用。</p>
       </div>
 
       <div class="way">
-        <span class="way-no">2</span>
-        <h3>把 SKILL.md 上傳給 AI</h3>
-        <p>開一個<b>新的對話</b>（Claude、ChatGPT、Gemini 都可以），
-           把 <b>SKILL.md</b> 直接拖進輸入框，或按輸入框旁邊的<b>迴紋針／＋</b>選檔案上傳。</p>
-        <p class="way-note">一定要開新對話：舊對話裡的前提會蓋掉規範。</p>
+        <div class="way-hd"><h3>步驟 2｜交給 AI</h3></div>
+        <ul class="pl-list">
+          <li><b>開新對話</b>（舊對話的前提會蓋掉規範）。</li>
+          <li>把四個檔<b>一次拖進輸入框</b>；要轉寫既有頁面，把那個 HTML 也一起拖進去。</li>
+          <li>按「複製指令」貼進<b>同一則訊息</b>。</li>
+          <li>指令最後「這次的需求」A／B／C 挑一種填好、另外兩行刪掉，送出。</li>
+          <li>各工具怎麼上傳，看「各工具怎麼上傳」頁籤。</li>
+        </ul>
       </div>
 
       <div class="way">
-        <span class="way-no">3</span>
-        <h3>貼上指令再送出</h3>
-        <p>按「複製指令」，貼到<b>同一則訊息</b>裡（附件和文字要一起送出），
-           把最後一行的「（在這裡描述你的需求）」換成你要做的頁面，然後送出。</p>
-        <p class="way-note warn">中間那五條照抄不要刪，那是用來擋住 AI「自己調」的。</p>
-        <button class="btn primary" id="copyPrompt"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span>複製指令</button>
+        <div class="way-hd"><h3>步驟 3｜確認它讀到了，再讓它做</h3></div>
+        <ul class="pl-list">
+          <li>AI 第一則會回四行：<b>風格名稱、主色、對比色、圓角</b>。</li>
+          <li><span class="ok">對得上</span>上面那組 → 回「確認，開始」。</li>
+          <li><span class="ng">對不上／說讀不到</span> → 檔案沒進去，回步驟 2 重傳。</li>
+          <li>做完看三件事：顏色是這一組的？按鈕圓角對？手機版有重排（漢堡選單、表格直式小表）？不對就回「照 SKILL.md 修正」。</li>
+        </ul>
       </div>
     </div>
 
-    <h3 class="sub-title">指令內容<span class="en">— 可直接複製</span></h3>
+    </div>
+    <div class="ai-panel" id="tab-tools" role="tabpanel" hidden>
+    <div class="way-grid tools">
+      <div class="way">
+        <div class="way-hd"><h3>Claude（claude.ai）</h3></div>
+        <ul class="pl-list">
+          <li>對話輸入框左下角「＋」→ 上傳檔案，一次可選多個。</li>
+          <li>要長期用：建一個 <b>Project</b>，把四個檔放進 Project knowledge，之後每次對話都自動讀到。</li>
+        </ul>
+      </div>
+      <div class="way">
+        <div class="way-hd"><h3>ChatGPT</h3></div>
+        <ul class="pl-list">
+          <li>輸入框的迴紋針 → 上傳檔案（可多選）。</li>
+          <li>用 <b>GPTs／Projects</b>：把四個檔放進 Knowledge，指令貼在 Instructions。</li>
+        </ul>
+      </div>
+      <div class="way">
+        <div class="way-hd"><h3>Gemini</h3></div>
+        <ul class="pl-list">
+          <li>輸入框「＋」→ 上傳檔案。</li>
+          <li>Gemini 對 .md 有時只當文字；若它說讀不到，把 SKILL.md 的內容整段貼進訊息裡。</li>
+        </ul>
+      </div>
+      <div class="way">
+        <div class="way-hd"><h3>Claude Code／Cursor／Copilot（寫程式）</h3></div>
+        <ul class="pl-list">
+          <li>把解壓後的整個資料夾放進專案。</li>
+          <li>指令改成：「先讀 <code>./SKILL.md</code>、<code>./tokens.css</code>、<code>./hl-style.css</code>，以 <code>./index.html</code> 為底稿……」。</li>
+          <li>AI 會直接沿用 class 與變數，不會另造一套。</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+    <div class="ai-panel" id="tab-prompt" role="tabpanel" hidden>
     <pre class="ai-prompt" id="promptText"></pre>
+    <p style="margin:18px 0 0;text-align:right"><button class="btn primary" id="copyPrompt"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span>複製指令</button></p>
+    </div>
   </section>
 </main>
 
@@ -146,29 +239,80 @@
     /* 不先寫 #kitName——它是 #kitNow 的子節點，下一行整段換掉就沒了 */
     document.getElementById('kitNow').innerHTML=
       '<span>還沒挑視覺套版，下面的指令沒有指定風格。</span>'
-      +'<a href="templates.html">去挑一組 →</a>';
+      +'<a href="index.html#kits">去挑一組 →</a>';
   }
 
   function buildPrompt(){
     var n=kit?(kit.n||''):'';
     return [
-      '請依附件 SKILL.md 的翰林品牌規範製作網頁'+(n?('（風格：'+n+'）'):'')+'。',
+      '我要用翰林的品牌規範'+(n?('（風格：'+n+'）'):'')+'來做網頁，規範與樣式檔都在附件裡，請先讀完再照步驟進行。',
       '',
-      '必須遵守：',
-      '1. 色彩、圓角、陰影、字體一律照 SKILL.md 的數值，不要自行調整或「優化」。',
-      '2. 版型（Header／Footer／歡迎橫幅／功能選單／表格樣式）照 SKILL.md 的「採用設定」那一節。',
-      '3. 對比色只用在需要被點擊或需要強調的地方，不要拿來鋪大面積。',
-      '4. 附件若有 tokens.css，直接引用裡面的 CSS 變數，不要另外定義一套顏色。',
-      '5. 我提供的文字內容與資訊架構不要更動，你只負責視覺呈現。',
+      '━━ 步驟 1｜打開附件，先確認 ━━',
+      '・附件有：SKILL.md（規範）、tokens.css（顏色／圓角變數）、hl-style.css（元件樣式）、app.js（互動）；若有 index.html，它是範例頁，class 怎麼用照它。',
+      '・全部讀完後，只回四行：風格名稱／主色／對比色／按鈕圓角。讀不到附件就直接說。',
+      '・等我回「確認，開始」再做。',
       '',
-      '我要做的頁面是：（在這裡描述你的需求）'
+      '━━ 步驟 2｜製作 ━━',
+      '・產出一個完整可開啟的 index.html，引用 tokens.css、hl-style.css、app.js（放同一層）。',
+      '・結構與 class 的用法照 index.html 與 SKILL.md 的「元件 class 對照」；手機版由這些 class 自動重排（漢堡選單、表格直式小表）。',
+      '・做完列出有無偏離 SKILL.md 之處。',
+      '',
+      '━━ 這次的需求 ━━',
+      '下面 A、B、C 三種情況挑一種：把那一行的「＿＿＿」填好，另外兩行刪掉再送出。',
+      'A．我想做一個新頁面：頁面名稱是「＿＿＿」，裡面要有：＿＿＿',
+      'B．我已經有一個頁面（附在附件裡），請把它改成這個風格：文字、版面結構、功能和程式都不要動，只換顏色和樣式。',
+      'C．我想直接改範例頁 index.html：改成「＿＿＿」，要動的地方是：＿＿＿',
+      '',
+      '━━ 注意事項 ━━',
+      '・只用附件的變數與 class，不另寫顏色、元件或互動。',
+      '・色彩、圓角、陰影、字體照 SKILL.md／tokens.css，不自行調整或「優化」。',
+      '・層次用色塊表現，不把顏色用在邊線上。',
+      '・對比色只用在要點擊或強調的地方，不鋪大面積。',
+      '・版型照 SKILL.md「採用設定」。',
+      '・我給的文字與資訊架構不更動，你只負責視覺。',
+      ''
     ].join('\n');
   }
   var box=document.getElementById('promptText');
-  box.textContent=buildPrompt();
+  var PROMPT=buildPrompt();
+  /* 畫面上排版過（段落標題粗體、子項縮排、長行懸掛縮排），複製出去的是純文字 PROMPT */
+  /* 畫面呈現跟「怎麼做」一樣：每個段落一張卡（編號＋標題＋條目），複製出去仍是純文字 PROMPT */
+  var secs=[],cur=null,intro=[];
+  PROMPT.split('\n').forEach(function(l){
+    if(/^━━/.test(l)){cur={title:l.replace(/━━/g,'').trim(),lines:[]};secs.push(cur);return}
+    if(!l.trim())return;
+    if(cur)cur.lines.push(l);else intro.push(l);
+  });
+  var out=intro.map(function(l){return '<p class="pl-intro">'+esc(l)+'</p>'});
+  out.push('<div class="way-grid prompt-cards">');
+  secs.forEach(function(s,i){
+    var warn=/注意事項/.test(s.title);
+    out.push('<div class="way'+(warn?' warn':'')+'"><div class="way-hd"><h3>'+esc(s.title)+'</h3></div>');
+    var items=[];
+    s.lines.forEach(function(l){
+      if(/^下面 A/.test(l)){out.push('<p class="pl-line">'+esc(l)+'</p>');return}
+      items.push('<li>'+esc(l.replace(/^　　/,'').replace(/^・/,''))+'</li>');
+    });
+    if(items.length)out.push('<ul class="pl-list">'+items.join('')+'</ul>');
+    out.push('</div>');
+  });
+  out.push('</div>');
+  box.innerHTML=out.join('');
 
+
+  /* 頁籤：怎麼做／各工具怎麼上傳／指令內容 */
+  (function(){
+    var tabs=[].slice.call(document.querySelectorAll('.ai-tab'));
+    function show(id){
+      tabs.forEach(function(t){var on=t.getAttribute('data-tab')===id;t.classList.toggle('on',on);t.setAttribute('aria-selected',String(on))});
+      ['how','tools','prompt'].forEach(function(k){document.getElementById('tab-'+k).hidden=(k!==id)});
+    }
+    tabs.forEach(function(t){t.addEventListener('click',function(){show(t.getAttribute('data-tab'))})});
+    document.querySelectorAll('[data-goto]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-goto'));window.scrollTo({top:document.querySelector('.ai-tabs').getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'})})});
+    if(location.hash==='#prompt')show('prompt');
+  })();
   document.getElementById('copyPrompt').addEventListener('click',function(){
-    var btn=this,txt=box.textContent;
+    var btn=this,txt=PROMPT;
     function done(){
       var lab=btn.innerHTML;
       btn.innerHTML='<span class="material-symbols-rounded" style="font-size:18px">check</span>已複製';

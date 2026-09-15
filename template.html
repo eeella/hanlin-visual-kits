@@ -456,7 +456,7 @@ main .opt-dot.on{border-color:#0088D2}
 </head>
 <body class="tpl">
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">首頁</a><a href="templates.html" class="on">視覺套版</a><a href="basic.html">基本規範</a><a href="ai.html" id="goAiTop">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">首頁</a><a href="basic.html">基本規範</a><a href="ai.html" id="goAiTop">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 <div class="sticky-head">
 <header class="topbar">
   <div class="topbar-inner">
@@ -486,7 +486,7 @@ main .opt-dot.on{border-color:#0088D2}
 
 <div class="pagehead">
   <div class="pin">
-    <nav class="crumb-line" aria-label="麵包屑"><a href="templates.html">視覺套版</a> ／ <a href="#demo" id="crumbName" data-gocat="start">—</a><span id="crumbTail" hidden> ／ 完整規範</span></nav>
+    <nav class="crumb-line" aria-label="麵包屑"><a href="index.html#kits">視覺套版</a> ／ <a href="#demo" id="crumbName" data-gocat="start">—</a><span id="crumbTail" hidden> ／ 完整規範</span></nav>
     <div class="k-head">
       <div>
         <div class="k-title" id="kName">—</div>
@@ -2493,7 +2493,7 @@ main .opt-dot.on{border-color:#0088D2}
     dockBtn.innerHTML=nx
       ? ico+'arrow_forward</span>確認採用，下一步：'+tabName(nx)
       : (imp? ico+'check</span>確認採用，回匯入頁'
-            : ico+'download</span>確認採用，下載規範檔');
+            : ico+'download</span>確認採用，下載範例檔');
     dockTxt.innerHTML=nx
       ? '<span style="color:#5C6A78">這一頁勾好之後按「確認採用」，會存起來並帶你到下一個頁籤。</span>'
       : (imp? '<span style="color:#5C6A78">最後一步。按「確認採用」存起來，並回到匯入頁套用。</span>'
@@ -2879,7 +2879,7 @@ main .opt-dot.on{border-color:#0088D2}
        原本這裡把 iframe 裡套好的範本頁存成 hanlin-sample-<kit>.html。
        實際要的是規範本體：使用者拿到手要餵給 AI，HTML 給不了那個用途。
        改成輸出 SKILL.md 單檔，內容沿用 skillpack.js 的 buildSkillPack ——
-       與右上角「確認採用，下載規範檔」zip 裡的 SKILL.md 是同一份，
+       與右上角「確認採用，下載範例檔」zip 裡的 SKILL.md 是同一份，
        不另外寫第二套產生器（先前兩份分岔過，數字對不起來）。 */
     var dl=document.getElementById('dlSample');
     if(dl)dl.addEventListener('click',function(){

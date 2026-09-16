@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609141900">
-<script src="defaults.js?v=16974f4afe52"></script>
+<link rel="stylesheet" href="style.css?v=20260916d">
+<script src="defaults.js?v=20260916d"></script>
 <style>
 /* ===== 預覽頁專用 ===== */
 .pv-toolbar{position:sticky;top:0;z-index:120;background:#fff;box-shadow:var(--shadow-sm)}
@@ -28,6 +28,12 @@
 .pv-block:not(.off) .pv-check::before{content:"check";font-family:'Material Symbols Rounded';font-size:14px;font-weight:700}
 .pv-tag{display:inline-block;font-size:11.5px;color:var(--brand);background:var(--blue-50);border-radius:999px;padding:2px 10px}
 .pv-block.off .pv-tag{visibility:hidden}
+/* 2026-09-16 UX 審核：手機版區塊標題列——標題與標籤不拆字，「採用：〜」自己換到下一行靠左 */
+@media(max-width:600px){
+  .pv-block-head{flex-wrap:wrap;padding:12px 16px;row-gap:4px}
+  .pv-block-head>*{white-space:nowrap}
+  .pv-block-head .pick-note{margin-left:0;flex-basis:100%;text-align:left}
+}
 .pv-block-body{padding:26px}
 .pv-block.off .pv-block-body{opacity:.32;filter:grayscale(.6)}
 .vr{display:none}
@@ -43,23 +49,24 @@ body.result-mode .pv-block-head{cursor:default}
 </head>
 <body>
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 <header class="pv-toolbar">
   <div class="pv-toolbar-inner">
     <h1>版型預覽<span class="sub">Layout Preview</span></h1>
     <span class="grow">
       <span class="pv-count" id="pvCount"></span>
-      <button class="btn primary" id="saveBlocks" style="font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">save</span>儲存 skill 區塊</button>
+      <button class="btn primary" id="saveBlocks" hidden style="font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">save</span>儲存 skill 區塊</button>
       <button class="btn soft" id="backEdit" style="display:none;font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">edit</span>返回編輯</button>
       <button class="btn soft" id="exportSkill" style="display:none;font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">download</span>匯出 skill JSON</button>
-      <button class="btn primary" id="goImportHome" style="display:none;font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">done</span>完成，回匯入頁</button>
+      <button class="btn primary" id="goImportHome" hidden style="display:none;font-size:13.5px;padding:9px 20px"><span class="material-symbols-rounded" style="font-size:18px">done</span>完成，回匯入頁</button>
     </span>
   </div>
 </header>
 
 <p class="pv-hint">以下區塊已套用你在視覺套版選定的主色、對比色、Logo 與版型；點區塊標題列可勾選/取消「納入 skill」。</p>
 
-<main class="wrap">
+<main id="main" class="wrap">
 
   <!-- 匯入頁面（套上規範，與目前主題連動） -->
   <div class="pv-block" data-block="importpage" id="importPageBlock" style="display:none">
@@ -806,6 +813,18 @@ hlStampAssets();
     return blocks.filter(function(b){return !b.classList.contains('off')&&b.style.display!=='none'})
                  .map(function(b){return b.dataset.block});
   }
+  /* 流程條（2026-09-16 動線整理）：這一頁是步驟 2 的另一條路（沒有對應套版時的版型預覽）。
+     編輯中主鈕＝儲存區塊；成果模式主鈕＝回匯入頁。右上只留淺底工具鈕（返回編輯／匯出 JSON）。 */
+  function paintDock(){
+    if(!window.HL_flowDock)return;
+    if(document.body.classList.contains('result-mode')){
+      HL_flowDock({step:2,primary:{label:'完成，回匯入頁',icon:'arrow_forward',onClick:function(){document.getElementById('goImportHome').click()}},
+        note:'已儲存 '+pickedBlocks().length+' 個區塊'});
+    }else{
+      HL_flowDock({step:2,primary:{label:'儲存區塊，看成果',icon:'save',onClick:function(){document.getElementById('saveBlocks').click()}},
+        note:''});
+    }
+  }
   function enterResult(){
     document.body.classList.add('result-mode');
     document.getElementById('saveBlocks').style.display='none';
@@ -813,6 +832,7 @@ hlStampAssets();
     document.getElementById('exportSkill').style.display='';
     document.getElementById('goImportHome').style.display='';
     document.getElementById('pvCount').textContent='skill 成果預覽：'+pickedBlocks().length+' 個區塊';
+    paintDock();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   document.getElementById('backEdit').addEventListener('click',function(){
@@ -822,6 +842,7 @@ hlStampAssets();
     document.getElementById('exportSkill').style.display='none';
     document.getElementById('goImportHome').style.display='none';
     updateCount();
+    paintDock();
   });
   document.getElementById('goImportHome').addEventListener('click',function(){
     localStorage.setItem('hanlin-show-result','1');
@@ -858,6 +879,7 @@ hlStampAssets();
      共用函式早就寫好了卻沒人呼叫。取不到就不綁，不要退回自己寫一份——
      那正是當初分岔的起點。 */
   if(window.HL_bindQuickDefault)window.HL_bindQuickDefault();
+  paintDock();
 })();
 </script>
 

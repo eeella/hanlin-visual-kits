@@ -10,12 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609141900">
-<script src="defaults.js?v=16974f4afe52"></script>
+<link rel="stylesheet" href="style.css?v=20260916d">
+<script src="defaults.js?v=20260916d"></script>
 <script src="kits.js?v=edb539f4d2ae"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
-<script src="skillpack.js?v=20260915a"></script>
+<script src="skillpack.js?v=20260916e"></script>
 <style>
 /* ===== 套版詳細專用 =====
    這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
@@ -183,7 +183,7 @@ main .pick-box{overflow:hidden}
 .adopt-dock .ad-txt i{font-style:normal;color:#3A3D42}
 .adopt-dock .ad-act{flex:none;display:flex;gap:10px;align-items:center;order:-1}
 .adopt-dock .btn{border:none;box-shadow:none;border-radius:14px;font-size:13.5px;padding:10px 20px}
-.adopt-dock .btn.primary{background:#0088D2;color:#fff}
+.adopt-dock .btn.primary{background:#0072B5;color:#fff}
 .adopt-dock .btn.primary.done{background:#0B6B3A}
 /* 固定列會蓋住頁尾最後一段，把版面墊高等高的距離 */
 body.tpl.has-dock{padding-bottom:78px}
@@ -195,11 +195,11 @@ body.tpl.has-dock{padding-bottom:78px}
 }
 
 /* ===== 平台基本樣式：按鈕與選取狀態一律用全站原色 =====
-   套色是設在 <main> 上的（topbar／頁籤／頁尾本來就在作用域外），
+   套色是設在 <main id="main"> 上的（topbar／頁籤／頁尾本來就在作用域外），
    但 main 裡面不是只有示範內容——操作用的按鈕、以及「你選了哪一個」的
    選取回饋，是平台自己的介面，跟著色版變會讓人分不清
    「這是平台的樣子」還是「這是這一組套版的樣子」。
-   這裡把它們釘回 style.css 的原值：#0088D2／#005696／#E6F4FB。
+   這裡把它們釘回 style.css 的原值：#0072B5／#005696／#E6F4FB（2026-09-16 主色改 AA 版）。
 
    刻意不含在內的是示範內容：#controls／#popup／#project／#bookmark／
    #brandcomps 裡的按鈕是在示範「這一組風格的按鈕長什麼樣」，
@@ -208,10 +208,10 @@ body.tpl.has-dock{padding-bottom:78px}
 main .btn.primary#demoOpen,
 main .btn.primary#dlSample,
 main .btn.primary#goPreview,
-main #startgo .btn{background:#0088D2;color:#fff}
+main #startgo .btn{background:#0072B5;color:#fff}
 main #startgo .btn .material-symbols-rounded{color:#fff}
 main .btn.soft#exportTheme,
-main .btn.soft#exportSkillMd{background:#E6F4FB;color:#0088D2}
+main .btn.soft#exportSkillMd{background:#E6F4FB;color:#0072B5}
 /* 形狀也要一起釘：.btn 的 border 與 box-shadow 讀 --bd-comp／--sh-btn，
    只改顏色的話，漫畫貼紙風那種粗黑邊＋偏移陰影還是會套到平台按鈕上，
    跟頁首那兩顆（在套色作用域外）長得不一樣。 */
@@ -226,19 +226,24 @@ main .btn#exportSkillMd{border:none;box-shadow:none;border-radius:14px}
 /* 選取框是平台的區塊外殼，不是示範內容：邊線與陰影固定，
    裡面的 .pick-body 才是這一組套版該表現的地方。 */
 main .pick-box{border:1px solid #EDF0F4;box-shadow:0 1px 2px rgba(20,45,70,.05);border-radius:14px}
-main .pick-box.adopted{border:1.5px solid #0088D2}
+main .pick-box.adopted{border:1.5px solid #0072B5}
 main .pick-head{color:#005696}
-main .pick-box.adopted .pick-state{border-color:#0088D2;background:#0088D2;color:#fff}
-main .adopt-tag{color:#0088D2;background:#E6F4FB}
-main .logo-sel.on{outline-color:#0088D2}
-main .logo-sel.on .chk{background:#0088D2}
-main .logo-inv.on{outline-color:#0088D2}
-main .logo-inv.on .chk{color:#0088D2}
+main .pick-box.adopted .pick-state{border-color:#0072B5;background:#0072B5;color:#fff}
+main .adopt-tag{color:#0072B5;background:#E6F4FB}
+main .logo-sel.on{outline-color:#0072B5}
+main .logo-sel.on .chk{background:#0072B5}
+main .logo-inv.on{outline-color:#0072B5}
+main .logo-inv.on .chk{color:#0072B5}
 main .opt-card.sel{background:#E6F4FB}
-main .opt-dot.on{border-color:#0088D2}
+main .opt-dot.on{border-color:#0072B5}
 
 /* 範本頁之後的兩顆按鈕：不放標題與說明，按鈕自己就是說明 */
 .start-act{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.cat-next{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:10px 0 0;padding:22px 26px;background:#fff;border-radius:14px;box-shadow:var(--shadow-sm)}
+.cat-next[hidden]{display:none}
+.cat-next .cn-txt{font-size:14px;color:var(--gray-2)}
+.cat-next .btn{border:none;box-shadow:none;border-radius:14px;padding:11px 22px;font-size:14px;background:#0072B5;color:#fff}
+@media(max-width:640px){.cat-next .btn{width:100%;justify-content:center}}
 .start-act .btn{border-radius:14px;padding:13px 30px;font-size:15px}
 @media(max-width:560px){
   .start-act{flex-direction:column}
@@ -263,7 +268,7 @@ main .opt-dot.on{border-color:#0088D2}
   font-size:11.5px;letter-spacing:.06em;font-weight:500}
 .ratio-note{font-size:12.5px;color:var(--gray-2);margin-top:10px;line-height:1.85}
 .sub-hd{font-size:15px;font-weight:700;color:var(--gray-1);margin:32px 0 6px;letter-spacing:.02em}
-.sub-hd .en{font-size:11px;font-weight:400;color:#A6AEBB;letter-spacing:.18em;margin-left:8px}
+.sub-hd .en{font-size:11px;font-weight:400;color:#626A78;letter-spacing:.18em;margin-left:8px}
 .sub-note{font-size:13px;color:var(--gray-2);margin-bottom:16px;max-width:760px;line-height:1.85}
 
 /* 色票：主色票是大色塊配說明，延伸色票是橫式小卡（照 Master 的呈現）。
@@ -304,7 +309,7 @@ main .opt-dot.on{border-color:#0088D2}
 /* 元件樣式：用該組的圓角／陰影／邊線實際畫出來 */
 .ui-demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--block-gap)}
 .ui-cell{background:#fff;border-radius:14px;box-shadow:var(--shadow-sm);padding:24px;border:1px solid #EDF0F4}
-.ui-cell h4{font-size:12px;color:#A6AEBB;letter-spacing:.16em;font-weight:400;margin-bottom:16px}
+.ui-cell h4{font-size:12px;color:#626A78;letter-spacing:.16em;font-weight:400;margin-bottom:16px}
 .ui-cell .spec{font-size:11.5px;color:var(--gray-2);margin-top:14px;line-height:1.8;
   font-variant-numeric:tabular-nums;word-break:break-all}
 .k-btn{display:inline-flex;align-items:center;gap:6px;font-family:inherit;font-size:14.5px;
@@ -394,7 +399,7 @@ main .opt-dot.on{border-color:#0088D2}
 .tpl .pin{max-width:1280px;margin:0 auto;padding:0 24px}
 .tpl .blk-hd{margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--k-p)}
 .tpl .blk-hd h2{font-size:21px;font-weight:700;color:var(--gray-1);letter-spacing:.02em}
-.tpl .blk-hd h2 .en{font-size:12px;font-weight:400;color:#A6AEBB;letter-spacing:.18em;margin-left:10px}
+.tpl .blk-hd h2 .en{font-size:12px;font-weight:400;color:#626A78;letter-spacing:.18em;margin-left:10px}
 .tpl .blk-hd p{font-size:13px;color:var(--gray-2);margin-top:8px;line-height:1.85;max-width:760px}
 .tpl .blk>*+.todo{margin-top:24px}
 .tpl .ui-demo,.tpl .sw-grid,.tpl .logo-duo{gap:20px}
@@ -418,7 +423,7 @@ main .opt-dot.on{border-color:#0088D2}
 .typo-row{display:grid;grid-template-columns:210px 1fr;gap:20px;align-items:baseline;
   padding:22px 24px;border-bottom:1px solid #EDF0F4}
 .typo-row:last-child{border-bottom:0}
-.typo-row .k{font-size:12px;color:#A6AEBB;letter-spacing:.1em}
+.typo-row .k{font-size:12px;color:#626A78;letter-spacing:.1em}
 .typo-row .k b{display:block;font-size:13.5px;color:var(--gray-1);font-weight:500;letter-spacing:.02em;margin-bottom:3px}
 .typo-row .v{color:var(--gray-1)}
 .kv-line{font-size:13px;color:var(--gray-2);line-height:1.9}
@@ -456,6 +461,7 @@ main .opt-dot.on{border-color:#0088D2}
 </head>
 <body class="tpl">
 
+<a class="skip-link" href="#main">跳到主要內容</a>
 <div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html" id="goAiTop">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 <div class="sticky-head">
 <header class="topbar">
@@ -463,13 +469,14 @@ main .opt-dot.on{border-color:#0088D2}
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">menu_book</span>
     <h1>套版詳細<span class="sub">Style Detail</span></h1>
     <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
-      <button class="btn primary" id="goPreviewTop" style="font-size:13px;padding:8px 16px;border-radius:999px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>套入匯入頁</button>
+      <button class="btn soft" id="dlSample" style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載範例檔</button>
     </span>
   </div>
 </header>
 
 <div class="tab-bar">
   <nav class="cat-tabs">
+    <button class="cat-tab cat-back" type="button" data-gocat="start" href="#demo" title="回到這一組的總覽"><span class="material-symbols-rounded" style="font-size:18px;vertical-align:-4px">arrow_back</span>套版總覽</button>
     <!-- 品牌基礎暫時關閉 <button class="cat-tab" data-cat="brand">品牌基礎</button> -->
     <button class="cat-tab" data-cat="identity">品牌識別</button>
     <button class="cat-tab" data-cat="comps">介面套用</button>
@@ -486,7 +493,7 @@ main .opt-dot.on{border-color:#0088D2}
 
 <div class="pagehead">
   <div class="pin">
-    <nav class="crumb-line" aria-label="麵包屑"><a href="index.html#kits">視覺套版</a> ／ <a href="#demo" id="crumbName" data-gocat="start">—</a><span id="crumbTail" hidden> ／ 完整規範</span></nav>
+    <nav class="crumb-line" aria-label="麵包屑"><a href="index.html#kits">視覺套版</a> ／ <a href="#demo" id="crumbName" data-gocat="start">—</a><span id="crumbTail" hidden> ／ 自訂規範樣式</span></nav>
     <div class="k-head">
       <div>
         <div class="k-title" id="kName">—</div>
@@ -559,8 +566,7 @@ main .opt-dot.on{border-color:#0088D2}
        標題與說明都拿掉——按鈕文字已經講完了要做什麼，再寫一段只是擋在中間。 -->
   <section class="sec" data-cat="start" id="startgo">
     <div class="start-act">
-      <button class="btn primary" id="dlSample"><span class="material-symbols-rounded" style="font-size:19px">download</span>下載範例檔</button>
-      <a class="btn primary" href="#header" data-gocat="identity"><span class="material-symbols-rounded" style="font-size:19px">tune</span>自訂規範樣式</a>
+      <a class="btn soft" href="#logo" data-gocat="identity"><span class="material-symbols-rounded" style="font-size:19px">tune</span>自訂規範樣式</a>
     </div>
   </section>
 
@@ -850,8 +856,8 @@ main .opt-dot.on{border-color:#0088D2}
       <div class="pick-head"><span class="pick-state"></span>輸入框 Input<span class="adopt-tag">採用中</span><span class="pick-note">Label 一律顯示（不得用 placeholder 代替）；錯誤狀態同時具備色彩、文字、aria-invalid 與 aria-describedby；輸入內容不得因錯誤被清空。</span></div>
       <div class="pick-body">
     <div class="duo">
-      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
-      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
+      <div class="duo-card light"><span class="duo-tag">淺色底</span><span>品牌色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字" aria-label="教材名稱"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@" aria-label="電子郵件"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
+      <div class="duo-card dark"><span class="duo-tag">深色底</span><span>白色系呈現</span><div class="cx"><div><label class="cx-lab">教材名稱 <em>*</em></label><input class="cx-in" placeholder="請輸入關鍵字" aria-label="教材名稱"><div class="cx-help">最多 40 字</div></div><div><label class="cx-lab">電子郵件 <em>*</em></label><input class="cx-in err" value="hanlin@" aria-label="電子郵件"><div class="cx-help err">格式不正確：請補上 @ 後面的網域，內容已保留</div></div></div></div>
     </div>
       </div>
     </div>
@@ -957,13 +963,13 @@ main .opt-dot.on{border-color:#0088D2}
       </div>
       <div style="overflow-x:auto">
       <table class="tbl hover">
-        <thead><tr><th style="width:44px"><input type="checkbox"></th><th>試卷名稱</th><th>科目</th><th>年級</th><th>狀態</th><th>建立日期</th><th style="width:110px">操作</th></tr></thead>
+        <thead><tr><th style="width:44px"><input type="checkbox" aria-label="全選"></th><th>試卷名稱</th><th>科目</th><th>年級</th><th>狀態</th><th>建立日期</th><th style="width:110px">操作</th></tr></thead>
         <tbody>
-          <tr><td><input type="checkbox" checked></td><td>第一次段考複習卷 A</td><td><span class="tagx blue">數學</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/12</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
-          <tr><td><input type="checkbox"></td><td>單元三 隨堂測驗</td><td><span class="tagx blue">國文</span></td><td>八年級</td><td><span class="tagx yellow">批改中</span></td><td>2026/08/10</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
-          <tr><td><input type="checkbox"></td><td>英語聽力 Unit 5</td><td><span class="tagx blue">英語</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/08</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
-          <tr><td><input type="checkbox"></td><td>AI 素養導向題組（草稿）</td><td><span class="tagx blue">自然</span></td><td>九年級</td><td><span class="tagx gray">草稿</span></td><td>2026/08/05</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
-          <tr><td><input type="checkbox"></td><td>會考總複習 模擬卷一</td><td><span class="tagx blue">社會</span></td><td>九年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/01</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox" checked aria-label="選取 第一次段考複習卷 A"></td><td>第一次段考複習卷 A</td><td><span class="tagx blue">數學</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/12</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox" aria-label="選取 單元三 隨堂測驗"></td><td>單元三 隨堂測驗</td><td><span class="tagx blue">國文</span></td><td>八年級</td><td><span class="tagx yellow">批改中</span></td><td>2026/08/10</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox" aria-label="選取 英語聽力 Unit 5"></td><td>英語聽力 Unit 5</td><td><span class="tagx blue">英語</span></td><td>七年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/08</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox" aria-label="選取 AI 素養導向題組（草稿）"></td><td>AI 素養導向題組（草稿）</td><td><span class="tagx blue">自然</span></td><td>九年級</td><td><span class="tagx gray">草稿</span></td><td>2026/08/05</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
+          <tr><td><input type="checkbox" aria-label="選取 會考總複習 模擬卷一"></td><td>會考總複習 模擬卷一</td><td><span class="tagx blue">社會</span></td><td>九年級</td><td><span class="tagx green">已派發</span></td><td>2026/08/01</td><td><span class="act"><span class="edit"><span class="material-symbols-rounded">edit</span></span><span class="del"><span class="material-symbols-rounded">delete</span></span></span></td></tr>
         </tbody>
       </table>
       </div>
@@ -1254,7 +1260,7 @@ main .opt-dot.on{border-color:#0088D2}
       <div class="pick-box adopted" data-multi="1" style="margin-bottom:0">
         <div class="pick-head"><span class="pick-state"></span>輸入框 Inputs<span class="adopt-tag">採用中</span></div>
         <div class="pick-body">
-          <div class="field"><input type="text" placeholder="搜尋..."></div>
+          <div class="field"><input type="text" placeholder="搜尋..." aria-label="搜尋"></div>
           <div class="check-line"><i></i>勾選項目</div>
         </div>
       </div>
@@ -1269,8 +1275,8 @@ main .opt-dot.on{border-color:#0088D2}
       </div>
     </div>
     <div class="confirm-strip" style="margin-top:30px">
-      <p>選好品牌規範（主色 / Logo / Header / Footer / Hero Banner / 元件...）後，按下確認存進採用設定，並回到視覺套版列表。</p>
-      <button class="btn primary" id="goPreview"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用，套入匯入頁</button>
+      <p>勾選會自動儲存。需要檔案的話可以在這裡匯出設定。</p>
+      <button class="btn soft" id="goPreview" hidden style="border-radius:999px"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用，套入匯入頁</button>
       <button class="btn soft" id="exportTheme" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">download</span>匯出 theme JSON</button>
       <button class="btn soft" id="exportSkillMd" style="border-radius:999px;margin-left:10px"><span class="material-symbols-rounded" style="font-size:18px">description</span>匯出 skill.md</button>
     </div>
@@ -1340,7 +1346,7 @@ main .opt-dot.on{border-color:#0088D2}
     <p class="sub-desc">次要文字、圖示、分隔線與底色一律用這三階灰，不要隨手用淺灰帶過。</p>
     <div class="kv-grid">  <!-- 同第一排的固定欄寬 -->
       <div class="kv-card"><div class="kv-chip" style="background:var(--gray-1)"></div><div class="kv-meta"><b>深灰 Gray-1</b><span>#3A3D42<br>主要文字 / 圖示</span></div></div>
-      <div class="kv-card"><div class="kv-chip" style="background:var(--gray-2)"></div><div class="kv-meta"><b>中灰 Gray-2</b><span>#8C9099<br>次要文字 / 說明</span></div></div>
+      <div class="kv-card"><div class="kv-chip" style="background:var(--gray-2)"></div><div class="kv-meta"><b>中灰 Gray-2</b><span>#626A78<br>次要文字 / 說明</span></div></div>
       <div class="kv-card"><div class="kv-chip" style="background:var(--gray-3)"></div><div class="kv-meta"><b>淺灰 Gray-3</b><span>#E6E8EC<br>分隔線 / 底色</span></div></div>
     </div>
       </div>
@@ -1473,17 +1479,15 @@ main .opt-dot.on{border-color:#0088D2}
 
 
 
+  <!-- 每個頁籤內容的底端：切到下一個頁籤（2026-09-16 使用者要求）。文字與動作跟底部流程條同一份 -->
+  <div class="cat-next" id="catNext" hidden>
+    <span class="cn-txt" id="catNextTxt"></span>
+    <button type="button" class="btn primary" id="catNextBtn"></button>
+  </div>
 </main>
 
 <!-- 已存採用列：勾選即存，這一條負責讓使用者看到「實際存進去的是什麼」 -->
-<div class="adopt-dock" id="adoptDock" hidden>
-  <div class="pin">
-    <span class="ad-act">
-      <button class="btn primary" id="adoptConfirm"><span class="material-symbols-rounded" style="font-size:18px">check</span>確認採用</button>
-    </span>
-    <span class="ad-txt" id="adoptDockTxt"></span>
-  </div>
-</div>
+<!-- 底部流程條改用 defaults.js 的 HL_flowDock（2026-09-16 動線整理），這裡不再放自己的 adopt-dock -->
 
 <footer class="site-footer">
   © 2026 翰林教學樞紐 Hanlin Hub · 相信學習<br>
@@ -1506,8 +1510,8 @@ main .opt-dot.on{border-color:#0088D2}
     <span class="close-x material-symbols-rounded">close</span>
     <h4>建立新試卷</h4>
     <p>填寫基本資訊後開始選題。</p>
-    <div class="field"><label>試卷名稱 <em class="pv-star">*</em></label><input type="text" placeholder="例：第一次段考複習卷"></div>
-    <div class="field"><label>適用班級</label><input type="text" placeholder="例：七年 3 班"></div>
+    <div class="field"><label>試卷名稱 <em class="pv-star">*</em></label><input type="text" placeholder="例：第一次段考複習卷" aria-label="試卷名稱"></div>
+    <div class="field"><label>適用班級</label><input type="text" placeholder="例：七年 3 班" aria-label="適用班級"></div>
     <div class="acts"><button class="btn soft">取消</button><button class="btn primary">建立</button></div>
   </div>
 </div>
@@ -1578,7 +1582,7 @@ main .opt-dot.on{border-color:#0088D2}
   if(window.HL_importFlowBar)window.HL_importFlowBar();
 
   /* ===== 頁籤切換 ===== */
-  var tabs=document.querySelectorAll('.cat-tab');
+  var tabs=document.querySelectorAll('.cat-tab:not(.cat-back)');   /* 返回鈕不算頁籤 */
   var groups=document.querySelectorAll('.nav-group');
   var sections=document.querySelectorAll('main section.sec');
   var tabBar=document.querySelector('.tab-bar');
@@ -2458,14 +2462,11 @@ main .opt-dot.on{border-color:#0088D2}
      這一頁是勾選即存、沒有送出動作，所以勾完不知道到底存進去什麼。
      這一條讀 buildState()——也就是「真的會被存下來的那份」——直接貼出來，
      不另外維護一份狀態，畫面上寫什麼就等於存了什麼。 */
-  var dock=document.getElementById('adoptDock'),
-      dockTxt=document.getElementById('adoptDockTxt'),
-      dockBtn=document.getElementById('adoptConfirm'),
-      dockCat='';
+  var dockCat='';
   /* 頁籤順序直接讀畫面上的按鈕，不另外寫死一份清單——
      AI 指令那顆被註解關掉之後，寫死的清單就會把人帶到看不見的頁籤。 */
   function tabOrder(){
-    return [].slice.call(document.querySelectorAll('.cat-tab')).map(function(t){return t.dataset.cat});
+    return [].slice.call(document.querySelectorAll('.cat-tab:not(.cat-back)')).map(function(t){return t.dataset.cat});
   }
   function nextCat(cat){
     var o=tabOrder(),i=o.indexOf(cat);
@@ -2481,39 +2482,48 @@ main .opt-dot.on{border-color:#0088D2}
     try{return sessionStorage.getItem('hanlin-import-live')==='1'
       &&!!localStorage.getItem('hanlin-import-html')}catch(e){return false}
   }
-  function updateDock(){
-    if(!dock)return;
-    var nx=nextCat(dockCat),imp=fromImport(),
-        ico='<span class="material-symbols-rounded" style="font-size:18px">';
-    dockBtn.innerHTML=nx
-      ? ico+'arrow_forward</span>確認採用，下一步：'+tabName(nx)
-      : (imp? ico+'check</span>確認採用，回匯入頁'
-            : ico+'download</span>確認採用，下載範例檔');
-    dockTxt.innerHTML=nx
-      ? '<span style="color:#5C6A78">這一頁勾好之後按「確認採用」，會存起來並帶你到下一個頁籤。</span>'
-      : (imp? '<span style="color:#5C6A78">最後一步。按「確認採用」存起來，並回到匯入頁套用。</span>'
-            : '<span style="color:#5C6A78">最後一步。按「確認採用」存起來，並下載這一組的規範檔。</span>');
+  /* 流程條（2026-09-16 動線整理）：全站共用 HL_flowDock，這一頁是步驟 2。
+     落地頁：主鈕＝「下一步：套入匯入頁」（原本在右上角那顆）。
+     自訂模式：主鈕＝「確認採用，下一步：〈下個頁籤〉」，最後一個頁籤才回匯入頁或下載。 */
+  function _kitNameFromUrl(){
+    var id=new URLSearchParams(location.search).get('kit')||'',ks=window.HL_KITS||[];
+    for(var i=0;i<ks.length;i++){if(ks[i].id===id)return ks[i].n}
+    return ks.length?ks[0].n:'這一組';
   }
-  function updateDockVisible(cat){
-    if(!dock)return;
-    /* 落地頁沒有任何勾選項目，出現這一條只會擋住畫面 */
-    var show=(cat!=='start');
-    dockCat=cat;
-    dock.hidden=!show;
-    document.body.classList.toggle('has-dock',show);
-    if(show)updateDock();
-  }
-  if(dockBtn)dockBtn.addEventListener('click',function(){
+  function dockClick(){
     saveTheme();
     var nx=nextCat(dockCat);
     /* 還有下一個頁籤就往下走；走到最後一頁才用既有的 saveAndPreview
        （存檔、發通行證、去匯入頁），不另外寫一套。 */
     if(nx){setCat(nx);return}
-    /* 從匯入頁來的才回匯入頁（既有的 saveAndPreview：存檔、發通行證、跳頁）；
-       其餘情況終點就是拿到檔案，直接打包下載。 */
-    if(fromImport()){saveAndPreview();return}
-    downloadKitZip(dockBtn);
-  });
+    /* 最後一頁：一律套入匯入頁（全站四步的下一步）；範例檔由右上角「下載範例檔」拿，不在這裡分岔。 */
+    saveAndPreview();
+  }
+  function updateDock(){
+    if(!window.HL_flowDock)return;
+    if(dockCat==='start'||!dockCat){
+      HL_flowDock({step:2,primary:{label:'下一步：套入匯入頁',icon:'arrow_forward',onClick:saveAndPreview}});
+      var cn0=document.getElementById('catNext');if(cn0)cn0.hidden=true;
+      return;
+    }
+    var nx=nextCat(dockCat),o=tabOrder(),i=o.indexOf(dockCat);
+    HL_flowDock({step:2,
+      primary:nx?{label:'下一步：'+tabName(nx),icon:'arrow_forward',onClick:dockClick}
+                :{label:'完成，套入匯入頁',icon:'check',onClick:dockClick},
+      note:'自訂 '+(i+1)+'／'+o.length+'・勾選會自動儲存'});
+    /* 頁籤內容底端的同一顆 */
+    var cn=document.getElementById('catNext');
+    if(cn){
+      cn.hidden=false;
+      document.getElementById('catNextTxt').textContent=nx?('這一頁勾好了？繼續到「'+tabName(nx)+'」'):'三個頁籤都看過了，套到你的頁面上';
+      document.getElementById('catNextBtn').innerHTML='<span class="material-symbols-rounded" style="font-size:18px">'+(nx?'arrow_forward':'check')+'</span>'+(nx?('下一步：'+tabName(nx)):'完成，套入匯入頁');
+    }
+  }
+  function updateDockVisible(cat){
+    dockCat=cat;
+    updateDock();
+  }
+  var cnb=document.getElementById('catNextBtn');if(cnb)cnb.addEventListener('click',dockClick);
 
   /* setCat() 定義在前面、這一段在後面，用 window 掛勾接起來，
      不把 dock 的程式往上搬（那一段是頁籤切換，跟採用狀態無關）。 */
@@ -2543,7 +2553,6 @@ main .opt-dot.on{border-color:#0088D2}
     location.href=to;
   }
   document.getElementById('goPreview').addEventListener('click',saveAndPreview);
-  document.getElementById('goPreviewTop').addEventListener('click',saveAndPreview);
   /* 所有下載規範檔的按鈕都只是觸發同一顆原本的匯出鈕，產生邏輯只有一份。
      兩種拿法的差別不在產生器，而在「你有沒有先去品牌識別把版面設定挑好」——
      挑過的設定本來就已經存進採用設定，匯出時自然會帶進去。 */
@@ -2553,8 +2562,9 @@ main .opt-dot.on{border-color:#0088D2}
       a.addEventListener('click',function(e){
         e.preventDefault();
         setCat(a.getAttribute('data-gocat'));
-        var t=document.querySelector(a.getAttribute('href'));
-        if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+        /* 2026-09-16 動線整理：進自訂模式一律從該頁籤頂端開始，不跳到中段（跳到 #header 會讓人不知道自己在哪、也漏掉 Logo） */
+        var href=a.getAttribute('href');
+        if(href&&href!=='#logo'&&href!=='#header'&&href!=='#demo'){var t=document.querySelector(href);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}
       });
     });
   })();
@@ -2805,10 +2815,15 @@ main .opt-dot.on{border-color:#0088D2}
   /* 提示條：色票的複製互動已依使用者指定移除，
      這支 say() 仍由 AI 指令的複製鈕使用，不能一起刪。 */
   var toast=document.getElementById('kitToast'),tt=null;
-  function say(msg){
+  function say(msg,ms){
     toast.textContent=msg;toast.classList.add('on');
-    clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},1800);
+    clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('on')},ms||1800);
   }
+  /* 從首頁「切換此風格」進來：報一聲切到哪一組，票用完即丟 */
+  (function(){
+    var sw='';try{sw=sessionStorage.getItem('hanlin-switched')||'';sessionStorage.removeItem('hanlin-switched')}catch(e){}
+    if(sw&&sw===k.id)setTimeout(function(){say('已切換為「'+k.n+'」，之後的匯入與預覽都會用這一組',3200)},250);
+  })();
 
 
   /* 原本這裡會組出一份完整的「視覺指令」文字，放在 AI 指令節下方的摺疊區供複製。
@@ -2875,30 +2890,15 @@ main .opt-dot.on{border-color:#0088D2}
        與右上角「確認採用，下載範例檔」zip 裡的 SKILL.md 是同一份，
        不另外寫第二套產生器（先前兩份分岔過，數字對不起來）。 */
     var dl=document.getElementById('dlSample');
+    /* 2026-09-16：右上角「下載範例檔」＝這一組的完整範例包（zip）：
+       starter 的 index.html／hl-style.css／app.js／favicon ＋ 合併這一組色值的 tokens.css ＋ SKILL.md，
+       內容依目前採用設定（自訂模式勾的 Logo／Header 等都會帶進去）。
+       先前這顆只給一份 skill .md，跟 AI 指令頁「解壓縮拿四個檔」對不上。 */
     if(dl)dl.addEventListener('click',function(){
-      if(typeof window.HL_buildSkillPack!=='function'){
-        alert('規範產生器沒有載入，請重新整理後再試一次。');return;
+      if(typeof window.HL_downloadKitZip!=='function'||typeof window.HL_saveTheme!=='function'){
+        alert('打包元件沒有載入，請重新整理後再試一次。');return;
       }
-      var lab=dl.innerHTML;
-      dl.disabled=true;
-      dl.innerHTML='<span class="material-symbols-rounded" style="font-size:19px">hourglass_top</span>產生中…';
-      try{
-        if(typeof window.HL_saveTheme!=='function')
-          throw new Error('HL_saveTheme 未掛載（採用設定取不到）');
-        var pk=window.HL_buildSkillPack(window.HL_saveTheme());
-        /* 檔名用 kit 的 id（ASCII）。先前用 pk.slug，那是中文組名，
-           被 [^\w-] 洗成單一個 '-'，檔名變成 hanlin-skill--.md。 */
-        var slug=String((k&&k.id)||pk.slug||'kit').replace(/[^\w-]+/g,'-')
-                 .replace(/^-+|-+$/g,'')||'kit';
-        window.HL_dlBlob(new Blob([pk.md],{type:'text/markdown;charset=utf-8'}),
-          'hanlin-skill-'+slug+'.md');
-      }catch(e){
-        /* 使用者看到的訊息保持簡短，但原因一定要留在 console，
-           否則就是又一個「按了沒反應、查不出為什麼」的無聲失敗。 */
-        try{console.error('[下載範例檔] 產生 SKILL.md 失敗：',e);}catch(_){}
-        alert('產生規範檔時發生問題，請重新整理後再試一次。\n（詳細原因已記在瀏覽器主控台）');
-      }
-      dl.disabled=false;dl.innerHTML=lab;
+      window.HL_downloadKitZip(dl,window.HL_saveTheme());
     });
   })();
 

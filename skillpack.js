@@ -232,14 +232,47 @@
     };
     if(SH[0])map['--shadow-1']=SH[0];
     if(SH[1])map['--shadow-2']=SH[1];
+    /* ── 色彩分配（2026-09-16）：讓範本頁跟首頁卡片縮圖長一樣 ──
+       原本 p 只落在按鈕與連結、c 只落在裝飾形狀，其餘全是白底灰字，15 組換過去都像同一組。
+       這裡多產出一組「分配」token（hl-style.css 有 fallback，沒給就維持原樣）：
+         hero 底＝深色大塊（30% 裡最重的一筆）、hero CTA＝對比色 c（10%，只放這一顆）、
+         次要鈕＝主色 12% 淡底、hero 裝飾圓點避免跟 hero 底同色。
+       2026-09-16 先開三組給使用者看過，確認後全部套用。 */
+    var extra='';
+    if(window.HL_heroSpec){
+      var hs=window.HL_heroSpec(t.id?t:_kitOf(t)||t);
+      var hero=hs.hero,cta=hs.btn;
+      function _best(bg,prefer){ /* 字色：ink 夠深且對比 ≥4.5 就用 ink；否則在白／近黑裡挑對比高的 */
+        if(prefer&&_lum(prefer)<.2&&_cr(prefer,bg)>=4.5)return prefer;
+        var cw=_cr('#ffffff',bg),cd=_cr('#16202B',bg);
+        return cw>=cd?'#ffffff':'#16202B';
+      }
+      var heroFg=_best(hero,t.ink),ctaFg=_best(cta,t.ink);
+      var heroLight=heroFg!=='#ffffff';
+      var dot=_cr(p,hero)>=1.6?p:((t.i&&_cr(t.i,hero)>=1.6)?t.i:(heroLight?'rgba(0,0,0,.12)':'rgba(255,255,255,.35)'));
+      extra='\n/* 色彩分配：hero 深色大塊＋對比色 CTA（由 HL_heroSpec 決定，與首頁卡片同一份） */\n:root{\n'+
+        '  --color-hero-bg: '+hero+';\n'+
+        '  --color-hero-fg: '+heroFg+';\n'+
+        '  --color-hero-fg-muted: '+(heroLight?'rgba(0,0,0,.72)':'rgba(255,255,255,.86)')+';\n'+
+        '  --color-cta-bg: '+cta+';\n'+
+        '  --color-cta-fg: '+ctaFg+';\n'+
+        '  --color-cta-bg-hover: '+_dk(cta,.9)+';\n'+
+        '  --color-hero-btn2-bg: '+(heroLight?'rgba(0,0,0,.08)':'rgba(255,255,255,.16)')+';\n'+
+        '  --color-hero-btn2-fg: '+heroFg+';\n'+
+        '  --color-hero-dot: '+dot+';\n'+
+        '  --color-btn-soft-bg: color-mix(in srgb, '+p+' 12%, #fff);\n'+
+        '}\n';
+    }
     var out=css.split('\n').map(function(line){
       var m=/^(\s*)(--[a-z0-9-]+)\s*:\s*([^;]*);(.*)$/i.exec(line);
       if(!m||!map.hasOwnProperty(m[2]))return line;
       return m[1]+m[2]+': '+map[m[2]]+';  /* 色版「'+(t.n||'')+'」 */';
     }).join('\n');
     return '/* 翰林視覺套版｜基本範例 tokens × 色版「'+(t.n||'')+'」'+(t.src?('　來源 '+t.src):'')+'　由套版詳細頁合併產出 */\n'
-      +out.replace(/^\/\*[\s\S]*?\*\/\n?/,'')+'\n'+buildTokensCss(t);
+      +out.replace(/^\/\*[\s\S]*?\*\/\n?/,'')+extra+'\n'+buildTokensCss(t);
   }
+  /* theme 物件多半沒有 id（採用設定只存中文名），用名字對回 kits.js 那一組 */
+  function _kitOf(t){var ks=window.HL_KITS||[];for(var i=0;i<ks.length;i++){if(ks[i].n===t.n)return ks[i]}return null}
 
   /* ── 把基本規範併進色版 SKILL.md ──
      只取基本規範裡「色版沒有的」段落（使用說明、最高原則、無障礙、文案語氣、反模式、規範缺口、檢查清單、完整 UI 開發規範）；
@@ -289,7 +322,9 @@
       zip.file('SKILL.md',mergeBasicSkill(pk.md,rs[4]));
       return zip.generateAsync({type:'blob'});
     }).then(function(blob){
-      dlBlob(blob,'hanlin-'+(pk.slug||'kit')+'-kit.zip');
+      /* 檔名用 kit 的英文 id（對得上就用），中文組名在部分系統會變亂碼 */
+      var kk=_kitOf(theme)||{};
+      dlBlob(blob,'hanlin-'+(kk.id||pk.slug||'kit')+'-kit.zip');
     }).catch(function(){
       alert('打包時發生問題，請重新整理後再試一次。');
     }).then(function(){

@@ -500,7 +500,7 @@ img { max-width: 100%; height: auto; }
 .btn--text:hover { background: var(--color-page-bg-subtle); box-shadow: none; }
 .btn--danger { background: var(--color-danger); color: #fff; }
 .btn--danger:hover { background: #8F1E17; }
-.btn--secondary { background: #E6EEF9; color: var(--color-action-bg); }
+.btn--secondary { background: var(--color-btn-soft-bg, #E6EEF9); color: var(--color-action-bg); }  /* 淡底＝主色 12%，換色版時跟著主色走 */
 .btn:focus-visible { outline: 3px solid var(--focus-ring-color); outline-offset: 2px; }
 
 /* Select：原生 select 加箭頭 */
@@ -574,7 +574,7 @@ img { max-width: 100%; height: auto; }
 .hero-art .a1 { left: 0; top: 30px; width: 200px; height: 150px; background: #fff; box-shadow: var(--shadow-1); }
 .hero-art .a2 { right: 20px; top: 0; width: 170px; height: 130px; background: var(--color-decor-sun); }
 .hero-art .a3 { right: 0; bottom: 0; width: 150px; height: 110px; background: var(--color-decor-warm); }
-.hero-art .a4 { left: 60px; bottom: 10px; width: 110px; height: 110px; border-radius: 50%; background: var(--color-action-bg); }
+.hero-art .a4 { left: 60px; bottom: 10px; width: 110px; height: 110px; border-radius: 50%; background: var(--color-hero-dot, var(--color-action-bg)); }
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); letter-spacing: .14em; color: var(--color-text-primary); text-transform: uppercase; }
 .eyebrow::before { content: ""; width: 28px; height: 4px; border-radius: 2px; background: var(--color-decor-sun); }
 mark.hl { background: linear-gradient(transparent 68%, var(--color-decor-sun) 68%); color: inherit; padding: 0 2px; }
@@ -669,3 +669,23 @@ h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 4
   .footer-col[open] ul { display: flex; }
   .footer-col li a { display: block; min-height: 44px; line-height: 44px; }
 }
+
+/* ── 色彩分配（2026-09-16）：60／30／10 ──────────────────────────
+   下面這些 token 沒有給值時全部 fallback 回原本的樣子（基本範例維持淺底 hero）。
+   套上色版時由 tokens.css 的「色彩分配」段給值：
+     hero 用深色大塊（30% 裡最重的一筆），hero 的主要 CTA 用對比色（10%，全頁只有這一顆），
+     次要鈕在深底上改成半透明白，不畫邊線；焦點框在深底上改用 hero 字色，才看得見。 */
+.hero { background: var(--color-hero-bg, var(--color-page-bg-subtle)); }
+.hero h1 { color: var(--color-hero-fg, var(--color-text-secondary)); }
+.hero .prose p, .hero .lead { color: var(--color-hero-fg-muted, var(--color-text-primary)); }
+.hero .eyebrow { color: var(--color-hero-fg-muted, var(--color-text-primary)); }
+.hero .eyebrow::before { background: var(--color-cta-bg, var(--color-decor-sun)); }  /* 眉標短線跟 CTA 同色：hero 底若跟裝飾黃同色（芥黃、公務金黃）才不會消失 */
+.hero .btn:not(.btn--secondary):not(.btn--ghost):not(.btn--text) {
+  background: var(--color-cta-bg, var(--color-action-bg));
+  color: var(--color-cta-fg, var(--color-action-fg));
+}
+.hero .btn:not(.btn--secondary):not(.btn--ghost):not(.btn--text):hover { background: var(--color-cta-bg-hover, var(--color-action-bg-hover)); }
+.hero .btn:not(.btn--secondary):not(.btn--ghost):not(.btn--text):active { background: var(--color-cta-bg-hover, var(--color-action-bg-active)); }
+.hero .btn--secondary { background: var(--color-hero-btn2-bg, var(--color-btn-soft-bg, #E6EEF9)); color: var(--color-hero-btn2-fg, var(--color-action-bg)); }
+.hero .btn--secondary:hover { background: var(--color-hero-btn2-bg, var(--color-disabled-bg)); filter: brightness(1.08); }
+.hero :focus-visible { outline-color: var(--color-hero-fg, var(--focus-ring-color)); }

@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609141900">
-<script src="defaults.js?v=16974f4afe52"></script>
+<link rel="stylesheet" href="style.css?v=20260916d">
+<script src="defaults.js?v=20260916d"></script>
 <script src="kits.js?v=edb539f4d2ae"></script>
 <style>
 /* ===== 首頁＝視覺套版列表（2026-09-15 兩頁合併） ===== */
@@ -39,6 +39,8 @@
 .filters .f:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 
 /* 三欄卡片 */
+/* templates.html 轉址落在 #kits：sticky 的 topbar 約 110px，不留 scroll-margin 標題會被蓋住一半 */
+#kits{scroll-margin-top:120px}
 .kit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px}
 .kit{
   background:#fff;border:1.5px solid #E1E8F0;border-radius:16px;padding:18px 20px 20px;
@@ -67,6 +69,21 @@
 .mini-art{flex:none;width:118px;height:112px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;
   box-shadow:0 6px 16px rgba(0,0,0,.16)}
 .mini-art svg{width:98px;height:80px;display:block}
+/* 2026-09-16 UX 審核：手機版縮圖重新排列，不是硬塞。
+   390px 寬時卡片內距只剩約 310px，導覽四顆 pill 會逐字直排、插圖蓋住標題與按鈕。
+   做法：導覽只留「網站名稱＋首頁＋課程」、pill 不換行；主視覺改上下排（文字在上、插圖橫放在下）。 */
+@media(max-width:480px){
+  .mini-nav{gap:6px;padding:10px 12px}
+  .mini-nav b,.mini-nav span{white-space:nowrap}
+  .mini-nav span{padding:3px 9px;font-size:11px}
+  .mini-nav span:nth-of-type(n+3){display:none}
+  .mini-hero{flex-direction:column;align-items:stretch;gap:14px;padding:18px 16px;min-height:0}
+  .kit .mini-hero h4{white-space:normal;font-size:18px}
+  .mini-hero .bt{flex-wrap:wrap}
+  .mini-art{width:100%;height:96px;align-self:stretch}
+  .kit-ui .row{flex-wrap:wrap;row-gap:10px}
+  .kit-ui .in{flex:1 1 100%}
+}
 
 /* 色票列：圓點在前、名稱在後 */
 .kit-sw{display:flex;align-items:center;justify-content:space-between;gap:4px;flex-wrap:nowrap;font-size:12.5px;color:#2B3541;padding:0 2px}
@@ -209,6 +226,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
 </head>
 <body class="home">
 
+<a class="skip-link" href="#main">跳到主要內容</a>
 <div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
@@ -216,7 +234,8 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">palette</span>
     <h1>視覺風格<span class="sub">Hanlin Visual Kits</span></h1>
     <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
-      <button class="btn soft" id="goImport" style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>匯入我的頁面</button>
+      <!-- 「匯入我的頁面」是流程捷徑不是工具，2026-09-16 搬進底部流程條 -->
+      <button class="btn soft" id="goImport" hidden style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">file_open</span>匯入我的頁面</button>
     </span>
   </div>
 </header>
@@ -245,7 +264,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
 </section>
 -->
 
-<main>
+<main id="main">
 
   <section class="sec" id="kits">
    <div class="pin">
@@ -270,7 +289,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
     <div class="kit-grid" id="kitGrid"></div>
     <p class="kit-empty" id="kitEmpty" hidden>這個分類目前沒有套版。</p>
     <div class="more-wrap" id="moreWrap" hidden>
-      <button class="btn" id="moreBtn" type="button" style="border-radius:14px;padding:11px 24px;font-size:14px;background:#005696;color:#fff">看全部 <span id="moreCount">—</span> 組 <span class="material-symbols-rounded" style="font-size:18px;vertical-align:-4px">expand_more</span></button>
+      <button class="btn soft" id="moreBtn" type="button" style="border-radius:14px;padding:11px 24px;font-size:14px">看全部 <span id="moreCount">—</span> 組 <span class="material-symbols-rounded" style="font-size:18px;vertical-align:-4px">expand_more</span></button>
     </div>
    </div>
   </section>
@@ -394,18 +413,11 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
   /* 卡片主視覺底色：這幾組的輔色是黑／近黑，整排看起來太重，
      改用規範文件裡的中間色或次級底色當主視覺底（色碼取自各組 DESIGN.md 的 token），
      按鈕也跟著換成同一份文件裡對得上的強調色。只影響卡片預覽，不動 kits.js。 */
-  var HERO={
-    dawho:   {hero:'#0094DF',btn:'#FF9F1C'},   /* 主要藍取代純黑底 */
-    mustard: {hero:'#EEC66F',btn:'#2C1D18'},   /* color.mustard 專題區塊底；按鈕用 espresso */
-    pine:    {hero:'#4D692D',btn:'#E3C874'},   /* color.moss 次級底 */
-    avocado: {hero:'#D5CB86',btn:'#FF5E03'},   /* color.khaki 次級區塊底（導覽列已是 avocado 綠，主視覺要和它分開） */
-    douclass:{hero:'#7747B5',btn:'#E8A33D'},   /* surface.strong 主紫 */
-    gov:     {hero:'#FFC551',btn:'#C04C08'},   /* surface.strong 主金；按鈕用 tertiary 橘 */
-    neon:    {hero:'#16B5D5',btn:'#FAD852'}    /* color.cyan 次級橫幅 */
-  };
+  /* 色彩分配（hero 底／CTA 色）改讀 defaults.js 的 HL_heroSpec，跟範本頁同一份（2026-09-16） */
+
   function card(k){
-    var ov=HERO[k.id]||{};
-    var deep=ov.hero||k.s||k.p, light=k.i||k.bg||'#F4F7FB', ink=k.ink||'#1E3D60', btn=ov.btn||k.c;
+    var hs=window.HL_heroSpec?window.HL_heroSpec(k):{hero:k.s||k.p,btn:k.c};
+    var deep=hs.hero, light=k.i||k.bg||'#F4F7FB', ink=k.ink||'#1E3D60', btn=hs.btn;
     var heroTx=onColor(deep), cTx=onColor(btn);
     var navBg=k.bg||'#fff', navTx=pick(navBg,ink), pillBg=(Math.abs(lum(navBg)-lum(k.p))<.12)?k.c:k.p, pillTx=onColor(pillBg), liteTx=pick('#F6F8FB',ink), tagTx=pick(light,ink);
     var on=(k.n===nowName);
@@ -500,6 +512,19 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
   }
   /* 匯入流程進行中：把步驟列帶過來，離開匯入頁也看得到自己走到哪 */
   if(window.HL_importFlowBar)window.HL_importFlowBar();
+  /* 流程條（2026-09-16 動線整理）：步驟 1。已採用某一組 → 下一步就是它的套版詳細；還沒 → 先挑。 */
+  function paintDock(){
+    if(!window.HL_flowDock)return;
+    var id=(window.HL_adoptedKitId&&window.HL_adoptedKitId())||'';
+    if(id){
+      HL_flowDock({step:1,primary:{label:'下一步：套版詳細「'+nowName+'」',icon:'arrow_forward',href:'template.html?kit='+encodeURIComponent(id)},
+        secondary:{label:'已有頁面？直接匯入',icon:'file_open',onClick:function(){go('import.html')}}});
+    }else{
+      HL_flowDock({step:1,primary:{label:'先點一張卡片挑風格',icon:'palette',disabled:true},
+        secondary:{label:'已有頁面？直接匯入',icon:'file_open',onClick:function(){go('import.html')}}});
+    }
+  }
+  paintDock();
 
   document.getElementById('goImport').addEventListener('click',function(){go('import.html')});
   /* 從匯入頁按「調整樣式」過來時才顯示引導條。
@@ -539,6 +564,11 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
       try{sessionStorage.setItem('hanlin-import-styled','1')}catch(_){}
       go('import.html');
       return;
+    }
+    /* 2026-09-16 UX 審核：「切換此風格」是靜默副作用（採用＋跳詳細頁），
+       帶一張一次性標記過去，詳細頁進來先報一聲「已切換為〈某某〉」。 */
+    if(a.getAttribute('data-act')==='detail'&&a.textContent.trim()!=='使用中'){
+      try{sessionStorage.setItem('hanlin-switched',a.getAttribute('data-kit')||'1')}catch(_){}
     }
     go(a.getAttribute('href'));
   });

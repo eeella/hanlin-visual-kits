@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609141900">
-<script src="defaults.js?v=16974f4afe52"></script>
+<link rel="stylesheet" href="style.css?v=20260916d">
+<script src="defaults.js?v=20260916d"></script>
 <script src="importbase.js?v=1"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
 <script src="kits.js?v=edb539f4d2ae"></script>
@@ -24,7 +24,7 @@
 .imp-wrap{max-width:1280px;margin:0 auto;padding:30px 24px 60px;display:flex;flex-direction:column;gap:30px;flex:1;width:100%}
 .imp-step{background:#fff;border:1px solid #EDF0F4;border-radius:14px;box-shadow:var(--shadow-sm);padding:26px 30px}
 .step-head{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;color:var(--brand-dark);margin-bottom:16px;flex-wrap:wrap}
-.step-head .en{font-size:11.5px;color:#9AA3B2;letter-spacing:.25em;font-weight:400}
+.step-head .en{font-size:11.5px;color:#626A78;letter-spacing:.25em;font-weight:400}
 .dropzone{border:2px dashed var(--blue-200);border-radius:12px;background:var(--blue-50);padding:38px 20px;text-align:center;color:var(--brand-dark);font-size:14px;cursor:pointer;transition:.15s}
 .dropzone:hover,.dropzone.over{background:var(--blue-100);border-color:var(--brand)}
 .dropzone .material-symbols-rounded{font-size:38px;color:var(--brand);display:block;margin:0 auto 8px}
@@ -43,6 +43,14 @@
 .cmp-cell b{display:block;font-size:13px;font-weight:500;color:var(--gray-1);margin-bottom:8px}
 .cmp-cell b.after{color:var(--brand)}
 .cmp-cell iframe{width:100%;height:760px;border:1px solid var(--gray-3);border-radius:12px;background:#fff}
+/* 2026-09-16：「開新分頁看完整」原本是標題旁一顆 11.5px 小字鈕，容易被忽略。
+   改成標題列右側的深藍鈕（同一列、靠右，不浮在預覽上；主鈕色只留給底部流程條）。 */
+.cmp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.cmp-cell>b,.cmp-head{min-height:34px}
+.cmp-cell>b{display:flex;align-items:center}
+.cmp-head b{margin-bottom:0}
+.cmp-open{background:var(--brand-dark);color:#fff;font-size:13px;font-weight:500;padding:7px 14px;border-radius:12px;border:none;box-shadow:none;white-space:nowrap}
+.cmp-open:hover{background:var(--brand);color:#fff}
 .cmp-cell.after iframe{border:1.5px solid var(--brand)}
 .same-note{margin-top:12px;font-size:13px;color:#B5760A;background:#F8EBD9;border-radius:10px;padding:10px 14px;display:none}
 .next-row{display:flex;gap:12px;flex-wrap:wrap}
@@ -114,7 +122,8 @@
 </head>
 <body>
 
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -123,12 +132,13 @@
   </div>
 </header>
 
-<main class="imp-wrap">
+<main id="main" class="imp-wrap">
 
   <!-- 操作步驟：告訴使用者現在走到哪一步、下一步該做什麼。
        狀態由實際資料判斷（有沒有匯入檔、有沒有套用結果、採用了哪一組），
        不是各步驟自己記一份旗標，避免畫面說「已完成」但資料其實沒存到。 -->
-  <ol class="flow" id="flow">
+  <!-- 2026-09-16 動線整理：四步驟改由底部流程條（HL_flowDock）呈現，這排卡片保留給 paintFlow 判定用，不顯示 -->
+  <ol class="flow" id="flow" hidden>
     <li data-step="1"><span class="flow-n">1</span><span class="flow-t"><b>匯入頁面</b><i>貼上或上傳你的 HTML</i></span></li>
     <li data-step="2"><span class="flow-n">2</span><span class="flow-t"><b>看對照預覽</b><i>確認檔案讀對了，再去挑樣式</i></span></li>
     <li data-step="3"><span class="flow-n">3</span><span class="flow-t"><b>挑視覺套版</b><i>不挑就用目前這組</i></span></li>
@@ -143,7 +153,7 @@
     </div>
     <span id="nextActions" style="margin-left:auto;display:inline-flex;visibility:hidden;gap:10px;flex-wrap:wrap">
       <button class="btn soft" id="importConfirm" style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">tune</span>調整樣式</button>
-      <button class="btn primary" id="dlBranded" style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載成果</button>
+      <button class="btn primary" id="dlBranded" hidden style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載成果</button><!-- 動作改由流程條觸發，元素留著給既有 handler -->
     </span>
   </div>
 
@@ -181,9 +191,11 @@
     </details>
     <div class="cmp-grid" id="cmpGrid" style="display:none">
       <div class="cmp-cell"><b>原始樣式</b><iframe id="frameRaw" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
-      <div class="cmp-cell after"><b class="after">套上品牌規範後（配色 / 字體 / Logo）<button class="btn soft" id="openFullBranded" style="font-size:11.5px;padding:4px 10px;margin-left:10px;vertical-align:middle"><span class="material-symbols-rounded" style="font-size:15px">open_in_new</span>開新分頁看完整</button></b><iframe id="frameBranded" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
+      <div class="cmp-cell after"><div class="cmp-head"><b class="after">套上品牌規範後（配色 / 字體 / Logo）</b><button class="btn cmp-open" id="openFullBranded" type="button"><span class="material-symbols-rounded" style="font-size:18px">open_in_new</span>開新分頁看完整</button></div><iframe id="frameBranded" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
     </div>
-    <p class="same-note" id="notStyledNote" style="display:none"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> <b>還沒挑視覺套版，所以左右兩邊一樣。</b>按右上角「調整樣式」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。</p>
+    <p class="same-note" id="notStyledNote" style="display:none"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> <b>還沒挑視覺套版，所以左右兩邊一樣。</b><span id="notStyledText">按右上角「調整樣式」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。</span>
+      <!-- 2026-09-16 UX 審核：已經採用過某一組的人不用再繞去挑一次，直接在這裡按一下就套上 -->
+      <button type="button" class="btn soft" id="useAdoptedKit" style="display:none;margin-left:10px;font-size:12.5px;padding:6px 14px;vertical-align:middle"><span class="material-symbols-rounded" style="font-size:16px">check</span><span id="useAdoptedKitName">用採用中的這一組套上</span></button></p>
     <p class="same-note" id="sameNote"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> 此檔案沒有偵測到可替換的色碼或 Logo，左右畫面差異不明顯。</p>
     <div id="compSample" style="display:none">
       <b style="display:block;font-size:13px;font-weight:500;color:var(--gray-1);margin-bottom:8px">規範元件示例（已套用匯入主題）</b>
@@ -7001,7 +7013,7 @@ hlStampAssets();
       if(!sp)return;
       sp.innerHTML=au.oks.map(function(x){return '<span style="margin-right:12px;white-space:nowrap">✅ '+x+'</span>'}).join('')
         +au.probs.map(function(x){return '<span style="margin-right:12px;white-space:nowrap;color:#DE3535">⚠️ '+x+'</span>'}).join('')
-        +au.notes.map(function(x){return '<span style="display:block;color:#A6AEBB;white-space:normal;word-break:break-word;margin-top:2px">◽ '+x+'</span>'}).join('');
+        +au.notes.map(function(x){return '<span style="display:block;color:#626A78;white-space:normal;word-break:break-word;margin-top:2px">◽ '+x+'</span>'}).join('');
       /* 收合狀態也要看得到檢查結果，否則得先點開才知道有沒有問題 */
       var sum2=document.getElementById('impReportSum');
       if(sum2)sum2.innerHTML=sumBase+' · 檢查 '+(au.probs.length?('<span style="color:#B3261E">⚠️ '+au.probs.length+' 項待確認</span>'):'✅ 全部通過');
@@ -7088,8 +7100,9 @@ hlStampAssets();
     var el=document.getElementById('srcScriptN');
     if(el)el.textContent=n;
   }
+  var lastSrcLabel='';
   function showPreview(st,src,rawMarkup){
-    pendingState=st;
+    pendingState=st;lastSrcLabel=src;
     lastRawMarkup=rawMarkup||null;
     updateSrcWarn(lastRawMarkup);
     if(window.HL_trace)window.HL_trace('showPreview',{
@@ -7119,6 +7132,20 @@ hlStampAssets();
         document.getElementById('impReportBox').style.display='none';
         note.style.display='none';
         notStyled.style.display='block';
+        /* 已採用某一組（例如剛從套版詳細回來、或上一輪挑過）：給一顆「直接套上」 */
+        (function(){
+          var btn=document.getElementById('useAdoptedKit'),txt=document.getElementById('notStyledText');
+          if(!btn)return;
+          var nm='';
+          try{ if(hasPickedKit())nm=((JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}').theme)||{}).n||'' }catch(e){}
+          btn.style.display=nm?'inline-flex':'none';
+          if(nm){
+            document.getElementById('useAdoptedKitName').textContent='用「'+nm+'」套上';
+            if(txt)txt.textContent='你目前採用的是「'+nm+'」，按右邊直接套上；想換別組就按右上角「調整樣式」。';
+          }else if(txt){
+            txt.textContent='按右上角「調整樣式」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。';
+          }
+        })();
       }
       cmp.style.display='grid';
       sample.style.display='none';
@@ -7197,6 +7224,23 @@ hlStampAssets();
       var nm='';
       try{ nm=((JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}').theme)||{}).n||'' }catch(e){}
       sub.textContent=(isStyled()&&nm)?('目前選用：'+nm):'按「調整樣式」挑一組';
+    }
+    /* 流程條（2026-09-16 動線整理）：全站四步的第 3／4 步，主鈕依實際資料切換 */
+    if(window.HL_flowDock){
+      var nm2='';
+      try{ nm2=((JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}').theme)||{}).n||'' }catch(e){}
+      if(!st[1]){
+        HL_flowDock({step:3,primary:{label:'先貼上或上傳你的頁面',icon:'upload_file',disabled:true}});
+      }else if(!st[2]){
+        HL_flowDock({step:3,primary:{label:'下一步：挑視覺套版',icon:'tune',onClick:function(){document.getElementById('importConfirm').click()}},
+          note:nm2?('採用中：'+nm2):''});
+      }else if(!st[4]){
+        HL_flowDock({step:4,primary:{label:'下載成果',icon:'download',onClick:function(){document.getElementById('dlBranded').click()}},
+          note:nm2?('採用中：'+nm2):''});
+      }else{
+        HL_flowDock({step:4,primary:{label:'已下載，再下載一次',icon:'check',done:true,onClick:function(){document.getElementById('dlBranded').click()}},
+          note:nm2?('採用中：'+nm2):''});
+      }
     }
   }
   function setTab(name){
@@ -7329,8 +7373,19 @@ hlStampAssets();
   /* 下載套用後的頁面：設定都調完之後在這裡收尾。
      不掛匯出閘門——先前那道閘門會在逐項比對沒全過時把按鈕鎖住，
      已依使用者指定移除，這裡不再加回來。比對結果仍在下方報告裡看得到。 */
+  document.getElementById('useAdoptedKit').addEventListener('click',function(){
+    if(!pendingState||!lastRawMarkup)return;
+    if(window.HL_trace)window.HL_trace('按下「用採用中的這一組套上」');
+    markStyled();
+    showPreview(keepPickedTheme(pendingState),lastSrcLabel||'貼上的內容',lastRawMarkup);
+  });
   document.getElementById('dlBranded').addEventListener('click',function(){
     if(!lastBranded){alert('還沒有套用結果，請先在「匯入來源」載入一份頁面。');return}
+    /* 2026-09-16 UX 審核：還沒套版就下載，拿到的是跟原檔一模一樣的東西。
+       不鎖按鈕（先前的匯出閘門已依使用者指定移除），只先問一句。 */
+    if(lastRawMarkup&&!isStyled()){
+      if(!confirm('還沒套上視覺套版，下載的會是原始檔案。\n\n按「取消」回去挑一組，按「確定」直接下載原檔。'))return;
+    }
     var blob=new Blob([lastBranded],{type:'text/html'});
     var a=document.createElement('a');
     a.href=URL.createObjectURL(blob);

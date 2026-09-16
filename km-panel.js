@@ -49,9 +49,16 @@
       });
       if(on){wrap.querySelector('#kmBody').style.display='none';
              wrap.querySelector('#kmToggle').textContent='明細'}
+      barEl.style.cursor=on?'pointer':'';
     }
     minEl.addEventListener('click',function(){setMin(minEl.textContent==='－')});
-    try{if(localStorage.getItem('hanlin-km-min')==='1')setMin(true)}catch(e){}
+    /* 收起時整顆膠囊都能點開，不用瞄準那顆「＋」 */
+    barEl.addEventListener('click',function(e){if(minEl.textContent==='＋'&&e.target!==minEl)setMin(false)});
+    /* 2026-09-16 UX 審核：預設收起。展開的整條工具列會蓋住匯入頁的「解析貼上的內容」與提示文字，
+       手機版更會橫切說明區；面板仍無條件顯示（2026-09-09 決定），只是第一次進來先收成一顆膠囊，
+       使用者展開過一次就記住。 */
+    var minPref=null;try{minPref=localStorage.getItem('hanlin-km-min')}catch(e){}
+    setMin(minPref!=='0');
 
     var sum=wrap.querySelector('#kmSum'),body=wrap.querySelector('#kmBody');
     var tg=wrap.querySelector('#kmToggle'),cp=wrap.querySelector('#kmCopy'),run=wrap.querySelector('#kmRun');

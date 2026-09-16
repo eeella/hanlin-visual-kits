@@ -42,6 +42,24 @@ window.HL_adoptedKitId=function(){
   }catch(e){}
   return '';
 };
+/* ── 色彩分配（60／30／10）：首頁卡片縮圖與範本頁（demo.html／下載範例檔）共用同一份 ──
+   每一組的 p/s/i/c 只是色值，「哪個顏色放哪裡」才決定看起來生不生動。規則：
+     主視覺底 hero ＝ 覆寫 > 輔色 s > 主色 p（每頁一個深色大塊）
+     主要 CTA  btn ＝ 覆寫 > 對比色 c（10% 面積，只放在最想被點的地方）
+   HERO 覆寫是給「s 是純黑／hero 該用次級底」那幾組的（2026-09-16 從 index.html 搬到這裡）。 */
+window.HL_HERO={
+  dawho:   {hero:'#0094DF',btn:'#FF9F1C'},   /* 主要藍取代純黑底 */
+  mustard: {hero:'#EEC66F',btn:'#2C1D18'},   /* color.mustard 專題區塊底；按鈕用 espresso */
+  pine:    {hero:'#4D692D',btn:'#E3C874'},   /* color.moss 次級底 */
+  avocado: {hero:'#D5CB86',btn:'#FF5E03'},   /* color.khaki 次級區塊底（導覽列已是 avocado 綠，主視覺要和它分開） */
+  douclass:{hero:'#7747B5',btn:'#E8A33D'},   /* surface.strong 主紫 */
+  gov:     {hero:'#FFC551',btn:'#C04C08'},   /* surface.strong 主金；按鈕用 tertiary 橘 */
+  neon:    {hero:'#16B5D5',btn:'#FAD852'}    /* color.cyan 次級橫幅 */
+};
+window.HL_heroSpec=function(k){
+  var ov=(k&&window.HL_HERO[k.id])||{};
+  return {hero:ov.hero||k.s||k.p, btn:ov.btn||k.c};
+};
 window.HL_previewTarget=function(){
   var id=window.HL_adoptedKitId();
   return id?('template.html?kit='+encodeURIComponent(id)):'preview.html';
@@ -293,6 +311,8 @@ window.HL_freshEntryReset=function(handoff){
    匯入頁自己那一份有完整的四段判定（它才知道 previewReady／lastBranded），
    兩邊不共用邏輯只共用外觀，避免挑選頁去猜匯入頁的內部狀態而說錯話。 */
 window.HL_importFlowBar=function(){
+  /* 2026-09-16 動線整理：進度改由底部流程條 HL_flowDock 呈現，這排卡片不再注入（函式保留給既有呼叫點）。 */
+  return;
   /* 判定依據是 sessionStorage 的 hanlin-import-live，不是 localStorage 有沒有檔案。
      hanlin-import-html 已改成永久保存，拿它當「正在匯入」的依據等於永遠成立——
      匯入過一次之後，之後每次進來挑風格都會看到停在第 3 步的步驟列。
@@ -363,4 +383,64 @@ window.HL_importFlowBar=function(){
     mount=pin;
   }
   main.insertBefore(mount,main.firstChild);
+};
+
+/* ── 流程條（2026-09-16 動線整理）───────────────────────────────────
+   全站「下一步」唯一的家。四步：挑風格 → 套版詳細 → 匯入頁面 → 下載成果。
+   HL_flowDock({step, primary:{label,icon,onClick,href,disabled,done}, note})
+   可重複呼叫：第一次建 DOM，之後只更新內容，不會弄丟事件。 */
+window.HL_FLOW_STEPS=[
+  {n:'挑風格',href:'index.html#kits'},
+  {n:'套版詳細',href:''},
+  {n:'匯入頁面',href:'import.html'},
+  {n:'下載成果',href:''}
+];
+window.HL_flowDock=function(o){
+  o=o||{};
+  var d=document.getElementById('flowDock');
+  if(!d){
+    d=document.createElement('div');d.id='flowDock';d.className='flow-dock';
+    d.setAttribute('role','navigation');d.setAttribute('aria-label','流程');
+    d.innerHTML='<div class="fd-in"><ol class="fd-steps"></ol><span class="fd-mobile"></span>'+
+      '<span class="fd-act"><span class="fd-note" id="flowNote"></span>'+
+      '<button type="button" class="btn soft" id="flowSecondary" hidden></button>'+
+      '<button type="button" class="btn primary" id="flowPrimary"></button></span></div>';
+    document.body.appendChild(d);
+    document.body.classList.add('has-flow-dock');
+    function goWithTicket(href){
+      var file=href.split('?')[0].split('#')[0];
+      try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:file,t:Date.now()}))}catch(_){}
+      location.href=href;
+    }
+    d.querySelector('#flowPrimary').addEventListener('click',function(e){
+      var b=e.currentTarget;if(b.disabled)return;
+      if(typeof d._onClick==='function'){d._onClick(e);return}
+      if(d._href)goWithTicket(d._href);
+    });
+    d.querySelector('#flowSecondary').addEventListener('click',function(e){
+      if(typeof d._onClick2==='function'){d._onClick2(e);return}
+      if(d._href2)goWithTicket(d._href2);
+    });
+  }
+  var step=o.step||1,S=window.HL_FLOW_STEPS;
+  d.querySelector('.fd-steps').innerHTML=S.map(function(st,i){
+    var n=i+1,cls=n<step?'done':(n===step?'now':'');
+    return '<li class="'+cls+'"><i><span>'+n+'</span></i>'+st.n+'</li>';
+  }).join('');
+  d.querySelector('.fd-mobile').innerHTML='<b>步驟 '+step+'／'+S.length+'</b>'+(S[step-1]?S[step-1].n:'');
+  var pr=o.primary||{},b=d.querySelector('#flowPrimary');
+  b.innerHTML=(pr.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+pr.icon+'</span>':'')+(pr.label||'下一步');
+  b.disabled=!!pr.disabled;
+  b.classList.toggle('done',!!pr.done);
+  d._onClick=pr.onClick||null;d._href=pr.href||'';
+  /* 次要動作（可選）：例如首頁的「已有頁面？直接匯入」，淺底、放在主鈕左邊 */
+  var sc=o.secondary||null,b2=d.querySelector('#flowSecondary');
+  if(sc){
+    b2.hidden=false;
+    b2.innerHTML=(sc.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+sc.icon+'</span>':'')+(sc.label||'');
+    d._onClick2=sc.onClick||null;d._href2=sc.href||'';
+  }else{b2.hidden=true;d._onClick2=null;d._href2='';}
+  var note=d.querySelector('#flowNote');note.textContent=o.note||'';note.style.display=o.note?'':'none';
+  d.hidden=!!o.hidden;document.body.classList.toggle('has-flow-dock',!o.hidden);
+  return d;
 };

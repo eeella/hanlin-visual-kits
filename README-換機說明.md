@@ -14,7 +14,7 @@
 | 檔案 | 是什麼 |
 |---|---|
 | `index.html` | 首頁。Hero ＋ 前 6 組套版 ＋ CTA |
-| `templates.html` | 視覺套版列表。風格／網站類型兩排篩選 ＋ 全部 16 組 |
+| `templates.html` | 視覺套版列表。風格／網站類型兩排篩選 ＋ 全部 15 組 |
 | `template.html` | 套版詳細（`?kit=<id>`）。**同時是規範細節**：色彩系統／品牌識別／介面元件／版面規範／AI 指令 |
 | `demo.html` | 通用套版範本（`?kit=<id>`），沒有指定 demoFile 的組會用它 |
 | `import.html` | 匯入既有頁面並套版 |
@@ -51,6 +51,6 @@
 這支只給無頭瀏覽器用，畫面上的 textarea 就是套好的完整 HTML，
 存進 `demo/` 之後在 PALETTES 該組加一行 `demoFile:'demo/xxx.html'` 即可。
 
-## 目前 16 組的 id
+## 目前 15 組的 id
 hanlin / musical / istockapp / navy / spike / dopamine / moroccan / dawho /
 mustard / pine / clash / avocado / trail / neon / douclass / gov

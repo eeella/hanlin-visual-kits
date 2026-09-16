@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=202609141900">
-<script src="defaults.js?v=16974f4afe52"></script>
+<link rel="stylesheet" href="style.css?v=20260916d">
+<script src="defaults.js?v=20260916d"></script>
 <script src="kits.js?v=edb539f4d2ae"></script>
 <style>
 /* 這一頁是獨立的操作說明，不是規範內容，所以沒有色版套色——
@@ -18,12 +18,12 @@
 .way-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
 .way{background:#fff;border-radius:14px;padding:24px 22px;
   display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow-sm)}
-.way-no{width:30px;height:30px;border-radius:50%;background:#0088D2;color:#fff;
+.way-no{width:30px;height:30px;border-radius:50%;background:#0072B5;color:#fff;
   font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .way h3{margin:4px 0 0;font-size:17px;font-weight:700;color:#005696}
 .way p{margin:0;font-size:13.5px;line-height:1.9;color:#5C6A78}
 .way p b{color:#3A3D42;font-weight:500}
-.way-note{font-size:12.5px;color:#8C9099}
+.way-note{font-size:12.5px;color:#626A78}
 /* 這一條是整頁最容易被忽略、但刪掉就會出事的提醒，用底色圈起來。
    #6E5200 on #FFF7E0 ＝ 6.84:1，12.5px 也達得到 AA。 */
 .steps{margin:0;padding:0 0 0 22px;font-size:14.5px;line-height:1.9;color:#3E4C5A;background:#fff;border-radius:14px;padding:22px 26px 22px 48px;box-shadow:var(--shadow-sm)}
@@ -75,7 +75,7 @@
   padding:10px 13px;color:#6E5200;line-height:1.85;
 }
 .way .btn{margin-top:auto;border-radius:14px;border:none;box-shadow:none}
-.way .btn.primary{background:#0088D2;color:#fff}
+.way .btn.primary{background:#0072B5;color:#fff}
 /* 指令框：等寬字、可捲動 */
 .ai-prompt{margin:0;padding:0;background:transparent;font-family:inherit;white-space:normal}
 /* 目前選用的那一組：講清楚指令與規範檔是依哪一組產生的 */
@@ -84,12 +84,13 @@
 .kit-now b{font-size:15px;font-weight:700;color:#005696}
 .kit-now .sw{display:inline-flex;gap:5px;margin-left:2px}
 .kit-now .sw i{width:20px;height:20px;border-radius:6px;border:1px solid rgba(0,0,0,.09);display:block}
-.kit-now a{margin-left:auto;font-size:13px;color:#0088D2;text-decoration:none}
+.kit-now a{margin-left:auto;font-size:13px;color:#0072B5;text-decoration:none}
 .kit-now a:hover{text-decoration:underline}
 </style>
 </head>
 <body class="tpl">
 
+<a class="skip-link" href="#main">跳到主要內容</a>
 <div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
@@ -99,14 +100,14 @@
   </div>
 </header>
 
-<main class="wrap">
+<main id="main" class="wrap">
   <section class="sec">
     <div class="sec-head"><h2>AI 操作步驟</h2><span class="note">AI PROMPT</span></div>
 
     <div class="kit-now" id="kitNow">
       <span>目前依這一組產生：</span><b id="kitName">—</b>
       <span class="sw" id="kitSw"></span>
-      <a href="index.html#kits">換一組 →</a>
+      <a href="index.html#kits" style="display:inline-flex;align-items:center;gap:2px">換一組<span class="material-symbols-rounded" style="font-size:18px">chevron_right</span></a>
     </div>
 
     <!-- 流程一眼看完 -->
@@ -119,35 +120,34 @@
 
     <div class="way-grid">
       <div class="way">
-        <div class="way-hd"><h3>步驟 1｜準備檔案</h3></div>
-        <p>在<b>套版詳細</b>按<b>下載範例檔</b>，解壓縮後拿出這四個：</p>
+        <div class="way-hd"><h3>步驟 1｜下載檔案</h3></div>
+        <p>在<b>套版詳細</b>右上角按<b>下載範例檔</b>，解壓縮。會用到這四個：</p>
         <div class="files">
           <span><code>SKILL.md</code>規範</span>
           <span><code>tokens.css</code>顏色／圓角</span>
           <span><code>hl-style.css</code>元件樣式</span>
           <span><code>app.js</code>互動（漢堡、Tabs…）</span>
         </div>
-        <p class="way-note">想直接在範例頁上改，再多拿 <code>index.html</code>。favicon、theme.json 不用。</p>
+        <p class="way-note">要直接改範例頁，再加 <code>index.html</code>。</p>
       </div>
 
       <div class="way">
-        <div class="way-hd"><h3>步驟 2｜交給 AI</h3></div>
+        <div class="way-hd"><h3>步驟 2｜上傳＋貼指令</h3></div>
         <ul class="pl-list">
-          <li><b>開新對話</b>。</li>
-          <li>把四個檔<b>一次拖進輸入框</b>；要轉寫既有頁面，可以把那個 HTML 一起拖進去，不拖也行。</li>
-          <li>按<b>複製指令</b>貼進<b>同一則訊息</b>。</li>
-          <li>指令最後<b>這次的需求</b>A／B／C 挑一種填好、另外兩行刪掉，送出。</li>
-          <li>各工具怎麼上傳，看<b>AI 工具</b>頁籤。</li>
+          <li>開新對話，把四個檔<b>拖進輸入框</b>（要改既有頁面就連那個 HTML 一起拖）。</li>
+          <li>按<b>複製指令</b>，貼進<b>同一則訊息</b>。</li>
+          <li>把最後<b>「這次的需求」</b>A／B／C 選一種填好，送出。</li>
         </ul>
+        <p class="way-note">各工具的上傳位置，看<b>AI 工具</b>頁籤。</p>
       </div>
 
       <div class="way">
-        <div class="way-hd"><h3>步驟 3｜複製命令貼上</h3></div>
+        <div class="way-hd"><h3>步驟 3｜確認後開始</h3></div>
         <ul class="pl-list">
-          <li>AI 第一則會回四行：<b>風格名稱、主色、對比色、圓角</b>。</li>
-          <li><span class="ok">對得上</span>上面那組 → 回<b>確認，開始</b>。</li>
-          <li><span class="ng">對不上／說讀不到</span> → 檔案沒進去，回步驟 2 重傳。</li>
-          <li>做完看三件事：顏色是這一組的？按鈕圓角對？手機版有重排（漢堡選單、表格直式小表）？不對就回<b>照 SKILL.md 修正</b>。</li>
+          <li>AI 會先回四行：<b>風格、主色、對比色、圓角</b>。</li>
+          <li><span class="ok">對得上</span>上面這組 → 回<b>確認，開始</b>。</li>
+          <li><span class="ng">對不上</span> → 檔案沒讀到，回步驟 2 重傳。</li>
+          <li>成品顏色或圓角不對 → 回<b>照 SKILL.md 修正</b>。</li>
         </ul>
       </div>
     </div>
@@ -158,30 +158,29 @@
       <div class="way">
         <div class="way-hd"><h3>Claude（claude.ai）</h3></div>
         <ul class="pl-list">
-          <li>對話輸入框左下角<b>＋</b>→ 上傳檔案，一次可選多個。</li>
-          <li>要長期用：建一個 <b>Project</b>，把四個檔放進 Project knowledge，之後每次對話都自動讀到。</li>
+          <li>輸入框左下角<b>＋</b>→ 上傳檔案（可多選）。</li>
+          <li>常用的話建一個 <b>Project</b>，四個檔放進 knowledge，之後每次對話都讀得到。</li>
         </ul>
       </div>
       <div class="way">
         <div class="way-hd"><h3>ChatGPT</h3></div>
         <ul class="pl-list">
           <li>輸入框的迴紋針 → 上傳檔案（可多選）。</li>
-          <li>用 <b>GPTs／Projects</b>：把四個檔放進 Knowledge，指令貼在 Instructions。</li>
+          <li>常用的話用 <b>Projects</b>：四個檔放進 Knowledge，指令貼在 Instructions。</li>
         </ul>
       </div>
       <div class="way">
         <div class="way-hd"><h3>Gemini</h3></div>
         <ul class="pl-list">
           <li>輸入框<b>＋</b>→ 上傳檔案。</li>
-          <li>Gemini 對 .md 有時只當文字；若它說讀不到，把 SKILL.md 的內容整段貼進訊息裡。</li>
+          <li>若它說讀不到 SKILL.md，把內容整段貼進訊息。</li>
         </ul>
       </div>
       <div class="way">
         <div class="way-hd"><h3>Claude Code／Cursor／Copilot（寫程式）</h3></div>
         <ul class="pl-list">
-          <li>把解壓後的整個資料夾放進專案。</li>
-          <li>指令改成：<b>先讀 <code>./SKILL.md</code>、<code>./tokens.css</code>、<code>./hl-style.css</code>，以 <code>./index.html</code> 為底稿……</b>。</li>
-          <li>AI 會直接沿用 class 與變數，不會另造一套。</li>
+          <li>整個資料夾放進專案。</li>
+          <li>指令開頭改成：<b>先讀 <code>./SKILL.md</code>、<code>./tokens.css</code>、<code>./hl-style.css</code>，以 <code>./index.html</code> 為底稿</b>。</li>
         </ul>
       </div>
     </div>
@@ -244,17 +243,17 @@
   function buildPrompt(){
     /* 風格名稱寫死不帶入：以附件 SKILL.md 為準，指令跟封包永遠不會對不上 */
     return [
-      '我要用翰林的品牌規範來做網頁，風格以附件 SKILL.md 為準；規範與樣式檔都在附件裡，請先讀完再照步驟進行。',
+      '請用附件裡的翰林品牌規範做網頁，風格以 SKILL.md 為準。先讀完附件，再照步驟進行。',
       '',
-      '━━ 步驟 1｜打開附件，先確認 ━━',
-      '・附件有：SKILL.md（規範）、tokens.css（顏色／圓角變數）、hl-style.css（元件樣式）、app.js（互動）；若有 index.html，它是範例頁，class 怎麼用照它。',
-      '・全部讀完後，只回四行：風格名稱／主色／對比色／按鈕圓角。讀不到附件就直接說。',
-      '・等我回「確認，開始」再做。',
+      '━━ 步驟 1｜先確認 ━━',
+      '・附件：SKILL.md（規範）、tokens.css（顏色／圓角）、hl-style.css（元件樣式）、app.js（互動）；有 index.html 就是範例頁，class 用法照它。',
+      '・讀完只回四行：風格／主色／對比色／按鈕圓角。讀不到就直接說。',
+      '・等我回「確認，開始」再動手。',
       '',
       '━━ 步驟 2｜製作 ━━',
-      '・產出一個完整可開啟的 index.html，引用 tokens.css、hl-style.css、app.js（放同一層）。',
-      '・結構與 class 的用法照 index.html 與 SKILL.md 的「元件 class 對照」；手機版由這些 class 自動重排（漢堡選單、表格直式小表）。',
-      '・做完列出有無偏離 SKILL.md 之處。',
+      '・產出一個可直接開啟的 index.html，引用同一層的 tokens.css、hl-style.css、app.js。',
+      '・結構、class、版型照 index.html 與 SKILL.md；手機版靠這些 class 自動重排。',
+      '・做完列出有沒有偏離 SKILL.md 的地方。',
       '',
       '━━ 這次的需求 ━━',
       '下面 A、B、C 三種情況挑一種：把那一行的「＿＿＿」填好，另外兩行刪掉再送出。',
@@ -263,12 +262,9 @@
       'C．我想直接改範例頁 index.html：改成「＿＿＿」，要動的地方是：＿＿＿',
       '',
       '━━ 注意事項 ━━',
-      '・只用附件的變數與 class，不另寫顏色、元件或互動。',
-      '・色彩、圓角、陰影、字體照 SKILL.md／tokens.css，不自行調整或「優化」。',
-      '・層次用色塊表現，不把顏色用在邊線上。',
-      '・對比色只用在要點擊或強調的地方，不鋪大面積。',
-      '・版型照 SKILL.md「採用設定」。',
-      '・我給的文字與資訊架構不更動，你只負責視覺。',
+      '・只用附件的變數與 class；顏色、圓角、陰影、字體不自行調整。',
+      '・層次用色塊、不用邊線；對比色只放在要點擊或強調的地方。',
+      '・文字與資訊架構不動，你只負責視覺。',
       ''
     ].join('\n');
   }

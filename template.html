@@ -10,12 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260916d">
+<link rel="stylesheet" href="style.css?v=20260917a">
 <script src="defaults.js?v=20260916d"></script>
 <script src="kits.js?v=edb539f4d2ae"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
-<script src="skillpack.js?v=20260916e"></script>
+<script src="skillpack.js?v=20260917a"></script>
 <style>
 /* ===== 套版詳細專用 =====
    這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
@@ -433,20 +433,7 @@ main .opt-dot.on{border-color:#0072B5}
 /* ===== 探究科學報（EXPO）版型 =====
    取自 demo/hanlin-expo-dopamine.html 的 Header 與 Footer。
    顏色不寫死：亮色底、深色頁尾都走主題變數，換色版會跟著變。 */
-.hd-expo{
-  background:var(--blue-300);color:var(--gray-1);text-align:center;
-  padding:38px 24px 34px;border-radius:0 0 22px 22px;
-}
-.hd-expo .eb{
-  display:inline-block;font-size:11.5px;letter-spacing:.22em;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.72;margin-bottom:12px;
-}
-.hd-expo h4{font-size:26px;font-weight:700;line-height:1.35;letter-spacing:.02em;margin:0 0 10px}
-.hd-expo h4 em{font-style:normal;background:var(--warm);padding:0 6px;border-radius:6px}
-.hd-expo p{font-size:13px;line-height:1.85;opacity:.78;max-width:52ch;margin:0 auto}
-.hd-expo .scroll{display:block;margin:18px auto 0;width:2px;height:24px;
-  background:linear-gradient(var(--gray-1),transparent)}
-
+/* .hero-expo 樣式已搬到 style.css（preview.html 也要用） */
 .ft-expo{
   background:var(--brand-dark);color:rgba(255,255,255,.78);text-align:center;
   border-radius:22px;padding:34px 24px 30px;font-size:13px;line-height:1.9;
@@ -686,17 +673,6 @@ main .opt-dot.on{border-color:#0072B5}
       </div>
     </div>
 
-    <div class="pick-box" data-group="hd">
-      <div class="pick-head"><span class="pick-state"></span>探究科學報（EXPO）<span class="adopt-tag">採用中</span><span class="pick-note">滿版亮色 · 置中大標 · 專題／單篇長文</span></div>
-      <div class="pick-body">
-        <div class="hd-expo">
-          <span class="eb">翰林 EXPO ・ 探究科學報</span>
-          <h4>從課本裡的一行公式，到<em>看得見的世界</em></h4>
-          <p>沒有導覽列，用一整屏的主視覺把讀者帶進主題；適合專題報導與單篇長文，不適合功能型頁面。</p>
-          <span class="scroll"></span>
-        </div>
-      </div>
-    </div>
 
   </section>
 
@@ -807,6 +783,18 @@ main .opt-dot.on{border-color:#0072B5}
             <span class="material-symbols-rounded">auto_stories</span>
             <span>背景照片預留位置（明亮、自然、真實學習場景）</span>
           </div>
+        </div>
+      </div>
+    </div>
+    <!-- 2026-09-17 從 Header 版型搬來：它是整塊主視覺，不是導覽列 -->
+    <div class="pick-box" data-group="hero" style="margin-bottom:0">
+      <div class="pick-head"><span class="pick-state"></span>探究科學報（EXPO）<span class="adopt-tag">採用中</span><span class="pick-note">滿版亮色 · 置中大標 · 專題／長文</span></div>
+      <div class="pick-body">
+        <div class="hero-expo">
+          <span class="eb">翰林 EXPO ・ 探究科學報</span>
+          <h4>從課本裡的一行公式，到<em>看得見的世界</em></h4>
+          <p>沒有導覽列，用一整屏的主視覺把讀者帶進主題；適合專題報導與單篇長文，不適合功能型頁面。</p>
+          <span class="scroll"></span>
         </div>
       </div>
     </div>
@@ -2437,7 +2425,7 @@ main .opt-dot.on{border-color:#0072B5}
   /* 即時採用狀態列：勾選當下就顯示「實際存進去的組合」 */
   var HD_NS=['品牌官網（淺色）','品牌官網（深色）','教師平台','國小／兒童','國中／高中學術','命題大師','行動大師','影音派','AI 數位導覽員'];
   var FT_NS=['完整頁尾','導覽頁尾','精簡頁尾（深色置中）'];
-  var HERO_NS=['AI 漸層版','純圖片版'];
+  var HERO_NS=['AI 漸層版','純圖片版','探究科學報（EXPO）'];
   var FM_NS=['色塊版','純 icon 版'];
   var TBL_NS=['斑馬紋','全框線','主色表頭','深色表頭'];
   var adoptBar=document.createElement('div');

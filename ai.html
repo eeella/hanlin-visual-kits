@@ -136,7 +136,7 @@
         <ul class="pl-list">
           <li>開新對話，把四個檔<b>拖進輸入框</b>（要改既有頁面就連那個 HTML 一起拖）。</li>
           <li>按<b>複製指令</b>，貼進<b>同一則訊息</b>。</li>
-          <li>把最後<b>「這次的需求」</b>A／B／C 選一種填好，送出。</li>
+          <li>把最後<b>「這次的需求」</b>兩種情況選一種填好，送出。</li>
         </ul>
         <p class="way-note">各工具的上傳位置，看<b>AI 工具</b>頁籤。</p>
       </div>
@@ -144,10 +144,9 @@
       <div class="way">
         <div class="way-hd"><h3>步驟 3｜確認後開始</h3></div>
         <ul class="pl-list">
-          <li>AI 會先回四行：<b>風格、主色、對比色、圓角</b>。</li>
-          <li><span class="ok">對得上</span>上面這組 → 回<b>確認，開始</b>。</li>
-          <li><span class="ng">對不上</span> → 檔案沒讀到，回步驟 2 重傳。</li>
-          <li>成品顏色或圓角不對 → 回<b>照 SKILL.md 修正</b>。</li>
+          <li><span class="ok">完全正確</span> ➔ 回覆：「<b>確認，開始。</b>」</li>
+          <li><span class="ng">檔案錯誤</span> ➔ 回覆：「<b>檔案錯誤，回步驟 2 重傳。</b>」</li>
+          <li>成品細節不對 ➔ 回覆：「<b>效果不對，照 SKILL.md 優化。</b>」</li>
         </ul>
       </div>
     </div>
@@ -256,10 +255,9 @@
       '・做完列出有沒有偏離 SKILL.md 的地方。',
       '',
       '━━ 這次的需求 ━━',
-      '下面 A、B、C 三種情況挑一種：把那一行的「＿＿＿」填好，另外兩行刪掉再送出。',
-      'A．我想做一個新頁面：頁面名稱是「＿＿＿」，裡面要有：＿＿＿',
-      'B．我已經有一個頁面（附在附件裡），請把它改成這個風格：文字、版面結構、功能和程式都不要動，只換顏色和樣式。',
-      'C．我想直接改範例頁 index.html：改成「＿＿＿」，要動的地方是：＿＿＿',
+      '以下兩種情況挑一種：把那一行的「＿＿＿」填好，另一行刪掉再送出。',
+      '全新做一頁（目前沒有這個網頁，從頭設計）：我想做一個新頁面，頁面名稱是「＿＿＿」，裡面要有：＿＿＿',
+      '舊頁面換皮（已有網頁，版面和功能不動，只換顏色、字體、按鈕風格）：我已經有一個頁面（附在附件裡），請把它改成這個風格；文字、版面結構、功能和程式都不要動。',
       '',
       '━━ 注意事項 ━━',
       '・只用附件的變數與 class；顏色、圓角、陰影、字體不自行調整。',
@@ -285,8 +283,8 @@
     out.push('<div class="way'+(warn?' warn':'')+'"><div class="way-hd"><h3>'+esc(s.title)+'</h3></div>');
     var items=[];
     s.lines.forEach(function(l){
-      if(/^下面 A/.test(l)){out.push('<p class="pl-line">'+esc(l)+'</p>');return}
-      items.push('<li>'+esc(l.replace(/^　　/,'').replace(/^・/,''))+'</li>');
+      if(/^(下面 A|可以參考以下|以下三種|以下兩種)/.test(l)){out.push('<p class="pl-line">'+esc(l)+'</p>');return}
+      items.push('<li>'+(function(t){var mm=/需求/.test(s.title)&&/^([^（]+)（/.exec(t);return mm?('<b>'+esc(mm[1])+'</b>'+esc(t.slice(mm[1].length))):esc(t)})(l.replace(/^　　/,'').replace(/^・/,''))+'</li>');
     });
     if(items.length)out.push('<ul class="pl-list">'+items.join('')+'</ul>');
     out.push('</div>');

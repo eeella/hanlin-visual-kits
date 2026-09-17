@@ -695,11 +695,9 @@ dialog *:not([class*="material-"]):not([class*="fa-"]):not([class*="bi-"]):not(c
    註：這裡只作用在品牌規範頁自己的示範元件，與匯入套版引擎無關 ——
    「不准強加邊線」那條鐵律管的是匯入頁，不是這裡。 */
 
-/* ══ 流程條 flow-dock（2026-09-16 動線整理）═══════════════════════════
-   使用者回報：主鈕有的在右上、有的在中間，不知道哪顆才是「下一步」。
+/* ══ 流程條 flow-dock（2026-09-16 動線整理；2026-09-17 使用者確認保留固定深藍帶）═══════
    規則：「下一步」只住這裡（底部固定、全站同一位置、同一時間只有一顆主鈕）；
-   右上角只放淺底的工具鈕（下載／匯出）；內容區只放就地操作的小鈕。
-   由 defaults.js 的 HL_flowDock() 產生；template.html 自訂模式的 adopt-dock 也套同一組樣式。 */
+   右上角只放淺底工具鈕；內容區只放就地操作的小鈕。由 defaults.js 的 HL_flowDock() 產生。 */
 .flow-dock{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--brand-dark);color:#fff;
   box-shadow:0 -6px 22px rgba(0,86,150,.28);padding:10px 0;
   animation:fd-in .32s cubic-bezier(.2,.6,.3,1) both}
@@ -721,6 +719,7 @@ dialog *:not([class*="material-"]):not([class*="fa-"]):not([class*="bi-"]):not(c
 .fd-mobile{display:none;font-size:13px;color:#fff;white-space:nowrap}
 .fd-mobile b{color:#fff;font-weight:700;margin-right:6px}
 .fd-act{flex:none;display:flex;align-items:center;gap:12px}
+#flowSecondaries{display:contents}
 .fd-note{font-size:12.5px;color:rgba(255,255,255,.78);max-width:340px;line-height:1.6;text-align:right}
 .fd-act .btn{border:none;box-shadow:none;border-radius:14px;font-size:14px;padding:11px 22px;white-space:nowrap;font-weight:500}
 .fd-act .btn.primary{background:#fff;color:var(--brand-dark)}
@@ -731,22 +730,45 @@ dialog *:not([class*="material-"]):not([class*="fa-"]):not([class*="bi-"]):not(c
 .fd-act .btn.soft:hover{background:rgba(255,255,255,.24);color:#fff}
 .fd-act .btn:focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:none}
 body.has-flow-dock{padding-bottom:74px}
-/* 監測膠囊讓位：有流程條時往上疊，不擋主鈕 */
+/* inline 版（首頁／套版詳細）：不固定，接在內容最後，置中 */
+.flow-dock.flow-inline{position:static;background:none;color:inherit;box-shadow:none;animation:none;margin:34px auto 8px;max-width:1280px;padding:0 24px}
+.flow-inline .fd-in{flex-direction:column;align-items:center;gap:12px;text-align:center}
+.flow-inline .fd-steps{flex:none;justify-content:center;flex-wrap:wrap;margin-bottom:2px}
+.flow-inline .fd-steps li{color:var(--gray-2);font-size:13px}
+.flow-inline .fd-steps li+li::before{background:var(--gray-3);width:34px;margin:0 12px}
+.flow-inline .fd-steps li i{background:#ECEFF3;color:var(--gray-2);width:24px;height:24px;font-size:12px}
+.flow-inline .fd-steps li.done{color:var(--gray-2)}
+.flow-inline .fd-steps li.done i{background:#DDF3E6;color:#0B6B3A}
+.flow-inline .fd-steps li.now{color:var(--gray-1)}
+.flow-inline .fd-steps li.now i{background:var(--brand);color:#fff}
+.flow-inline .fd-act{justify-content:center;flex-wrap:wrap}
+.flow-inline .fd-note{color:var(--gray-2);text-align:center;flex-basis:100%;order:2}
+.flow-inline .fd-act .btn{font-size:14.5px;padding:12px 26px}
+.flow-inline .fd-act .btn.primary{background:var(--brand);color:#fff}
+.flow-inline .fd-act .btn.primary:hover{background:var(--brand-dark);color:#fff}
+.flow-inline .fd-act .btn.primary[disabled]{background:#ECEFF3;color:var(--gray-2)}
+.flow-inline .fd-act .btn.soft{background:var(--blue-50);color:var(--brand)}
+.flow-inline .fd-act .btn.soft:hover{background:var(--blue-100);color:var(--brand-dark)}
+.flow-inline .fd-act .btn:focus-visible{outline:2px solid var(--brand);box-shadow:none}
+.flow-inline .fd-mobile{color:var(--gray-1)}
+.flow-inline .fd-mobile b{color:var(--brand)}
+@media(max-width:760px){
+  .flow-dock.flow-inline{padding:0 16px}
+  .flow-inline .fd-act{width:100%}
+  .flow-inline .fd-act .btn{flex:1 1 100%}
+}
+/* 監測膠囊與 toast 讓位，不擋主鈕 */
 body.has-flow-dock #kmPanel{bottom:88px!important}
 body.has-flow-dock .toast-mini,body.has-flow-dock .pv-toast{bottom:96px}
 @media(max-width:760px){
   .flow-dock{padding:9px 0}
-  .flow-dock .fd-in{padding:0 16px;gap:10px}
+  .flow-dock .fd-in{padding:0 16px;gap:10px;flex-wrap:wrap;row-gap:8px}
   .fd-steps{display:none}
   .fd-mobile{display:block;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .fd-note{display:none}
-  .fd-act .btn{padding:9px 14px;font-size:13px}
-  .fd-act #flowSecondary .material-symbols-rounded{display:none}
-  /* 有次要動作時（首頁）兩顆鈕獨佔一行，步驟字才不會被擠掉 */
-  .flow-dock .fd-in{flex-wrap:wrap;row-gap:8px}
-  .fd-act:has(#flowSecondary:not([hidden])){width:100%;justify-content:flex-end}
-  .fd-act:has(#flowSecondary:not([hidden])) .btn{flex:1;justify-content:center}
-  body.has-flow-dock:has(#flowSecondary:not([hidden])){padding-bottom:110px}
-  body.has-flow-dock{padding-bottom:64px}
-  body.has-flow-dock #kmPanel{bottom:76px!important}
+  .fd-act{width:100%;justify-content:flex-end}
+  .fd-act .btn{flex:1;justify-content:center;padding:9px 12px;font-size:13px}
+  .fd-act .btn .material-symbols-rounded{display:none}
+  body.has-flow-dock{padding-bottom:110px}
+  body.has-flow-dock #kmPanel{bottom:120px!important}
 }

@@ -88,6 +88,9 @@
 .sub-note{font-size:12.5px;color:var(--gray-2);margin-bottom:14px;max-width:760px;line-height:1.85}
 
 /* 兩條路的對照 */
+.dl-center{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;text-align:center}
+.dl-center .btn{border-radius:14px;padding:12px 26px;font-size:14.5px}
+.dl-center p{font-size:12.5px;color:var(--gray-2);margin:0}
 .path-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px}
 .path{
   border:1px solid var(--gray-3);border-radius:var(--r-lg);background:var(--card);
@@ -115,9 +118,7 @@
   <div class="topbar-inner">
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">design_services</span>
     <h1>基本規範<span class="sub">Basic Guideline</span></h1>
-    <span style="margin-left:auto;display:inline-flex;gap:10px;align-items:center">
-      <a class="btn primary" href="hanlin-web-starter.zip" download style="font-size:13px;padding:8px 16px;border-radius:14px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載範例檔</a>
-    </span>
+    <!-- 2026-09-17 「下載範例檔」移到頁面最下方置中 -->
   </div>
 </header>
 
@@ -299,40 +300,16 @@
       </div>
     </div>
 
-    <h3 class="sub-hd">使用規則 RULES</h3>
-    <ul class="ic-rules">
-      <li>尺寸 24×24px（<code>font-size: 24px</code>），按鈕內 20px、頁首與功能磚 28px；線寬 1.6px、端點與轉角圓角（Rounded 字重 400、光學尺寸 24）。</li>
-      <li>顏色只用 <code>currentColor</code> 或 <code>color.surface.strong</code>；深色底一律 <code>.icon--inverse</code> 反白。</li>
-      <li>純裝飾圖示必須加 <code>aria-hidden="true"</code>；圖示是按鈕唯一內容時，按鈕必須另外提供 <code>aria-label</code>。</li>
-      <li>色底圓形容器：白底頁面用主色底＋白圖示；不得改用柔色底、不得加陰影或邊線。</li>
-      <li>功能磚輪替色只作用在圖示與標題文字，容器維持白底（見 §3.12 功能選單）。</li>
-      <li>不使用 emoji、不使用其他圖示庫（Font Awesome、Bootstrap Icons）；既有頁面套版時將其替換為對應的 Material Symbols。</li>
-    </ul>
+    <!-- 2026-09-17 使用規則 RULES 已移除（使用者指定） -->
    </div>
   </section>
 
   <!-- ══════ 兩條路 ══════ -->
   <section class="sec">
    <div class="pin">
-    <div class="sec-hd">
-      <span class="eyebrow">Which One</span>
-      <h2>基本規範，還是視覺套版？</h2>
-      <p>兩者不衝突，差別在你要不要挑一個「長相」。</p>
-    </div>
-
-    <div class="path-grid">
-      <div class="path">
-        <span class="who">你在這一頁</span>
-        <h3><span class="material-symbols-rounded">design_services</span>基本規範</h3>
-        <p>只有翰林的基礎視覺語言：藍色主色、既定字級、圓角與間距尺度。不帶任何風格傾向，適合後台、內部工具、資訊密度高的產品頁。</p>
-        <!-- 下載範例檔只留右上角一顆（2026-09-16 動線整理） -->
-      </div>
-      <div class="path">
-        <span class="who">想要有個性的長相</span>
-        <h3><span class="material-symbols-rounded">palette</span>視覺套版</h3>
-        <p>15 組風格，每組取自一份實際的規範文件——清新小森林、漫畫貼紙風、多巴胺潮流等等。挑一組就能把整套視覺方向交給 AI，或直接套到既有頁面。</p>
-        <a class="btn primary" href="index.html#kits" style="border-radius:14px">瀏覽全部套版<span class="material-symbols-rounded" style="font-size:18px">chevron_right</span></a>
-      </div>
+    <!-- 2026-09-17 「基本規範，還是視覺套版？」兩張卡已移除（使用者指定），只留下載鈕 -->
+    <div class="dl-center">
+      <a class="btn primary" href="hanlin-web-starter.zip" download><span class="material-symbols-rounded" style="font-size:19px">download</span>下載基本範例檔</a>
     </div>
    </div>
   </section>

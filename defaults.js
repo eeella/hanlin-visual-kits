@@ -395,23 +395,26 @@ window.HL_FLOW_STEPS=[
   {n:'匯入頁面',href:'import.html'},
   {n:'下載成果',href:''}
 ];
+function goWithTicket(href){
+  var file=href.split('?')[0].split('#')[0];
+  try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:file,t:Date.now()}))}catch(_){}
+  location.href=href;
+}
 window.HL_flowDock=function(o){
   o=o||{};
   var d=document.getElementById('flowDock');
   if(!d){
     d=document.createElement('div');d.id='flowDock';d.className='flow-dock';
     d.setAttribute('role','navigation');d.setAttribute('aria-label','流程');
+
     d.innerHTML='<div class="fd-in"><ol class="fd-steps"></ol><span class="fd-mobile"></span>'+
       '<span class="fd-act"><span class="fd-note" id="flowNote"></span>'+
+      '<span id="flowSecondaries"></span>'+
       '<button type="button" class="btn soft" id="flowSecondary" hidden></button>'+
       '<button type="button" class="btn primary" id="flowPrimary"></button></span></div>';
-    document.body.appendChild(d);
-    document.body.classList.add('has-flow-dock');
-    function goWithTicket(href){
-      var file=href.split('?')[0].split('#')[0];
-      try{sessionStorage.setItem('hanlin-handoff',JSON.stringify({to:file,t:Date.now()}))}catch(_){}
-      location.href=href;
-    }
+    /* inline：接在內容最後、不固定浮動（首頁／套版詳細用，使用者指定 2026-09-17）；其餘頁固定在畫面底部 */
+    if(o.inline){d.classList.add('flow-inline');(document.querySelector('main')||document.body).appendChild(d);}
+    else{document.body.appendChild(d);document.body.classList.add('has-flow-dock');}
     d.querySelector('#flowPrimary').addEventListener('click',function(e){
       var b=e.currentTarget;if(b.disabled)return;
       if(typeof d._onClick==='function'){d._onClick(e);return}
@@ -435,12 +438,23 @@ window.HL_flowDock=function(o){
   d._onClick=pr.onClick||null;d._href=pr.href||'';
   /* 次要動作（可選）：例如首頁的「已有頁面？直接匯入」，淺底、放在主鈕左邊 */
   var sc=o.secondary||null,b2=d.querySelector('#flowSecondary');
+  /* 次要動作可以給陣列（多顆淺底鈕）；給單一物件則走原本那顆 #flowSecondary */
+  var multi=d.querySelector('#flowSecondaries');multi.innerHTML='';
+  if(Array.isArray(sc)){
+    sc.forEach(function(x){
+      var bt=document.createElement('button');bt.type='button';bt.className='btn soft';
+      bt.innerHTML=(x.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+x.icon+'</span>':'')+(x.label||'');
+      bt.addEventListener('click',function(e){if(typeof x.onClick==='function')x.onClick(e);else if(x.href)goWithTicket(x.href)});
+      multi.appendChild(bt);
+    });
+    sc=null;
+  }
   if(sc){
     b2.hidden=false;
     b2.innerHTML=(sc.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+sc.icon+'</span>':'')+(sc.label||'');
     d._onClick2=sc.onClick||null;d._href2=sc.href||'';
   }else{b2.hidden=true;d._onClick2=null;d._href2='';}
   var note=d.querySelector('#flowNote');note.textContent=o.note||'';note.style.display=o.note?'':'none';
-  d.hidden=!!o.hidden;document.body.classList.toggle('has-flow-dock',!o.hidden);
+  d.hidden=!!o.hidden;if(!d.classList.contains('flow-inline'))document.body.classList.toggle('has-flow-dock',!o.hidden);
   return d;
 };

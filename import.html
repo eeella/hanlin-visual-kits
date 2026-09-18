@@ -169,6 +169,14 @@
         <label style="cursor:pointer" title="一般的文件流頁面：行銷頁、官網、文章頁"><input type="radio" name="layoutOpt" value="page"> 一般頁面</label>
         <label style="cursor:pointer" title="側欄＋主工作區的應用型版面：後台、編輯器、工具頁。套版時不補歡迎橫幅、不動佈局"><input type="radio" name="layoutOpt" value="appshell"> 應用型版面</label>
       </span>
+      <!-- 頁首／頁尾：自動判定猜錯（例如 <header class="hero"> 其實是主視覺）時，使用者可直接指定 -->
+      <!-- 使用者沒有「判定模式」的概念（2026-09-18）：一律套用公司版型，這組選項只給稽核用，網址帶 ?adv=1 才顯示 -->
+      <span id="shellOptWrap" hidden style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">頁首／頁尾</b>
+        <label style="cursor:pointer" title="用採用的版型重做頁首／頁尾：原本的導覽連結搬進新頁首，原本的頁首／頁尾收起來"><input type="radio" name="shellOpt" value="replace" checked> 套用版型</label>
+        <label style="cursor:pointer" title="沿用頁面原本的頁首／頁尾、只換配色與 Logo；沒有才補一個"><input type="radio" name="shellOpt" value="auto"> 沿用＋補缺</label>
+        <label style="cursor:pointer" title="不管判定結果，一律在最前面補頁首、最後面補頁尾（原本的保留）"><input type="radio" name="shellOpt" value="add"> 一律補上</label>
+        <label style="cursor:pointer" title="只沿用頁面原本的頁首／頁尾套配色，缺了也不補"><input type="radio" name="shellOpt" value="keep"> 只用原本的</label>
+      </span>
       <span style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">主色強度</b>
         <label style="cursor:pointer"><input type="radio" name="toneOpt" value="standard" checked> 標準</label>
         <label style="cursor:pointer"><input type="radio" name="toneOpt" value="soft"> 低調（大面積底色改柔色）</label>
@@ -182,7 +190,8 @@
         <label style="cursor:pointer"><input type="checkbox" data-opt="font" checked> 字體</label>
         <label style="cursor:pointer"><input type="checkbox" data-opt="logo" checked> Logo</label>
         <label style="cursor:pointer"><input type="checkbox" data-opt="icon" checked> icon</label>
-        <label style="cursor:pointer" title="會套用按鈕、表單、卡片、表格等元件樣式；實測這一層在窄螢幕較容易撐破版面，預設不開"><input type="checkbox" data-opt="semantic"> 語意樣式層<span style="font-size:11.5px;color:#8A4508;background:#F8EDE0;border-radius:6px;padding:1px 7px;margin-left:6px">窄螢幕易破版</span></label>
+        <!-- 2026-09-18 使用者指定：匯入檔沒有 header／footer 要補上——補殼的邏輯掛在這個選項底下，所以改成預設勾選；仍可手動關掉 -->
+        <label style="cursor:pointer" title="套用 Header／Footer 版型（頁面沒有就補上）、歡迎橫幅與按鈕、表單、卡片、表格等元件樣式；窄螢幕若破版可關掉"><input type="checkbox" data-opt="semantic" checked> 版型與元件</label>
       </span>
     </div>
     <details id="impReportBox" style="display:none;margin:0 0 12px;background:#fff;border:1px solid #EDF0F4;border-radius:12px;padding:10px 16px">
@@ -918,8 +927,19 @@ hlStampAssets();
           fg:'#fff',photo:false};
       }
       if(idx2===1){
-        return {bg:_wash+'linear-gradient(180deg,#FFFFFF 0%,'+SG.subtle+' 100%)',
-          fg:SG.ink,photo:true};
+        /* 【純圖片版沒有照片時，不再是白底預留位】(使用者回報 2026-09-18)
+           原本是白→淺灰漸層＋「主視覺照片」提示框：整塊發白、原檔的白字直接消失、對比色圓形浮在白底上很突兀。
+           改成跟首頁卡片縮圖與範本頁同一份色彩分配（defaults.js HL_heroSpec）：這一組的深色大塊當底，
+           字色依對比自動挑白或深。有真的照片時仍走照片＋暗角遮罩（見 forceStyle 那段）。 */
+        var _hs=null;
+        try{
+          var _ks=window.HL_KITS||[],_k=null;
+          for(var _i=0;_i<_ks.length;_i++){if(_ks[_i].n===to2.n){_k=_ks[_i];break}}
+          if(_k&&window.HL_heroSpec)_hs=window.HL_heroSpec(_k);
+        }catch(e){}
+        var _hb=(_hs&&_hs.hero)||(isDark2?mixB(to2.s||to2.p,.35):(to2.s||to2.p));
+        var _hfg=(sgLum(normHex(_hb))<0.35)?'#fff':(sgLum(normHex(to2.ink||SG.ink))<0.2?(to2.ink||SG.ink):'#16202B');
+        return {bg:_wash+_hb,fg:_hfg,photo:true,cta:(_hs&&_hs.btn)||to2.c};
       }
       return null;
     }
@@ -930,6 +950,10 @@ hlStampAssets();
        不能拿初始值 false 去講「一般頁面（文件流）」——那是把沒發生的判斷講成結論，
        使用者正是靠這個面板診斷版面問題的。 */
     var STRUCT_RAN=false;
+    /* 頁首／頁尾判定帳：報告要明講「補上新的」還是「沿用原本的哪一個」，猜錯時使用者才知道去切「頁首／頁尾」選項 */
+    var SHELL_MODE=(opts&&/^(add|keep|auto|replace)$/.test(opts.shellMode||''))?opts.shellMode:'replace';
+    var SHELL_ORIG={hd:null,ft:null};   /* 套用版型模式：原本的頁首／頁尾（導覽連結要搬進新殼，然後收起來） */
+    var SHELL_INFO={hd:'',ft:''};
   /* 【選項卡列不是頁首】(2026-08-31)
      實測：一列 3 個 button 的橫向選項卡完全符合下面 header fallback 的條件
      （前段、文字短、無 h1~h4、含按鈕），於是整條被塗成頁首配色，
@@ -2110,7 +2134,7 @@ hlStampAssets();
                    [data-hl-hero] h1/h2/p{color:#fff!important}（特異度 (0,1,1)），
                    writeStyle 產生的 html body [data-hl-s] 是 (0,1,2) 且置底，穩定勝出，
                    不需要在使用者的文字元素上留 element.style。 */
-                writeStyle(tx,'color',SG.ink);
+                writeStyle(tx,'color',HERO_BASE.fg||SG.ink);
               });
             }catch(e){SWALLOW(e)}
           }
@@ -2120,7 +2144,8 @@ hlStampAssets();
           if(!heroPhoto&&!heroHasVisual&&!he.querySelector('[data-hl-photo]')){
             var ph=markSystem(doc.createElement('span'));
             ph.setAttribute('data-hl-photo','1');
-            ph.setAttribute('style','position:absolute;top:14px;right:18px;display:inline-flex;align-items:center;gap:6px;background:'+mixW(to.p,.88)+';color:'+SG.ink+';border-radius:100px;padding:6px 14px;font-size:13px;backdrop-filter:blur(4px)');
+            var _phDark=(HERO_BASE.fg==='#fff');
+            ph.setAttribute('style','position:absolute;top:14px;right:18px;display:inline-flex;align-items:center;gap:6px;background:'+(_phDark?'rgba(255,255,255,.18)':mixW(to.p,.88))+';color:'+(_phDark?'#fff':SG.ink)+';border-radius:100px;padding:6px 14px;font-size:13px;backdrop-filter:blur(4px)');
             ph.innerHTML='<span data-hl-origin="system" class="material-symbols-rounded" style="font-family:\'Material Symbols Rounded\';font-size:16px;line-height:1;vertical-align:-3px">image</span>主視覺照片';
             he.appendChild(ph);
           }
@@ -2941,6 +2966,19 @@ hlStampAssets();
           var hdEl=doc.querySelector('header,nav,[class*=navbar],[class*=topbar]');
           if(inSB(hdEl))hdEl=null;
           if(hdEl&&isTabStrip(hdEl))hdEl=null;   /* nav.tabs／role=tablist 不當頁首 */
+          /* 【<header class="hero"> 是主視覺，不是頁首】(使用者回報 2026-09-18，Hanlin EXPO.html)
+             專題／長文頁常把整屏主視覺寫成 <header class="hero">：裡面只有眉標＋h1＋導言，沒有任何導覽連結。
+             把它當頁首會有兩個後果：① 不補真正的頁首殼（Logo／會員入口），② 主視覺被塗成頁首配色。
+             判定：<header> 且（class 含 hero／banner／masthead，或 含 h1 且連結＋按鈕 <2 個）→ 不是頁首。
+             它仍會被後面的橫幅偵測認成 hero，照 hero 規則處理。 */
+          if(hdEl&&/^header$/i.test(hdEl.tagName)&&SHELL_MODE!=='keep'){
+            var _hcls=String(hdEl.className||''),_hlinks=hdEl.querySelectorAll('a,button').length;
+            if(/\b(hero|banner|masthead)\b/i.test(_hcls)||(hdEl.querySelector('h1')&&_hlinks<2)){
+              hdEl.setAttribute('data-hl-herohead','1');   /* 給後面的 header 候選掃描與稽核看 */
+              SHELL_INFO.hdSkipped='原本的 '+hdEl.tagName.toLowerCase()+(_hcls?'.'+_hcls.split(' ')[0]:'')+' 判為主視覺（有大標、沒有導覽連結）';
+              hdEl=null;
+            }
+          }
           /* 命中 nav 時，若父層是同一條橫列（含品牌名等），改用父層才不會把 logo 插到選單中間 */
           if(hdEl&&/^(nav|ul)$/i.test(hdEl.tagName)){
             var pp2=hdEl.parentElement;
@@ -2954,6 +2992,7 @@ hlStampAssets();
             for(var ci=0;ci<lim;ci++){
               var cd=cands[ci];
               if(inSB(cd))continue;                                  /* 側欄不是 header */
+              if(cd.hasAttribute('data-hl-herohead')||cd.closest('[data-hl-herohead]'))continue;   /* 主視覺型 header 不是頁首 */
               /* header 必須是頁面最前段的橫條：位於前 2 個頂層區塊內 */
               var top=cd;while(top.parentElement&&top.parentElement!==doc.body)top=top.parentElement;
               if(bodyKids.indexOf(top)>1)break;
@@ -2990,8 +3029,15 @@ hlStampAssets();
             /* app shell：側欄品牌區就是 header 的角色，把版型樣式套在它身上 */
             hdEl=SBEL.querySelector('[class*=brand],[class*=logo],[class*=head],[class*=title]')||SBEL;
           }
+          /* 手動模式：一律補上 → 原本認到的頁首留在原地不動、另外補一個；只用原本的 → 缺了也不補 */
+          function _tagOf(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
+          if(SHELL_MODE==='add'){if(hdEl)SHELL_INFO.hdKept=_tagOf(hdEl);hdEl=null}
+          if(SHELL_MODE==='replace'&&hdEl){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
+          if(hdEl)SHELL_INFO.hd='沿用原本的 '+_tagOf(hdEl)+'，套上採用的版型';
           /* 原檔沒有 header 就補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL） */
-          if((ADD_COMPONENTS||ADD_SHELL)&&!hdEl){
+          if((ADD_COMPONENTS||ADD_SHELL)&&!hdEl&&SHELL_MODE!=='keep'){
+            SHELL_INFO.hd=SHELL_INFO.hdReplaced?('套用版型重做（原本的 '+SHELL_INFO.hdReplaced+' 收起，導覽連結搬進新頁首）')
+              :('補上新的'+(SHELL_INFO.hdSkipped?('（'+SHELL_INFO.hdSkipped+'）'):(SHELL_INFO.hdKept?('（原本的 '+SHELL_INFO.hdKept+' 保留，你選了「一律補上」）'):'（頁面沒有頁首）')));
             /* 用語意的 <header>，不是裸 div：外部工具與無障礙都靠這個標籤認頁首 */
             hdEl=markSystem(doc.createElement('header'));
             hdEl.setAttribute('data-hl-inserted','1');
@@ -3004,7 +3050,8 @@ hlStampAssets();
              ['margin','0'],['position','relative'],['z-index','5']].forEach(function(kv){
               try{hdEl.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}
             });
-            if(ON('logo')){
+            /* 公司頁首一定要有 Logo（使用者指定 2026-09-18）；「套用項目 › Logo」只管內容裡的 logo 替換，不管這裡 */
+            {
               var hlg=markSystem(doc.createElement('img'));hlg.src=LOGO_DATA;hlg.alt='翰林';
               [['height','30px'],['width','auto'],['display','block'],['flex','0 0 auto']].forEach(function(kv){
                 try{hlg.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
@@ -3043,6 +3090,27 @@ hlStampAssets();
               if(mainEl){hHost=mainEl;hAnchor=mainEl.firstChild}
             }
             hHost.insertBefore(hdEl,hAnchor);
+            /* 套用版型模式：原本頁首裡的導覽連結搬進新頁首（放在站名之後、會員入口之前），原本的頁首收起來。
+               只搬 <a>（導覽），不搬品牌字樣／副標——那些跟翰林 Logo 重複。 */
+            if(SHELL_MODE==='replace'&&SHELL_ORIG.hd){
+              try{
+                var _links=Array.prototype.filter.call(SHELL_ORIG.hd.querySelectorAll('a[href]'),function(a){
+                  var t=(a.textContent||'').trim();return t&&t.length<=12&&!a.querySelector('img,svg')});
+                if(_links.length){
+                  var _nav=markSystem(doc.createElement('nav'));_nav.setAttribute('data-hl-nav','1');_nav.setAttribute('aria-label','主要導覽');
+                  [['display','flex'],['gap','4px'],['align-items','center'],['flex','1 1 auto'],['min-width','0'],['flex-wrap','wrap'],['margin-left','8px']].forEach(function(kv){
+                    try{_nav.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
+                  _links.slice(0,7).forEach(function(a){
+                    [['display','inline-flex'],['align-items','center'],['padding','6px 12px'],['border-radius','999px'],['text-decoration','none'],['font-size','14px'],['white-space','nowrap'],['color','inherit']].forEach(function(kv){
+                      try{a.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
+                    _nav.appendChild(a);
+                  });
+                  hdEl.appendChild(_nav);
+                }
+                SHELL_ORIG.hd.setAttribute('data-hl-replaced','1');
+                try{SHELL_ORIG.hd.style.setProperty('display','none','important')}catch(e){SWALLOW(e)}
+              }catch(e){SWALLOW(e)}
+            }
           }
           /* ── AI 生成頁面手法：單字母方塊當 logo mark ──
              側欄／header 的品牌區常寫成 <div class="hmark">H</div> 這種字母方塊，
@@ -3089,7 +3157,13 @@ hlStampAssets();
             ftEl=SBEL.querySelector('[class*=foot],[class*=bottom]')||null;
           }
           if(!ftEl&&APPSHELL){ftEl=null}
-          if(!ftEl&&!APPSHELL&&(ADD_COMPONENTS||ADD_SHELL)){
+          function _tagOf2(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
+          if(SHELL_MODE==='add'){if(ftEl)SHELL_INFO.ftKept=_tagOf2(ftEl);ftEl=null}
+          if(SHELL_MODE==='replace'&&ftEl){SHELL_ORIG.ft=ftEl;SHELL_INFO.ftReplaced=_tagOf2(ftEl);ftEl=null}
+          if(ftEl)SHELL_INFO.ft='沿用原本的 '+_tagOf2(ftEl)+'，套上採用的版型';
+          if(!ftEl&&!APPSHELL&&(ADD_COMPONENTS||ADD_SHELL)&&SHELL_MODE!=='keep'){
+            SHELL_INFO.ft=SHELL_INFO.ftReplaced?('套用版型重做（原本的 '+SHELL_INFO.ftReplaced+' 收起，版權文字保留）')
+              :('補上新的'+(SHELL_INFO.ftKept?'（原本的保留，你選了「一律補上」）':'（頁面沒有頁尾）'));
             /* 頁面沒有 footer：補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL）。
                原本是 createElement('div') 且完全不寫結構樣式，實測結果是
                寬 120px／高 24px／padding 0 的一行字貼在內容下緣 —— 版型的
@@ -3110,6 +3184,30 @@ hlStampAssets();
             var _fnm=((doc.querySelector('title')||{}).textContent||'').trim()
                    ||((doc.querySelector('h1')||{}).textContent||'').trim();
             ftEl.textContent='© '+(new Date().getFullYear())+(_fnm?' '+_fnm:'');
+            /* 頁尾也放 Logo（白色，跟版型預覽的頁尾一致）；文字用 span 包住，Logo 排在上一行 */
+            (function(){
+              try{
+                var _txt=ftEl.textContent;ftEl.textContent='';
+                var flg=markSystem(doc.createElement('img'));flg.src=LOGO_DATA;flg.alt='翰林';flg.setAttribute('data-hl-ftlogo','1');
+                [['height','26px'],['width','auto'],['display',_ftIdx===0?'block':'inline-block'],['margin','0 auto 10px'],['filter','brightness(0) invert(1)'],['opacity','.92']].forEach(function(kv){
+                  try{flg.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
+                var ftx=markSystem(doc.createElement('span'));ftx.setAttribute('data-hl-fttext','1');ftx.textContent=_txt;
+                try{ftx.style.setProperty('display','block','important')}catch(e){SWALLOW(e)}
+                ftEl.appendChild(flg);ftEl.appendChild(ftx);
+              }catch(e){SWALLOW(e)}
+            })();
+            /* 套用版型模式：原本頁尾的文字（版權、公司名）保留一行，原本的頁尾收起來 */
+            if(SHELL_MODE==='replace'&&SHELL_ORIG.ft){
+              try{
+                /* 頁面可能有多個 footer（資料來源聲明＋版權列）：全部收起，版權文字取含 © 的那一個 */
+                var _fts=Array.prototype.filter.call(doc.querySelectorAll('footer,[class*="site-footer"],[class*="page-footer"]'),function(f){return f!==ftEl&&!ftEl.contains(f)});
+                var _pick=null;
+                _fts.forEach(function(f){var t=(f.textContent||'').replace(/\s+/g,' ').trim();if(!_pick&&/©|copyright|版權/i.test(t))_pick=t});
+                if(!_pick&&SHELL_ORIG.ft)_pick=(SHELL_ORIG.ft.textContent||'').replace(/\s+/g,' ').trim();
+                if(_pick&&_pick.length<=120){var _fx=ftEl.querySelector('[data-hl-fttext]');if(_fx)_fx.textContent=_pick;else ftEl.textContent=_pick}
+                _fts.forEach(function(f){f.setAttribute('data-hl-replaced','1');try{f.style.setProperty('display','none','important')}catch(e){SWALLOW(e)}});
+              }catch(e){SWALLOW(e)}
+            }
             doc.body.appendChild(ftEl);
           }
           if(ftEl)ftEl.setAttribute('data-hl-ft','1');
@@ -3742,7 +3840,10 @@ hlStampAssets();
           if(/background/i.test(s.getAttribute('style')||''))return;
           /* hero／banner 自帶底色（多半寫在 CSS class，inline 看不到），不算進白底的輪替 */
           if(s.hasAttribute('data-hl-hero')||/hero|banner|jumbotron/i.test(s.getAttribute('class')||''))return;
-          if((si++)%2===1)imp(s,'background',SG.subtle);
+          /* 【深色頁不能塗淺底】(使用者回報 2026-09-18，Hanlin EXPO.html)
+             深色主題的頁面塗上 #F4F7FB 會出現一整塊白區，跟整頁的深底格格不入。
+             深色頁改用「輔色與黑混合」的深一階面板色（跟頁尾／深色 hero 同一套算法），節奏仍在、色調不破。 */
+          if((si++)%2===1)imp(s,'background',isDarkPage?mixB(to.s||to.p,.62):SG.subtle);
         });
         HL_RULE='色條輪替';
         /* 重複的色條／欄頭底色輪替：打破單色調最有效的一招，但**只處理原本就有實心底色的元素**。
@@ -5156,7 +5257,7 @@ hlStampAssets();
         +'}catch(e){}})();<\/script>';
       html=injectBeforeBody(html,ckLog);
     }catch(e){SWALLOW(e)}
-    return {html:html,checklist:ckRows,checklistMissing:ckMissing,map:toneMap,logoSwapped:logoSwapped,logoCount:logoCount,iconCount:iconCount,det:det,authoring:AUTHORING,comps:compCounts,framework:FRAMEWORK.name,varRole:{hits:VAR_HITS,defs:Object.keys(VAR_ROLE).length},appShell:IS_APPSHELL,appShellNoHero:APPSHELL_NO_HERO,structRan:STRUCT_RAN,layoutMode:(opts&&opts.layoutMode)||'auto',cfgState:CFG_STATE,vs:VS,cfgSeen:CFG_SEEN,ruleTrace:{writes:HL_WRITES,overrides:HL_OVR},optDbg:OPT_DBG,swallowed:SWALLOWED};
+    return {html:html,checklist:ckRows,checklistMissing:ckMissing,map:toneMap,logoSwapped:logoSwapped,logoCount:logoCount,iconCount:iconCount,det:det,authoring:AUTHORING,comps:compCounts,framework:FRAMEWORK.name,varRole:{hits:VAR_HITS,defs:Object.keys(VAR_ROLE).length},appShell:IS_APPSHELL,appShellNoHero:APPSHELL_NO_HERO,structRan:STRUCT_RAN,layoutMode:(opts&&opts.layoutMode)||'auto',shell:SHELL_INFO,shellMode:SHELL_MODE,cfgState:CFG_STATE,vs:VS,cfgSeen:CFG_SEEN,ruleTrace:{writes:HL_WRITES,overrides:HL_OVR},optDbg:OPT_DBG,swallowed:SWALLOWED};
   }
   function applyThemeVars(t){
     if(!t||!t.p)return;
@@ -5240,8 +5341,12 @@ hlStampAssets();
   function currentOpts(){
     var o={tone:(document.querySelector('input[name=toneOpt]:checked')||{}).value||'standard'};
     document.querySelectorAll('#impOpts [data-opt]').forEach(function(c){o[c.dataset.opt]=c.checked});
+    o.v=2;   /* 2026-09-18：semantic 改預設開；舊紀錄（沒有 v）裡的 semantic:false 是舊預設，不沿用 */
     var lm=(document.querySelector('input[name=layoutOpt]:checked')||{}).value||'auto';
     if(lm!=='auto')o.layoutMode=lm;   /* auto 就不傳，讓引擎自己判定 */
+    var _swEl=document.getElementById('shellOptWrap');
+    var sm=(_swEl&&!_swEl.hidden)?((document.querySelector('input[name=shellOpt]:checked')||{}).value||'replace'):'replace';
+    o.shellMode=sm;    /* 頁首／頁尾：replace＝套用版型（預設）、auto＝沿用＋補缺、add＝一律補上、keep＝只用原本的 */
     return o;
   }
   /* 套用檢查：把套用結果實際渲染在隱藏 iframe，用 computedStyle 逐項驗證「真的生效」，不是只看規則有沒有寫入 */
@@ -6950,6 +7055,12 @@ hlStampAssets();
             add('這是自動判定的','判斷錯的話，把上面的「版面型態」改成手動指定即可',
                 false);
         }
+        if(ran){
+          var sh=res.shell||{},smLab={add:'　← 你選了「一律補上」',keep:'　← 你選了「只用原本的」',auto:'　← 你選了「沿用＋補缺」'}[res.shellMode]||'';
+          add('頁首',(sh.hd||(res.shellMode==='keep'?'頁面沒有頁首（你選了只用原本的，所以不補）':'未處理'))+smLab, !sh.hd);
+          add('頁尾',(sh.ft||(isShell?'app shell 不補頁尾':(res.shellMode==='keep'?'頁面沒有頁尾（你選了只用原本的，所以不補）':'未處理')))+smLab, !sh.ft&&!isShell);
+          if(/[?&]adv=1/.test(location.search))add('想改？','「頁首／頁尾」選項：套用版型（重做）／沿用＋補缺／一律補上／只用原本的，切了右邊立刻重套',false);
+        }
         add('補歡迎橫幅',
             !ran?'不補（本次沒做結構判定）'
                :(isShell?'不補（app shell 補了會蓋掉工作區）':'依採用設定'),
@@ -7041,8 +7152,12 @@ hlStampAssets();
       document.querySelectorAll('input[name=toneOpt]').forEach(function(r){
         r.checked=(r.value===tone);          /* 兩個方向都寫，不是只寫其中一邊 */
       });
+      var sm=(o&&/^(add|keep|auto|replace)$/.test(o.shellMode||''))?o.shellMode:'replace';
+      document.querySelectorAll('input[name=shellOpt]').forEach(function(r){r.checked=(r.value===sm)});
       document.querySelectorAll('#impOpts [data-opt]').forEach(function(c){
         var v=o?o[c.dataset.opt]:undefined;
+        /* 舊版紀錄（沒有 v）的 semantic:false 只是當時的預設值，不是使用者取消 → 一律當沒有紀錄 */
+        if(c.dataset.opt==='semantic'&&!(o&&o.v>=2))v=undefined;
         /* 沒有記錄＝採用（面板預設全開）；只有明確的 false 才是取消。
            用 !==false 而不是 ===true，避免把 "true"／1 這類非布林值誤判成取消。 */
         c.checked=(v===undefined)?true:(v!==false);
@@ -7061,6 +7176,7 @@ hlStampAssets();
         localStorage.setItem('hanlin-import-opts',JSON.stringify(currentOpts()));
       }
     }catch(e){}
+    try{if(/[?&]adv=1/.test(location.search)){var _sw=document.getElementById('shellOptWrap');if(_sw){_sw.hidden=false;_sw.style.display='inline-flex'}}}catch(e){}
     document.querySelectorAll('#impOpts input').forEach(function(inp){inp.addEventListener('change',renderBranded)});
     /* ── 重新勾選熱更新（Live Change Observer）──────────────────────
        原本只掛了兩個訊號：跨分頁 storage 事件、外層 window 的 focus。缺口有二：

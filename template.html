@@ -418,7 +418,7 @@ main .opt-dot.on{border-color:#0072B5}
   pointer-events:none;display:block}
 /* 原本是底部一行灰色小字「點擊開啟完整範本」，看不出能點（使用者回報 2026-09-30）：
    改成縮圖下方白底區的實心主色按鈕。不壓在縮圖上——每組範本配色不同，壓上去會撞色（翰林學習藍的主視覺就是同一個藍） */
-.demo-foot{display:flex;justify-content:center;padding:18px 16px;background:#fff}
+.demo-foot{display:flex;justify-content:center;padding:16px;background:#fff}
 .demo-open{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:14px;background:var(--brand);color:#fff;
   font-size:15px;font-weight:600;white-space:nowrap;text-decoration:none;transition:background .2s}
 .demo-open .material-symbols-rounded{font-size:19px}
@@ -2891,15 +2891,31 @@ main .opt-dot.on{border-color:#0072B5}
   (function(){
     var fr=document.getElementById('demoFrame');
     if(!fr)return;
-    var url='demo.html?kit='+encodeURIComponent(k.id);   /* 範本頁一律＝基本範例檔套色，不再各自一份 */
+    /* v＝範本頁版本：demo.html 改過就換這個值，瀏覽器才不會吃到舊的範本頁（2026-09-30） */
+    var url='demo.html?kit='+encodeURIComponent(k.id)+'&v=20260930b';   /* 範本頁一律＝基本範例檔套色，不再各自一份 */
     fr.src=url;
     document.getElementById('demoLink').href=url;
     document.getElementById('demoOpen').href=url;
     /* 等比縮到容器寬度：寫死縮放比例，換螢幕寬度就會露出白邊或被切掉 */
+    /* 縮圖高度＝範本「頁首＋主視覺」的實際高度（使用者回報 2026-09-30：寫死 560px，主視覺矮的組底下多露一大塊空白，很不精緻）。
+       範本內容是 demo.html 非同步產生的，要等 .hero 出現才量得到；量不到就維持原本的 560px。 */
+    var shot=fr.parentNode,heroH=0;
     function fit(){
-      var w=fr.parentNode.clientWidth;
-      if(w)fr.style.transform='scale('+(w/1280)+')';
+      var w=shot.clientWidth;if(!w)return;
+      var sc=w/1280;
+      fr.style.transform='scale('+sc+')';
+      if(heroH)shot.style.height=Math.round(heroH*sc)+'px';
     }
+    function measure(n){
+      var d=null;try{d=fr.contentDocument}catch(e){}
+      var h=d&&d.querySelector('.hero');
+      if(!h){if(n<40)setTimeout(function(){measure(n+1)},100);return}
+      try{d.documentElement.style.overflow='hidden';d.body.style.overflow='hidden'}catch(e){}   /* 縮圖裡不要出現捲軸 */
+      var r=h.getBoundingClientRect(),top=(d.documentElement.scrollTop||0);
+      heroH=Math.min(1720,Math.ceil(r.bottom+top));
+      fit();
+    }
+    fr.addEventListener('load',function(){measure(0)});
     fit();
     window.addEventListener('resize',fit);
 

@@ -22,9 +22,13 @@
   var K=(window.HL_KITS||[]).filter(function(k){return k.id===id})[0]||(window.HL_KITS||[])[0];
   var base='hanlin-web-starter/';
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-  Promise.all([fetch(base+'index.html').then(function(r){return r.text()}),fetch(base+'tokens.css').then(function(r){return r.text()})])
+  /* 一律向伺服器確認有沒有新版（cache:'no-cache'）：starter 的檔案沒有破快取版本號，
+     先前改了 hl-style.css，使用者瀏覽器仍吃舊快取，範本副標一直是灰字（2026-09-30） */
+  var NC={cache:'no-cache'};
+  function get(u){return fetch(u,NC).then(function(r){return r.ok?r.text():''})}
+  Promise.all([get(base+'index.html'),get(base+'tokens.css'),get(base+'hl-style.css')])
   .then(function(rs){
-    var html=rs[0],tokens=rs[1];
+    var html=rs[0],tokens=rs[1],style=rs[2];
     /* 資源路徑指回 starter 資料夾 */
     html=html.replace(/href="tokens\.css"/,'href="'+base+'tokens.css"')
              .replace(/href="hl-style\.css"/,'href="'+base+'hl-style.css"')
@@ -35,6 +39,9 @@
       var merged=window.HL_mergeStarterTokens(tokens,K);
       html=html.replace('<link rel="stylesheet" href="'+base+'hl-style.css">','<style id="hl-kit-tokens">\n'+merged+'\n</style>\n<link rel="stylesheet" href="'+base+'hl-style.css">');
     }
+    /* 樣式直接內嵌剛抓到的最新版，不再用 <link> 讓瀏覽器自己拿（會拿到快取） */
+    if(style)html=html.replace('<link rel="stylesheet" href="'+base+'hl-style.css">','<style id="hl-starter-style">\n'+style+'\n</style>');
+    html=html.replace(/src="hanlin-web-starter\/app\.js"/,'src="hanlin-web-starter/app.js?v='+Date.now()+'"');
     /* 文案換成這一組的（沒有就留 starter 原文） */
     var cp=(K&&K.cp)||{};
     if(cp.hl)html=html.replace(/<h1>[\s\S]*?<\/h1>/,'<h1>'+esc(cp.hl)+'</h1>');

@@ -108,10 +108,10 @@
 .grid-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-8px 0 12px;min-height:44px}
 .grid-count{font-size:16px;font-weight:600;color:#16202B}
 .grid-count b{color:var(--brand);font-size:18px;font-weight:700;margin:0 2px}   /* 「共 15 組」原本 14px 灰字不明顯（使用者回報 2026-09-30） */
-.more-link{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 4px;background:none;border:0;cursor:pointer;
-  font:inherit;font-size:14px;font-weight:600;color:var(--brand);border-radius:10px}
-.more-link .material-symbols-rounded{font-size:20px}
-.more-link:hover{color:var(--brand-dark)}
+.more-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px 0 20px;border:0;cursor:pointer;
+  font:inherit;font-size:15px;font-weight:700;color:var(--brand);background:#E6F0FA;border-radius:14px;transition:background .15s}   /* 文字連結不明顯（使用者回報 2026-09-30）：改成淺藍底按鈕 */
+.more-link .material-symbols-rounded{font-size:22px}
+.more-link:hover{background:#D3E4F5;color:var(--brand-dark)}
 .more-link:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .more-link[hidden]{display:none}
 .grid-bar[hidden]{display:none}
@@ -304,7 +304,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
     <!-- 卡片上方標題列：左邊顯示幾組、右邊「看全部」（使用者指定 2026-09-30，630px 高的第一屏要看得到） -->
     <div class="grid-bar" id="moreWrap">
       <span class="grid-count" id="gridCount"></span>
-      <button class="more-link" id="moreBtn" type="button">看全部 <span id="moreCount">—</span> 組<span class="material-symbols-rounded" aria-hidden="true">chevron_right</span></button>
+      <button class="more-link" id="moreBtn" type="button">看全部 <span id="moreCount">—</span> 組<span class="material-symbols-rounded" aria-hidden="true">expand_more</span></button>
     </div>
     <div class="kit-grid" id="kitGrid"></div>
     <p class="kit-empty" id="kitEmpty" hidden>這個分類目前沒有套版。</p>

@@ -745,6 +745,12 @@ body.has-flow-dock{padding-bottom:74px}
 .flow-top .fd-steps li.now{color:var(--brand);font-weight:700}
 .flow-top .fd-steps li.now i{background:var(--brand);color:#fff}
 .flow-top .fd-mobile{display:none !important}
+/* 已完成的步驟可以點回去：整顆（圓圈＋名稱）都是連結，滑過變主色 */
+.flow-top .fd-back{display:inline-flex;align-items:center;gap:inherit;color:inherit;text-decoration:none;border-radius:999px;padding:4px 8px 4px 4px;margin:-4px -8px -4px -4px;cursor:pointer;transition:background .15s,color .15s}
+.flow-top .fd-back:hover{background:#EAF1FA;color:var(--brand)}
+.flow-top .fd-back:hover i{background:var(--brand);color:#fff}
+.flow-top .fd-back:hover i::before{color:#fff}
+.flow-top .fd-back:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 /* 內頁：步驟在標題列右邊同一欄，尺寸配合標題列高度 */
 .flow-top.flow-top--bar{flex:none}
 .fd-grow{order:1}.flow-top--after{order:2}

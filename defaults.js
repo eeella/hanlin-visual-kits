@@ -451,10 +451,31 @@ window.HL_flowDock=function(o){
   /* 匯入流程自己的步驟列（ol#flow）真的顯示在頁面上時，不再疊一條；它若是隱藏狀態，照常顯示 */
   var _own=document.getElementById('flow'),_ownOn=!!(_own&&!_own.hidden&&_own.getClientRects().length);
   if(top)top.hidden=!!o.hidden||_ownOn;
+  /* 已完成的步驟可以點回去（使用者指定 2026-09-30）。套版詳細要帶目前採用的那一組；
+     目標就是目前這一頁（匯入頁的步驟 3／4）時不做連結，免得重新整理弄丟進度 */
+  var here=(location.pathname.split('/').pop()||'index.html');
+  function backHref(n){
+    if(n===1)return 'index.html#kits';
+    if(n===2){var id=(window.HL_adoptedKitId&&window.HL_adoptedKitId())||'';return id?('template.html?kit='+encodeURIComponent(id)):''}
+    if(n===3)return 'import.html';
+    return '';
+  }
   top.querySelector('.fd-steps').innerHTML=S.map(function(st,i){
     var n=i+1,cls=n<step?'done':(n===step?'now':'');
-    return '<li class="'+cls+'"><i><span>'+n+'</span></i>'+st.n+'</li>';
+    var body='<i><span>'+n+'</span></i>'+st.n;
+    var href=n<step?backHref(n):'';
+    if(href&&href.split('?')[0].split('#')[0]!==here)
+      return '<li class="'+cls+'"><a class="fd-back" href="'+href+'" title="回到「'+st.n+'」">'+body+'</a></li>';
+    return '<li class="'+cls+'"'+(n===step?' aria-current="step"':'')+'>'+body+'</li>';
   }).join('');
+  if(!top._backBound){
+    top._backBound=true;
+    top.addEventListener('click',function(e){
+      var a=e.target.closest?e.target.closest('a.fd-back'):null;if(!a)return;
+      if(e.metaKey||e.ctrlKey||e.shiftKey)return;   /* 要開新分頁就交給瀏覽器 */
+      e.preventDefault();goWithTicket(a.getAttribute('href'));
+    });
+  }
   top.querySelector('.fd-mobile').innerHTML='<b>步驟 '+step+'／'+S.length+'</b>'+(S[step-1]?S[step-1].n:'');
   var pr=o.primary||{},b=d.querySelector('#flowPrimary');
   b.innerHTML=(pr.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+pr.icon+'</span>':'')+(pr.label||'下一步');

@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260930f">
-<script src="defaults.js?v=a1f84aade6dd"></script>
+<link rel="stylesheet" href="style.css?v=20260930g">
+<script src="defaults.js?v=792634ded4c0"></script>
 <script src="kits.js?v=bd42b56bca0b"></script>
 <style>
 /* ===== 首頁＝視覺套版列表（2026-09-15 兩頁合併） ===== */
@@ -106,7 +106,8 @@
 .kit-apply:hover{filter:brightness(.95)}
 .kit.on .kit-apply{background:#1E5BC6;color:#fff}
 .grid-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-8px 0 12px;min-height:44px}
-.grid-count{font-size:14px;color:#6B7785}
+.grid-count{font-size:16px;font-weight:600;color:#16202B}
+.grid-count b{color:var(--brand);font-size:18px;font-weight:700;margin:0 2px}   /* 「共 15 組」原本 14px 灰字不明顯（使用者回報 2026-09-30） */
 .more-link{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 4px;background:none;border:0;cursor:pointer;
   font:inherit;font-size:14px;font-weight:600;color:var(--brand);border-radius:10px}
 .more-link .material-symbols-rounded{font-size:20px}
@@ -505,7 +506,7 @@ body.home h1,body.home h2,body.home h3,body.home h4{color:#16202B;line-height:1.
     moreWrap.hidden=!list.length;
     moreBtn.hidden=expanded||list.length<=FIRST_ROW;
     moreCount.textContent=list.length;
-    document.getElementById('gridCount').textContent=(show.length<list.length)?('顯示 '+show.length+'／'+list.length+' 組'):('共 '+list.length+' 組');
+    document.getElementById('gridCount').innerHTML=(show.length<list.length)?('顯示 <b>'+show.length+'</b>／'+list.length+' 組'):('共 <b>'+list.length+'</b> 組');
   }
   moreBtn.addEventListener('click',function(){expanded=true;render()});
   function bind(bar,attr,set){

@@ -230,10 +230,13 @@
     function _chroma(h){h=String(h||'').replace('#','');if(h.length!==6)return 0;var r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return Math.max(r,g,b)-Math.min(r,g,b)}
     var warm=null;EX.forEach(function(x){if(!warm&&x&&x[1]&&_chroma(x[1])>40)warm=x[1]});
     warm=warm||((t.i&&_chroma(t.i)>40&&String(t.i).toUpperCase()!==String(t.bg||'').toUpperCase())?t.i:(t.s||t.c));   /* 亮色若就是頁面底（奶油底那種）畫不出形狀，退回輔色 */
+    /* 頁尾字色（text.tertiary 疊在 text.secondary 的深色頁尾上）：色版的亮色不一定亮（墨綠聖誕是深綠 #4D692D，對比 1.78），
+       對比不到 4.5 就退回翰林淺灰藍，再不夠用白（使用者回報 2026-09-30） */
+    var tert=(t.i&&_cr(t.i,heading)>=4.5)?t.i:(_cr('#BECAD7',heading)>=4.5?'#BECAD7':'#FFFFFF');
     var map={
       '--color-surface-strong':p,'--color-action-bg':p,'--color-action-bg-hover':s,'--color-action-bg-active':a,
       '--color-page-bg-subtle':page,'--color-decor-sun':t.c,'--color-decor-warm':warm,
-      '--color-text-secondary':heading,'--color-text-primary':_onWhite(body),'--color-text-tertiary':t.i||'#BECAD7',
+      '--color-text-secondary':heading,'--color-text-primary':_onWhite(body),'--color-text-tertiary':tert,
       '--color-border':line,'--color-border-strong':_onWhite(body),'--color-brand-ink':heading,
       '--radius-md':RD[0]||'14px','--radius-xs':RD[1]||'12px','--radius-sm':RD[2]||'20px'
     };

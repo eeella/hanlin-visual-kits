@@ -689,7 +689,12 @@ h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 4
      次要鈕在深底上改成半透明白，不畫邊線；焦點框在深底上改用 hero 字色，才看得見。 */
 .hero { background: var(--color-hero-bg, var(--color-page-bg-subtle)); }
 .hero h1 { color: var(--color-hero-fg, var(--color-text-secondary)); word-break: keep-all; text-wrap: balance; }   /* 中文詞不從中間斷（避免「測／驗」），只在標點處換行 */
-.hero .prose p, .hero .lead { color: var(--color-hero-fg-muted, var(--color-text-on-subtle)); }
+/* 主視覺同時帶 .section--subtle：上面那條 .section--subtle > .container > .prose p 有 3 個 class，
+   比 .hero .prose p 強，深色主視覺的副標會被蓋成淺底用的深灰字（對比最低 1.22，使用者回報 2026-09-30）。
+   這裡用同樣的結構再加 .hero，特異度較高，一律以主視覺字色為準。 */
+.hero .prose p, .hero .lead,
+.hero.section--subtle > .container > p,
+.hero.section--subtle > .container > .prose p { color: var(--color-hero-fg-muted, var(--color-text-on-subtle)); }
 .hero .btn:not(.btn--secondary):not(.btn--ghost):not(.btn--text) {
   background: var(--color-cta-bg, var(--color-action-bg));
   color: var(--color-cta-fg, var(--color-action-fg));

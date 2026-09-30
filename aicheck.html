@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 感檢查</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="importbase.js"></script>
+<script src="aicheck.js"></script>
+<style>
+.wrap{max-width:1280px;margin:0 auto;padding:26px 24px 60px}
+h1{font-size:24px;margin:0 0 6px;color:#16202B}
+.lead{font-size:13.5px;color:#5C6A78;line-height:1.9;margin:0 0 20px}
+.drop{border-radius:14px;padding:34px;text-align:center;background:#EAF1F8;cursor:pointer;color:#3E5064;font-size:14px;line-height:1.9}
+.drop:hover,.drop.on{background:#DCE9F6;color:#064EA4}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0}
+.seg{display:inline-flex;background:#EEF2F7;border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;padding:8px 16px;border-radius:9px;font:inherit;font-size:13.5px;color:#3E5064;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:#fff;color:#064EA4;font-weight:500;box-shadow:0 1px 3px rgba(20,45,70,.12)}
+.fname{font-size:13px;color:#5C6A78}
+.verdict{margin:6px 0 18px;padding:16px 20px;border-radius:14px;font-size:14px;line-height:1.9}
+.verdict.ok{background:#E8F6EC;color:#155724}
+.verdict.warn{background:#FBF0E2;color:#6B3E00}
+.verdict.bad{background:#FDECEC;color:#8A1F1F}
+.verdict b{display:block;font-size:16px;margin-bottom:4px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (width<=960px){.grid{grid-template-columns:1fr}}
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(20,45,70,.08);padding:12px 14px}
+.rule-h{display:flex;align-items:center;gap:10px;font-size:14px;color:#16202B}
+.rule-h .material-symbols-rounded{font-size:20px}
+.rule-h .n{margin-left:auto;font-size:12.5px;color:#5C6A78}
+.rule.fail .rule-h .material-symbols-rounded{color:#B3261E}
+.rule.warn .rule-h .material-symbols-rounded{color:#8F4B00}
+.rule.pass .rule-h .material-symbols-rounded{color:#146C43}
+.rule.pass{box-shadow:none;background:#F4F7FB;padding:8px 14px}
+.rule.pass .rule-h{color:#5C6A78;font-size:13px}
+.locs{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.locs button{width:100%;text-align:left;border:0;background:#F4F7FB;border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;color:#3E5064;cursor:pointer;line-height:1.6}
+.locs button:hover{background:#E6EEF7}
+.locs code{font-size:11.5px;color:#5C6A78;display:block}
+.more{font-size:12px;color:#5C6A78;padding:2px 10px}
+.stage{position:sticky;top:12px;background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(20,45,70,.08);overflow:hidden}
+.stage-h{padding:9px 14px;font-size:13px;background:#F4F7FB;color:#3E5064}
+.vp{position:relative;overflow:hidden}
+.vp iframe{border:0;display:block;background:#fff;transform-origin:0 0}
+.manual{margin-top:18px;background:#F4F7FB;border-radius:12px;padding:12px 16px;font-size:13px;color:#3E5064;line-height:1.9}
+.manual b{color:#16202B}
+.errs{margin-top:12px;background:#FDECEC;color:#8A1F1F;border-radius:12px;padding:10px 14px;font-size:12.5px;line-height:1.8}
+</style>
+</head>
+<body class="tpl">
+<div class="wrap">
+  <h1>AI 感檢查</h1>
+  <p class="lead">把要檢查的 HTML 拖進來，會實際畫出頁面，再逐條對照 基本規範（<code>hanlin-web-starter/skill.md</code>） §6.1「去除 AI 感」。
+     頁面用到的 CSS 檔請<b>一起拖進來</b>（可多選），不然外部樣式載不到、光暈陰影這類規則會量不到。
+     功能選單與加了 <code>data-ai-ok</code> 屬性的元素不檢查。這一頁不會改動任何檔案。</p>
+
+  <div class="drop" id="drop">拖曳 HTML（與它的 CSS）到這裡，或點擊選擇
+    <input type="file" id="file" accept=".html,.htm,.css,text/html,text/css" multiple hidden></div>
+
+  <div id="out" hidden>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="檢查寬度">
+        <button type="button" data-w="1280" aria-pressed="true">桌機 1280</button>
+        <button type="button" data-w="390" aria-pressed="false">手機 390</button>
+      </div>
+      <button class="btn" id="copy" type="button" style="border-radius:12px">複製結果</button>
+      <span class="fname" id="fname"></span>
+    </div>
+    <div class="verdict" id="verdict" role="status" aria-live="polite"></div>
+    <div class="grid">
+      <div>
+        <div class="rules" id="rules"></div>
+        <div class="manual"><b>自動測不到，請人工看：</b><span id="manual"></span></div>
+        <div class="errs" id="errs" hidden></div>
+      </div>
+      <div class="stage">
+        <div class="stage-h" id="stageH">頁面預覽（點左邊的位置會捲到該處並框起來）</div>
+        <div class="vp" id="vp"><iframe id="fr" title="檢查中的頁面" sandbox="allow-same-origin allow-scripts"></iframe></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var drop=document.getElementById('drop'),file=document.getElementById('file'),fr=document.getElementById('fr'),vp=document.getElementById('vp');
+  var page=null,W=1280,last=null;
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  drop.addEventListener('click',function(){file.click()});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('on')});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('on')});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('on');load(e.dataTransfer.files)});
+  file.addEventListener('change',function(){load(file.files)});
+  Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(b){
+    b.addEventListener('click',function(){
+      W=+b.getAttribute('data-w');
+      Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+      if(page)render();
+    });
+  });
+
+  /* 讀進所有檔案：第一個 HTML 是要檢查的頁面，CSS 依檔名對回 <link href> 直接內嵌 */
+  function load(list){
+    var files=Array.prototype.slice.call(list||[]);if(!files.length)return;
+    Promise.all(files.map(function(f){return f.text().then(function(t){return {name:f.name,text:t}})})).then(function(all){
+      var html=all.find(function(f){return /\.html?$/i.test(f.name)});
+      if(!html){alert('沒有 HTML 檔，請至少拖進一個 .html');return}
+      var css={};all.forEach(function(f){if(/\.css$/i.test(f.name))css[f.name.toLowerCase()]=f.text});
+      var inlined=0,missing=[];
+      var src=html.text.replace(/<link\b[^>]*>/gi,function(tag){
+        if(!/rel\s*=\s*["']?stylesheet/i.test(tag))return tag;
+        var m=/href\s*=\s*["']([^"']+)["']/i.exec(tag);if(!m||/^(https?:)?\/\//i.test(m[1]))return tag;
+        var base=m[1].split(/[?#]/)[0].split('/').pop().toLowerCase();
+        if(css[base]!==undefined){inlined++;return '<style>/* '+esc(base)+' */\n'+css[base].replace(/<\/style/gi,'<\\/style')+'</style>'}
+        missing.push(base);return tag;
+      });
+      var reb=window.HL_rebaseHtml?window.HL_rebaseHtml(src,null):{html:src};
+      page={name:html.name,html:reb.html,inlined:inlined,missing:missing};
+      document.getElementById('out').hidden=false;
+      render();
+    });
+  }
+
+  function render(){
+    document.getElementById('fname').textContent=page.name+(page.inlined?'（已內嵌 '+page.inlined+' 個 CSS）':'')+
+      (page.missing.length?'｜缺 CSS：'+page.missing.join('、'):'');
+    document.getElementById('verdict').className='verdict';
+    document.getElementById('verdict').innerHTML='<b>檢查中…</b>';
+    fr.style.width=W+'px';fr.style.height='900px';
+    fit();
+    fr.onload=function(){
+      var d=fr.contentDocument;
+      var ready=(d&&d.fonts&&d.fonts.ready)?d.fonts.ready:Promise.resolve();
+      Promise.race([ready,new Promise(function(r){setTimeout(r,2500)})]).then(function(){setTimeout(check,400)});
+    };
+    fr.srcdoc=page.html;
+  }
+  function fit(){
+    var s=Math.min(1,vp.clientWidth/W);
+    fr.style.transform='scale('+s+')';
+    vp.style.height=Math.round(900*s)+'px';
+  }
+  window.addEventListener('resize',function(){if(page)fit()});
+
+  function check(){
+    var r;
+    try{r=window.HL_aiCheck(fr.contentDocument,fr.contentWindow)}
+    catch(e){document.getElementById('verdict').className='verdict bad';document.getElementById('verdict').innerHTML='<b>檢查程式出錯</b>'+esc(e.message);return}
+    last=r;
+    var by={};r.findings.forEach(function(f){(by[f.rule]=by[f.rule]||[]).push(f)});
+    var nFail=0,nWarn=0,html='';
+    var order=r.rules.slice().sort(function(a,b){
+      var ka=by[a[0]]?(a[2]==='fail'?0:1):2,kb=by[b[0]]?(b[2]==='fail'?0:1):2;return ka-kb;
+    });
+    order.forEach(function(rule){
+      var list=by[rule[0]]||[],st=list.length?rule[2]:'pass';
+      if(st==='fail')nFail++;if(st==='warn')nWarn++;
+      var ic=st==='fail'?'error':st==='warn'?'help':'check_circle';
+      var lab=st==='fail'?'違規':st==='warn'?'需確認':'通過';
+      html+='<div class="rule '+st+'"><div class="rule-h"><span class="material-symbols-rounded" aria-hidden="true">'+ic+'</span>'+
+        '<span>'+esc(rule[1])+'</span><span class="n">'+lab+(list.length?'・'+list.length+' 處':'')+'</span></div>';
+      if(list.length){
+        html+='<ul class="locs">'+list.slice(0,8).map(function(f,i){
+          return '<li><button type="button" data-rule="'+rule[0]+'" data-i="'+i+'">'+esc(f.note)+(f.hidden?'（目前隱藏）':'')+
+            '<code>'+esc(window.HL_aiPath(f.el))+'</code></button></li>';
+        }).join('')+'</ul>'+(list.length>8?'<div class="more">另外還有 '+(list.length-8)+' 處</div>':'');
+      }
+      html+='</div>';
+    });
+    var rules=document.getElementById('rules');rules.innerHTML=html;
+    Array.prototype.forEach.call(rules.querySelectorAll('.locs button'),function(b){
+      b.addEventListener('click',function(){show(by[b.getAttribute('data-rule')][+b.getAttribute('data-i')].el)});
+    });
+    document.getElementById('manual').textContent=r.manual.join('、')+'。';
+    var errs=document.getElementById('errs');
+    errs.hidden=!r.errors.length;
+    errs.textContent=r.errors.length?'有 '+r.errors.length+' 條規則執行失敗，結果不完整：'+r.errors.join('；'):'';
+    var v=document.getElementById('verdict');
+    v.className='verdict '+(nFail?'bad':nWarn?'warn':'ok');
+    v.innerHTML=nFail?'<b>有 '+nFail+' 條違規</b>請依下方位置修正；'+(nWarn?nWarn+' 條需要人工確認。':'')+'（寬度 '+W+'px）':
+      nWarn?'<b>沒有違規，'+nWarn+' 條需要人工確認</b>這些可能是正當用法，請看說明判斷。（寬度 '+W+'px）':
+      '<b>'+r.rules.length+' 條自動檢查全部通過</b>最後請人工看一下下方三項。（寬度 '+W+'px）';
+    if(page.missing.length)v.innerHTML+='<br>注意：缺少 '+esc(page.missing.join('、'))+'，外部樣式沒套到，結果可能不完整。';
+  }
+
+  function show(el){
+    try{
+      el.scrollIntoView({block:'center'});
+      var o=el.style.outline,oo=el.style.outlineOffset;
+      el.style.outline='3px solid #B3261E';el.style.outlineOffset='2px';
+      setTimeout(function(){el.style.outline=o;el.style.outlineOffset=oo},2500);
+    }catch(e){}
+  }
+
+  document.getElementById('copy').addEventListener('click',function(){
+    if(!last)return;
+    var L=['AI 感檢查：'+page.name+'（寬度 '+W+'px）'];
+    last.rules.forEach(function(rule){
+      var list=last.findings.filter(function(f){return f.rule===rule[0]});
+      if(!list.length)return;
+      L.push('');L.push('【'+(rule[2]==='fail'?'違規':'需確認')+'】'+rule[1]+'：'+list.length+' 處');
+      list.forEach(function(f){L.push('  - '+f.note+(f.hidden?'（目前隱藏）':'')+'　'+window.HL_aiPath(f.el))});
+    });
+    if(last.errors.length)L.push('','規則執行失敗：'+last.errors.join('；'));
+    var t=L.join('\n'),ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;left:-9999px';
+    document.body.appendChild(ta);ta.select();
+    var b=document.getElementById('copy');
+    try{document.execCommand('copy');b.textContent='已複製'}catch(e){b.textContent='複製失敗'}
+    ta.remove();setTimeout(function(){b.textContent='複製結果'},1600);
+  });
+})();
+</script>
+</body>
+</html>

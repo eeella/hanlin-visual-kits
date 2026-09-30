@@ -1,5 +1,5 @@
 /* 自動產生，請勿手改。來源：template.html 的 var PALETTES／產生器：build-kits.py
-   指紋 edb539f4d2ae　共 15 組
+   指紋 bd42b56bca0b　共 15 組
 
    為什麼要有這個檔：index.html（套版列表）與 template.html（套版詳細）也要用同一份風格資料。
    若各自存一份，就會重演「兩邊各存一份、改了不同步」的問題。
@@ -19,7 +19,7 @@
      p/s/i/c     主色／輔色／亮色／對比色
      d           這一組的說明 */
 window.HL_KITS=[
-    {id:'hanlin',cat:'專業',n:'翰林學習藍',en:'STYLEGUIDE',src:'STYLEGUIDE.md',
+    {id:'hanlin',cat:'專業',n:'翰林學習藍',en:'STYLEGUIDE',src:'hanlin-web-starter/skill.md',
      /* 字體排版與適用情境：這一組要長什麼樣、用在哪、不要做什麼。
         色票之外的判斷，寫在這裡才會一起進 kits.js 給列表頁與範本頁用。 */
      ty:['Noto Sans TC / 700 / 32px','Noto Sans TC / 400 / 15px / 1.8','Noto Sans TC / 500 / 15px'],tyFam:'sans',
@@ -40,7 +40,7 @@ window.HL_KITS=[
      rd:['14px','12px','20px'],sh:['rgba(30,61,96,.03) 0 5px 15px',null],bd:null,  /* radius.md 14px 給按鈕／輸入框／下拉（2026-09-15 由 100px 修正），xs 12px 卡片，sm 20px 大區塊 */
      /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      ex:[['裝飾暖橘','#EF9D78'],['淺藍底','#F4F7FB']],
-     btn:'#064EA4',  /* 風格色版按鈕底色：STYLEGUIDE surface.strong 主要藍（＝主色） */
+     btn:'#064EA4',  /* 風格色版按鈕底色：基本規範 surface.strong 主要藍（＝主色） */
      p:'#064EA4',s:'#05407F',i:'#BECAD7',c:'#F5D35B',
      d:'主色為主要藍，輔色是按鈕滑過時的深藍，對比色取自裝飾用的裝飾黃。'},
     {id:'musical',cat:'自然',n:'清新小森林',en:'Musical',src:'Musical-DESIGN.md',
@@ -92,7 +92,7 @@ window.HL_KITS=[
      ex:[['深灰','#333333']],
      /* 這一組有一份實際套好的頁面，範本頁直接用它，不用通用的 demo.html。
         註：這份頁面的形狀特徵（2px 邊線＋無模糊硬投影）有套到，
-        但色票大多仍是 STYLEGUIDE 的藍，不是這一組的金融藍／橘紅。 */
+        但色票大多仍是 基本規範 的藍，不是這一組的金融藍／橘紅。 */
      /* 範本頁：統一走 demo.html?kit=<id> 通用版型，只換這一組的色版（2026-09-11 定案） */
      btn:'#FF5933',  /* 風格色版按鈕底色：istockapp surface.strong 橘紅（使用者指定） */
      p:'#2C89D8',s:'#08284C',i:'#04FDBC',c:'#FF5933',
@@ -445,4 +445,4 @@ window.HL_KITS=[
      d:'米白底配深褐文字，磚橘撐結構，金黃只做主要行動。金黃底一律配近黑字，文件實測白字只有 1.57:1。'},
 
 ];
-window.HL_KITS_VERSION='edb539f4d2ae';
+window.HL_KITS_VERSION='bd42b56bca0b';

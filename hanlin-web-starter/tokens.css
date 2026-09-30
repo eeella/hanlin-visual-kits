@@ -1,7 +1,7 @@
 /* ============================================================
    翰林相信學習 — 設計 token
    唯一數值來源。元件層只准引用這裡的變數，不得自行寫色碼或尺寸。
-   對應規範：STYLEGUIDE.md §2
+   對應規範：基本規範 skill.md §2
    ============================================================ */
 
 :root {
@@ -36,13 +36,16 @@
   --color-brand-ink:        #040000;  /* 僅供品牌標誌文字 */
 
   /* ── 推導值 ───────────────────────────────────────────────
-     以下四個 token 在 STYLEGUIDE.md §3 被引用，但 §2.1 沒有給值。
+     以下 token 在 基本規範 skill.md §3 被引用（text-on-subtle 為 §4 對比度要求而補），但 §2.1 沒有給值。
      這裡的數值是為了讓範例能跑而推導的，不是規範原文。
      取得正式值之後請直接覆蓋，並刪掉這段註解。
      ───────────────────────────────────────────────────────── */
   --color-border:        #becad7;  /* ＝ text.tertiary，其用途已含「分隔」 */
   --color-border-strong: #7690a8;  /* 白底 3.32:1，滿足 §4「元件邊界 ≥ 3:1」 */
   --color-disabled-fg:   #8a9aab;  /* 於 disabled.bg 2.56:1，可辨識但明顯非啟用 */
+  --color-text-on-subtle: color-mix(in srgb, var(--color-text-primary) 88%, var(--color-surface-base));
+  /* 淺底上的正文：text.primary 於 page.bg.subtle 僅 4.29:1（未達 AA），壓深 12% 後約 5.26:1。
+     用 color-mix 而不是寫死色碼，換色版時會跟著 text.primary 一起變。 */
   --logo-ink:            var(--color-surface-strong);
   /* 標誌墨色。§3.11 原文寫「淺色底使用 color.brand.ink」（近黑 #040000），
      此處依指示改用主色藍 #064EA4（白底 7.97:1）。深色底仍覆寫為 surface.muted。
@@ -82,7 +85,7 @@
   --radius-xs:   12px;    /* 卡片、選單、面板 */
   --radius-sm:   20px;    /* 大型區塊 */
   --radius-md:   14px;    /* 按鈕、輸入框、Select、Alert：2026-09-15 依規範修正為 14px（原 100px） */
-  --radius-pill-full: 100px;   /* 原 STYLEGUIDE radius.md 全圓；chip／badge／switch 仍用它 */
+  --radius-pill-full: 100px;   /* 原 基本規範 radius.md 全圓；chip／badge／switch 仍用它 */
   --radius-lg:   1000px;  /* 圓形裝飾 */
 
   /* ── 2.4 陰影 ─────────────────────────────────────────── */
@@ -118,14 +121,14 @@
 }
 
 /* ── 設計系統（hanlin-design-system/tokens.css）命名別名 ──
-   components.html 與 UI.md 用這組名字；值全部指回上面 STYLEGUIDE 的 token，不另存色碼。
-   注意：STYLEGUIDE 的 text.primary＝正文、text.secondary＝標題，寫元件請用 --text-body／--text-heading。 */
+   components.html 與 UI.md 用這組名字；值全部指回上面 基本規範 的 token，不另存色碼。
+   注意：基本規範 的 text.primary＝正文、text.secondary＝標題，寫元件請用 --text-body／--text-heading。 */
 :root {
   --color-page-bg:        var(--color-page-bg-subtle);
   --color-surface:        var(--color-surface-muted);
   --color-focus:          var(--color-surface-strong);
   --color-info:           var(--color-surface-strong);
-  --color-warning:        #8f4b00;   /* STYLEGUIDE 未定義；engine.js SG warning，白底 6.62:1 */
+  --color-warning:        #8f4b00;   /* 基本規範 未定義；engine.js SG warning，白底 6.62:1 */
   --color-decor-contrast: var(--color-decor-sun);
   --border-default:       var(--color-border);
   --border-strong:        var(--color-border-strong);

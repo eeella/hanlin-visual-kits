@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>翰林 UI 元件範例</title>
   <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=block" />
   <style>
     :root {
       --blue-700: var(--color-action-bg);
@@ -182,7 +183,6 @@
 
     .foundation-card { min-width: 0; padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
     .foundation-card h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; color: var(--text); font-size: 1.15rem; }
-    .foundation-card h2:first-letter { color: var(--primary-hover); }
     .foundation-card h2 small { color: var(--slate-500); font-size: .62rem; font-weight: 700; letter-spacing: .12em; }
     .foundation-card p { margin: 0 0 var(--space-4); color: var(--text-muted); font-size: 0.875rem; }
     .token-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
@@ -203,7 +203,6 @@
     .reference-components { min-width: 0; padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
     .reference-components > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: var(--space-3); }
     .reference-components > header h2 { margin: 0; color: var(--text); font-size: 1.25rem; }
-    .reference-components > header h2:first-letter { color: var(--primary-hover); }
     .reference-components > header p { margin: 0; color: var(--text-muted); font-size: 0.85rem; }
     .component-showcase { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
     .showcase-cell { min-width: 0; padding: var(--space-3); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -256,14 +255,6 @@
       width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
       padding: var(--space-12) 0 64px;
-    }
-
-    .eyebrow {
-      margin: 0 0 var(--space-2);
-      color: var(--blue-600);
-      font-size: 0.875rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
     }
 
     h1, h2, h3, p { overflow-wrap: anywhere; }
@@ -507,7 +498,6 @@
   <main class="page">
     <section class="reference-hero" aria-labelledby="reference-title">
       <div>
-        <p class="eyebrow">SAME STANDARDS. A BRIGHTER LEARNING TOMORROW.</p>
         <h1 id="reference-title">建立一致、可及、可維護的翰林數位體驗</h1>
         <p class="lead">共用結構與元件，產品只需替換語意色彩與品牌內容。</p>
       </div>
@@ -525,19 +515,19 @@
     </section>
 
     <section class="icon-strip" aria-label="圖示元件">
-      <div class="icon-token"><span class="ui-icon">⌂</span><span>首頁</span></div>
-      <div class="icon-token"><span class="ui-icon">◉</span><span>色彩</span></div>
-      <div class="icon-token"><span class="ui-icon">Tt</span><span>字體</span></div>
-      <div class="icon-token"><span class="ui-icon">▧</span><span>間距</span></div>
-      <div class="icon-token"><span class="ui-icon">◇</span><span>元件</span></div>
-      <div class="icon-token"><span class="ui-icon success">✓</span><span>完成</span></div>
-      <div class="icon-token"><span class="ui-icon warning">!</span><span>提醒</span></div>
-      <div class="icon-token"><span class="ui-icon danger">×</span><span>錯誤</span></div>
+      <div class="icon-token"><span class="ui-icon material-symbols-rounded" aria-hidden="true">home</span><span>首頁</span></div>
+      <div class="icon-token"><span class="ui-icon material-symbols-rounded" aria-hidden="true">palette</span><span>色彩</span></div>
+      <div class="icon-token"><span class="ui-icon material-symbols-rounded" aria-hidden="true">text_fields</span><span>字體</span></div>
+      <div class="icon-token"><span class="ui-icon material-symbols-rounded" aria-hidden="true">space_dashboard</span><span>間距</span></div>
+      <div class="icon-token"><span class="ui-icon material-symbols-rounded" aria-hidden="true">widgets</span><span>元件</span></div>
+      <div class="icon-token"><span class="ui-icon success material-symbols-rounded" aria-hidden="true">check</span><span>完成</span></div>
+      <div class="icon-token"><span class="ui-icon warning material-symbols-rounded" aria-hidden="true">priority_high</span><span>提醒</span></div>
+      <div class="icon-token"><span class="ui-icon danger material-symbols-rounded" aria-hidden="true">close</span><span>錯誤</span></div>
     </section>
 
     <section class="foundation-grid" aria-label="基礎規範">
       <article class="foundation-card">
-        <h2>◉ 色彩系統 <small>COLOR SYSTEM</small></h2>
+        <h2>色彩系統</h2>
         <p>語意化色彩，支援無障礙與多產品主題。</p>
         <div class="token-grid">
           <div class="token"><div class="token-color" style="background:#003da6"></div><strong>主要色</strong><code>#003DA6</code></div>
@@ -550,7 +540,7 @@
         <div class="theme-modes"><strong>主題模式</strong><button class="button button-primary" type="button" data-theme-value="hanlin-blue">亮色主題</button><button class="button button-secondary" type="button" data-theme-value="hanlin-gray">深色主題</button></div>
       </article>
       <article class="foundation-card">
-        <h2>Tt 字體系統</h2>
+        <h2>字體系統</h2>
         <p>清晰易讀，支援教育情境的層級資訊。</p>
         <div class="type-list">
           <div class="type-row"><strong>H1 翰林數位學習</strong><span>32 / Bold</span></div>
@@ -561,7 +551,7 @@
         </div>
       </article>
       <article class="foundation-card">
-        <h2>▧ 間距系統</h2>
+        <h2>間距系統</h2>
         <p>一致的間距節奏，建立清晰的版面結構。</p>
         <div class="spacing-scale" aria-label="4、8、12、16、24、32 像素間距">
           <div class="spacing-item"><div class="spacing-block" style="height:12px"></div><strong>4</strong><span>4px</span></div>
@@ -576,7 +566,7 @@
 
     <section class="reference-body" aria-label="核心元件與發布標準">
       <article class="reference-components">
-        <header><div><h2>◇ 核心元件</h2><p>可重複使用的通用元件，支援一致的互動與無障礙體驗。</p></div></header>
+        <header><div><h2>核心元件</h2><p>可重複使用的通用元件，支援一致的互動與無障礙體驗。</p></div></header>
         <div class="component-showcase">
           <div class="showcase-cell"><h3>按鈕（Button）</h3><div class="state-row"><button class="button button-primary" type="button">主要按鈕</button><button class="button button-secondary" type="button">次要按鈕</button><button class="button button-tertiary" type="button">文字按鈕</button><button class="button button-danger" type="button">危險按鈕</button></div></div>
           <div class="showcase-cell"><h3>表單元件（Input / Select）</h3><div class="state-row"><input class="input" style="max-width:180px" aria-label="文字輸入" placeholder="請輸入關鍵字" /><select class="input" style="max-width:140px" aria-label="選擇選單"><option>請選擇</option><option>國文</option><option>數學</option></select></div></div>
@@ -584,18 +574,17 @@
           <div class="showcase-cell"><h3>分頁（Tabs）</h3><div class="dot-tabs" role="tablist" aria-label="分頁"><button class="is-active" type="button" role="tab" aria-selected="true">教材</button><button type="button" role="tab" aria-selected="false">評量</button><button type="button" role="tab" aria-selected="false">學習歷程</button><button type="button" role="tab" aria-selected="false">設定</button></div></div>
           <div class="showcase-cell"><h3>狀態標籤（Badge）</h3><div class="badges"><span class="badge">預設</span><span class="badge badge-blue">進行中</span><span class="badge badge-green">已完成</span><span class="badge badge-yellow">待確認</span><span class="badge badge-coral">異常</span></div></div>
           <div class="showcase-cell"><h3>提示訊息（Alert）</h3><div class="alert" style="margin-top:0"><span aria-hidden="true">ⓘ</span><div>這是一則提示訊息，提供重要的操作資訊。</div></div></div>
-          <div class="showcase-cell"><h3>教材卡片（Resource Card）</h3><div class="mini-resource-card" role="button" tabindex="0" aria-label="選取國中數學第三冊"><span class="mini-resource-cover" aria-hidden="true">▤</span><div><strong>國中數學 第三冊</strong><div class="mini-resource-meta"><span>國中</span><span>數學</span><span>翰林版</span></div></div><span class="mini-resource-arrow" aria-hidden="true">›</span></div></div>
-          <div class="showcase-cell" style="grid-column:1/-1"><h3>元件狀態（Button States）</h3><div class="state-row"><span class="state-label">Default</span><button class="button button-primary" type="button">主要按鈕</button><span class="state-label">Hover</span><button class="button button-primary" type="button" style="background:var(--primary-hover)">主要按鈕</button><span class="state-label">Focus</span><button class="button button-primary" type="button" style="box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--focus)">主要按鈕</button><span class="state-label">Disabled</span><button class="button" type="button" disabled>主要按鈕</button><span class="state-label">Loading</span><button class="button button-primary" type="button">◌ 處理中</button></div></div>
+          <div class="showcase-cell"><h3>教材卡片（Resource Card）</h3><div class="mini-resource-card" role="button" tabindex="0" aria-label="選取國中數學第三冊"><span class="mini-resource-cover material-symbols-rounded" aria-hidden="true">menu_book</span><div><strong>國中數學 第三冊</strong><div class="mini-resource-meta"><span>國中</span><span>數學</span><span>翰林版</span></div></div><span class="mini-resource-arrow" aria-hidden="true">›</span></div></div>
+          <div class="showcase-cell" style="grid-column:1/-1"><h3>元件狀態（Button States）</h3><div class="state-row"><span class="state-label">Default</span><button class="button button-primary" type="button">主要按鈕</button><span class="state-label">Hover</span><button class="button button-primary" type="button" style="background:var(--primary-hover)">主要按鈕</button><span class="state-label">Focus</span><button class="button button-primary" type="button" style="box-shadow:0 0 0 3px var(--surface),0 0 0 6px var(--focus)">主要按鈕</button><span class="state-label">Disabled</span><button class="button" type="button" disabled>主要按鈕</button><span class="state-label">Loading</span><button class="button button-primary" type="button" aria-busy="true"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:1.1em;vertical-align:-0.15em">progress_activity</span> 處理中</button></div></div>
         </div>
       </article>
     </section>
 
-    <section class="reference-flow" aria-label="設計系統流程"><div class="flow-step"><span class="flow-icon">◎</span><div><strong>Tokens</strong><small>設計語意與主題</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">◇</span><div><strong>元件</strong><small>可重複的介面積木</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">▤</span><div><strong>教育模式</strong><small>解決教學情境需求</small></div></div><span class="flow-arrow">→</span><div class="flow-step"><span class="flow-icon">▦</span><div><strong>產品</strong><small>打造一致的數位體驗</small></div></div></section>
-    <aside class="p0-panel"><h2>✓ P0 發布標準</h2><ul class="check-list"><li><span class="check">✓</span><div><strong>WCAG 2.2 AA</strong><small>符合無障礙規範</small></div></li><li><span class="check">✓</span><div><strong>鍵盤操作</strong><small>完整鍵盤導覽</small></div></li><li><span class="check">✓</span><div><strong>完整狀態</strong><small>涵蓋各種使用情境</small></div></li><li><span class="check">✓</span><div><strong>響應式</strong><small>支援多裝置與斷點</small></div></li><li><span class="check">✓</span><div><strong>自動測試</strong><small>確保品質與穩定性</small></div></li></ul></aside>
+    <section class="reference-flow" aria-label="設計系統流程"><div class="flow-step"><span class="flow-icon material-symbols-rounded" aria-hidden="true">tune</span><div><strong>Tokens</strong><small>設計語意與主題</small></div></div><span class="flow-arrow material-symbols-rounded" aria-hidden="true">arrow_forward</span><div class="flow-step"><span class="flow-icon material-symbols-rounded" aria-hidden="true">widgets</span><div><strong>元件</strong><small>可重複的介面積木</small></div></div><span class="flow-arrow material-symbols-rounded" aria-hidden="true">arrow_forward</span><div class="flow-step"><span class="flow-icon material-symbols-rounded" aria-hidden="true">school</span><div><strong>教育模式</strong><small>解決教學情境需求</small></div></div><span class="flow-arrow material-symbols-rounded" aria-hidden="true">arrow_forward</span><div class="flow-step"><span class="flow-icon material-symbols-rounded" aria-hidden="true">devices</span><div><strong>產品</strong><small>打造一致的數位體驗</small></div></div></section>
+    <aside class="p0-panel"><h2>P0 發布標準</h2><ul class="check-list"><li><span class="check material-symbols-rounded" aria-hidden="true">check</span><div><strong>WCAG 2.2 AA</strong><small>符合無障礙規範</small></div></li><li><span class="check material-symbols-rounded" aria-hidden="true">check</span><div><strong>鍵盤操作</strong><small>完整鍵盤導覽</small></div></li><li><span class="check material-symbols-rounded" aria-hidden="true">check</span><div><strong>完整狀態</strong><small>涵蓋各種使用情境</small></div></li><li><span class="check material-symbols-rounded" aria-hidden="true">check</span><div><strong>響應式</strong><small>支援多裝置與斷點</small></div></li><li><span class="check material-symbols-rounded" aria-hidden="true">check</span><div><strong>自動測試</strong><small>確保品質與穩定性</small></div></li></ul></aside>
 
     <section class="hero">
       <div>
-        <p class="eyebrow">HANLIN UI COMPONENT EXAMPLE</p>
         <h1>一致、清楚，而且企劃套用也不會破版</h1>
         <p class="lead">這個單頁範例展示語意色彩、共用元件、教育內容卡片與長文案處理。切換主題只會更換 Token，不會改變元件結構與操作。</p>
         <div class="actions">

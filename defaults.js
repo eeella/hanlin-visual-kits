@@ -10,7 +10,7 @@ window.HL_QUICK_DEFAULT={
   logoLight:2,logoDark:2,logoInv:false,
   groups:{hd:1,ft:2,hero:1,fm:1,opt:1,tblsty:0,icon:0},
   controls:{btn:true,seg:true,select:true,label:true,input:true,choice:true,tabs:true,btnstate:true,rescard:true,principles:true,midcolor:true,gray:true,softtile:true,rwd:true,type:true,shape:true},
-  memberEntry:true
+  memberEntry:false   /* 2026-09-21：會員入口預設關閉，是選項不是基本樣式 */
 };
 
 /* 頂帶「預設」按鈕的共用行為：確認後寫入預設組合、清掉匯入紀錄、帶著一次性通行證跳到版型預覽。
@@ -407,7 +407,28 @@ window.HL_flowDock=function(o){
     d=document.createElement('div');d.id='flowDock';d.className='flow-dock';
     d.setAttribute('role','navigation');d.setAttribute('aria-label','流程');
 
-    d.innerHTML='<div class="fd-in"><ol class="fd-steps"></ol><span class="fd-mobile"></span>'+
+    /* 步驟列放在頁面上方（標題列之下），底部只留操作按鈕（使用者指定 2026-09-30：放底部容易被忽略） */
+    var top=document.createElement('div');top.id='flowTop';top.className='flow-top';
+    top.setAttribute('role','navigation');top.setAttribute('aria-label','流程步驟');
+    top.innerHTML='<div class="ft-in"><ol class="fd-steps"></ol><span class="fd-mobile"></span></div>';
+    var tb=document.querySelector('header.topbar');
+    /* 內頁（首頁以外）：步驟放進標題列右邊、同一欄（使用者指定 2026-09-30）；標題列本身 sticky，捲動時一直看得到。
+       標題列右側若已有撐開用的容器（margin-left:auto 或 .grow），接在它裡面最後，否則兩個 auto 會把步驟擠到中間 */
+    var bar=document.body.classList.contains('home')?null:document.querySelector('header.topbar .topbar-inner, header.pv-toolbar .pv-toolbar-inner');
+    if(bar){
+      top.classList.add('flow-top--bar');
+      var sp=[].filter.call(bar.children,function(c){return c.classList.contains('grow')||/margin-left:\s*auto/.test(c.getAttribute('style')||'')})[0];
+      if(sp&&sp.classList.contains('grow')){
+        /* 預覽頁：.grow 裡有計數與按鈕，步驟不放進去，而是排在它後面（同一層）；
+           手機放不下時 .grow 換到第二排，步驟仍留在頁名那一排 */
+        sp.classList.add('fd-grow');top.classList.add('flow-top--after');bar.appendChild(top);
+      }
+      else if(sp)sp.appendChild(top);else{top.style.marginLeft='auto';bar.appendChild(top)}
+    }
+    else if(tb&&tb.parentNode)tb.parentNode.insertBefore(top,tb.nextSibling);
+    else{var mn=document.querySelector('main');if(mn)mn.insertBefore(top,mn.firstChild);else document.body.insertBefore(top,document.body.firstChild);}
+    d.setAttribute('aria-label','下一步');
+    d.innerHTML='<div class="fd-in">'+
       '<span class="fd-act"><span class="fd-note" id="flowNote"></span>'+
       '<span id="flowSecondaries"></span>'+
       '<button type="button" class="btn soft" id="flowSecondary" hidden></button>'+
@@ -426,17 +447,21 @@ window.HL_flowDock=function(o){
     });
   }
   var step=o.step||1,S=window.HL_FLOW_STEPS;
-  d.querySelector('.fd-steps').innerHTML=S.map(function(st,i){
+  var top=document.getElementById('flowTop');
+  /* 匯入流程自己的步驟列（ol#flow）真的顯示在頁面上時，不再疊一條；它若是隱藏狀態，照常顯示 */
+  var _own=document.getElementById('flow'),_ownOn=!!(_own&&!_own.hidden&&_own.getClientRects().length);
+  if(top)top.hidden=!!o.hidden||_ownOn;
+  top.querySelector('.fd-steps').innerHTML=S.map(function(st,i){
     var n=i+1,cls=n<step?'done':(n===step?'now':'');
     return '<li class="'+cls+'"><i><span>'+n+'</span></i>'+st.n+'</li>';
   }).join('');
-  d.querySelector('.fd-mobile').innerHTML='<b>步驟 '+step+'／'+S.length+'</b>'+(S[step-1]?S[step-1].n:'');
+  top.querySelector('.fd-mobile').innerHTML='<b>步驟 '+step+'／'+S.length+'</b>'+(S[step-1]?S[step-1].n:'');
   var pr=o.primary||{},b=d.querySelector('#flowPrimary');
   b.innerHTML=(pr.icon?'<span class="material-symbols-rounded" style="font-size:18px">'+pr.icon+'</span>':'')+(pr.label||'下一步');
   b.disabled=!!pr.disabled;
   b.classList.toggle('done',!!pr.done);
   d._onClick=pr.onClick||null;d._href=pr.href||'';
-  /* 次要動作（可選）：例如首頁的「已有頁面？直接匯入」，淺底、放在主鈕左邊 */
+  /* 次要動作（可選）：例如首頁的「直接匯入」，淺底、放在主鈕左邊 */
   var sc=o.secondary||null,b2=d.querySelector('#flowSecondary');
   /* 次要動作可以給陣列（多顆淺底鈕）；給單一物件則走原本那顆 #flowSecondary */
   var multi=d.querySelector('#flowSecondaries');multi.innerHTML='';

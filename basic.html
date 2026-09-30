@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260917a">
+<link rel="stylesheet" href="style.css?v=20260930f">
 <style>
 /* ===== 基本規範（獨立頁） =====
    不挑視覺套版、不交給 AI 的那條路。版面沿用站上的 .pin／.sec 尺度，
@@ -19,10 +19,8 @@
 .sec{padding:30px 0 60px}
 /* 標題區不再限寬，內文一路延伸到 .pin 的右緣 */
 .sec-hd{margin-bottom:36px}
-.sec-hd h2{font-size:30px;font-weight:700;color:var(--gray-1);letter-spacing:-.01em;margin:12px 0 10px}
+.sec-hd h2{font-size:30px;font-weight:700;color:var(--gray-1);letter-spacing:-.01em;margin:0 0 10px}
 .sec-hd p{font-size:15px;color:#5C6A78;line-height:1.95}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;
-  letter-spacing:.18em;color:var(--brand);text-transform:uppercase}
 
 /* 實機預覽：直接把範例以 1280 寬載進來再等比縮，
    跟點進去看到的完全一致，不必另外維護截圖。做法沿用套版列表的縮圖。 */
@@ -66,7 +64,8 @@
 .ic-card.dark h4{color:#fff}.ic-card.dark p{color:rgba(255,255,255,.75)}
 .ic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:14px 8px}
 .ic-grid .ic{display:flex;align-items:center;justify-content:center;color:#064EA4}
-.ic-grid .ic .material-symbols-rounded{font-size:26px;font-variation-settings:'wght' 400,'opsz' 24}
+/* §3.10：圖示 24×24px */
+.ic-grid .ic .material-symbols-rounded{font-size:24px;font-variation-settings:'wght' 400,'opsz' 24}
 .ic-grid.bg .ic{width:44px;height:44px;border-radius:50%;background:#064EA4;color:#fff;margin:0 auto}
 .ic-card.dark .ic-grid .ic{color:#fff}
 .ic-card.dark .ic-grid.bg .ic{background:#fff;color:#064EA4}
@@ -86,6 +85,64 @@
 @media (max-width:640px){ .type-row{grid-template-columns:1fr;gap:6px} }
 .sub-hd{font-size:15px;font-weight:700;color:var(--gray-1);letter-spacing:.04em;margin:34px 0 6px}
 .sub-note{font-size:12.5px;color:var(--gray-2);margin-bottom:14px;max-width:760px;line-height:1.85}
+
+/* ===== 對比度 ===== */
+.cr-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:12px}
+.cr{border-radius:10px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+.cr-demo{padding:18px 16px;font-size:16px;font-weight:500;line-height:1.5}
+.cr-meta{padding:10px 14px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--gray-2)}
+.cr-meta code{font-size:11.5px;color:var(--brand-dark);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.cr-meta .sw-cr{margin:0;white-space:nowrap}
+
+/* ===== 間距 ===== */
+.sp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:4px 32px}
+.sp-row{display:grid;grid-template-columns:96px 44px 1fr;align-items:center;gap:12px;min-height:34px}
+.sp-row code{font-size:12px;color:var(--brand-dark);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.sp-row span{font-size:12.5px;color:var(--gray-2);text-align:right;font-variant-numeric:tabular-nums}
+.sp-bar{display:block;height:14px;border-radius:3px;background:#064EA4}
+.sp-row.lv .sp-bar{background:#8FB0DA}
+
+/* ===== 圓角／陰影 ===== */
+.shape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.shape{background:#fff;border-radius:12px;box-shadow:var(--shadow-sm);padding:16px;display:flex;flex-direction:column;gap:10px}
+.shape-demo{height:64px;background:#E6EEF9;display:flex;align-items:center;justify-content:center;color:#064EA4;font-size:13px;font-weight:500}
+.shape b{font-size:13.5px;font-weight:500;color:var(--gray-1)}
+.shape code{font-size:12px;color:var(--brand-dark);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.shape i{font-style:normal;font-size:12px;color:var(--gray-2);line-height:1.6}
+.shadow-stage{background:#F4F7FB;border-radius:12px;padding:28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:28px}
+.shadow-card{background:#fff;border-radius:12px;padding:22px 20px;display:flex;flex-direction:column;gap:6px}
+.shadow-card b{font-size:14px;font-weight:700;color:var(--gray-1)}
+.shadow-card code{font-size:11.5px;color:var(--brand-dark);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
+.shadow-card i{font-style:normal;font-size:12.5px;color:var(--gray-2)}
+
+/* ===== 動態 =====
+   只動 transform；三條同時跑，才看得出 300／350／800 的差別。 */
+.mo-list{display:flex;flex-direction:column;gap:10px}
+.mo-row{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
+.mo-row b{display:block;font-size:13.5px;font-weight:500;color:var(--gray-1)}
+.mo-row span{font-size:12px;color:var(--gray-2)}
+.mo-track{position:relative;height:36px;border-radius:18px;background:#fff;box-shadow:var(--shadow-sm);overflow:hidden}
+.mo-dot{display:block;position:absolute;left:6px;top:6px;width:24px;height:24px;border-radius:50%;background:#064EA4;
+  transition-property:transform;transition-timing-function:cubic-bezier(.2,.6,.3,1)}
+.mo-list.run .mo-dot{transform:translateX(var(--mo-x,240px))}
+.mo-play{margin-top:14px}
+.mo-play:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){ .mo-dot{transition-duration:.01ms!important} }
+@media (max-width:640px){ .mo-row{grid-template-columns:1fr;gap:6px} }
+
+/* ===== 版面 ===== */
+.bp{display:flex;border-radius:10px;overflow:hidden;font-size:12.5px;font-weight:500}
+.bp>div{padding:14px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.bp small{font-size:12px;font-weight:400}
+.bp .m{flex:640;background:#E6EEF9;color:#064EA4}
+.bp .t{flex:220;background:#8FB0DA;color:#03305F}
+.bp .d{flex:580;background:#064EA4;color:#fff}
+.lay-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;margin-top:16px}
+.lay{background:#fff;border-radius:10px;box-shadow:var(--shadow-sm);padding:14px 16px}
+.lay b{display:block;font-size:13.5px;font-weight:500;color:var(--gray-1);margin-bottom:4px}
+.lay code{font-size:12px;color:var(--brand-dark);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.lay i{display:block;font-style:normal;font-size:12px;color:var(--gray-2);margin-top:4px;line-height:1.6}
+@media (max-width:640px){ .bp{flex-direction:column} .bp>div{flex:none} }
 
 /* 兩條路的對照 */
 .dl-center{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;text-align:center}
@@ -112,12 +169,12 @@
 <body>
 
 <a class="skip-link" href="#main">跳到主要內容</a>
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html" class="on">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="48" height="24" style="height:24px;width:48px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html" class="on">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">design_services</span>
-    <h1>基本規範<span class="sub">Basic Guideline</span></h1>
+    <h1>基本規範</h1>
     <!-- 2026-09-17 「下載範例檔」移到頁面最下方置中 -->
   </div>
 </header>
@@ -128,7 +185,6 @@
   <section class="sec">
    <div class="pin">
     <div class="sec-hd">
-      <span class="eyebrow">Basic Starter</span>
       <h2>基本 Guideline 套版範例</h2>
       <p>
         翰林基本規範的「現成起始範例」在這裡！裡面已經幫你準備好所有的設計 Token、
@@ -150,9 +206,8 @@
   <section class="sec">
    <div class="pin">
     <div class="sec-hd">
-      <span class="eyebrow">Colors</span>
       <h2>色彩系統</h2>
-      <p>取自 <code>STYLEGUIDE.md</code> §2.1，就是 <code>tokens.css</code> 裡的值。
+      <p>取自基本規範 §2.1，就是 <code>tokens.css</code> 裡的值。
          對比度是實際計算的，不是抄文件的。</p>
     </div>
 
@@ -168,6 +223,8 @@
     <p class="sub-note">正文、標題、頁尾底色與分隔。白底不得用淺藍灰承載正文。</p>
     <div class="sw-grid">
         <div class="sw"><span class="sw-chip" style="background:#1e3d60"></span><span class="sw-meta"><b>標題 text.secondary</b><code>#1E3D60</code><i>標題、頁尾底色</i><span class="sw-cr ok">白底 11.10:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#000000"></span><span class="sw-meta"><b>最深底 surface.base</b><code>#000000</code><i>最深底色</i></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#ffffff"></span><span class="sw-meta"><b>白 surface.muted</b><code>#FFFFFF</code><i>頁面與卡片底色</i></span></div>
         <div class="sw"><span class="sw-chip" style="background:#62778f"></span><span class="sw-meta"><b>正文 text.primary</b><code>#62778F</code><i>內文預設色</i><span class="sw-cr ok">白底 4.61:1</span></span></div>
         <div class="sw"><span class="sw-chip" style="background:#becad7"></span><span class="sw-meta"><b>淺藍灰 text.tertiary</b><code>#BECAD7</code><i>深色底文字、分隔</i><span class="sw-cr no">白底 1.66:1 禁用</span></span></div>
         <div class="sw"><span class="sw-chip" style="background:#eef2f7"></span><span class="sw-meta"><b>停用底 disabled.bg</b><code>#EEF2F7</code><i>停用元件底色</i></span></div>
@@ -177,7 +234,9 @@
     <h3 class="sub-hd">語意色 SEMANTIC</h3>
     <div class="sw-grid">
         <div class="sw"><span class="sw-chip" style="background:#b3261e"></span><span class="sw-meta"><b>錯誤 danger</b><code>#B3261E</code><i>錯誤訊息與邊框</i><span class="sw-cr ok">於 #FDF1F0 上 5.92:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#fdf1f0"></span><span class="sw-meta"><b>錯誤底 danger.bg</b><code>#FDF1F0</code><i>錯誤訊息底色</i></span></div>
         <div class="sw"><span class="sw-chip" style="background:#146c43"></span><span class="sw-meta"><b>成功 success</b><code>#146C43</code><i>成功訊息</i><span class="sw-cr ok">白底 6.45:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#040000"></span><span class="sw-meta"><b>品牌墨 brand.ink</b><code>#040000</code><i>僅供品牌標誌文字；範例的 <code style="margin:0">--logo-ink</code> 刻意改用主色</i></span></div>
     </div>
 
     <h3 class="sub-hd">裝飾色 DECORATIVE</h3>
@@ -191,11 +250,26 @@
     </div>
 
     <h3 class="sub-hd">推導值 DERIVED　<span style="font-weight:400;color:var(--gray-2);font-size:12.5px">規範未定義，非原文</span></h3>
-    <p class="sub-note">這三個 token 在 <code>STYLEGUIDE.md</code> §3 被引用，但 §2.1 的色彩表沒有給值。以下數值是為了能跑而推導的，取得正式值後直接覆蓋 <code>tokens.css</code>。</p>
+    <p class="sub-note">前三個 token 在基本規範 §3 被引用、警告色是範例的「待審核」徽章在用、淺底正文是為了補足 AA 對比，但 §2.1 的色彩表都沒有給值。以下數值是為了能跑而推導的，取得正式值後直接覆蓋 <code>tokens.css</code>。</p>
     <div class="sw-grid">
         <div class="sw"><span class="sw-chip" style="background:#becad7"></span><span class="sw-meta"><b>邊框 border</b><code>#BECAD7</code><i>卡片、分隔線</i></span></div>
         <div class="sw"><span class="sw-chip" style="background:#7690a8"></span><span class="sw-meta"><b>強邊框 border.strong</b><code>#7690A8</code><i>輸入框邊框</i><span class="sw-cr ok">白底 3.32:1</span></span></div>
         <div class="sw"><span class="sw-chip" style="background:#8a9aab"></span><span class="sw-meta"><b>停用字 disabled.fg</b><code>#8A9AAB</code><i>停用元件文字</i><span class="sw-cr ok">於停用底 2.56:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#8f4b00"></span><span class="sw-meta"><b>警告 warning</b><code>#8F4B00</code><i>待審核徽章、警告訊息</i><span class="sw-cr ok">白底 6.62:1</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#56697e"></span><span class="sw-meta"><b>淺底正文 text.on-subtle</b><code>#56697E</code><i>淺底 #F4F7FB 上的正文；text.primary 壓深 12%</i><span class="sw-cr ok">於淺底 5.26:1</span></span></div>
+    </div>
+
+    <h3 class="sub-hd">對比度 CONTRAST</h3>
+    <p class="sub-note">§2.1 的必守組合，每張都是實際配色。正文 4.5:1、大字與元件邊界 3:1 是底線。</p>
+    <div class="cr-list">
+        <div class="cr"><div class="cr-demo" style="color:#62778f;background:#ffffff">正文 on 白</div><div class="cr-meta"><code>text.primary / surface.muted</code><span class="sw-cr ok">4.61:1</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#62778f;background:#f4f7fb">正文 on 淺底</div><div class="cr-meta"><code>text.primary / page.bg.subtle</code><span class="sw-cr no">4.29:1 不通過</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#56697e;background:#f4f7fb">正文 on 淺底（改用）</div><div class="cr-meta"><code>text.on-subtle / page.bg.subtle</code><span class="sw-cr ok">5.26:1</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#becad7;background:#ffffff">淺藍灰 on 白</div><div class="cr-meta"><code>text.tertiary / surface.muted</code><span class="sw-cr no">1.66:1 禁用</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#becad7;background:#1e3d60">淺藍灰 on 頁尾</div><div class="cr-meta"><code>text.tertiary / text.secondary</code><span class="sw-cr ok">6.67:1</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#ffffff;background:#064ea4">白字 on 主色</div><div class="cr-meta"><code>surface.muted / surface.strong</code><span class="sw-cr ok">7.97:1</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#064ea4;background:#ffffff">主色 on 白（徽章）</div><div class="cr-meta"><code>surface.strong / surface.muted</code><span class="sw-cr ok">7.97:1</span></div></div>
+        <div class="cr"><div class="cr-demo" style="color:#b3261e;background:#fdf1f0">錯誤 on 錯誤底</div><div class="cr-meta"><code>danger / danger.bg</code><span class="sw-cr ok">5.92:1</span></div></div>
     </div>
    </div>
   </section>
@@ -204,9 +278,8 @@
   <section class="sec">
    <div class="pin">
     <div class="sec-hd">
-      <span class="eyebrow">Typography</span>
       <h2>文字大小</h2>
-      <p>取自 <code>STYLEGUIDE.md</code> §2.2，就是 <code>tokens.css</code> 裡的 <code>--font-size-*</code>。
+      <p>取自基本規範 §2.2，就是 <code>tokens.css</code> 裡的 <code>--font-size-*</code>。
          下面每一列都是照該級距真實渲染的，不是示意圖。</p>
     </div>
 
@@ -269,13 +342,105 @@
    </div>
   </section>
 
+  <!-- ══════ 間距 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <h2>間距</h2>
+      <p>取自基本規範 §2.3，就是範例 <code>tokens.css</code> 裡的 <code>--space-*</code>。色條長度就是實際像素。</p>
+    </div>
+    <h3 class="sub-hd">元件內部 COMPONENT</h3>
+    <p class="sub-note">按鈕、輸入框、卡片內距與元素間隔。</p>
+    <div class="sp-list">
+        <div class="sp-row"><code>space.1</code><span>6px</span><i class="sp-bar" style="width:6px"></i></div>
+        <div class="sp-row"><code>space.2</code><span>8px</span><i class="sp-bar" style="width:8px"></i></div>
+        <div class="sp-row"><code>space.3</code><span>10px</span><i class="sp-bar" style="width:10px"></i></div>
+        <div class="sp-row"><code>space.4</code><span>12px</span><i class="sp-bar" style="width:12px"></i></div>
+        <div class="sp-row"><code>space.5</code><span>14px</span><i class="sp-bar" style="width:14px"></i></div>
+        <div class="sp-row"><code>space.6</code><span>15px</span><i class="sp-bar" style="width:15px"></i></div>
+        <div class="sp-row"><code>space.7</code><span>16px</span><i class="sp-bar" style="width:16px"></i></div>
+        <div class="sp-row"><code>space.8</code><span>17px</span><i class="sp-bar" style="width:17px"></i></div>
+    </div>
+    <h3 class="sub-hd">版面級 LAYOUT</h3>
+    <p class="sub-note">區塊之間、網格間距、容器左右內距。<b>不得插入其他中間值</b>；兄弟元素一律用 flex／grid 的 <code>gap</code>，不逐一設 margin。</p>
+    <div class="sp-list">
+        <div class="sp-row lv"><code>space.9</code><span>24px</span><i class="sp-bar" style="width:24px"></i></div>
+        <div class="sp-row lv"><code>space.10</code><span>32px</span><i class="sp-bar" style="width:32px"></i></div>
+        <div class="sp-row lv"><code>space.11</code><span>48px</span><i class="sp-bar" style="width:48px"></i></div>
+        <div class="sp-row lv"><code>space.12</code><span>64px</span><i class="sp-bar" style="width:64px"></i></div>
+        <div class="sp-row lv"><code>space.13</code><span>96px</span><i class="sp-bar" style="width:96px"></i></div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════ 圓角・陰影 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <h2>圓角與陰影</h2>
+      <p>取自基本規範 §2.4。層次用底色深淺與陰影表現，不用有色邊線（§2.6）。</p>
+    </div>
+    <h3 class="sub-hd">圓角 RADIUS</h3>
+    <div class="shape-grid">
+      <div class="shape"><div class="shape-demo" style="border-radius:12px">12px</div><b>radius.xs</b><i>卡片、選單、面板</i></div>
+      <div class="shape"><div class="shape-demo" style="border-radius:14px">14px</div><b>radius.md</b><i>按鈕、輸入框、下拉選單</i></div>
+      <div class="shape"><div class="shape-demo" style="border-radius:20px">20px</div><b>radius.sm</b><i>大型區塊</i></div>
+      <div class="shape"><div class="shape-demo" style="border-radius:100px;height:40px;margin:12px 0">100px</div><b>radius.pill</b><i>Chip、Badge、Switch 全圓</i></div>
+      <div class="shape"><div class="shape-demo" style="border-radius:1000px;width:64px;align-self:center">圓</div><b>radius.lg</b><i>1000px，圓形裝飾</i></div>
+    </div>
+    <h3 class="sub-hd">陰影 SHADOW</h3>
+    <p class="sub-note">放在淺底 #F4F7FB 上看才是實際效果。陰影很淡是刻意的：卡片靠白底從淺底浮出來，陰影只是補一點邊緣。</p>
+    <div class="shadow-stage">
+      <div class="shadow-card" style="box-shadow:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.04) 0 2px 8px"><b>shadow.2 · 預設</b><i>卡片與面板</i><code>rgba(30,61,96,.04) 0 1px 2px, rgba(30,61,96,.04) 0 2px 8px</code></div>
+      <div class="shadow-card" style="box-shadow:rgba(30,61,96,.03) 0 5px 15px,rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.04) 0 2px 8px"><b>shadow.1 + shadow.2 · hover</b><i>滑過時疊上 shadow.1 抬升</i><code>rgba(30,61,96,.03) 0 5px 15px</code></div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════ 動態 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <h2>動態</h2>
+      <p>取自基本規範 §2.4。緩動統一 <code>cubic-bezier(.2,.6,.3,1)</code>，只動 <code>transform</code> 與 <code>opacity</code>。
+         系統開啟「減少動態」時，所有時長縮至 0.01ms。</p>
+    </div>
+    <div class="mo-list" id="moList">
+      <div class="mo-row"><div><b>motion.duration.instant</b><span>300ms · 互動回饋</span></div><div class="mo-track"><i class="mo-dot" style="transition-duration:300ms"></i></div></div>
+      <div class="mo-row"><div><b>motion.duration.fast</b><span>350ms · 轉場</span></div><div class="mo-track"><i class="mo-dot" style="transition-duration:350ms"></i></div></div>
+      <div class="mo-row"><div><b>motion.duration.normal</b><span>800ms · 載入動畫</span></div><div class="mo-track"><i class="mo-dot" style="transition-duration:800ms"></i></div></div>
+    </div>
+    <button type="button" class="btn mo-play" id="moPlay"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px">play_arrow</span>播放比較</button>
+   </div>
+  </section>
+
+  <!-- ══════ 版面 ══════ -->
+  <section class="sec">
+   <div class="pin">
+    <div class="sec-hd">
+      <h2>版面與斷點</h2>
+      <p>取自基本規範 §2.5、§2.7。手機不是等比縮小：導覽收成漢堡、頁尾收成單欄、表格變成一筆一卡。</p>
+    </div>
+    <div class="bp">
+      <div class="m">手機 ≤640px<small>Hero 縮小、選單滿寬、表格轉直式小卡</small></div>
+      <div class="t">平板 ≤860px<small>導覽收合、雙欄轉單欄</small></div>
+      <div class="d">桌機 &gt;860px<small>容器最寬 1180px</small></div>
+    </div>
+    <div class="lay-grid">
+      <div class="lay"><b>容器最大寬度</b><code>--layout-max-width: 1180px</code><i>左右內距 space.9（24px）</i></div>
+      <div class="lay"><b>長文最大寬度</b><code>--layout-prose-width: 760px</code><i>約 65 字元，避免一行太長</i></div>
+      <div class="lay"><b>卡片網格</b><code>minmax(320px, 1fr)</code><i>auto-fill，間距 space.10（32px）</i></div>
+      <div class="lay"><b>焦點框</b><code>3px · offset 2px</code><i>主色，不得移除（§4）</i></div>
+    </div>
+   </div>
+  </section>
+
   <!-- ══════ 圖示 ══════ -->
   <section class="sec">
    <div class="pin">
     <div class="sec-hd">
-      <span class="eyebrow">Icons</span>
       <h2>圖示系統</h2>
-      <p>取自 <code>STYLEGUIDE.md</code> §3.10。圖示一律用 <b>Google Material Symbols Rounded</b>，
+      <p>取自基本規範 §3.10。圖示一律用 <b>Google Material Symbols Rounded</b>，
          圓角端點、線寬 1.6px 的風格與翰林的字體、圓角尺度一致；不混用其他圖示庫。</p>
     </div>
 
@@ -331,7 +496,11 @@
   function fit(){
     var w=shot.clientWidth;
     if(!w)return;
-    var scale=w/1280;
+    /* 窄螢幕把 1280 桌機版縮到 1/4 根本讀不到字；改以 390 手機寬載入，
+       順便展示範例在手機上重新排列後的樣子 */
+    var base=w<600?390:1280;
+    frame.style.width=base+'px';
+    var scale=w/base;
     frame.style.transform='scale('+scale+')';
     frame.style.height=(shot.clientHeight/scale)+'px';   /* 縮放後剛好填滿框高 */
   }
@@ -340,6 +509,15 @@
 
   /* 原本這裡是「點色卡複製色碼」：色票改成不可點（使用者指定），
      連帶的提示條與剪貼簿邏輯一併移除。 */
+
+  /* 動態比較：三顆點同時出發，終點依軌道寬度算，手機也不會跑出框 */
+  var moList=document.getElementById('moList'),moPlay=document.getElementById('moPlay');
+  moPlay.addEventListener('click',function(){
+    var track=moList.querySelector('.mo-track');
+    moList.style.setProperty('--mo-x',(track.clientWidth-36)+'px');
+    moList.classList.toggle('run');
+    moPlay.lastChild.textContent=moList.classList.contains('run')?'播放回程':'播放比較';
+  });
 
   var toTop=document.getElementById('toTop');
   toTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});

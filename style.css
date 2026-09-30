@@ -213,17 +213,17 @@ p.sub-desc{font-size:13.5px;color:var(--gray-2);margin-bottom:16px}
 .demo-bar nav a{text-decoration:none;color:inherit;font-size:13.5px}
 .member-pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-50);color:var(--brand);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:400}
 /* 2026-09-16 UX 審核：Header 範例在手機版逐字直排。真實 header 在窄幅會收成漢堡選單，
-   範例照同樣邏輯：連結列收起、只留 logo＋會員／搜尋，並顯示一顆選單圖示表示「這裡會收合」。 */
+   範例照同樣邏輯，並顯示一顆選單圖示表示「這裡會收合」。
+   2026-09-29 使用者指定（基本規範 §3.13）：行動裝置頁首只留 Logo（靠左）＋漢堡（靠右），會員、搜尋、按鈕也收起來。
+   template.html 有真正會開合的 .hl-burger，會把這顆示意圖示關掉。 */
 @media(max-width:600px){
   .demo-bar{gap:12px;padding:12px 16px;flex-wrap:nowrap}
-  .demo-bar nav{display:none}
-  .demo-bar .grow{gap:10px}
-  .demo-bar .demo-search{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .demo-bar .member-pill{margin-left:auto;white-space:nowrap;padding:5px 10px}
-  .demo-bar::after{content:"menu";font-family:"Material Symbols Rounded";font-size:22px;line-height:1;margin-left:4px;opacity:.85}
+  .demo-bar>*:not(img):not(.hl-burger){display:none !important}
+  .demo-bar::after{content:"menu";font-family:"Material Symbols Rounded";font-size:22px;line-height:1;margin-left:auto;opacity:.85}
 }
 .demo-bar.dark .member-pill{background:rgba(255,255,255,.15);color:#fff}
-.demo-logo{height:24px}
+.demo-logo{height:28px;width:auto}   /* 基本規範 §3.11：頁首 Logo 28px，640px 以下 22px */
+@media(max-width:640px){.demo-logo{height:22px}}
 .demo-bar.dark .demo-logo,.demo-bar.black .demo-logo{filter:brightness(0) invert(1)}
 .demo-search{flex:1;display:flex;align-items:center;gap:8px;background:#EFF2F5;border-radius:14px;padding:8px 14px;color:var(--gray-2);font-size:13px}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:400;flex:none}
@@ -711,7 +711,7 @@ dialog *:not([class*="material-"]):not([class*="fa-"]):not([class*="bi-"]):not(c
   display:inline-flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:500}
 .fd-steps li.done{color:rgba(255,255,255,.85)}
 .fd-steps li.done i{background:#7BD3A1;color:#063D24}
-.fd-steps li.done i::before{content:"✓"}
+.fd-steps li.done i::before{content:"check";font-family:'Material Symbols Rounded';font-size:16px;font-weight:normal}
 .fd-steps li.done i span{display:none}
 .fd-steps li.now{color:#fff;font-weight:500}
 .fd-steps li.now i{background:#fff;color:var(--brand-dark)}
@@ -730,6 +730,32 @@ dialog *:not([class*="material-"]):not([class*="fa-"]):not([class*="bi-"]):not(c
 .fd-act .btn.soft:hover{background:rgba(255,255,255,.24);color:#fff}
 .fd-act .btn:focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:none}
 body.has-flow-dock{padding-bottom:74px}
+/* 上方步驟列（2026-09-30 從底部流程條搬上來）：置中，與頁面內容同寬；不加底色區塊（使用者指定），直接放在頁面底色上 */
+.flow-dock .fd-in{justify-content:center}   /* 底部只剩操作按鈕：置中（使用者指定 2026-09-30） */
+.flow-top .ft-in{max-width:1280px;margin:0 auto;padding:18px 24px 6px;display:flex;justify-content:center}
+/* 顯眼但不加底色（使用者指定 2026-09-30）：字級、圓圈放大，目前這步用主色加粗 */
+.flow-top .fd-steps{flex:none}
+.flow-top .fd-steps li{color:var(--gray-2);font-size:15px;gap:10px}
+.flow-top .fd-steps li+li::before{background:#D5DCE4;width:48px;height:2px;margin:0 14px}
+.flow-top .fd-steps li i{background:#E6EAF0;color:var(--gray-2);width:30px;height:30px;font-size:14px;font-weight:700}
+.flow-top .fd-steps li.done{color:var(--gray-1)}
+.flow-top .fd-steps li.done i{background:#DDF3E6;color:#0B6B3A}
+.flow-top .fd-steps li.done i::before{font-size:18px}
+.flow-top .fd-steps li.done+li.now::before,.flow-top .fd-steps li.done+li.done::before{background:#7BC99A}
+.flow-top .fd-steps li.now{color:var(--brand);font-weight:700}
+.flow-top .fd-steps li.now i{background:var(--brand);color:#fff}
+.flow-top .fd-mobile{display:none !important}
+/* 內頁：步驟在標題列右邊同一欄，尺寸配合標題列高度 */
+.flow-top.flow-top--bar{flex:none}
+.fd-grow{order:1}.flow-top--after{order:2}
+.flow-top.flow-top--bar .ft-in{padding:0;margin:0;max-width:none}
+.flow-top.flow-top--bar .fd-steps li{font-size:14px;gap:8px}
+.flow-top.flow-top--bar .fd-steps li+li::before{width:28px;margin:0 10px}
+.flow-top.flow-top--bar .fd-steps li i{width:26px;height:26px;font-size:13px}
+@media(max-width:1100px){
+  .flow-top.flow-top--bar .fd-steps li:not(.now){font-size:0;gap:0}
+  .flow-top.flow-top--bar .fd-steps li+li::before{width:18px;margin:0 8px}
+}
 /* inline 版（首頁／套版詳細）：不固定，接在內容最後，置中 */
 .flow-dock.flow-inline{position:static;background:none;color:inherit;box-shadow:none;animation:none;margin:34px auto 8px;max-width:1280px;padding:0 24px}
 .flow-inline .fd-in{flex-direction:column;align-items:center;gap:12px;text-align:center}
@@ -766,7 +792,21 @@ body.has-flow-dock .toast-mini,body.has-flow-dock .pv-toast{bottom:96px}
   .fd-steps{display:none}
   .fd-mobile{display:block;flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .fd-note{display:none}
-  .fd-act{width:100%;justify-content:flex-end}
+  .fd-act{width:100%;justify-content:center}
+  /* 手機：四個數字圓圈都留著，只有目前這一步顯示名稱 */
+  .flow-top .ft-in{padding:14px 16px 2px;justify-content:center}
+  .flow-top .fd-steps{display:flex}
+  .flow-top .fd-steps li{font-size:0;gap:0}
+  .flow-top .fd-steps li.now{font-size:15px;gap:8px}
+  .flow-top .fd-steps li+li::before{width:22px;margin:0 8px}
+  .flow-top .fd-steps li i{width:28px;height:28px;font-size:13px}
+  /* 內頁標題列空間有限：手機只留四個圓圈，目前這步用主色實心表示 */
+  .flow-top.flow-top--bar .ft-in{padding:0}
+  .flow-top--after{order:1;margin-left:auto}
+  .fd-grow{order:2;flex-basis:100%;justify-content:flex-end}
+  .flow-top.flow-top--bar .fd-steps li,.flow-top.flow-top--bar .fd-steps li.now{font-size:0;gap:0}
+  .flow-top.flow-top--bar .fd-steps li+li::before{width:12px;margin:0 5px}
+  .flow-top.flow-top--bar .fd-steps li i{width:24px;height:24px;font-size:12px}
   .fd-act .btn{flex:1;justify-content:center;padding:9px 12px;font-size:13px}
   .fd-act .btn .material-symbols-rounded{display:none}
   body.has-flow-dock{padding-bottom:110px}

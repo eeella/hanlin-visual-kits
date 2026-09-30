@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260917a">
-<script src="defaults.js?v=20260916d"></script>
-<script src="kits.js?v=edb539f4d2ae"></script>
+<link rel="stylesheet" href="style.css?v=20260930f">
+<script src="defaults.js?v=a1f84aade6dd"></script>
+<script src="kits.js?v=bd42b56bca0b"></script>
 <style>
 /* 這一頁是獨立的操作說明，不是規範內容，所以沒有色版套色——
    整頁一律用 style.css 的平台原色。 */
@@ -91,18 +91,18 @@
 <body class="tpl">
 
 <a class="skip-link" href="#main">跳到主要內容</a>
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="48" height="24" style="height:24px;width:48px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html" class="on">AI 指令</a><a href="import.html" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">smart_toy</span>
-    <h1>AI 指令<span class="sub">AI Prompt</span></h1>
+    <h1>AI 指令</h1>
   </div>
 </header>
 
 <main id="main" class="wrap">
   <section class="sec">
-    <div class="sec-head"><h2>AI 操作步驟</h2><span class="note">AI PROMPT</span></div>
+    <div class="sec-head"><h2>AI 操作步驟</h2></div>
 
     <div class="kit-now" id="kitNow">
       <span>目前依這一組產生：</span><b id="kitName">—</b>
@@ -144,9 +144,9 @@
       <div class="way">
         <div class="way-hd"><h3>步驟 3｜確認後開始</h3></div>
         <ul class="pl-list">
-          <li><span class="ok">完全正確</span> ➔ 回覆：「<b>確認，開始。</b>」</li>
-          <li><span class="ng">檔案錯誤</span> ➔ 回覆：「<b>檔案錯誤，回步驟 2 重傳。</b>」</li>
-          <li>成品細節不對 ➔ 回覆：「<b>效果不對，照 SKILL.md 優化。</b>」</li>
+          <li><span class="ok">完全正確</span>：請回覆「<b>確認，開始。</b>」</li>
+          <li><span class="ng">檔案錯誤</span>：請回覆「<b>檔案錯誤，回步驟 2 重傳。</b>」</li>
+          <li>成品細節不對：請回覆「<b>效果不對，照 SKILL.md 優化。</b>」</li>
         </ul>
       </div>
     </div>
@@ -157,21 +157,21 @@
       <div class="way">
         <div class="way-hd"><h3>Claude（claude.ai）</h3></div>
         <ul class="pl-list">
-          <li>輸入框左下角<b>＋</b>→ 上傳檔案（可多選）。</li>
+          <li>輸入框左下角<b>＋</b>，選「上傳檔案」（可多選）。</li>
           <li>常用的話建一個 <b>Project</b>，四個檔放進 knowledge，之後每次對話都讀得到。</li>
         </ul>
       </div>
       <div class="way">
         <div class="way-hd"><h3>ChatGPT</h3></div>
         <ul class="pl-list">
-          <li>輸入框的迴紋針 → 上傳檔案（可多選）。</li>
+          <li>點輸入框的迴紋針，選「上傳檔案」（可多選）。</li>
           <li>常用的話用 <b>Projects</b>：四個檔放進 Knowledge，指令貼在 Instructions。</li>
         </ul>
       </div>
       <div class="way">
         <div class="way-hd"><h3>Gemini</h3></div>
         <ul class="pl-list">
-          <li>輸入框<b>＋</b>→ 上傳檔案。</li>
+          <li>輸入框<b>＋</b>，選「上傳檔案」。</li>
           <li>若它說讀不到 SKILL.md，把內容整段貼進訊息。</li>
         </ul>
       </div>

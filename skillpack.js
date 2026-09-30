@@ -34,7 +34,13 @@
     var LOGO_N=['① 完整組合','② 中英組合','③ 標準字','④ 品牌標誌'];
     var CTL_N={btn:'按鈕 Button',seg:'選取狀態 Selectable',select:'下拉 Select',label:'標籤 Label',input:'輸入框 Input',choice:'選擇控制 Checkbox / Radio / Switch',tabs:'頁籤 Tabs',btnstate:'按鈕變體與狀態',rescard:'教材卡片 Resource Card',principles:'設計方針',midcolor:'中間色 / 輔助色',gray:'灰階',softtile:'淡色圖示方塊',rwd:'RWD 斷點',type:'文字級距',shape:'形狀與間距'};
     var g=st.groups||{},c=st.controls||{};
-    function pickName(key){return (N[key]||[])[g[key]||0]||''}
+    /* 【不套用要寫進規範】(2026-09-24)：自訂規範樣式可以整組取消（use[key]===false，或沒有任何一張被採用＝索引 -1）。
+       原本 -1 會印成空白，拿到規範檔的人分不出是「沒選」還是「漏寫」。 */
+    var u=st.use||{};
+    function pickName(key){
+      if(u[key]===false||(typeof g[key]==='number'&&g[key]<0))return '不套用（沿用原頁面的樣式，不替換結構）';
+      return (N[key]||[])[g[key]||0]||'';
+    }
     var adopted=Object.keys(CTL_N).filter(function(k){return c[k]!==false}).map(function(k){return CTL_N[k]});
     var md=[
       '---',
@@ -65,7 +71,7 @@
       '- 採用組合：'+(LOGO_N[st.logoLight]||LOGO_N[2])+(st.logoInv?'（反白版，深色背景用）':'（標準版，淺色背景用）'),
       '- 四種組合擇一，標準版與反白版共用同一個選擇：'
         +'① 完整組合 logo.svg／② 中英組合 logo-en.svg／③ 標準字 logo-text.svg／④ 品牌標誌 logo-mark-only.svg',
-      '- 尺寸：頁首 40px 高（視窗 640px 以下 32px）、頁尾 44px 高；寬度一律 auto，等比例縮放',
+      '- 尺寸：頁首 28px 高（視窗 640px 以下 22px）、頁尾 31px 高；寬度一律 auto，等比例縮放',
       '- 深色底一律反白：filter: brightness(0) invert(1)（等同規範的「深色底覆寫為 surface.muted」）',
       '- **標誌已含品牌字樣，旁邊不得再重複品牌文字**（不要在 logo 右邊再寫一次「翰林」）',
       '- favicon 一併換成 logo-mark-only.svg',
@@ -85,7 +91,7 @@
       '- 橫向選項卡：'+pickName('opt'),
       '- 表格樣式：'+pickName('tblsty'),
       '- 圖示樣式：'+pickName('icon')+'(Google Material Symbols Rounded)',
-      '- Header 會員入口：'+(st.memberEntry?'啟用':'停用'),
+      '- Header 會員入口：'+(u.hd===false?'停用（頁首不套用，會員入口放在頁首裡，一併不加）':(st.memberEntry?'啟用':'停用')),
       '',
       '## 採用元件 Components',
       adopted.map(function(x){return '- '+x}).join('\n'),
@@ -116,7 +122,8 @@
       (_BD?('- 邊線：'+_BD+_fromPal+'——這一組色版的元件帶邊線，屬於它的形狀特徵'):'- 邊線：元件一律無邊線，層次用色塊與陰影表達'),
       '- 間距刻度：4 的倍數(4 / 8 / 12 / 16 / 24 / 32)',
       '- RWD 斷點(Tailwind):sm 640 / md 768 / lg 1024 / xl 1280；跨斷點時多欄轉單欄',
-      '- Header RWD：≤860px 導覽收成漢堡選單（Logo 左、漢堡右，展開後導覽整寬清單、每項 ≥44px、Esc／點外面關閉）；主要 CTA 保留在 header',
+      '- Header RWD：≤860px 導覽收成漢堡選單（Logo 左、漢堡右，展開後導覽整寬清單、每項 ≥48px、Esc／點外面關閉）；手機 header 只保留 Logo 與漢堡兩樣，Logo 預設靠左，導覽、帳號、CTA、頁面名稱全部收進選單',
+      '- 漢堡按鈕 44×44px、三條線展開轉成 ✕，用 aria-expanded／aria-controls 指向 <nav>，aria-label 在「開啟選單／關閉選單」切換；收合用 hidden 屬性，開啟時焦點移到第一項，Esc 關閉後焦點回按鈕；面板白底加陰影不畫邊線，不加遮罩、不鎖捲動；不可只靠 :hover 展開',
       '- Footer RWD：≤640px 多欄收成單欄置中，連結群可展開、版權置中，每個連結 ≥44px',
       '- 表格 RWD：欄位多時，手機**不是**出現橫向捲軸、也不是等比縮小，而是每筆資料變成一張直式小表——每個欄位一列，左邊是欄名格（品牌深色底白字、固定寬）、右邊是內容，一筆一卡、卡與卡之間留空；欄名必須清楚呈現，不可省略',
       '- 層次一律用色塊表現，不把顏色用在邊線上，不可「色塊＋邊線」並用：次要按鈕＝柔色底不外框、輸入框＝淺底填色不外框、Tabs 當前態＝色塊、卡片＝白底＋陰影、表格手機卡＝色塊分隔；焦點態的 outline 為可及性需求可保留；色版本身以粗邊為識別者（bd token）除外',
@@ -152,7 +159,7 @@
       '- **單色頁面須重新配色**：不可整頁映射成單一主色，須把完整色盤分配到元件上：',
       '  - 重複元件群組（同層同 class ≥3 個，如功能卡、步驟）：icon 與色塊依「主色 '+t.p+' → 亮色 '+t.i+' → 對比色 '+((st.contrast&&st.contrast!=='auto')?st.contrast:t.c)+(_EX.length?(' → 裝飾色 '+_EX[0][1]):' → 成功綠 #26A649')+'」輪替'+_fromPal,
       '  - 標籤 / 徽章（tag / badge / chip / pill）：輪替柔色底＋同色字',
-      '  - 小標 eyebrow / kicker → 對比色；統計數字、步驟編號 → 色盤輪替；清單勾號 → 成功綠；mark 高亮 → 對比色柔底',
+      '  - 原頁已有的小標 eyebrow / kicker 保留並改用對比色（新產出的頁面不得加眉標，見基本規範「去除 AI 感」）；統計數字、步驟編號 → 色盤輪替；清單勾號 → 成功綠；mark 高亮 → 對比色柔底',
       '  - 區塊節奏：原本沒有底色的 section 交替「白 → 主色淡底」，自帶底色的區塊（hero 等）不計；白底至少保留一半',
       '- icon 替換：空的 fa-/bi- 元素與可辨識檔名的圖檔 icon 轉 Material Symbols 對應圖示；emoji 與符號字元（★✓☰►）轉對應圖示；猜不到語意的圖檔 icon 套灰階融入',
       '- 外部圖檔 icon、background-image、canvas 圖形無法語意替換，保留原樣',
@@ -204,7 +211,7 @@
   /* ── 基本範例 tokens.css × 風格色版 ＝ 合併後的 tokens.css ──
      下載範例檔應該是「基本範例（index.html／hl-style.css／app.js）＋這一組的顏色」，
      否則拿到 SKILL.md 也不知道怎麼套。作法：拿 starter 的 tokens.css 原文，
-     把 STYLEGUIDE 那幾個顏色／圓角／陰影變數的值換成這一組的，其餘（字級、間距、版面）不動。
+     把 基本規範 那幾個顏色／圓角／陰影變數的值換成這一組的，其餘（字級、間距、版面）不動。
      後面再附上舊的 --brand／--warm 別名，既有引用不會斷。 */
   function _lum(h){h=String(h||'').replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];if(!/^[0-9a-f]{6}$/i.test(h))return 1;
     var c=[0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
@@ -275,16 +282,19 @@
   function _kitOf(t){var ks=window.HL_KITS||[];for(var i=0;i<ks.length;i++){if(ks[i].n===t.n)return ks[i]}return null}
 
   /* ── 把基本規範併進色版 SKILL.md ──
-     只取基本規範裡「色版沒有的」段落（使用說明、最高原則、無障礙、文案語氣、反模式、規範缺口、檢查清單、完整 UI 開發規範）；
-     色彩／Logo／字體／形狀／元件狀態兩邊都有，以色版那份為準，不重複放。 */
+     基本規範（hanlin-web-starter/skill.md，2026-09-24 整併為唯一規範檔）整份帶入，
+     只拿掉色版自己有、而且以色版為準的小節：§2.1 色彩、§2.2 字體、§2.3 間距、§2.4 圓角陰影動態、§3.11 Logo。
+     開頭的 frontmatter 與檔案說明（第一個 ## 之前）不帶。 */
+  var KIT_OWNS=/^### (2\.[1-4]|3\.11) /;
   function mergeBasicSkill(kitMd,basicMd){
     if(!basicMd)return kitMd;
-    var keep=['使用說明','最高原則','無障礙','文案語氣','反模式','已知的規範缺口','交付檢查清單','完整 UI 開發規範'];
-    var parts=basicMd.split(/\n(?=## )/);
-    var picked=parts.filter(function(p){var h=(p.match(/^## ([^\n]*)/)||[])[1]||'';return keep.some(function(k){return h.indexOf(k)===0})});
+    var parts=basicMd.split(/\n(?=## )/).slice(1);
+    var picked=parts.map(function(p){
+      return p.split(/\n(?=### )/).filter(function(sub){return !KIT_OWNS.test(sub)}).join('\n');
+    }).filter(function(p){return /^## /.test(p)});
     if(!picked.length)return kitMd;
-    return kitMd.replace(/\s*$/,'')+'\n\n---\n\n# 基本規範（通用，不隨色版變；來源 hanlin-web-starter/skill.md）\n\n'
-      +picked.map(function(p){return p.replace(/^## /,'## ')}).join('\n\n').replace(/^(#{2,4}) /gm,function(m,h){return h+'# '})+'\n';
+    return kitMd.replace(/\s*$/,'')+'\n\n---\n\n# 基本規範（通用，不隨色版變；來源 hanlin-web-starter/skill.md。色彩、字體、間距、形狀、Logo 以上方色版為準）\n\n'
+      +picked.join('\n\n').replace(/^(#{2,4}) /gm,function(m,h){return h+'# '})+'\n';
   }
   function dlBlob(blob,name){
     var a=document.createElement('a');

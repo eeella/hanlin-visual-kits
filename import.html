@@ -8,11 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260917a">
-<script src="defaults.js?v=20260916d"></script>
+<link rel="stylesheet" href="style.css?v=20260930f">
+<script src="defaults.js?v=a1f84aade6dd"></script>
 <script src="importbase.js?v=1"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
-<script src="kits.js?v=edb539f4d2ae"></script>
+<script src="kits.js?v=bd42b56bca0b"></script>
 <style>
 /* 與品牌規範 / 版型預覽統一內容寬度 1160px */
 .imp-tabs{display:inline-flex;gap:8px}
@@ -89,7 +89,7 @@
    對比實測：#8A4508 on #F8EDE0 = 6.19:1、#5C5248 = 6.60:1、白字 on #B45309 = 5.02:1 */
 .flow li.done{background:#F8EDE0}
 .flow li.done .flow-n{background:#B45309;color:#fff;font-size:0;box-shadow:none}
-.flow li.done .flow-n::after{content:"✓";font-size:15px;font-weight:700}
+.flow li.done .flow-n::after{content:"check";font-family:'Material Symbols Rounded';font-size:18px;font-weight:normal}
 .flow li.done .flow-t b{color:#8A4508}
 .flow li.done .flow-t i{color:#5C5248}
 
@@ -123,12 +123,12 @@
 <body>
 
 <a class="skip-link" href="#main">跳到主要內容</a>
-<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="68" height="34" style="height:34px;width:68px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
+<div class="topbar-band"><div><a href="index.html" style="display:inline-flex;align-items:center"><img src="logo.svg" alt="翰林" width="48" height="24" style="height:24px;width:48px;filter:brightness(0) invert(1)"></a><span class="band-nav"><a href="index.html" class="on">視覺風格</a><a href="basic.html">基本規範</a><a href="ai.html">AI 指令</a><a href="import.html" class="on" hidden data-navhidden="1">匯入</a></span></div></div>
 
 <header class="topbar">
   <div class="topbar-inner">
     <span class="material-symbols-rounded" style="color:var(--brand);font-size:26px">file_open</span>
-    <h1>匯入品牌規範<span class="sub">Import Guidelines</span></h1>
+    <h1>匯入品牌規範</h1>
   </div>
 </header>
 
@@ -159,7 +159,7 @@
 
   <!-- 對照預覽 -->
   <div class="imp-step" id="stepPreview" style="display:none">
-    <div class="step-head">對照預覽<span class="en">COMPARE</span><span class="pick-note" id="previewSource" style="margin-left:auto"></span></div>
+    <div class="step-head">對照預覽<span class="pick-note" id="previewSource" style="margin-left:auto"></span></div>
     <div id="impOpts" style="display:none;align-items:center;gap:20px;flex-wrap:wrap;font-size:13px;margin:0 0 12px;background:#fff;border:1px solid #EDF0F4;border-radius:12px;padding:12px 18px">
       <!-- 版面型態：自動判定猜不中時，使用者可以直接指定。
            應用型版面（側欄＋工作區）套版時不補歡迎橫幅、不動佈局結構，
@@ -189,7 +189,8 @@
         <label style="cursor:pointer"><input type="checkbox" data-opt="colors" checked> 配色</label>
         <label style="cursor:pointer"><input type="checkbox" data-opt="font" checked> 字體</label>
         <label style="cursor:pointer"><input type="checkbox" data-opt="logo" checked> Logo</label>
-        <label style="cursor:pointer"><input type="checkbox" data-opt="icon" checked> icon</label>
+        <!-- 2026-09-21 使用者指定：icon 一律替換，不給選（隱藏，checkbox 保留給程式讀） -->
+        <label style="cursor:pointer" hidden><input type="checkbox" data-opt="icon" checked> icon</label>
         <!-- 2026-09-18 使用者指定：匯入檔沒有 header／footer 要補上——補殼的邏輯掛在這個選項底下，所以改成預設勾選；仍可手動關掉 -->
         <label style="cursor:pointer" title="套用 Header／Footer 版型（頁面沒有就補上）、歡迎橫幅與按鈕、表單、卡片、表格等元件樣式；窄螢幕若破版可關掉"><input type="checkbox" data-opt="semantic" checked> 版型與元件</label>
       </span>
@@ -220,7 +221,7 @@
 
   <!-- 選擇來源（載入後收合，由「重新匯入」展開） -->
   <div class="imp-step" id="stepSource">
-    <div class="step-head">選擇來源<span class="en">SOURCE</span></div>
+    <div class="step-head">選擇來源</div>
     <!-- 匯入的 HTML 會在本站的同源環境裡執行（對照預覽的 iframe 需要同源才能量測、
          做版型比對與高度自適應，所以 sandbox 保留了 allow-same-origin）。
          這代表檔案裡的 <script> 具有和本站相同的權限，能讀寫本站的 localStorage。
@@ -529,7 +530,7 @@ hlStampAssets();
     var v=[1,3,5].map(function(i){var c=parseInt(hex.substr(i,2),16)/255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)});
     return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];
   }
-  /* 白字實心元件的底色必須 ≥4.5:1（STYLEGUIDE 2.1 對比度限制） */
+  /* 白字實心元件的底色必須 ≥4.5:1（基本規範 2.1 對比度限制） */
   function actOf(hex){
     var out=normHex(hex);
     for(var i=0;i<12&&1.05/(sgLum2(out)+0.05)<4.5;i++)out=normHex(mixB(out,.1));
@@ -895,8 +896,10 @@ hlStampAssets();
       function on(k){return _use[k]!==false}
       return {
         use   :on,
-        hd    :idx('hd',1,false),
-        ft    :idx('ft',2,false),
+        /* 頁首／頁尾也可以整組不套（使用者指定 2026-09-24：「在自訂裡都可以勾選跟不勾選」）。
+           null＝不套：原本的頁首／頁尾完全不動（不標記、不補、不替換），只保留全頁共用的換皮。 */
+        hd    :on('hd')?idx('hd',1,false):null,
+        ft    :on('ft')?idx('ft',2,false):null,
         hero  :on('hero')?idx('hero',1,true):null,
         fm    :on('fm')?idx('fm',1,true):null,
         opt   :on('opt')?idx('opt',1,true):null,
@@ -907,6 +910,7 @@ hlStampAssets();
         _dflt :_dflt
       };
     })();
+    var HD_ON=(VS.hd!==null),FT_ON=(VS.ft!==null);   /* 自訂規範樣式取消了頁首／頁尾＝整組不碰（2026-09-24） */
     /* 主視覺底色的唯一產生器：注入的 layoutCss 與 inline 層都呼叫這一支。
        先前 inline 層是用正則去「反解自己剛產生的 CSS 字串」把底色撈回來
        （/\[data-hl-hero\]\{background:([^;!]+)/），解不出來就整段 inline
@@ -937,9 +941,11 @@ hlStampAssets();
           for(var _i=0;_i<_ks.length;_i++){if(_ks[_i].n===to2.n){_k=_ks[_i];break}}
           if(_k&&window.HL_heroSpec)_hs=window.HL_heroSpec(_k);
         }catch(e){}
-        var _hb=(_hs&&_hs.hero)||(isDark2?mixB(to2.s||to2.p,.35):(to2.s||to2.p));
-        var _hfg=(sgLum(normHex(_hb))<0.35)?'#fff':(sgLum(normHex(to2.ink||SG.ink))<0.2?(to2.ink||SG.ink):'#16202B');
-        return {bg:_wash+_hb,fg:_hfg,photo:true,cta:(_hs&&_hs.btn)||to2.c};
+        /* 2026-09-18 使用者指定：純圖片版沒有照片時，橫幅底色「吃 body」——不另畫一塊色帶，跟頁面底色連成一片，
+           文字色也不改寫（沿用頁面映射後的字色）。有照片才走照片＋暗角。 */
+        /* 字色一定要依頁面底色決定：原檔常是「深底白字」，底色一吃 body 變淺，白字就整段消失
+           （2026-09-21 自檢：hanlin-cloud、expo 三份樣本 hero 白字疊在白底上）。 */
+        return {bg:'transparent',fg:(isDark2?'#fff':(to2.ink||SG.ink)),photo:true,cta:(_hs&&_hs.btn)||to2.c};
       }
       return null;
     }
@@ -1051,7 +1057,9 @@ hlStampAssets();
        「我勾的是純圖片版，你到底讀到什麼」要能一眼看到，不用猜。 */
     var READ_VALS={hero:null,opt:null,fm:null};
     var to=guidelineTheme();
-    /* ── 設計 token（STYLEGUIDE.md 第 2 節）：套版數值一律由此取得，元件層不得自訂色碼與一次性尺寸 ── */
+    /* icon 字型名稱 → Material Symbols 對照表（Font Awesome／Bootstrap Icons／Lucide 共用）；靜態替換與執行期轉換同一份 */
+    var FA_MAP={home:'home',house:'home','magnifying-glass':'search',search:'search',user:'person',users:'group','user-group':'group',star:'star',heart:'favorite',envelope:'mail',phone:'call',gear:'settings',cog:'settings',trash:'delete','trash-can':'delete',pen:'edit',pencil:'edit',edit:'edit',book:'menu_book','book-open':'auto_stories',calendar:'calendar_month','calendar-days':'calendar_month',clock:'schedule',bell:'notifications','chart-bar':'bar_chart','bar-chart':'bar_chart','chart-line':'trending_up','line-chart':'trending_up','chart-pie':'pie_chart',play:'play_circle',video:'videocam',camera:'photo_camera',image:'image',photo:'image',folder:'folder','folder-open':'folder_open',file:'description','file-alt':'description','file-lines':'description',check:'check','check-circle':'check_circle','circle-check':'check_circle',xmark:'close',times:'close',plus:'add',minus:'remove','arrow-right':'arrow_forward','arrow-left':'arrow_back','arrow-up':'arrow_upward','arrow-down':'arrow_downward','chevron-right':'chevron_right','chevron-left':'chevron_left','chevron-down':'expand_more','chevron-up':'expand_less','angle-right':'chevron_right','angle-left':'chevron_left','angle-down':'expand_more','angle-up':'expand_less',bars:'menu','ellipsis-v':'more_vert',ellipsis:'more_horiz',lock:'lock',unlock:'lock_open',key:'key','cart-shopping':'shopping_cart','shopping-cart':'shopping_cart','credit-card':'credit_card','money-bill':'payments','dollar-sign':'payments','graduation-cap':'school',flask:'science',globe:'public',lightbulb:'lightbulb',rocket:'rocket_launch',trophy:'trophy',fire:'local_fire_department','thumbs-up':'thumb_up',robot:'smart_toy',bolt:'bolt',gift:'redeem','map-marker':'location_on','location-dot':'location_on',tag:'sell',tags:'sell',download:'download',upload:'upload',share:'share','share-nodes':'share',link:'link',comment:'chat',comments:'forum',message:'chat','paper-plane':'send','info-circle':'info','circle-info':'info',info:'info','question-circle':'help',question:'help','triangle-exclamation':'warning','exclamation-triangle':'warning',warning:'warning',shield:'shield','shield-halved':'shield',eye:'visibility','eye-slash':'visibility_off',filter:'filter_alt',sliders:'tune',wrench:'build',hammer:'construction',music:'music_note',headphones:'headphones',microphone:'mic',wifi:'wifi',cloud:'cloud',database:'database',server:'dns',code:'code',terminal:'terminal',laptop:'laptop_mac',mobile:'smartphone','mobile-screen':'smartphone',tablet:'tablet_mac',desktop:'desktop_windows',print:'print',copy:'content_copy',paste:'content_paste',save:'save',refresh:'refresh',rotate:'refresh',sync:'sync','sign-out':'logout','sign-in':'login','right-from-bracket':'logout','right-to-bracket':'login','external-link':'open_in_new',expand:'open_in_full',compress:'close_fullscreen',sun:'light_mode',moon:'dark_mode',palette:'palette',brush:'brush','paint-brush':'brush',flag:'flag',bookmark:'bookmark',archive:'archive',inbox:'inbox',list:'format_list_bulleted','list-ul':'format_list_bulleted','list-check':'checklist',table:'table_chart','table-cells':'grid_view',th:'grid_view',grid:'grid_view',sitemap:'account_tree',briefcase:'work',building:'apartment',truck:'local_shipping',plane:'flight',car:'directions_car',award:'workspace_premium',medal:'military_tech',certificate:'verified',handshake:'handshake',seedling:'psychiatry',leaf:'eco',puzzle:'extension','puzzle-piece':'extension',brain:'psychology',atom:'science',dna:'genetics',calculator:'calculate',language:'translate',pallet:'palette',settings:'settings',mail:'mail',send:'send','trash-2':'delete','edit-2':'edit','edit-3':'edit','bar-chart-2':'bar_chart','bar-chart-3':'bar_chart','pie-chart':'pie_chart','message-circle':'chat','message-square':'chat',zap:'bolt',sparkles:'auto_awesome',target:'ads_click',layers:'layers',monitor:'desktop_windows','trending-up':'trending_up','trending-down':'trending_down','log-out':'logout','log-in':'login','shield-check':'verified_user',clipboard:'checklist','clipboard-list':'checklist','clipboard-check':'task_alt','check-square':'check_box','x-circle':'cancel','x':'close','alert-circle':'error','alert-triangle':'warning','help-circle':'help','play-circle':'play_circle','map-pin':'location_on','phone-call':'call',smile:'mood',activity:'monitoring',compass:'explore',box:'inventory_2',package:'inventory_2',cpu:'memory','hard-drive':'storage','file-text':'description','book-marked':'bookmark','badge-check':'verified','circle-play':'play_circle','circle-user':'account_circle','user-check':'how_to_reg','user-plus':'person_add',library:'local_library','school':'school','backpack':'backpack',pointer:'touch_app','mouse-pointer':'touch_app',feather:'edit',infinity:'all_inclusive',blocks:'extension',component:'widgets',boxes:'widgets',gauge:'speed',timer:'timer',hourglass:'hourglass_empty','graph-up':'trending_up','graph-down':'trending_down','graph-up-arrow':'trending_up','clipboard-check':'task_alt','clipboard-data':'analytics','journal':'menu_book','journal-text':'menu_book','journal-bookmark':'bookmark','mortarboard':'school','easel':'co_present','pencil-square':'edit_note','card-checklist':'checklist','people':'group','person-circle':'account_circle','chat-dots':'chat','chat-left-text':'chat','bell-fill':'notifications','house-door':'home','box-seam':'inventory_2','bar-chart-line':'bar_chart','pie-chart-fill':'pie_chart','check2-circle':'check_circle','exclamation-circle':'error','x-lg':'close','arrow-right-circle':'arrow_circle_right','play-btn':'play_circle','camera-video':'videocam','mic-fill':'mic','cloud-arrow-up':'cloud_upload','cloud-arrow-down':'cloud_download','gear-fill':'settings','tools':'build','lightning':'bolt','lightning-charge':'bolt','stars':'auto_awesome','patch-check':'verified','shield-lock':'shield','calendar-event':'event','calendar-check':'event_available','clock-history':'history','hourglass-split':'hourglass_empty','list-task':'checklist','ui-checks':'checklist','collection':'collections_bookmark','folder2-open':'folder_open','file-earmark-text':'description','printer':'print','trophy-fill':'trophy','award-fill':'workspace_premium','emoji-smile':'mood','globe2':'public','translate':'translate','palette2':'palette','brush-fill':'brush','magic':'auto_fix_high','robot':'smart_toy','cpu-fill':'memory','database-fill':'database','diagram-3':'account_tree','kanban':'view_kanban','speedometer':'speed','activity':'monitoring','bookmark-star':'bookmark','pin-map':'location_on','envelope-paper':'mail','telephone':'call','question-lg':'help','info-lg':'info',cube:'view_in_ar',cubes:'widgets','shapes':'category',puzzle:'extension','object-group':'widgets',layer:'layers','layer-group':'layers','diagram-project':'account_tree','network-wired':'lan','folder-tree':'account_tree','sitemap':'account_tree','code-branch':'fork_right','terminal':'terminal','bug':'bug_report','vial':'science','flask-vial':'science','magnifying-glass-chart':'analytics','chart-column':'bar_chart','chart-simple':'bar_chart','table-list':'table_chart','rectangle-list':'checklist','square-check':'check_box','circle-dot':'radio_button_checked','toggle-on':'toggle_on','sliders-h':'tune','bars-staggered':'menu','grip':'drag_indicator','arrows-rotate':'refresh','wand-magic-sparkles':'auto_fix_high','face-smile':'mood','comments':'forum','headset':'headset_mic','id-card':'badge','address-book':'contacts','building-columns':'account_balance','store':'storefront','cart-plus':'add_shopping_cart','wallet':'account_balance_wallet','receipt':'receipt_long','file-invoice':'receipt_long','chalkboard':'co_present','chalkboard-user':'co_present','person-chalkboard':'co_present','book-open-reader':'auto_stories','pen-to-square':'edit_note','pen-fancy':'edit','highlighter':'format_ink_highlighter','marker':'edit','note-sticky':'sticky_note_2','bookmark':'bookmark','thumbtack':'push_pin','paperclip':'attach_file','link-slash':'link_off','share-from-square':'share','arrow-up-right-from-square':'open_in_new','circle-nodes':'hub','satellite-dish':'satellite_alt','tower-broadcast':'cell_tower','signal':'signal_cellular_alt','battery-full':'battery_full','plug':'power','microchip':'memory','memory':'memory','hard-drive':'storage','floppy-disk':'save','folder-plus':'create_new_folder','file-circle-plus':'note_add','trash-arrow-up':'restore_from_trash','clock-rotate-left':'history'};
+    /* ── 設計 token（基本規範 skill.md 第 2 節）：套版數值一律由此取得，元件層不得自訂色碼與一次性尺寸 ── */
     var SG={
       strong:'#064EA4',actHover:'#05407F',actActive:'#03305F',
       subtle:'#F4F7FB',decorSun:'#F5D35B',decorWarm:'#EF9D78',
@@ -1066,6 +1074,10 @@ hlStampAssets();
       fsBase:'18px',lhBase:'30.006px',
       tapBtn:'44px',tapField:'48px',tapChip:'40px',tapAcc:'56px'
     };
+    /* 【區塊淺底＝這一組的 bg】(使用者回報 2026-09-21：每組套出來都一樣、跟基本範本差很多)
+       基本範本（demo.html／下載範例檔）的 --color-page-bg-subtle 就是 kit.bg（酪梨青檸＝淺綠、芥黃刊物＝米色紙）。
+       引擎這裡原本寫死平台的 #F4F7FB，所以區塊節奏、表頭、hover 底全部長一樣。深色 bg（墨綠聖誕、藍夜霓虹）走深色頁路徑，不在這裡換。 */
+    try{if(to.bg&&sgLum(normHex(to.bg))>0.55)SG.subtle=normHex(to.bg)}catch(e){}
     /* 2.1 對比度限制：白字實心元件必須 ≥4.5:1。主題主色不足時逐步加深，直到達標為止 */
     function sgLum(hex){
       var v=[1,3,5].map(function(i){var c=parseInt(hex.substr(i,2),16)/255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)});
@@ -1640,6 +1652,19 @@ hlStampAssets();
          寫入層的硬閘門：setS／imp／forceStyle 全部匯流到這裡，
          擋在這一點就沒有任何通道能把 border／border-radius 加回去。
          border:none／0 是消去不是強加，放行。 */
+      /* 【套用版型重做的頁首／頁尾：版型陰影放行】(2026-09-24)
+         replace 模式下 header／footer 是我們新建的元件，會吃到沙盒的 all:unset（0,2,2），
+         於是 layoutCss 的 [data-hl-hd]{box-shadow…}（0,1,0）整條失效；底色與字色有 fs() 寫進 inline 救回，
+         陰影卻被下面的 isDecorAdd 當成「強加裝飾」擋掉 → 品牌官網（淺色）與教師平台套出同一種樣式
+         （variant-suite：9 種 Header 只剩 8 種，正是「勾了 A 套出 B」）。
+         放行條件與 sanitizeCss 的 isVariantRule 對等：只限我們自己建的版型標記元素、只限 box-shadow；
+         邊線與圓角照舊由 isDecorAdd 擋（不准強加邊線的鐵律不變）。 */
+      try{
+        if(el.hasAttribute&&el.hasAttribute(HL_ORIGIN)&&(el.hasAttribute('data-hl-hd')||el.hasAttribute('data-hl-ft'))
+           &&/^(-webkit-|-moz-)?box-shadow$/.test(String(k).trim().toLowerCase())){
+          el.style.setProperty(k,String(v).replace(/!important/gi,'').trim(),'important');return;
+        }
+      }catch(e){SWALLOW(e)}
       if(typeof isDecorAdd==='function'&&isDecorAdd(k,v,el))return;
       /* 特異度筆記（踩過的坑）：:not([data-hl-k=…]) 算 attribute selector，
          計入 class 那一欄。原本在通則上掛兩個，把 [data-hl-hd] * 從 (0,1,1)
@@ -1723,6 +1748,98 @@ hlStampAssets();
        是死碼。實測 27 份樣本 memberEntry:true 全部 loginSystemInjection=skip。
        直接把總開關打開不是選項：實測會一口氣新增 555 個元件（edcafe 一份就 261 個），
        那正是「不新建元件」鐵律要擋的。所以只開這一條路。 */
+    /* ── 行動裝置 Header 只留 Logo＋漢堡（使用者指定 2026-09-29，基本規範 §3.13）
+       ≤860px 時頁首裡除了 Logo 與漢堡以外的東西（會員、按鈕、搜尋、站名、頭像）一律收起來，Logo 預設靠左。
+       收起來的可點項目不能就此消失（只換皮不動功能）：連結複製一份、按鈕做成代按的項目，放進漢堡選單最後面，
+       只在手機展開選單時出現。頁首沒有漢堡的話這裡自己補一組。頁首整組不套（HD_ON=false）時不動。
+       要跑兩次：第一輪套版後一次；版型元件（通知、頭像、搜尋框）是第二輪 applyLayoutInline 才補進來的，補完再跑一次。
+       重跑只處理新出現的元素，已收進選單的項目不重複。 */
+    function mobileHeaderOnly(doc){
+      if(!HD_ON)return;
+      var _mh=doc.querySelector('[data-hl-hd]')||doc.querySelector('header');
+      var _mlg=_mh&&(_mh.querySelector('img[data-hl-logo],img[alt="翰林"]')||_mh.querySelector('[class*=logo],[class*=brand]'));
+      if(!_mh||!_mlg)return;
+      _mh.setAttribute('data-hl-monly','1');
+      var _mnav=_mh.querySelector('[data-hl-nav]');
+      function _toggle(){
+        /* 結構與導覽收合那一組相同：checkbox 在導覽之前（同層）、label 當漢堡放最後 */
+        var cb=doc.createElement('input');cb.type='checkbox';cb.id='hl-navtoggle';cb.setAttribute('data-hl-added','1');cb.setAttribute('aria-label','開啟選單');
+        cb.setAttribute('style','position:absolute;width:1px;height:1px;opacity:0;pointer-events:none');
+        _mnav.parentNode.insertBefore(cb,_mnav);
+        var lb=doc.createElement('label');lb.setAttribute('for','hl-navtoggle');lb.setAttribute('data-hl-navbtn','1');lb.setAttribute('data-hl-added','1');lb.setAttribute('title','選單');
+        lb.innerHTML='<span data-hl-navbar></span>';
+        _mh.appendChild(lb);_mh.setAttribute('data-hl-hasnav','1');
+      }
+      var _mkeep=[_mlg,_mnav,_mh.querySelector('#hl-navtoggle'),_mh.querySelector('[data-hl-navbtn]')].filter(Boolean);
+      var _mhid=[];
+      (function _mwalk(el){
+        Array.prototype.slice.call(el.children).forEach(function(ch){
+          if(_mkeep.indexOf(ch)>-1||ch.hasAttribute('data-hl-mhide'))return;
+          if(_mkeep.some(function(k){return ch.contains(k)})){_mwalk(ch);return}
+          if(/^(SCRIPT|STYLE|TEMPLATE|NOSCRIPT)$/.test(ch.tagName))return;
+          ch.setAttribute('data-hl-mhide','1');_mhid.push(ch);
+        });
+      })(_mh);
+      /* Logo 所在的最外層分支排第一、推開其餘（漢堡本來就 margin-left:auto 靠右） */
+      var _mtop=_mlg;while(_mtop.parentNode&&_mtop.parentNode!==_mh)_mtop=_mtop.parentNode;
+      if(_mtop.parentNode===_mh)_mtop.setAttribute('data-hl-mlogo','1');
+      /* 收起來的可點項目 → 選單裡的手機專用項目 */
+      var _mseen={};
+      if(_mnav)Array.prototype.forEach.call(_mnav.querySelectorAll('a,button,[role=button]'),function(a){_mseen[(a.textContent||'').replace(/\s+/g,' ').trim()]=1});
+      var _mitems=[],_mref=doc.querySelectorAll('[data-hl-mref]').length;
+      _mhid.forEach(function(box){
+        var list=box.matches('a,button,[role=button],[data-hl-member-item]')?[box]:Array.prototype.slice.call(box.querySelectorAll('a,button,[role=button],[data-hl-member-item]'));
+        list.forEach(function(a){
+          if(a.hasAttribute('data-hl-member-btn'))return;           /* 會員膠囊本身只是開選單，改收它的選單項目 */
+          if(a.parentNode&&a.parentNode.closest&&a.parentNode.closest('a,button,[role=button]'))return;
+          var _tc=a.cloneNode(true);Array.prototype.forEach.call(_tc.querySelectorAll('.material-symbols-rounded,.material-symbols-outlined,.material-icons,[class*=material-symbols],svg,img,i'),function(x){x.remove()});
+          var t=(_tc.textContent||'').replace(/\s+/g,' ').trim()||a.getAttribute('aria-label')||a.getAttribute('title')||'';
+          t=t.replace(/\s+/g,' ').trim();
+          if(!t||t.length>20||_mseen[t])return;
+          _mseen[t]=1;
+          var it=doc.createElement('a');it.setAttribute('data-hl-mclone','1');it.setAttribute('data-hl-added','1');it.textContent=t;
+          var href=a.tagName==='A'?a.getAttribute('href'):null;
+          if(href&&!/^javascript:/i.test(href)){it.setAttribute('href',href);if(a.getAttribute('target'))it.setAttribute('target',a.getAttribute('target'))}
+          else{
+            var rid='m'+(++_mref);a.setAttribute('data-hl-mref',rid);
+            it.setAttribute('href','#');it.setAttribute('role','button');
+            it.setAttribute('onclick',"event.preventDefault();var o=document.querySelector('[data-hl-mref=\\x22"+rid+"\\x22]');if(o)o.click();");
+          }
+          _mitems.push(it);
+        });
+      });
+      /* 導覽在手機一律收起（[data-hl-nav]{display:none}），所以只要有導覽就一定要有漢堡，否則裡面的項目在手機上點不到 */
+      if(!_mitems.length&&!_mh.querySelector('[data-hl-mhide]')&&!_mnav)return;
+      if(!_mnav){
+        /* 頁首本來沒有導覽：補一個空的導覽容器當選單 */
+        _mnav=doc.createElement('nav');_mnav.setAttribute('data-hl-nav','1');_mnav.setAttribute('data-hl-added','1');_mnav.setAttribute('aria-label','選單');
+        _mh.appendChild(_mnav);
+      }
+      if(!_mh.querySelector('#hl-navtoggle'))_toggle();
+      if(_mitems.length){
+        var _mx=_mnav.querySelector('[data-hl-mextra]');
+        if(!_mx){_mx=doc.createElement('div');_mx.setAttribute('data-hl-mextra','1');_mx.setAttribute('data-hl-added','1');_mnav.appendChild(_mx)}
+        _mitems.forEach(function(it){_mx.appendChild(it)});
+      }
+      /* 展開面板的配色跟頁首同一組（第二輪才知道版型）：底色＝頁首底色、字色＝頁首字色。
+         導覽項的字色是 inline 寫的頁首字色（已過對比守門），面板若維持白底，深色頁首的白字就會疊在白底上看不見。
+         導覽本身的 inline background:transparent !important 會蓋掉面板底色，要拿掉（桌機導覽本來就透明，外觀不變）。 */
+      var _HSx=LAYOUT_APPLIED&&LAYOUT_APPLIED.HS;
+      if(_HSx&&_mnav){
+        ['background','background-color','background-image'].forEach(function(p){try{_mnav.style.removeProperty(p)}catch(e){SWALLOW(e)}});
+        var _mst=doc.getElementById('hl-mhd-style');
+        if(!_mst){_mst=doc.createElement('style');_mst.id='hl-mhd-style';_mst.setAttribute('data-hl-added','1');(doc.head||doc.documentElement).appendChild(_mst)}
+        var _SEL='html body #hl-navtoggle:checked ~ [data-hl-nav][data-hl-nav]';
+        /* 導覽若 inline 寫了 margin-left（新建頁首是 8px），面板會往右偏、左邊露一條縫，用 left 抵銷 */
+        var _mml=(_mnav.style.getPropertyValue('margin-left')||'').trim();
+        _mst.textContent='@media(max-width:860px){'
+          +_SEL+'{background:'+_HSx.bg+' !important;color:'+_HSx.fg+' !important;gap:0 !important'+(/^[\d.]+px$/.test(_mml)&&parseFloat(_mml)?';left:-'+_mml+' !important':'')+'}'
+          +_SEL+' [data-hl-mextra]{gap:0 !important}'
+          /* 項目一列一個、≥48px；新建頁首的導覽項 inline 寫了 min-height:0／line-height，改用 height 撐到 48px */
+          +_SEL+' a,'+_SEL+' button,'+_SEL+' [role=button]{color:'+_HSx.fg+' !important;text-decoration:none !important;height:48px !important;box-sizing:border-box !important;width:100% !important;opacity:1 !important}'
+          +'}';
+      }
+    }
     function enforceHeaderLayout(doc,hdIdx,HS,B,memberOnly){
       var hd=doc.querySelector('[data-hl-hd]');
       if(!hd)return 0;
@@ -2070,6 +2187,8 @@ hlStampAssets();
               }
             }
             if(!heroHasVisual&&HERO_SRC_STYLED)heroHasVisual=true;   /* 原始 CSS 規則判定，見外層 */
+            /* 標記給注入 CSS：有自己視覺設計的橫幅，底色與字色一律不動（2026-09-21 自檢：原本深底白字的橫幅被 transparent 蓋掉變白字白底） */
+            if(heroHasVisual)he.setAttribute('data-hl-heroown','1');
           }catch(e){SWALLOW(e)}
           /* 純圖片版：強制換成整張主視覺照片的呈現（大版面＋暗角遮罩＋置中） */
           forceStyle(he,{
@@ -2134,14 +2253,14 @@ hlStampAssets();
                    [data-hl-hero] h1/h2/p{color:#fff!important}（特異度 (0,1,1)），
                    writeStyle 產生的 html body [data-hl-s] 是 (0,1,2) 且置底，穩定勝出，
                    不需要在使用者的文字元素上留 element.style。 */
-                writeStyle(tx,'color',HERO_BASE.fg||SG.ink);
+                if(HERO_BASE.fg)writeStyle(tx,'color',HERO_BASE.fg);   /* 吃 body 時不改字色 */
               });
             }catch(e){SWALLOW(e)}
           }
           /* 預留位只在「橫幅真的沒有任何視覺載體」時才補。
              原檔已有主視覺設計卻補一個「主視覺照片」提示框，就是畫面上憑空多出來的東西——
              與 2026-08-24 移除 Hero 裝飾圓的理由完全相同：純加料、風險高、收益低。 */
-          if(!heroPhoto&&!heroHasVisual&&!he.querySelector('[data-hl-photo]')){
+          if(false&&!heroPhoto&&!heroHasVisual&&!he.querySelector('[data-hl-photo]')){   /* 2026-09-18：不再補「主視覺照片」提示框 */
             var ph=markSystem(doc.createElement('span'));
             ph.setAttribute('data-hl-photo','1');
             var _phDark=(HERO_BASE.fg==='#fff');
@@ -2153,7 +2272,7 @@ hlStampAssets();
           /* AI 漸層版：品牌漸層＋AI 標記 */
           var heHasContent2=!!he.querySelector('h1,h2,h3,[class*=title],[class*=heading]')
             && (he.textContent||'').trim().length>=6;
-          forceStyle(he,{'background':HERO_BASE.bg,'color':HERO_BASE.fg,'padding':'64px 32px','text-align':'center','min-height':'0'});
+          forceStyle(he,HERO_BASE.fg?{'background':HERO_BASE.bg,'color':HERO_BASE.fg,'padding':'64px 32px','text-align':'center','min-height':'0'}:{'background':HERO_BASE.bg,'padding':'64px 32px','text-align':'center','min-height':'0'});
           if(!heHasContent2&&!he.querySelector('[data-hl-aichip]')){
             var ai=markSystem(doc.createElement('span'));
             ai.setAttribute('data-hl-aichip','1');
@@ -2162,13 +2281,19 @@ hlStampAssets();
             he.insertBefore(ai,he.firstChild);
           }
         }
+        /* 【橫幅文字色要跟版型分支同一個判斷】(2026-09-24 使用者回報：化學虛擬實驗室 標題白字壓淺底)
+           這段是早期為 AI 漸層版（深色漸層底）寫的「橫幅文字一律白字」，跑在版型分支之後。
+           純圖片版在上面已依 2026-09-21 規則「字色依頁面底色決定」寫好墨色，這裡又全部蓋回白色，
+           後寫的贏 → 淺底白字。改成與純圖片版分支同一套：有照片＝白字；原檔已有主視覺＝不動字色；
+           其餘＝HERO_BASE.fg（依底色算好的那個；空值＝吃 body 不改字色）。AI 漸層版維持白字不變。 */
+        var _heroTx=(heroIdx===1)?(heroPhoto?'#fff':(heroHasVisual?'':(HERO_BASE.fg||''))):(HERO_BASE.fg||'#fff');
         /* 只改橫幅內的純文字元素，不動任何元件（標籤/徽章/按鈕/卡片/彈窗…） */
-        Array.prototype.forEach.call(he.querySelectorAll('h1,h2,h3,h4,p'),function(e2){
+        if(_heroTx)Array.prototype.forEach.call(he.querySelectorAll('h1,h2,h3,h4,p'),function(e2){
           if(e2.querySelector&&e2.querySelector('img,svg'))return;
           var ec=(e2.getAttribute('class')||'')+' '+(e2.getAttribute('style')||'');
           if(/btn|button|cta|tag|badge|chip|pill|label|card|modal|dialog|alert|toast|table/i.test(ec))return;
           if(/background/i.test(e2.getAttribute('style')||''))return;
-          forceStyle(e2,{'color':fgOn(e2,'#fff')});
+          forceStyle(e2,{'color':fgOn(e2,_heroTx)});
         });
       }
     }
@@ -2193,7 +2318,7 @@ hlStampAssets();
            原本這道過濾只在 app shell 頁面啟用（因為那類版面一擠就垮），
            但一般頁面同樣不該被改排版，只是垮得沒那麼明顯而已。改成一律啟用。
 
-           代價（已告知使用者並由其決定）：STYLEGUIDE 的觸控目標 44px、
+           代價（已告知使用者並由其決定）：基本規範 的觸控目標 44px、
            字級尺度表、間距 token 這幾條無法再強制達成，
            它們在條文帳上會落到「已量測但只報告」而非「強制改寫」。
 
@@ -2210,7 +2335,7 @@ hlStampAssets();
            依 CSS 疊代規則，樣式表的 !important **勝過**普通 inline 宣告，
            所以原頁只要自帶 !important，我們就完全蓋不掉。
 
-           實測（samples/user-cloudec2.html，已套過 STYLEGUIDE 的真實檔案，
+           實測（samples/user-cloudec2.html，已套過 基本規範 的真實檔案，
            自帶 349 個 !important）：
                .btn-secondary  {border:1.5px solid #064ea4!important}
                .btn-ghost-light{border:1.5px solid rgba(255,255,255,.7)!important}
@@ -2278,9 +2403,18 @@ hlStampAssets();
       });
       /* 按鈕：button／submit／role=button／含 btn 語意的 a */
       Array.prototype.forEach.call(doc.querySelectorAll('button,[role=button],input[type=submit],input[type=button],a[class*=btn],a[class*=button],a[class*=cta]'),function(el){
+        /* 【可點的卡片不是按鈕】(使用者回報 2026-09-18，普國_課文隨身聽：<button class="bookcard"> 整張書封被塗成主色實心)
+           含圖片／class 有 card、tile、cover／文字超過 40 字／子元素超過 3 個 → 這是一張可點的卡片，
+           按鈕規則（實心主色、白字、藥丸、內距）一律不套；標上 data-hl-cardbtn 讓注入 CSS 用 :not() 排除。 */
+        try{
+          var _cc=String(el.getAttribute('class')||''),_tx=(el.textContent||'').replace(/\s+/g,' ').trim();
+          if(el.querySelector('img,picture,video,svg[width],svg[height]')||/(^|[\s_-])(card|tile|cover|thumb|book)/i.test(_cc)||_tx.length>40||el.children.length>3){
+            el.setAttribute('data-hl-cardbtn','1');return;
+          }
+        }catch(e){SWALLOW(e)}
         if(el.closest&&el.closest('[data-hl-hd]')){
           /* header 內的按鈕，底色與文字色交給版型規則（各 Header 變體不同），這裡不搶。
-             但「無邊線」是 STYLEGUIDE 3.1 的硬規則，版型規則並沒有涵蓋它——
+             但「無邊線」是 基本規範 3.1 的硬規則，版型規則並沒有涵蓋它——
              於是這幾顆按鈕只剩注入的 [class*=btn]{border:none !important} 撐著，
              而那條 specificity 只有 (0,1,0)，原站寫 a.btn (0,1,1) 或 .hero .btn (0,2,0)
              就會贏（兩邊都 !important 時比 specificity），1px 邊線永遠消不掉。
@@ -2622,7 +2756,7 @@ hlStampAssets();
         return tag.replace(/<img\b/i,'<img src="'+LOGO_DATA+'"');
       });}
       if(ON('icon')){
-      var FA={home:'home',house:'home','magnifying-glass':'search',search:'search',user:'person',users:'group','user-group':'group',star:'star',heart:'favorite',envelope:'mail',phone:'call',gear:'settings',cog:'settings',trash:'delete','trash-can':'delete',pen:'edit',pencil:'edit',edit:'edit',book:'menu_book','book-open':'auto_stories',calendar:'calendar_month','calendar-days':'calendar_month',clock:'schedule',bell:'notifications','chart-bar':'bar_chart','bar-chart':'bar_chart','chart-line':'trending_up','line-chart':'trending_up','chart-pie':'pie_chart',play:'play_circle',video:'videocam',camera:'photo_camera',image:'image',photo:'image',folder:'folder','folder-open':'folder_open',file:'description','file-alt':'description','file-lines':'description',check:'check','check-circle':'check_circle','circle-check':'check_circle',xmark:'close',times:'close',plus:'add',minus:'remove','arrow-right':'arrow_forward','arrow-left':'arrow_back','arrow-up':'arrow_upward','arrow-down':'arrow_downward','chevron-right':'chevron_right','chevron-left':'chevron_left','chevron-down':'expand_more','chevron-up':'expand_less','angle-right':'chevron_right','angle-left':'chevron_left','angle-down':'expand_more','angle-up':'expand_less',bars:'menu','ellipsis-v':'more_vert',ellipsis:'more_horiz',lock:'lock',unlock:'lock_open',key:'key','cart-shopping':'shopping_cart','shopping-cart':'shopping_cart','credit-card':'credit_card','money-bill':'payments','dollar-sign':'payments','graduation-cap':'school',flask:'science',globe:'public',lightbulb:'lightbulb',rocket:'rocket_launch',trophy:'trophy',fire:'local_fire_department','thumbs-up':'thumb_up',robot:'smart_toy',bolt:'bolt',gift:'redeem','map-marker':'location_on','location-dot':'location_on',tag:'sell',tags:'sell',download:'download',upload:'upload',share:'share','share-nodes':'share',link:'link',comment:'chat',comments:'forum',message:'chat','paper-plane':'send','info-circle':'info','circle-info':'info',info:'info','question-circle':'help',question:'help','triangle-exclamation':'warning','exclamation-triangle':'warning',warning:'warning',shield:'shield','shield-halved':'shield',eye:'visibility','eye-slash':'visibility_off',filter:'filter_alt',sliders:'tune',wrench:'build',hammer:'construction',music:'music_note',headphones:'headphones',microphone:'mic',wifi:'wifi',cloud:'cloud',database:'database',server:'dns',code:'code',terminal:'terminal',laptop:'laptop_mac',mobile:'smartphone','mobile-screen':'smartphone',tablet:'tablet_mac',desktop:'desktop_windows',print:'print',copy:'content_copy',paste:'content_paste',save:'save',refresh:'refresh',rotate:'refresh',sync:'sync','sign-out':'logout','sign-in':'login','right-from-bracket':'logout','right-to-bracket':'login','external-link':'open_in_new',expand:'open_in_full',compress:'close_fullscreen',sun:'light_mode',moon:'dark_mode',palette:'palette',brush:'brush','paint-brush':'brush',flag:'flag',bookmark:'bookmark',archive:'archive',inbox:'inbox',list:'format_list_bulleted','list-ul':'format_list_bulleted','list-check':'checklist',table:'table_chart','table-cells':'grid_view',th:'grid_view',grid:'grid_view',sitemap:'account_tree',briefcase:'work',building:'apartment',truck:'local_shipping',plane:'flight',car:'directions_car',award:'workspace_premium',medal:'military_tech',certificate:'verified',handshake:'handshake',seedling:'psychiatry',leaf:'eco',puzzle:'extension','puzzle-piece':'extension',brain:'psychology',atom:'science',dna:'genetics',calculator:'calculate',language:'translate',pallet:'palette',settings:'settings',mail:'mail',send:'send','trash-2':'delete','edit-2':'edit','edit-3':'edit','bar-chart-2':'bar_chart','bar-chart-3':'bar_chart','pie-chart':'pie_chart','message-circle':'chat','message-square':'chat',zap:'bolt',sparkles:'auto_awesome',target:'ads_click',layers:'layers',monitor:'desktop_windows','trending-up':'trending_up','trending-down':'trending_down','log-out':'logout','log-in':'login','shield-check':'verified_user',clipboard:'checklist','clipboard-list':'checklist','clipboard-check':'task_alt','check-square':'check_box','x-circle':'cancel','x':'close','alert-circle':'error','alert-triangle':'warning','help-circle':'help','play-circle':'play_circle','map-pin':'location_on','phone-call':'call',smile:'mood',activity:'monitoring',compass:'explore',box:'inventory_2',package:'inventory_2',cpu:'memory','hard-drive':'storage','file-text':'description','book-marked':'bookmark','badge-check':'verified','circle-play':'play_circle','circle-user':'account_circle','user-check':'how_to_reg','user-plus':'person_add',library:'local_library','school':'school','backpack':'backpack',pointer:'touch_app','mouse-pointer':'touch_app',feather:'edit',infinity:'all_inclusive',blocks:'extension',component:'widgets',boxes:'widgets',gauge:'speed',timer:'timer',hourglass:'hourglass_empty','graph-up':'trending_up','graph-down':'trending_down','graph-up-arrow':'trending_up','clipboard-check':'task_alt','clipboard-data':'analytics','journal':'menu_book','journal-text':'menu_book','journal-bookmark':'bookmark','mortarboard':'school','easel':'co_present','pencil-square':'edit_note','card-checklist':'checklist','people':'group','person-circle':'account_circle','chat-dots':'chat','chat-left-text':'chat','bell-fill':'notifications','house-door':'home','box-seam':'inventory_2','bar-chart-line':'bar_chart','pie-chart-fill':'pie_chart','check2-circle':'check_circle','exclamation-circle':'error','x-lg':'close','arrow-right-circle':'arrow_circle_right','play-btn':'play_circle','camera-video':'videocam','mic-fill':'mic','cloud-arrow-up':'cloud_upload','cloud-arrow-down':'cloud_download','gear-fill':'settings','tools':'build','lightning':'bolt','lightning-charge':'bolt','stars':'auto_awesome','patch-check':'verified','shield-lock':'shield','calendar-event':'event','calendar-check':'event_available','clock-history':'history','hourglass-split':'hourglass_empty','list-task':'checklist','ui-checks':'checklist','collection':'collections_bookmark','folder2-open':'folder_open','file-earmark-text':'description','printer':'print','trophy-fill':'trophy','award-fill':'workspace_premium','emoji-smile':'mood','globe2':'public','translate':'translate','palette2':'palette','brush-fill':'brush','magic':'auto_fix_high','robot':'smart_toy','cpu-fill':'memory','database-fill':'database','diagram-3':'account_tree','kanban':'view_kanban','speedometer':'speed','activity':'monitoring','bookmark-star':'bookmark','pin-map':'location_on','envelope-paper':'mail','telephone':'call','question-lg':'help','info-lg':'info',cube:'view_in_ar',cubes:'widgets','shapes':'category',puzzle:'extension','object-group':'widgets',layer:'layers','layer-group':'layers','diagram-project':'account_tree','network-wired':'lan','folder-tree':'account_tree','sitemap':'account_tree','code-branch':'fork_right','terminal':'terminal','bug':'bug_report','vial':'science','flask-vial':'science','magnifying-glass-chart':'analytics','chart-column':'bar_chart','chart-simple':'bar_chart','table-list':'table_chart','rectangle-list':'checklist','square-check':'check_box','circle-dot':'radio_button_checked','toggle-on':'toggle_on','sliders-h':'tune','bars-staggered':'menu','grip':'drag_indicator','arrows-rotate':'refresh','wand-magic-sparkles':'auto_fix_high','face-smile':'mood','comments':'forum','headset':'headset_mic','id-card':'badge','address-book':'contacts','building-columns':'account_balance','store':'storefront','cart-plus':'add_shopping_cart','wallet':'account_balance_wallet','receipt':'receipt_long','file-invoice':'receipt_long','chalkboard':'co_present','chalkboard-user':'co_present','person-chalkboard':'co_present','book-open-reader':'auto_stories','pen-to-square':'edit_note','pen-fancy':'edit','highlighter':'format_ink_highlighter','marker':'edit','note-sticky':'sticky_note_2','bookmark':'bookmark','thumbtack':'push_pin','paperclip':'attach_file','link-slash':'link_off','share-from-square':'share','arrow-up-right-from-square':'open_in_new','circle-nodes':'hub','satellite-dish':'satellite_alt','tower-broadcast':'cell_tower','signal':'signal_cellular_alt','battery-full':'battery_full','plug':'power','microchip':'memory','memory':'memory','hard-drive':'storage','floppy-disk':'save','folder-plus':'create_new_folder','file-circle-plus':'note_add','trash-arrow-up':'restore_from_trash','clock-rotate-left':'history'};
+      var FA=FA_MAP;   /* 對照表提到函式層（FA_MAP），執行期 icon 轉換也要用 */
       var matSpan=function(name){iconCount++;return '<span data-hl-origin="system" aria-hidden="true" class="material-symbols-rounded" style="font-size:1.15em;line-height:1;vertical-align:-0.15em;color:'+to.p+ICSTY+'">'+name+'</span>'};
       /* 空的 icon 字型元素（fa-/bi- 等，未載入字型時看不見）→ Material Symbols */
       seg=seg.replace(/<(i|span)\b([^>]*class\s*=\s*["\x27][^"\x27]*\b(?:fa|bi)-[^"\x27]*["\x27][^>]*)>\s*<\/\1>/gi,function(m,tg,attrs){
@@ -2681,7 +2815,16 @@ hlStampAssets();
        textContent 寫入或落在屬性值裡，標記就會被跳脫成畫面上的文字。
        動態產生的畫面改由下方「執行時圖示轉換」負責，它只動 DOM 文字節點，不會有這個問題。 */
     html=html.split(/(<script\b[\s\S]*?<\/script>)/gi).map(function(seg){
-      return /^<script/i.test(seg)?seg:recolorSeg(seg);
+      if(!/^<script/i.test(seg))return recolorSeg(seg);
+      /* 【tailwind.config 是設定不是程式】(使用者回報 2026-09-21：選公務金黃，上傳框、選取框、待確認標籤仍是原本的藍綠)
+         Tailwind CDN 在執行期照 tailwind.config 的 colors 產生 bg-brand／text-brand／bg-brand/5 這些 class，
+         config 裡的色碼不換，這些元素永遠是原本的品牌色。只換 colors 區塊裡的色碼，其餘 JS 一律不動。 */
+      if(/tailwind\.config\s*=/.test(seg)){
+        return seg.replace(/(colors\s*:\s*\{)([\s\S]*?)(\n\s*\}\s*,?\s*\n)/,function(m,a,body,c){
+          return a+body.replace(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g,function(mt){return recolorSeg(mt)})+c;
+        });
+      }
+      return seg;
     }).join('');
     /* 低調模式：主色只留給 primary 按鈕——主色家族背景轉柔色、邊框轉淺灰、文字與 icon 轉深灰 */
     if(tone==='soft'&&ON('colors')){
@@ -2772,7 +2915,7 @@ hlStampAssets();
               if(/\bw-\d+\b|\bbasis-\d+\b/.test(fcls))return true;
               var t=fcls.split(/\s+/).filter(Boolean);
               for(var k=0;k<t.length;k++){
-                var re=new RegExp('\\.'+t[k].replace(/[^\w-]/g,'')+'[^{}]*\\{([^}]*)\\}','i'),m=re.exec(SBSTYLE);
+                var re;try{re=new RegExp('\\.'+t[k].replace(/[^\w-]/g,'')+'[^{}]*\\{([^}]*)\\}','i')}catch(e){SWALLOW(e);continue}var m=re.exec(SBSTYLE);
                 if(m){var w=FIXED.exec(m[1]); if(w&&parseInt(w[1],10)<=420)return true;}
               }
               return false;
@@ -2794,9 +2937,11 @@ hlStampAssets();
               var cls=(box.getAttribute('class')||'');
               var isRow=/\bflex\b|\bgrid\b/.test(cls)
                      || (function(){
-                          var t=cls.split(/\s+/).filter(Boolean).map(function(c){return '.'+c}).join('|');
+                          /* 【class 名稱一律完整跳脫】(2026-09-21 實測 AI審題大師：Tailwind 的 shadow-[0_-4px_16px_rgba(0,0,0,0.15)]
+                             只跳脫「.」會組出無效的正規表示式，整段結構判定被 SWALLOW 吞掉，頁首頁尾全部沒套。) */
+                          var t=cls.split(/\s+/).filter(Boolean).map(function(c){return '\\.'+c.replace(/[.*+?^${}()|[\]\\\/]/g,'\\$&')}).join('|');
                           if(!t)return false;
-                          var re=new RegExp('(?:'+t.replace(/[.]/g,'\\.')+')[^{}]*\\{[^}]*display\\s*:\\s*(?:flex|grid)','i');
+                          var re;try{re=new RegExp('(?:'+t+')[^{}]*\\{[^}]*display\\s*:\\s*(?:flex|grid)','i')}catch(e){SWALLOW(e);return false}
                           return re.test(SBSTYLE);
                         })();
               if(!isRow)continue;
@@ -2973,7 +3118,9 @@ hlStampAssets();
              它仍會被後面的橫幅偵測認成 hero，照 hero 規則處理。 */
           if(hdEl&&/^header$/i.test(hdEl.tagName)&&SHELL_MODE!=='keep'){
             var _hcls=String(hdEl.className||''),_hlinks=hdEl.querySelectorAll('a,button').length;
-            if(/\b(hero|banner|masthead)\b/i.test(_hcls)||(hdEl.querySelector('h1')&&_hlinks<2)){
+            var _htext=(hdEl.textContent||'').replace(/\s+/g,' ').trim();
+            /* 主視覺＝有大標「而且」有導言（p）或文字量大；只有一行標題的 <header class="topbar"> 是標題列，仍是頁首（2026-09-18 實測 普國_課文隨身聽） */
+            if(/\b(hero|banner|masthead)\b/i.test(_hcls)||(hdEl.querySelector('h1')&&_hlinks<2&&(hdEl.querySelector('p')||_htext.length>60))){
               hdEl.setAttribute('data-hl-herohead','1');   /* 給後面的 header 候選掃描與稽核看 */
               SHELL_INFO.hdSkipped='原本的 '+hdEl.tagName.toLowerCase()+(_hcls?'.'+_hcls.split(' ')[0]:'')+' 判為主視覺（有大標、沒有導覽連結）';
               hdEl=null;
@@ -3032,10 +3179,10 @@ hlStampAssets();
           /* 手動模式：一律補上 → 原本認到的頁首留在原地不動、另外補一個；只用原本的 → 缺了也不補 */
           function _tagOf(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
           if(SHELL_MODE==='add'){if(hdEl)SHELL_INFO.hdKept=_tagOf(hdEl);hdEl=null}
-          if(SHELL_MODE==='replace'&&hdEl){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
+          if(SHELL_MODE==='replace'&&hdEl&&HD_ON){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
           if(hdEl)SHELL_INFO.hd='沿用原本的 '+_tagOf(hdEl)+'，套上採用的版型';
           /* 原檔沒有 header 就補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL） */
-          if((ADD_COMPONENTS||ADD_SHELL)&&!hdEl&&SHELL_MODE!=='keep'){
+          if((ADD_COMPONENTS||ADD_SHELL)&&!hdEl&&SHELL_MODE!=='keep'&&HD_ON){
             SHELL_INFO.hd=SHELL_INFO.hdReplaced?('套用版型重做（原本的 '+SHELL_INFO.hdReplaced+' 收起，導覽連結搬進新頁首）')
               :('補上新的'+(SHELL_INFO.hdSkipped?('（'+SHELL_INFO.hdSkipped+'）'):(SHELL_INFO.hdKept?('（原本的 '+SHELL_INFO.hdKept+' 保留，你選了「一律補上」）'):'（頁面沒有頁首）')));
             /* 用語意的 <header>，不是裸 div：外部工具與無障礙都靠這個標籤認頁首 */
@@ -3053,13 +3200,16 @@ hlStampAssets();
             /* 公司頁首一定要有 Logo（使用者指定 2026-09-18）；「套用項目 › Logo」只管內容裡的 logo 替換，不管這裡 */
             {
               var hlg=markSystem(doc.createElement('img'));hlg.src=LOGO_DATA;hlg.alt='翰林';
-              [['height','30px'],['width','auto'],['display','block'],['flex','0 0 auto']].forEach(function(kv){
+              /* 高度只寫一般 inline（不加 important）：inline !important 會蓋掉手機 ≤640px 的 22px 媒體查詢，
+                 桌機 28px 由版型樣式表 [data-hl-hd] img[alt="翰林"] 的 !important 決定 */
+              hlg.style.setProperty('height','28px');
+              [['width','auto'],['display','block'],['flex','0 0 auto']].forEach(function(kv){
                 try{hlg.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
               hdEl.appendChild(hlg);CK('logoReplacement');
             }
-            /* 站名只取頁面已經有的 title／h1，取不到就不放，絕不編一個出來 */
-            var _hnm=((doc.querySelector('title')||{}).textContent||'').trim()
-                   ||((doc.querySelector('h1')||{}).textContent||'').trim();
+            /* 站名只取頁面已經有的 title／h1，取不到就不放，絕不編一個出來。
+               2026-09-21 使用者指定：頁首版型是「Logo＋導覽＋會員」，不放站名（<title> 常是一長串，塞進頁首像亂加東西）。 */
+            var _hnm='';
             if(_hnm){
               var hts=markSystem(doc.createElement('span'));
               [['font-size','16px'],['letter-spacing','.05em'],['font-weight','500'],
@@ -3089,19 +3239,61 @@ hlStampAssets();
               }
               if(mainEl){hHost=mainEl;hAnchor=mainEl.firstChild}
             }
+            /* 套用版型模式且原本有頁首：新頁首放進原本頁首的位置（同一個父層、同一個槽）。
+               放 body 頂端或 main 頂端都可能掉進 flex 橫排容器裡被拉成整頁高（2026-09-18 實測 AI審題-國文示範：.app > nav + main，
+               頁首被塞進 main 這個 flex row，跟側欄並排、高度撐滿 900px）。原本頁首待的地方就是版面設計好給頁首的槽。 */
+            if(SHELL_MODE==='replace'&&SHELL_ORIG.hd&&SHELL_ORIG.hd.parentNode){hHost=SHELL_ORIG.hd.parentNode;hAnchor=SHELL_ORIG.hd}
+            /* 不論放哪，在 flex／grid 容器裡都不可被拉伸：自身高度只由內容決定 */
+            [['flex','0 0 auto'],['align-self','flex-start'],['height','auto'],['min-height','0'],['max-height','none'],['grid-column','1 / -1']].forEach(function(kv){
+              try{hdEl.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
             hHost.insertBefore(hdEl,hAnchor);
             /* 套用版型模式：原本頁首裡的導覽連結搬進新頁首（放在站名之後、會員入口之前），原本的頁首收起來。
                只搬 <a>（導覽），不搬品牌字樣／副標——那些跟翰林 Logo 重複。 */
             if(SHELL_MODE==='replace'&&SHELL_ORIG.hd){
               try{
-                var _links=Array.prototype.filter.call(SHELL_ORIG.hd.querySelectorAll('a[href]'),function(a){
-                  var t=(a.textContent||'').trim();return t&&t.length<=12&&!a.querySelector('img,svg')});
+                /* 【原本頁首的站名要保留】(使用者指定 2026-09-21)
+                   新頁首＝Logo＋（原本的站名）＋導覽＋（會員）。站名只認原本頁首裡「像品牌名／標題」的那一段短文字：
+                   優先 [class*=brand|logo|title|name|site]、h1／h2，再退回第一個短文字的 <a>／<span>。
+                   不用 <title>（常是一長串）；跟 Logo 重複的「翰林」不重複放。 */
+                var _nm='';
+                var _cands=SHELL_ORIG.hd.querySelectorAll('[class*=brand],[class*=logo],[class*=title],[class*=name],[class*=site],h1,h2,h3,a,span,b,strong,div');
+                for(var _ci=0;_ci<_cands.length&&!_nm;_ci++){
+                  var _ce=_cands[_ci];
+                  if(_ce.querySelector('img,svg'))continue;                       /* 圖像型品牌區不是文字站名 */
+                  if(_ce.children.length>2)continue;                                 /* 容器不是站名 */
+                  var _t=(_ce.textContent||'').replace(/\s+/g,' ').trim();
+                  /* 品牌區常是「單字母方塊＋站名」（<div class="hmark">審</div><b>AI 審題系統</b>）：去掉單字元的標記方塊，只留站名 */
+                  if(_ce.children.length){
+                    var _parts=[];Array.prototype.forEach.call(_ce.childNodes,function(n){var x=(n.textContent||'').replace(/\s+/g,' ').trim();if(x.length>1)_parts.push(x)});
+                    if(_parts.length)_t=_parts.join(' ');
+                  }
+                  if(!_t||_t.length<2||_t.length>24)continue;
+                  if(/^(翰林|hanlin|登入|註冊|會員|首頁|home|menu|選單)$/i.test(_t))continue;
+                  _nm=_t;
+                }
+                if(_nm){
+                  var _nmEl=markSystem(doc.createElement('span'));_nmEl.setAttribute('data-hl-sitename','1');_nmEl.textContent=_nm;
+                  [['font-size','16px'],['font-weight','600'],['letter-spacing','.04em'],['white-space','nowrap'],['flex','0 1 auto'],['min-width','0'],['overflow','hidden'],['text-overflow','ellipsis'],['color','inherit']].forEach(function(kv){
+                    try{_nmEl.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
+                  var _logoEl=hdEl.querySelector('img');
+                  if(_logoEl&&_logoEl.nextSibling)hdEl.insertBefore(_nmEl,_logoEl.nextSibling);else hdEl.appendChild(_nmEl);
+                }
+                /* 導覽項不一定是 <a href>：應用型頁面常用 <button>／<a> 無 href 切換分頁（2026-09-18 AI審題：審題工作台／批次總覽／題庫／審查規則）。
+                   一律搬：短文字、沒有圖的可點元素；品牌區（含 logo）與純圖示不搬。 */
+                var _links=Array.prototype.filter.call(SHELL_ORIG.hd.querySelectorAll('a,button,[role=tab],[role=menuitem]'),function(a){
+                  var t=(a.textContent||'').replace(/\s+/g,' ').trim();
+                  if(!t||t.length>12||a.querySelector('img,svg,picture'))return false;
+                  if(a.closest('[class*=brand],[class*=logo]'))return false;
+                  if(_nm&&t===_nm)return false;   /* 站名已放在 Logo 旁，不再當導覽項 */
+                  if(a.querySelector('a,button'))return false;   /* 容器不搬，搬裡面的 */
+                  return true});
                 if(_links.length){
                   var _nav=markSystem(doc.createElement('nav'));_nav.setAttribute('data-hl-nav','1');_nav.setAttribute('aria-label','主要導覽');
                   [['display','flex'],['gap','4px'],['align-items','center'],['flex','1 1 auto'],['min-width','0'],['flex-wrap','wrap'],['margin-left','8px']].forEach(function(kv){
                     try{_nav.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
-                  _links.slice(0,7).forEach(function(a){
-                    [['display','inline-flex'],['align-items','center'],['padding','6px 12px'],['border-radius','999px'],['text-decoration','none'],['font-size','14px'],['white-space','nowrap'],['color','inherit']].forEach(function(kv){
+                  _links.slice(0,8).forEach(function(a){
+                    a.setAttribute('data-hl-navitem','1');
+                    [['display','inline-flex'],['align-items','center'],['padding','6px 12px'],['border-radius','999px'],['text-decoration','none'],['font-size','14px'],['white-space','nowrap'],['color','inherit'],['background','transparent'],['border','none'],['cursor','pointer'],['font-weight','500'],['min-height','0'],['line-height','1.4']].forEach(function(kv){
                       try{a.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
                     _nav.appendChild(a);
                   });
@@ -3144,7 +3336,8 @@ hlStampAssets();
              實測 fuzz 樣本（亂數命名、無 header）：
                例外 Cannot read properties of null (reading 'setAttribute') @ 2452
                → 選項卡偵測連進都沒進去（到達=(沒進入)）。 */
-          if(hdEl)hdEl.setAttribute('data-hl-hd','1');
+          if(hdEl&&HD_ON)hdEl.setAttribute('data-hl-hd','1');
+          if(!HD_ON)SHELL_INFO.hd='不套用（你在自訂規範樣式取消了頁首，原本的頁首保持原樣，只跟著全頁換配色）';
           var ftEl=doc.querySelector('footer,[class*="footer"]');
           if(!ftEl){
             var alls=doc.body.querySelectorAll('div,section,td,table');
@@ -3159,9 +3352,9 @@ hlStampAssets();
           if(!ftEl&&APPSHELL){ftEl=null}
           function _tagOf2(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
           if(SHELL_MODE==='add'){if(ftEl)SHELL_INFO.ftKept=_tagOf2(ftEl);ftEl=null}
-          if(SHELL_MODE==='replace'&&ftEl){SHELL_ORIG.ft=ftEl;SHELL_INFO.ftReplaced=_tagOf2(ftEl);ftEl=null}
+          if(SHELL_MODE==='replace'&&ftEl&&FT_ON){SHELL_ORIG.ft=ftEl;SHELL_INFO.ftReplaced=_tagOf2(ftEl);ftEl=null}
           if(ftEl)SHELL_INFO.ft='沿用原本的 '+_tagOf2(ftEl)+'，套上採用的版型';
-          if(!ftEl&&!APPSHELL&&(ADD_COMPONENTS||ADD_SHELL)&&SHELL_MODE!=='keep'){
+          if(!ftEl&&!APPSHELL&&(ADD_COMPONENTS||ADD_SHELL)&&SHELL_MODE!=='keep'&&FT_ON){
             SHELL_INFO.ft=SHELL_INFO.ftReplaced?('套用版型重做（原本的 '+SHELL_INFO.ftReplaced+' 收起，版權文字保留）')
               :('補上新的'+(SHELL_INFO.ftKept?'（原本的保留，你選了「一律補上」）':'（頁面沒有頁尾）'));
             /* 頁面沒有 footer：補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL）。
@@ -3189,7 +3382,7 @@ hlStampAssets();
               try{
                 var _txt=ftEl.textContent;ftEl.textContent='';
                 var flg=markSystem(doc.createElement('img'));flg.src=LOGO_DATA;flg.alt='翰林';flg.setAttribute('data-hl-ftlogo','1');
-                [['height','26px'],['width','auto'],['display',_ftIdx===0?'block':'inline-block'],['margin','0 auto 10px'],['filter','brightness(0) invert(1)'],['opacity','.92']].forEach(function(kv){
+                [['height','31px'],['width','auto'],['display',_ftIdx===0?'block':'inline-block'],['margin','0 auto 10px'],['filter','brightness(0) invert(1)'],['opacity','.92']].forEach(function(kv){
                   try{flg.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
                 var ftx=markSystem(doc.createElement('span'));ftx.setAttribute('data-hl-fttext','1');ftx.textContent=_txt;
                 try{ftx.style.setProperty('display','block','important')}catch(e){SWALLOW(e)}
@@ -3208,9 +3401,13 @@ hlStampAssets();
                 _fts.forEach(function(f){f.setAttribute('data-hl-replaced','1');try{f.style.setProperty('display','none','important')}catch(e){SWALLOW(e)}});
               }catch(e){SWALLOW(e)}
             }
-            doc.body.appendChild(ftEl);
+            [['flex','0 0 auto'],['align-self','flex-start'],['height','auto'],['min-height','0'],['grid-column','1 / -1']].forEach(function(kv){
+              try{ftEl.style.setProperty(kv[0],kv[1],'important')}catch(e){SWALLOW(e)}});
+            if(SHELL_MODE==='replace'&&SHELL_ORIG.ft&&SHELL_ORIG.ft.parentNode&&SHELL_ORIG.ft.parentNode!==doc.body){SHELL_ORIG.ft.parentNode.insertBefore(ftEl,SHELL_ORIG.ft.nextSibling)}
+            else doc.body.appendChild(ftEl);
           }
-          if(ftEl)ftEl.setAttribute('data-hl-ft','1');
+          if(ftEl&&FT_ON)ftEl.setAttribute('data-hl-ft','1');
+          if(!FT_ON)SHELL_INFO.ft='不套用（你在自訂規範樣式取消了頁尾，原本的頁尾保持原樣，只跟著全頁換配色）';
           var heroEl=doc.querySelector('[class*=hero],[class*=banner],[class*=jumbotron],[class*=masthead],[class*=showcase]');
           if(!heroEl&&!APPSHELL){
             var h1=doc.querySelector('h1');
@@ -3218,7 +3415,11 @@ hlStampAssets();
               while(hp&&hp.parentElement&&hp.parentElement!==doc.body&&st<3&&hp.children.length<3){hp=hp.parentElement;st++}
               var htx=(hp&&hp.textContent||'').trim();
               var tooBig=htx.length>300||(hp&&(hp.querySelector('table,form,input,select')||hp.querySelectorAll('h2,h3').length>2));
-              if(hp&&hp!==doc.body&&hp!==hdEl&&!tooBig&&!(hdEl&&hp.contains(hdEl))&&!(ftEl&&hp.contains(ftEl)))heroEl=hp;
+              /* 卡片／對話框／登入盒不是橫幅（2026-09-18：置中的 .card 被當成 hero 塗上對比色圓形）；
+                 body 是置中容器（登入頁、單屏 landing）時，裡面那個盒子也不是橫幅。 */
+              var _hpc=String(hp&&hp.getAttribute('class')||''),_notHero=/(^|[\s_-])(card|modal|dialog|panel|box|login|form|sheet)/i.test(_hpc);
+              var _bodyCenter=/display\s*:\s*(flex|grid)[^}]*(align-items|justify-content|place-items)\s*:\s*center/i.test((html.match(/\bbody\s*\{[^}]*\}/i)||[''])[0]);
+              if(hp&&hp!==doc.body&&hp!==hdEl&&!tooBig&&!_notHero&&!_bodyCenter&&!(hdEl&&hp.contains(hdEl))&&!(ftEl&&hp.contains(ftEl)))heroEl=hp;
             }
           }
           /* app shell（側欄＋主工作區的應用型版面，例如聊天介面）不補歡迎橫幅：
@@ -3228,8 +3429,9 @@ hlStampAssets();
           if(APPSHELL&&(!heroEl||heroEl===hdEl)){
             /* 不新建元件：原檔沒有 hero 就不補（使用者指定） */
             APPSHELL_NO_HERO=true;
-          }else if(!heroEl||heroEl===hdEl){
-            /* 頁面沒有歡迎橫幅：依採用版型補一個，文字取自頁面既有的 h1／title，不新增虛構內容。 */
+          }else if((!heroEl||heroEl===hdEl)&&!/display\s*:\s*(flex|grid)[^}]*(align-items|justify-content|place-items)\s*:\s*center/i.test((html.match(/\bbody\s*\{[^}]*\}/i)||[''])[0])){
+            /* 頁面沒有歡迎橫幅：依採用版型補一個，文字取自頁面既有的 h1／title，不新增虛構內容。
+               body 是置中容器（登入頁、單屏 landing）時不補：補了會跟內容盒子擠在畫面正中間。 */
             var h1e=doc.querySelector('h1');
             var htxt=(h1e?h1e.textContent:'')||((doc.querySelector('title')||{}).textContent||'');
             htxt=(htxt||'').trim();
@@ -3286,10 +3488,19 @@ hlStampAssets();
               if(_hid)_sel.push('#'+_hid.replace(/[^\w-]/g,''));
               _sel.push('\\b'+heroEl.tagName.toLowerCase()+'\\b');
               var _css=(html.match(/<style[^>]*>[\s\S]*?<\/style>/gi)||[]).join('\n');
-              for(var _si=0;_si<_sel.length&&!HERO_SRC_STYLED;_si++){
-                var _re=new RegExp('([^{}]*'+_sel[_si]+'[^{}]*)\\{([^}]*)\\}','g'),_mm;
-                while((_mm=_re.exec(_css))){
-                  if(/background[^;]*(gradient|url\(|#[0-9a-f]{3,6}|rgb)/i.test(_mm[2])){HERO_SRC_STYLED=true;break}
+              /* 【效能】(2026-09-18 實測 普國_課文隨身聽.html 340KB：這裡原本吃掉 70 秒)
+                 原本用 new RegExp('([^{}]*'+sel+'[^{}]*)\\{([^}]*)\\}','g') 掃整段 CSS，
+                 開頭的 [^{}]* 讓每一次失敗都回溯整個大括號外的區間，是 O(n²) 的災難性回溯。
+                 改成把 CSS 依 '}' 切成一條條規則（O(n)），逐條看選擇器有沒有命中、宣告區有沒有背景。 */
+              var _selRe=[];_sel.forEach(function(x){try{_selRe.push(new RegExp(x,'i'))}catch(e){SWALLOW(e)}});
+              var _rules=_css.split('}');
+              for(var _ri=0;_ri<_rules.length&&!HERO_SRC_STYLED;_ri++){
+                var _br=_rules[_ri].lastIndexOf('{');if(_br<0)continue;
+                var _selPart=_rules[_ri].slice(0,_br),_body=_rules[_ri].slice(_br+1);
+                _selPart=_selPart.slice(_selPart.lastIndexOf('}')+1);
+                if(!/background/i.test(_body))continue;
+                for(var _si=0;_si<_selRe.length;_si++){
+                  if(_selRe[_si].test(_selPart)&&/background[^;]*(gradient|url\(|#[0-9a-f]{3,6}|rgb)/i.test(_body)){HERO_SRC_STYLED=true;break}
                 }
               }
             }catch(e){SWALLOW(e)}
@@ -3298,7 +3509,7 @@ hlStampAssets();
                .confetti 這類純色小方塊）原封不動留著。使用者實際看到的就是
                品牌漸層上散著灰紅 #D58883、灰綠 #D0E2D9 這些非品牌雜色。
                這裡把「沒有文字、沒有子節點、面積小」的純裝飾元素洗成
-               STYLEGUIDE 3 的裝飾色票；有文字或有內容的一律不動，
+               基本規範 3 的裝飾色票；有文字或有內容的一律不動，
                避免把原頁的內容元素當成裝飾清掉。 */
             try{
               /* 不能用 imp()：它宣告在後面的 if(ON('colors')) 區塊裡，
@@ -3421,7 +3632,7 @@ hlStampAssets();
             if(formWrap*2>=arr.length)return;
             /* ── C. 表單選項卡片（「選擇卷種」這種可勾選的選項組）──────────
                這種卡片的外形跟功能選單磁磚幾乎一樣（圖示＋標題＋說明文字），
-               所以先前整組被當成功能選單，套上 STYLEGUIDE 3.12 的四色輪替——
+               所以先前整組被當成功能選單，套上 基本規範 3.12 的四色輪替——
                第二張就被洗成 #E2F7EF 淡綠。使用者看到的「卷種區塊淡綠底色」
                不是原檔殘留，是這裡畫上去的（原檔 .ptype 本來是白底 #fff）。
                選項卡片是表單控制項、不是導覽入口，配色規則本來就不同：
@@ -3471,10 +3682,17 @@ hlStampAssets();
               if(/legend|chev|arrow|caret|fold|toggle|dot|swatch|bullet|crumb|step-line/i.test(card.getAttribute('class')||''))return;
               var ctext=(card.textContent||'').trim();
               if(ctext.length<6)return;                                            /* 只掛一顆圖示的小東西不是磁磚 */
+              /* 【整頁區塊不是磁磚】(使用者回報 2026-09-21，AI審題大師：三個 .step-container 分頁被當成三張功能磁磚，整個報告頁被塗成橘底)
+                 磁磚是「一顆圖示＋一個標題＋一兩行說明」；文字上千字、標題好幾個、class 叫 step／page／container／section／report 的是頁面區塊。 */
+              var _ccls=String(card.getAttribute('class')||'');
+              if(/(^|\s)(step|page|container|section|panel|report|view|wrapper|content|main|layout)/i.test(_ccls))return;
+              if(ctext.length>400)return;
+              if(card.querySelectorAll('h1,h2,h3').length>1)return;
+              if(card.querySelectorAll('table,form,ul,ol,canvas,iframe').length)return;
               /* 功能選單磁磚一定有標題；工具列按鈕、面板容器沒有，靠這個區分 */
               if(!card.querySelector('h1,h2,h3,h4,h5,h6,[class*=title],[class*=name],[class*=head],b,strong'))return;
               HL_RULE='功能選單';
-              /* 全域強制複寫（不混色、不看原檔）：一律帶入 STYLEGUIDE 3.12 的標準四色，
+              /* 全域強制複寫（不混色、不看原檔）：一律帶入 基本規範 3.12 的標準四色，
                  數值取自 brand.html 示範的實際 computedStyle。
                  先前用 CYCLE＋mixW 由主題推導，等於讓原檔／主題參與決定結果，
                  不同檔案套出來的功能選單會長得不一樣；改為固定色表後，
@@ -3505,7 +3723,7 @@ hlStampAssets();
               /* 卡片底色：brand.html 兩種示範的磁磚卡片都有對應的淺色底
                  （#E7F2FB／#E2F7EF／#FBEADD／#EEF6DE，與圖示同色系的 85% 白混合）。
                  先前保留匯入頁原底色，導致「選了色塊版，整張卡卻跟示範長得不一樣」。
-                 STYLEGUIDE 3.12：輪替色作用在卡片底與圖示／標題，色塊本身維持單色白底。 */
+                 基本規範 3.12：輪替色作用在卡片底與圖示／標題，色塊本身維持單色白底。 */
               /* 強制洗掉原檔底色，帶入標準淺色；連 background-image／border 一起消去，
                  否則原檔的漸層底或邊框會殘留在標準底色上面。 */
               imp(card,'background',cardBg);
@@ -3528,7 +3746,7 @@ hlStampAssets();
                 imp(ic,'font-size','34px');  /* 對齊品牌規範頁「純 icon 版」示範的 34px */
               }else{
                 /* 色塊版：色塊底色是「單色白底＋淺陰影」，四張磁磚一致，不隨主題也不輪替
-                   （STYLEGUIDE 3.12；brand.html 示範量測值 .fm-tile background = #FFF / --shadow-sm）。
+                   （基本規範 3.12；brand.html 示範量測值 .fm-tile background = #FFF / --shadow-sm）。
                    輪替色只作用在圖示與標題文字，不可染到色塊底色。
                    沒有容器時，只有字型圖示才自製色塊（SVG 加背景會蓋掉圖形）。 */
                 if(tile){imp(tile,'background','#FFFFFF');imp(tile,'background-image','none');
@@ -3864,7 +4082,7 @@ hlStampAssets();
             if(!c)return;
             if(/^(?:BUTTON|A|INPUT|SELECT|TEXTAREA|IMG|SVG)$/.test(el.tagName))return;
             if(/btn|button|cta|nav|menu|tab|chip|badge|tag|pill/i.test(c))return;   /* 這些另有規則 */
-            /* 功能選單的色塊／圖示已由 fm 規則決定配色（STYLEGUIDE 3.12：色塊單色白底），
+            /* 功能選單的色塊／圖示已由 fm 規則決定配色（基本規範 3.12：色塊單色白底），
                它們身上的 inline 底色是「套用結果」不是「原設計的色條」，再染一次會蓋掉白底。 */
             if(el.hasAttribute('data-hl-fm')||(el.closest&&el.closest('[data-hl-fm]')))return;
             if(!ownBg(el))return;                       /* 原本沒有實心底色就不碰 */
@@ -3890,6 +4108,7 @@ hlStampAssets();
         HL_RULE='按鈕文字色';
         /* 依採用設定 controls.btn；取消勾選＝這條規則整條不套 */
         if(CTLON('btn'))Array.prototype.forEach.call(doc.querySelectorAll('button,[type=submit],[type=button],a[class*=btn],a[class*=cta],button[class*=cta]'),function(el){
+          if(el.hasAttribute('data-hl-cardbtn'))return;   /* 可點的卡片不是按鈕 */
           var c2=(el.getAttribute('class')||'');
           if(/secondary|outline|ghost|btn-text|btn-link|cancel|btn-default|btn-light/i.test(c2))return;
           /* 停用態要留給 disabled token，白字寫上去會變成淺灰底白字（看不見） */
@@ -3957,6 +4176,7 @@ hlStampAssets();
             }
           }
         }catch(e){}
+        try{mobileHeaderOnly(doc)}catch(e){SWALLOW(e)}
         /* 對比色沿用：hero 第一顆按鈕改對比色底；內文 h2 加對比色短底線（裝飾形狀，不當文字色） */
         try{
           var _he=doc.querySelector('[data-hl-hero]')||doc.querySelector('[class*=hero],[class*=banner],[class*=jumbotron],[class*=masthead]');
@@ -3996,7 +4216,7 @@ hlStampAssets();
            （實測使用者真實檔案，橘色 #FF9A3C 幾乎蓋住整個主視覺）。
            收斂成低透明度、半徑縮小，只在右上角留一抹，不搶主體。 */
         /* 【對比色太弱】(使用者回報 2026-09-15) 22% 的光暈幾乎看不見。改成右上角一塊實心對比色圓形（邊緣硬切、約占橫幅一成面積），
-           再加一個小的暖色圓點錯開，讓對比色以「裝飾形狀」的身份站出來（STYLEGUIDE：裝飾色用於 Hero 與插圖形狀）。 */
+           再加一個小的暖色圓點錯開，讓對比色以「裝飾形狀」的身份站出來（基本規範：裝飾色用於 Hero 與插圖形狀）。 */
         _wash='';   /* 對比色形狀改由 [data-hl-heroshape]::before／::after 畫（2026-09-15），這裡不再疊光暈 */
     if(ON('font'))inject+='@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap");';
     if(ON('icon'))inject+='@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");@import url("https://fonts.googleapis.com/css2?family=Material+Icons");';
@@ -4036,7 +4256,7 @@ hlStampAssets();
       /* 圓角沒有 !important 時會被原檔的 class 規則壓過（.nav-tab{border-radius:9px}
          特異度 0,1,0 > 元素選擇器 0,0,1），實測就套不到規範的 100px。 */
       +'button{font-family:inherit;border-radius:14px !important;cursor:pointer;border:none !important}'
-      +'button:not([class*=primary]):not([class*=danger]):not([type=submit]){background:'+mixW(to.p,.9)+';color:'+(tone==="soft"?softText:to.p)+'}'
+      +'button:not([data-hl-cardbtn]):not([class*=primary]):not([class*=danger]):not([type=submit]){background:'+mixW(to.p,.9)+';color:'+(tone==="soft"?softText:to.p)+'}'
       +'input,textarea{font-family:inherit;border-radius:12px;border:none !important;background:#F4F7FB;padding:8px 12px;outline-color:'+to.p+'}'
       +'select{font-family:inherit;border-radius:12px;border:none !important;background:'+mixW(to.p,.9)+';color:'+(tone==="soft"?softText:to.p)+';padding:8px 12px}'
       +'table{border-collapse:collapse}'
@@ -4065,6 +4285,18 @@ hlStampAssets();
     /* Header RWD 的 CSS：桌機看不到漢堡；≤860px 導覽藏起來、漢堡鈕在右、勾選後導覽整寬展開在 header 下方 */
     try{
       var _hdBg=(function(){try{return (typeof HS!=='undefined'&&HS&&HS.bg)||'#fff'}catch(e){return '#fff'}})();
+      /* 行動裝置 Header 只留 Logo＋漢堡：[data-hl-mhide] 收起、[data-hl-mlogo] 靠左；[data-hl-mextra] 是收進選單的手機專用項目，桌機不出現 */
+      /* 選擇器刻意疊高特異度：系統元件重置 html body [data-hl-origin=system]:not(…){all:unset !important} 是 (0,2,2)，
+         特異度不夠會被它蓋回 display。版型元件的 display 是 inline !important 寫的，樣式表蓋不過，
+         所以同時用 visibility:hidden＋position:absolute 收起（visibility:hidden 也會移出 Tab 順序與無障礙樹）。 */
+      inject+='html body [data-hl-mextra][data-hl-mextra]{display:none !important}'
+        +'@media(max-width:860px){'
+        +'html body [data-hl-monly] [data-hl-mhide][data-hl-mhide]{display:none !important;visibility:hidden !important;position:absolute !important;width:0 !important;height:0 !important;overflow:hidden !important;pointer-events:none !important}'
+        +'html body [data-hl-monly] [data-hl-mlogo][data-hl-mlogo]{order:-1 !important;margin-right:auto !important;margin-left:0 !important}'
+        +'html body [data-hl-monly][data-hl-monly][data-hl-monly]{display:flex !important;flex-wrap:nowrap !important;align-items:center !important;justify-content:flex-start !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav] [data-hl-mextra]{display:flex !important;flex-direction:column !important}'
+        +'#hl-navtoggle:checked ~ [data-hl-nav] [data-hl-mextra] a{display:block !important}'
+        +'}';
       inject+='[data-hl-navbtn]{display:none}'
         +'@media(max-width:860px){'
         +'[data-hl-hasnav]{position:relative !important}'
@@ -4086,8 +4318,9 @@ hlStampAssets();
       inject+='[data-hl-herocta]{background:'+_cc+' !important;background-image:none !important;color:'+_ccTx+' !important;border:0 !important}'
         +'[data-hl-herocta] *{color:inherit !important}'
         +'[data-hl-heroshape]{position:relative;overflow:hidden}'
-        +'[data-hl-heroshape]::before{content:"";position:absolute;right:-60px;top:-60px;width:300px;height:300px;clip-path:circle(50% at 50% 50%);background:'+_cc+';opacity:.95;pointer-events:none;z-index:0}'
-        +'[data-hl-heroshape]::after{content:"";position:absolute;right:120px;bottom:-40px;width:120px;height:120px;clip-path:circle(50% at 50% 50%);background:'+_cc+';opacity:.55;pointer-events:none;z-index:0}'
+        +'[data-hl-heroshape]{position:relative !important;overflow:hidden !important}'
+        /* 2026-09-18 使用者指定：橫幅不再疊對比色大圓形（不是每個版模都適合，深紫底配粉紅大圓很突兀）。
+           橫幅只留該組的深色底；對比色由 CTA 按鈕承載。 */
         +'[data-hl-heroshape]>*{position:relative;z-index:1}'
         +'[data-hl-h2acc]{position:relative;padding-bottom:12px}'
         +'[data-hl-h2acc]::after{content:"";position:absolute;left:0;bottom:0;width:44px;height:5px;border-radius:3px;background:'+_cc+'}'
@@ -4130,23 +4363,27 @@ hlStampAssets();
       var ftIdx=VS.ft;
       /* 九種 Header 版型各自的視覺特徵（勾不同變體會有明顯不同的結果） */
       var P=to.p,S=to.s||to.p,I=to.i||to.p,DARKP=(isDarkPage?mixB(S,.45):null);
+      /* 各組規範文件定的版面色（lay：nav／footer／hero／cta），首頁卡片與基本範本都照它畫；有就用，沒有退回輔色 */
+      var LAY=(to.lay&&typeof to.lay==='object')?to.lay:{};
+      var NAV_BG=LAY.nav||(DARKP||S),NAV_FG=LAY.navFg||'#fff',FT_BG=LAY.footer||(isDarkPage?mixB(S,.45):S);
+      /* Logo 高度一律照基本規範 §3.11：頁首 28px（640px 以下 22px）、頁尾 31px（使用者指定 2026-09-29，原本各版型 26～34px 不一） */
       var HD_STYLE=[
         /* 0 品牌官網（淺色）：白底細陰影、留白大 */
-        {bg:'#fff',fg:'#62778F',extra:'padding:17px 32px !important;box-shadow:0 1px 8px rgba(30,40,60,.08) !important;border-bottom:none !important',logo:'30px',weight:'400',ls:'.02em'},
+        {bg:'#fff',fg:'#62778F',extra:'padding:17px 32px !important;box-shadow:0 1px 8px rgba(30,40,60,.08) !important;border-bottom:none !important',logo:'28px',weight:'400',ls:'.02em'},
         /* 1 品牌官網（深色）：品牌漸層沉浸 */
-        {bg:DARKP||S,fg:'#fff',extra:'padding:17px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'30px',weight:'400',ls:'.02em'},
+        {bg:NAV_BG,fg:NAV_FG,extra:'padding:17px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'400',ls:'.02em'},
         /* 2 教師平台：白底＋底部品牌色線、緊湊 */
-        {bg:'#fff',fg:'#62778F',extra:'padding:12px 32px !important;border-bottom:2px solid '+P+' !important;box-shadow:none !important',logo:'26px',weight:'500',ls:'0'},
+        {bg:'#fff',fg:'#62778F',extra:'padding:12px 32px !important;border-bottom:2px solid '+P+' !important;box-shadow:none !important',logo:'28px',weight:'500',ls:'0'},
         /* 3 國小／兒童：主色柔底、圓潤大字 */
-        {bg:'linear-gradient(120deg,'+(to.i||P)+' 0%,'+P+' 100%)',fg:'#fff',extra:'padding:24px 32px !important;border-radius:0 0 20px 22px !important;box-shadow:none !important;border-bottom:none !important',logo:'34px',weight:'700',ls:'.04em'},
+        {bg:'linear-gradient(120deg,'+(to.i||P)+' 0%,'+P+' 100%)',fg:'#fff',extra:'padding:24px 32px !important;border-radius:0 0 20px 22px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'700',ls:'.04em'},
         /* 4 國中／高中 學術：深色實色、寬字距細字 */
-        {bg:mixB(S,.25),fg:'#fff',extra:'padding:16px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'26px',weight:'300',ls:'.14em'},
+        {bg:mixB(S,.25),fg:'#fff',extra:'padding:16px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'300',ls:'.14em'},
         /* 5 命題大師：白底＋左側品牌色粗邊、重字 */
         {bg:'#fff',fg:S,extra:'padding:16px 32px !important;border-left:6px solid '+P+' !important;box-shadow:0 1px 6px rgba(30,40,60,.10) !important;border-bottom:none !important',logo:'28px',weight:'700',ls:'0'},
         /* 6 行動大師：主色淡底＋圓角卡片式 */
-        {bg:mixW(P,.9),fg:S,extra:'margin:10px !important;padding:14px 24px !important;border-radius:12px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'26px',weight:'500',ls:'.02em'},
+        {bg:mixW(P,.9),fg:S,extra:'margin:10px !important;padding:14px 24px !important;border-radius:12px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'28px',weight:'500',ls:'.02em'},
         /* 7 影音派：深黑底白字（影音沉浸） */
-        {bg:'#1B1D21',fg:'#fff',extra:'padding:14px 32px !important;box-shadow:none !important;border-bottom:1px solid rgba(255,255,255,.12) !important',logo:'26px',weight:'500',ls:'.02em'},
+        {bg:'#1B1D21',fg:'#fff',extra:'padding:14px 32px !important;box-shadow:none !important;border-bottom:1px solid rgba(255,255,255,.12) !important',logo:'28px',weight:'500',ls:'.02em'},
         /* 8 AI 數位導覽員：主色→冰藍漸層、圓角 */
         {bg:'linear-gradient(120deg,'+P+' 0%,'+I+' 100%)',fg:'#fff',extra:'padding:16px 32px !important;border-radius:0 0 20px 18px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'28px',weight:'600',ls:'.03em'}
       ];
@@ -4156,7 +4393,8 @@ hlStampAssets();
       var HDSEL='[data-hl-hd]';  /* 只套在偵測標記的那一個元素,避免巢狀 nav 繼承整組版型樣式 */
       layoutCss+=HDSEL+'{background:'+HS.bg+' !important;color:'+HS.fg+' !important;'+HS.extra+'}'
         +'[data-hl-hd] a{color:'+HS.fg+' !important;font-weight:'+HS.weight+' !important;letter-spacing:'+HS.ls+' !important}'
-        +'[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{height:'+HS.logo+' !important}'
+        +'[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{height:'+HS.logo+' !important;width:auto !important}'
+        +'@media(max-width:640px){[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{height:22px !important}}'
         +'[data-hl-inserted]{display:flex !important;align-items:center !important;gap:12px !important;font-family:inherit}';
       if(hdDark){
         layoutCss+='[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{filter:brightness(0) invert(1)}'
@@ -4223,7 +4461,7 @@ hlStampAssets();
           +AVATAR+'{border-radius:50% !important;width:32px !important;height:32px !important;background:rgba(255,255,255,.2) !important}',  /* 圓形＝規範頁 hd4 示範的實際值 */
         /* 5 命題大師 精簡工具列 */
         NAVA+'{margin:0 10px !important;font-size:16px !important;text-decoration:none !important}'
-          +'[data-hl-hd] button,[data-hl-hd] [class*=btn]{padding:8px 16px !important;font-size:15px !important;border-radius:14px !important}',   /* 圓角跟隨 STYLEGUIDE 2.4 radius.md=100px，先前這裡還留著舊的 12px */
+          +'[data-hl-hd] button,[data-hl-hd] [class*=btn]{padding:8px 16px !important;font-size:15px !important;border-radius:14px !important}',   /* 圓角跟隨 基本規範 2.4 radius.md=100px，先前這裡還留著舊的 12px */
         /* 6 行動大師 搜尋為主 */
         SEARCH+'{background:#fff !important;border:none !important;border-radius:12px !important;padding:10px 16px !important;min-width:320px !important;box-shadow:rgba(30,61,96,.04) 0 1px 2px,rgba(30,61,96,.06) 0 2px 8px !important}'
           +NAVA+'{margin:0 10px !important;font-size:15px !important;text-decoration:none !important}',
@@ -4249,9 +4487,9 @@ hlStampAssets();
         +'[data-hl-ft]>div'+NOTMARK+',[data-hl-ft]>section'+NOTMARK+'{background:transparent !important}';
       /* 三種 Footer 版型 */
       var FT_STYLE=[
-        {bg:'#F4F7FB',fg:'#62778F',extra:'padding:24px 32px !important;text-align:left !important;border-top:1px solid #BECAD7 !important'},
+        {bg:SG.subtle,fg:'#62778F',extra:'padding:24px 32px !important;text-align:left !important;border-top:none !important'},
         {bg:mixW(P,.92),fg:S,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'},
-        {bg:(isDarkPage?mixB(S,.45):S),fg:'#fff',extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
+        {bg:FT_BG,fg:'#fff',extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
       ];
       var FS=FT_STYLE[ftIdx]||FT_STYLE[2];
       if(LAYOUT_APPLIED)LAYOUT_APPLIED.FS=FS;
@@ -4335,14 +4573,14 @@ hlStampAssets();
          必須與 inline 層同一個決定，否則又回到「兩層各寫各的」。
          此時橫幅的品牌化交給既有的色彩映射（domMap／varMap／toneFor），
          原本的深藍漸層會被映射成翰林藍，而不是被換成一片淺底。 */
-      if(HERO_BASE&&!HERO_SRC_STYLED){
-        layoutCss+='[data-hl-hero]{background:'+HERO_BASE.bg+' !important;color:'+HERO_BASE.fg+' !important}';
+      if(HERO_BASE&&!HERO_SRC_STYLED&&HERO_BASE.fg){
+        layoutCss+='[data-hl-hero]:not([data-hl-heroown]){background:'+HERO_BASE.bg+' !important;color:'+HERO_BASE.fg+' !important}';
         /* 標題文字色同樣跟著 HERO_BASE 走。原本這裡一律寫死 #fff，
            hero:1 沒有照片時是中性淺底，白字等於整段消失（要靠 inline 再蓋回墨色）。 */
-        layoutCss+='[data-hl-hero] h1,[data-hl-hero] h2,[data-hl-hero] p{color:'+HERO_BASE.fg+' !important}';
+        layoutCss+='[data-hl-hero]:not([data-hl-heroown]) h1,[data-hl-hero]:not([data-hl-heroown]) h2,[data-hl-hero]:not([data-hl-heroown]) p{color:'+HERO_BASE.fg+' !important}';
       }
       if(ftIdx===2){
-        layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:'+(isDarkPage?mixB(to.s||to.p,.45):(to.s||to.p))+' !important;color:#fff !important;text-align:center}'
+        layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:'+FT_BG+' !important;color:#fff !important;text-align:center}'
           +'footer a,[data-hl-ft] a{color:#fff !important}';
       }else{
         layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:#F4F7FB !important;color:#62778F !important}'
@@ -4388,7 +4626,7 @@ hlStampAssets();
       var INK_SOFT=sgTextOn(INK,SOFT);          /* 品牌柔底上的正文 */
       layoutCss+=
       /* 按鈕：藥丸、無邊線、主要實心／次要柔色 */
-      'button,[class*=btn],[type=submit],[type=button],a[class*=button]{border:none !important;border-radius:14px !important;padding:8px 16px !important;font-size:16px !important;letter-spacing:.05em !important;cursor:pointer !important;font-family:inherit !important}'
+      'button:not([data-hl-cardbtn]),[class*=btn],[type=submit],[type=button],a[class*=button]{border:none !important;border-radius:14px !important;padding:8px 16px !important;font-size:16px !important;letter-spacing:.05em !important;cursor:pointer !important;font-family:inherit !important}'
       /* 主要按鈕：預設視為主要（實心）；只有明確標示 secondary/outline/ghost/text/link/cancel 才是次要 */
       /* cta 是「角色」不是「元件型別」：一個 CTA 可以是按鈕，也可以是整個區塊或容器。
          無標籤限定的 [class*=cta] 會把 <section class="cta-band"> 與 <div class="nav-cta">
@@ -4397,9 +4635,9 @@ hlStampAssets();
          寬鬆的 [class*=] 命中了非目標元素。
          另外 cta 是子字串，rectangle／octagon／spectacular 都含 cta。
          一律限定為真的可點元素，與元件層 1445 行的 a[class*=cta] 一致。 */
-      +'button,[class*=btn],[type=submit],[type=button],a[class*=cta],button[class*=cta]{background:'+ACT+' !important;color:#fff !important}'
+      +'button:not([data-hl-cardbtn]),[class*=btn],[type=submit],[type=button],a[class*=cta],button[class*=cta]{background:'+ACT+' !important;color:#fff !important}'
       /* 3.1 七態：hover／active 必須有明顯明暗變化 */
-      +'button:hover,[class*=btn]:hover,[type=submit]:hover,[type=button]:hover,a[class*=cta]:hover,button[class*=cta]:hover{background:'+ACT_HOVER+' !important;box-shadow:'+SG.sh1+' !important}'
+      +'button:not([data-hl-cardbtn]):hover,[class*=btn]:hover,[type=submit]:hover,[type=button]:hover,a[class*=cta]:hover,button[class*=cta]:hover{background:'+ACT_HOVER+' !important;box-shadow:'+SG.sh1+' !important}'
       +'button:active,[class*=btn]:active,[type=submit]:active,[type=button]:active{background:'+ACT_ACTIVE+' !important;transform:translateY(1px) !important}'
 
       +'[class*=secondary],[class*=outline],[class*=ghost],[class*=btn-text],[class*=btn-link],[class*=cancel],[class*=btn-default],[class*=btn-light]{background:'+SOFT+' !important;color:'+PTXT_SOFT+' !important}'
@@ -4468,14 +4706,14 @@ hlStampAssets();
       /* 版頭版尾在列印時不需要固定定位，否則會每頁重疊在內容上 */
       +'[data-hl-hd],[data-hl-ft],header,footer{position:static !important}'
       +'}';
-    /* ── STYLEGUIDE 第 3–4 節的強制條件：焦點指示、觸控目標、停用態、減少動態、內文排版 ── */
+    /* ── 基本規範 第 3–4 節的強制條件：焦點指示、觸控目標、停用態、減少動態、內文排版 ── */
     if(ON('semantic')){
       var FOCUS=to.p||SG.strong;
       inject+='@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}'
       /* 4：所有可聚焦元素 3px 外框、offset 2px，且不得以 outline:none 移除 */
       +'a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,[role=tab]:focus-visible,[role=button]:focus-visible{outline:3px solid '+FOCUS+' !important;outline-offset:2px !important}'
       /* 3.1／3.2／3.3／3.5：觸控目標下限 */
-      +'button,[class*=btn],[type=submit],[type=button],a[class*=button]{min-height:'+SG.tapBtn+' !important}'
+      +'button:not([data-hl-cardbtn]),[class*=btn],[type=submit],[type=button],a[class*=button]{min-height:'+SG.tapBtn+' !important}'
       +'input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea{min-height:'+SG.tapField+' !important}'
       +'[class*=chip],[class*=pill],[role=tab],[class*=page-item],[class*=pagination] a,[class*=pagination] button{min-height:'+SG.tapChip+' !important}'
       +'[class*=accordion] button,details>summary{min-height:'+SG.tapAcc+' !important}'
@@ -4503,6 +4741,10 @@ hlStampAssets();
          換成對該淺底達 4.5:1 的深一階顏色。 */
       if(ON('font'))inject+='[data-hl-sb]{color:'+sgTextOn(SG.body,SG.subtle)+' !important}'
         +'input,select,textarea{color:'+sgTextOn(SG.body,SG.subtle)+' !important}';
+      /* 【頁面底色＝這一組的 bg】(使用者回報 2026-09-21：換哪一組都長一樣、跟基本範本差很多)
+         基本範本整頁鋪的就是 kit.bg（酪梨青檸淺綠、芥黃刊物米色、林蔭野趣鵝黃）。匯入頁的 body 多半是白或淺灰（Tailwind 的 bg-gray-100 在執行期才生成，
+         離線換色抓不到），這裡直接把 body 底色寫成 kit.bg；卡片維持白底，層次反而更清楚。深色頁不動（它自己有深色體系）。 */
+      if(ON('colors')&&!isDarkPage&&to.bg&&sgLum(normHex(to.bg))>0.55)inject+='html,body{background-color:'+normHex(to.bg)+' !important}';
       if(ON('font'))inject+='body{font-size:'+SG.fsBase+' !important;line-height:'+SG.lhBase+' !important'+(isDarkPage?'':';color:'+SG.body+' !important')+'}';
     }
     inject+=layoutCss;
@@ -4562,7 +4804,7 @@ hlStampAssets();
          （border 的消去仍保留，那是「按鈕無邊線」這條規範明確要求的。） */
       /* 唯一例外：使用者**主動勾選**的版型在畫自己的視覺特徵時。
          鐵律①的界線是「無主動勾選則完全不污染」——勾了就不是強加。
-         功能選單「色塊版」的定義就是白底＋陰影（STYLEGUIDE 3.12），
+         功能選單「色塊版」的定義就是白底＋陰影（基本規範 3.12），
          禁掉陰影等於這個版型不存在（實測 20 個樣本全報 0/N 個色塊符合）。
          旗標只在該段程式碼內短暫打開，離開就關掉，不會外溢到別的元素。 */
       if(/^(-webkit-|-moz-)?box-shadow$/.test(prop)){
@@ -4595,7 +4837,7 @@ hlStampAssets();
          而且勾選方塊少了它就會被 [data-hl-hd] *{color} 之類的通則切斷。 */
       var KEEP=[];
       var s=String(cssText||'').replace(
-        /:not\(\s*(?:\[data-hl-(?:k|check-for)[^\]]*\]\s*)+\)/g,
+        /:not\(\s*(?:\[data-hl-(?:k|check-for|cardbtn|heroown)[^\]]*\]\s*)+\)/g,   /* cardbtn：可點的卡片不是按鈕；heroown：橫幅自帶視覺（2026-09-21） */
         function(m){KEEP.push(m);return '\u0001'+(KEEP.length-1)+'\u0001'});
       s=stripPseudo(stripPseudo(s,'not'),'has');
       /* ③ 模糊比對：先對映，再刪掉對映不到的整個子句 */
@@ -4616,7 +4858,7 @@ hlStampAssets();
         if(!uniq.length)return '';                            /* 選擇器整條沒了 */
         /* 版型標記的規則是「使用者主動勾選的版型畫自己的定義性特徵」，
            與散在一般元素上的強寫不同 —— 功能選單「色塊版」的定義就是
-           白底＋陰影（STYLEGUIDE 3.12），刪掉它這個版型就不存在了。
+           白底＋陰影（基本規範 3.12），刪掉它這個版型就不存在了。
            實測：不放行時 20 個樣本全報「0/N 個色塊符合」。
            只認精準的版型標記，不認 class 名稱。 */
         /* 版型標記＝使用者在 brand.html 主動勾選的那幾組：hd／ft／hero／fm／opt。
@@ -4656,7 +4898,7 @@ hlStampAssets();
       var wrap=function(out){return mediaPrefix?(mediaPrefix+out):out};
       if(/(?:^|[\s,>+~])(?:img|svg|picture|i|use)\b|\[alt=|material-symbols|material-icons/i.test(sel))return wrap(sel+'{'+body+'}');
       /* 表格手機重排（[data-hl-rwd]）是使用者指定的結構規則，display／grid／padding 就是它的本體，不濾 */
-      if(/\[data-hl-(?:rwd|cell|hdr|nav|navbtn|navbar|hasnav|ftm|herocta|h2acc|heroshape)[\]=]|#hl-navtoggle/.test(sel))return wrap(sel+'{'+body+'}');
+      if(/\[data-hl-(?:rwd|cell|hdr|nav|navbtn|navbar|hasnav|ftm|herocta|h2acc|heroshape|monly|mhide|mlogo|mextra)[\]=]|#hl-navtoggle/.test(sel))return wrap(sel+'{'+body+'}');
       var kept=body.split(';').filter(function(d){
         var k=(d.split(':')[0]||'').trim().toLowerCase();
         return k&&!LAYOUT_PROPS.test(k);
@@ -4680,6 +4922,13 @@ hlStampAssets();
            容器一律不碰；值就是色版指定的那一組，不自行加粗或改色。 */
         if(STYLE_BORDER||STYLE_RADIUS||STYLE_SHADOW){
           HL_RULE='色版形狀特徵';
+          /* imp() 宣告在 if(ON('colors')) 區塊內，這裡拿不到（實測 2026-09-21：imp is not a function 被 SWALLOW 吞掉，整段形狀特徵沒套）。
+             這裡用 writeStyle 直寫；LAYOUT_PROPS／mayWrite 守門照做。 */
+          var imp=(typeof imp==='function')?imp:function(el,k,v){
+            if(LAYOUT_PROPS.test(String(k).toLowerCase()))return;
+            if(!mayWrite(el,k))return;
+            writeStyle(el,k,v);
+          };
           try{
             Array.prototype.forEach.call(
               doc2.querySelectorAll('[data-hl-k=button],[data-hl-k=card],[data-hl-k=chip],[data-hl-k=input]'),
@@ -4705,6 +4954,7 @@ hlStampAssets();
            畫面落回樣式表——「勾了純圖片版卻拿到漸層」正是從這裡穿透的。 */
         /* 鐵律①：未主動勾選就不傳 HERO_BASE，inline 層的守門會整段跳過，橫幅保持原樣 */
         if(!_SHAPE_ONLY)applyLayoutInline(doc2,LAYOUT_APPLIED.hdIdx,LAYOUT_APPLIED.ftIdx,LAYOUT_APPLIED.heroIdx,LAYOUT_APPLIED.HS,LAYOUT_APPLIED.FS,((VS._dflt&&VS._dflt.hero)?null:heroBaseOf(LAYOUT_APPLIED.heroIdx,to,isDarkPage)),isDarkPage,IS_APPSHELL);
+        try{mobileHeaderOnly(doc2)}catch(e){SWALLOW(e)}
         html='<!DOCTYPE html>'+doc2.documentElement.outerHTML;
       }catch(e){SWALLOW(e)}
     }
@@ -4778,8 +5028,40 @@ hlStampAssets();
             +'if(n.parentNode)n.parentNode.replaceChild(frag,n);'
           +'});'
         +'}'
-        +'function boot(){conv(document);'
-          +'var t=null;new MutationObserver(function(){clearTimeout(t);t=setTimeout(function(){conv(document)},60)})'
+        /* 【執行期的 icon 字型元素】(使用者回報 2026-09-21：選項列的刪除鈕變成 ☒ 方框)
+           原頁 JS 動態長出來的 <i class="fa-solid fa-xmark"></i> 不在離線 DOM 裡，靜態替換抓不到；
+           而注入的 body 字型規則經 sanitizeCss 把 :not([class*="fa-"]) 刪掉後會蓋到它，FA 字碼用 Noto 畫就是方框。
+           執行期：對得到 Material 名稱的換成 Material Symbols；對不到的把原本的 icon 字型用 inline !important 寫回去。
+           用真函式 toString() 注入，避免字串跳脫出錯。 */
+        +'var FA='+JSON.stringify(FA_MAP)+';'
+        +'var convIconEls='+(function(){
+            function convIconEls(){try{
+              var els=document.querySelectorAll('i[class*="fa-"],span[class*="fa-"],i[class*="bi-"],span[class*="bi-"],[data-lucide]');
+              for(var i=0;i<els.length;i++){var el=els[i];
+                if(el.hasAttribute('data-hl-ic')||el.hasAttribute('data-hl-fa'))continue;
+                if((el.textContent||'').trim())continue;
+                var c=String(el.getAttribute('class')||''),names=[],mm,re=/\b(?:fa|bi)-([a-z0-9-]+)/gi;
+                while((mm=re.exec(c)))names.push(mm[1].toLowerCase());
+                var lu=el.getAttribute('data-lucide');if(lu)names.push(lu.toLowerCase());
+                var mat=null;for(var k=0;k<names.length&&!mat;k++){if(FA[names[k]])mat=FA[names[k]]}
+                if(mat){
+                  el.setAttribute('data-hl-ic','1');el.setAttribute('data-hl-origin','system');el.setAttribute('aria-hidden','true');
+                  el.className='material-symbols-rounded';el.textContent=mat;
+                  el.setAttribute('style','font-family:"Material Symbols Rounded" !important;font-size:1.15em;line-height:1;vertical-align:-0.15em;font-weight:400;font-style:normal');
+                }else{
+                  el.setAttribute('data-hl-fa','1');
+                  var brands=/fa-brands|\bfab\b/.test(c),reg=/fa-regular|\bfar\b/.test(c);
+                  var fam=/\bbi-/.test(c)?'bootstrap-icons':(brands?'"Font Awesome 6 Brands","Font Awesome 5 Brands"':'"Font Awesome 6 Free","Font Awesome 5 Free","Font Awesome 6 Pro",FontAwesome');
+                  el.style.setProperty('font-family',fam,'important');
+                  el.style.setProperty('font-weight',(brands||reg)?'400':'900','important');
+                  el.style.setProperty('font-style','normal','important');
+                }
+              }
+            }catch(e){}}
+            return convIconEls;
+          }).toString()+'();'
+        +'function boot(){conv(document);convIconEls();'
+          +'var t=null;new MutationObserver(function(){clearTimeout(t);t=setTimeout(function(){conv(document);convIconEls()},60)})'
             +'.observe(document.body,{childList:true,subtree:true});'
         +'}'
         +'if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();'
@@ -4855,6 +5137,78 @@ hlStampAssets();
         +'var a=m[i].addedNodes;for(var j=0;j<a.length;j++){'
         +'if(a[j].tagName==="STYLE"&&a[j].id.indexOf("hl-")!==0){bottom();return}}}})'
         +'.observe(document.documentElement,{childList:true,subtree:true})}catch(e){}'
+        +'})();<\/script>';
+      /* ══ 補出來的頁首／頁尾／橫幅一律滿版（使用者回報 2026-09-18，數學_配方法.html）═══════
+         原檔 body{padding:32px 16px} 或容器 max-width 會把我們補的殼夾在白邊裡：
+         頁首上方留 32px 白、左右各 16px 白。離線階段量不到 layout，所以在執行期做：
+         每個帶 data-hl-inserted 的頁首／頁尾／橫幅量自己的 left 與寬度，
+         用負 margin 推回視窗左緣、寬度撐到 clientWidth（不含捲軸，不會多出橫向捲動）；
+         第一個殼（頁首）的上方空隙也一併收掉（body 的 padding-top／margin-top）。
+         resize 時重算。不動使用者自己的元素，只動我們補的。 */
+      guard+='<script data-hl-rt="1">(function(){'
+        +'function bleed(){try{'
+        +'var W=document.documentElement.clientWidth;'
+        /* 【窄欄裡不撐滿版】(2026-09-24 實測 s21-appshell／user-edcafe)
+           套用版型把新頁首放進原本頁首的槽，應用型版面的槽常在 250～300px 的側欄裡；
+           原本一律撐成視窗寬（1280px），超出部分被側欄裁掉，靠右的「翰林會員」跑到 x=1129 看不見。
+           父層不到視窗 60% 就視為欄位，只填滿父層。 */
+        /* 判準看實際排版而不是寬度比例：390px 手機上 250px 側欄佔 64%，比例門檻會誤判成整頁寬。
+           父層（往上找到 body 為止）只要有「左右並排、看得見」的兄弟，它就是欄位。 */
+        +'function wide(el){for(var p=el.parentElement;p&&p!==document.body&&p!==document.documentElement;p=p.parentElement){var pr=p.getBoundingClientRect();var sibs=p.parentElement?p.parentElement.children:[];'
+        +'for(var j=0;j<sibs.length;j++){var sb=sibs[j];if(sb===p)continue;var cs3=getComputedStyle(sb);if(cs3.display==="none"||cs3.position==="fixed"||cs3.position==="absolute")continue;var sr=sb.getBoundingClientRect();'
+        +'if(sr.width>0&&sr.height>0&&sr.top<pr.bottom-1&&sr.bottom>pr.top+1&&(sr.right<=pr.left+1||sr.left>=pr.right-1))return false}}return true}'
+        /* 【上面有東西就不是「被置中推下來」】(2026-09-24 實測 user-cloudec／hanlin-cloud 系列)
+           原檔頁首上方有一條「開學早鳥優惠」促銷列，新頁首在它下面、top＝41 是正常位置；
+           原本「top>2 就改絕對定位貼頂」把促銷列整條蓋掉、橫幅也被壓住一截。
+           只有頁首（與它的祖先）前面沒有任何看得見的一般排版內容時，才是 flex／grid 置中造成的偏移。 */
+        +'function hasPrev(el){for(var x=el;x&&x!==document.body;x=x.parentElement){for(var s=x.previousElementSibling;s;s=s.previousElementSibling){var sp=getComputedStyle(s).position;if(sp==="fixed"||sp==="absolute"||getComputedStyle(s).display==="none")continue;if(s.getBoundingClientRect().height>0)return true}}return false}'
+        +'var els=document.querySelectorAll("header[data-hl-inserted],footer[data-hl-inserted],[data-hl-hero][data-hl-inserted]");'
+        +'var hs=document.querySelectorAll("[data-hl-heroshape]");for(var k=0;k<hs.length;k++){hs[k].style.setProperty("position","relative","important");hs[k].style.setProperty("overflow","hidden","important")}'
+        +'for(var i=0;i<els.length;i++){var e=els[i];'
+        +'e.style.setProperty("margin-left","0","important");e.style.setProperty("margin-right","0","important");e.style.setProperty("width","100%","important");e.style.setProperty("max-width","none","important");'
+        +'if(!wide(e))continue;'
+        +'var r=e.getBoundingClientRect();var L=Math.round(r.left);'
+        +'if(L>0||Math.round(r.width)<W-1){e.style.setProperty("margin-left",(-L)+"px","important");e.style.setProperty("width",W+"px","important");e.style.setProperty("max-width","none","important");e.style.setProperty("box-sizing","border-box","important")}}'
+        +'var hd=document.querySelector("header[data-hl-inserted]");'
+        +'if(hd&&!hd.hasAttribute("data-hl-abs")&&wide(hd)){var b=document.body,cs=getComputedStyle(b);var pt=parseFloat(cs.paddingTop)||0,mt=parseFloat(cs.marginTop)||0;'
+        +'if(pt||mt){hd.style.setProperty("margin-top",(-(pt+mt))+"px","important")}'
+        /* body 是 flex／grid 置中容器（登入頁、單屏 landing）：頁首會被排到畫面正中間。
+           量到頁首不在頂端就改成絕對定位貼頂（body 設 relative），頁尾同理貼底。 */
+        +'var rt=hd.getBoundingClientRect().top+window.scrollY;var pcs=getComputedStyle(hd.parentElement);var rowFlex=(pcs.display.indexOf("flex")>=0&&pcs.flexDirection.indexOf("row")>=0&&hd.parentElement.children.length>1)||pcs.display==="grid";'
+        +'if((rt>2&&!hasPrev(hd))||rowFlex){hd.setAttribute("data-hl-abs","1");if(getComputedStyle(b).position==="static")b.style.setProperty("position","relative","important");'
+        +'hd.style.setProperty("position","absolute","important");hd.style.setProperty("top","0","important");hd.style.setProperty("left","0","important");hd.style.setProperty("right","0","important");hd.style.setProperty("margin","0","important");hd.style.setProperty("width","100%","important");hd.style.setProperty("z-index","50","important");'
+        +'var mh=parseFloat(getComputedStyle(b).minHeight)||0;if(mh>=window.innerHeight*0.9){b.style.setProperty("box-sizing","border-box","important");b.style.setProperty("padding-top",Math.round(hd.getBoundingClientRect().height)+"px","important")}}}'
+        +'var ft=document.querySelector("footer[data-hl-inserted]");'
+        +'if(ft){var fb=ft.getBoundingClientRect(),docH=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight);'
+        +'if(fb.bottom+window.scrollY<docH-2&&getComputedStyle(document.body).display.indexOf("flex")>=0||fb.bottom+window.scrollY<docH-2&&getComputedStyle(document.body).display==="grid"){'
+        +'if(getComputedStyle(document.body).position==="static")document.body.style.setProperty("position","relative","important");'
+        +'ft.style.setProperty("position","absolute","important");ft.style.setProperty("bottom","0","important");ft.style.setProperty("left","0","important");ft.style.setProperty("right","0","important");ft.style.setProperty("margin","0","important");ft.style.setProperty("width","100%","important")}}'
+        +'if(ft&&ft===document.body.lastElementChild||ft&&!ft.nextElementSibling||ft&&Array.prototype.every.call(Array.prototype.slice.call(document.body.children,Array.prototype.indexOf.call(document.body.children,ft)+1),function(x){return /SCRIPT|STYLE|LINK/.test(x.tagName)})){'
+        +'var b2=document.body,cs2=getComputedStyle(b2);var pb=parseFloat(cs2.paddingBottom)||0,mb=parseFloat(cs2.marginBottom)||0;'
+        +'if(pb||mb){ft.style.setProperty("margin-bottom",(-(pb+mb))+"px","important")}}'
+        /* 【內容比視窗短時頁尾要貼底】(使用者回報 2026-09-24：化學虛擬實驗室套版後頁尾下面空一大片白)
+           上面只處理 body 是 flex／grid 的頁面；一般文件流的短頁，頁尾停在內容結束處。
+           作法：只動我們放的頁尾、且它後面沒有其他看得見的內容時，用 margin-top 把它推到視窗底。
+           推了多少記在 data-hl-push，重算前先扣回來，resize 不會越推越多；內容夠長時推移量＝0。 */
+        +'var fp=document.querySelector("footer[data-hl-inserted]");'
+        +'if(fp&&getComputedStyle(fp).position!=="absolute"){var add=parseFloat(fp.getAttribute("data-hl-push")||"0")||0,last=true;'
+        +'for(var n=fp.nextElementSibling;n;n=n.nextElementSibling){var rr=n.getBoundingClientRect();if(rr.height>0&&getComputedStyle(n).display!=="none"){last=false;break}}'
+        +'if(fp.parentElement!==document.body){for(var q=fp.parentElement;q&&q!==document.body;q=q.parentElement){if(q.nextElementSibling&&q.nextElementSibling.getBoundingClientRect().height>0){last=false;break}}}'
+        +'var bcs=getComputedStyle(document.body),tail=(parseFloat(bcs.paddingBottom)||0)+(parseFloat(bcs.marginBottom)||0);'
+        +'var bottom=fp.getBoundingClientRect().bottom+window.scrollY-add+tail;'
+        +'var push=(last&&bottom<window.innerHeight-1)?Math.floor(window.innerHeight-bottom):0;'
+        +'var mt=(parseFloat(getComputedStyle(fp).marginTop)||0)-add;'
+        +'fp.setAttribute("data-hl-push",String(push));fp.style.setProperty("margin-top",(mt+push)+"px","important")}'
+        +'}catch(e){}}'
+        +'bleed();window.addEventListener("load",bleed);window.addEventListener("resize",bleed);'
+        +'if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bleed);'
+        /* 執行期標記「可點的卡片」：原頁 JS 動態長出來的 <button class="bookcard"> 在離線 DOM 裡不存在，
+           只能在這裡補標 data-hl-cardbtn，注入 CSS 的 :not([data-hl-cardbtn]) 就會放過它們。 */
+        +'function cardBtns(){try{var bs=document.querySelectorAll("button:not([data-hl-cardbtn]),[role=button]:not([data-hl-cardbtn]),a[class*=btn]:not([data-hl-cardbtn])");'
+        +'for(var i=0;i<bs.length;i++){var el=bs[i];if(el.closest("[data-hl-hd],[data-hl-ft]"))continue;var c=String(el.getAttribute("class")||""),t=(el.textContent||"").replace(/\\s+/g," ").trim();'
+        +'if(el.querySelector("img,picture,video")||/(^|[\\s_-])(card|tile|cover|thumb|book)/i.test(c)||t.length>40||el.children.length>3)el.setAttribute("data-hl-cardbtn","1")}}catch(e){}}'
+        +'cardBtns();window.addEventListener("load",cardBtns);'
+        +'try{new MutationObserver(function(){cardBtns()}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}'
         +'})();<\/script>';
       /* ══ 執行期後補標記（使用者要求 2026-08-28）══════════════════════
          【真正的時間差在哪】brandifyHtml 跑在 DOMParser 的離線字串文件上，
@@ -5107,15 +5461,25 @@ hlStampAssets();
          實測 .spark 裡的圖示被塗成主色 #0088D2 疊在深藍漸層上只有 1.6:1，
          就是因為量不到底色而漏掉。改成把漸層字串裡的顏色全抽出來，
          取「對比最差」的那一個當底色判斷，寧可保守。 */
-      +'function gradStops(s){var out=[],m,re=/rgba?\\(([^)]+)\\)/g;'
-        +'while((m=re.exec(s))){var n=m[1].split(",");'
-          +'if(n.length>3&&parseFloat(n[3])<0.35)continue;'
-          +'out.push([+n[0],+n[1],+n[2]])}return out}'
+      /* 【半透明漸層要疊到底下的顏色上】(2026-09-24 使用者回報：化學虛擬實驗室 白字壓淺粉→薄荷漸層)
+         原本丟掉透明度 <0.35 的色點；整片由半透明色疊在白底上做成的淺色漸層，色點全被丟掉 →
+         回傳 null＝「不可判定」→ 直接放棄檢查，白字 1.1:1 就漏過去了。使用者會丟什麼頁面無法控制，
+         所以不看原頁怎麼寫，只看瀏覽器算出來的樣式：半透明色點依透明度疊到它底下實際的顏色
+         （同一元素有不透明色點就疊在那層漸層上，否則疊在元素自己的底色或祖先的底色上），
+         連同透出來的底色一起列入，取對比最差的那個判斷。只有真的是圖片（抽不到任何顏色）才放棄。 */
+      +'function stopsA(s){var out=[],m,re=/rgba?\\(([^)]+)\\)/g;'
+        +'while((m=re.exec(s))){var n=m[1].split(",");out.push([+n[0],+n[1],+n[2],n.length>3?parseFloat(n[3]):1])}return out}'
+      +'function mixOn(c,b){var a=c[3];return [Math.round(c[0]*a+b[0]*(1-a)),Math.round(c[1]*a+b[1]*(1-a)),Math.round(c[2]*a+b[2]*(1-a))]}'
+      +'function asList(b){return !b?[[255,255,255]]:(typeof b[0]==="number"?[b]:b)}'
       +'function bgOf(el){var e=el;while(e&&e!==document.documentElement){var c=getComputedStyle(e);'
-        +'if(c.backgroundImage&&c.backgroundImage!=="none"){var st=gradStops(c.backgroundImage);'
-          +'if(!st.length)return null;return st}'
-        +'var p=rgb(c.backgroundColor);'
-        +'if(p){var a=c.backgroundColor.indexOf("rgba")===0?parseFloat(c.backgroundColor.split(",")[3]):1;if(a>=0.95)return p}'
+        +'var own=rgb(c.backgroundColor),oa=c.backgroundColor.indexOf("rgba")===0?parseFloat(c.backgroundColor.split(",")[3]):1;'
+        +'if(c.backgroundImage&&c.backgroundImage!=="none"){var st=stopsA(c.backgroundImage);if(!st.length)return null;'
+          +'var solid=[],soft=[];for(var i=0;i<st.length;i++)(st[i][3]>=0.95?solid:soft).push(st[i]);'
+          +'var out=solid.map(function(x){return x.slice(0,3)});'
+          +'if(soft.length){var base=out.length?out.slice():((own&&oa>=0.95)?[own]:asList(bgOf(e.parentElement)));'
+            +'for(var j=0;j<base.length;j++){if(!out.length||solid.length===0)out.push(base[j]);for(var k=0;k<soft.length;k++)out.push(mixOn(soft[k],base[j]))}}'
+          +'return out}'
+        +'if(own&&oa>=0.95)return own;'
         +'e=e.parentElement}return [255,255,255]}'
       +'var INK=[30,61,96],WHITE=[255,255,255];'
       /* bg 可能是單一顏色，也可能是漸層抽出來的一組顏色；一組時取最差的那個。 */
@@ -5147,8 +5511,14 @@ hlStampAssets();
 
          取捨：這裡只寫 color 一個屬性，且只在「實測對比不足 3:1」時才寫，
          寫的是能看見的顏色。若要求絕對不碰 element.style，代價是這些文字會隱形。 */
-      +'function ownText(el){for(var i=0;i<el.childNodes.length;i++){var n=el.childNodes[i];'
-        +'if(n.nodeType===3&&n.nodeValue.replace(/\\s+/g,"").length>=2)return true}return false}'
+      /* 【逐字拆開的標題也要檢查】(2026-09-24 使用者回報：化學虛擬實驗室 標題白字壓白底 1.0:1)
+         原本只看「自己直接含 2 個字以上」的元素，為的是略過單一符號；但這頁的標題由頁面程式
+         拆成每字一個 <i>（逐字入場動畫），每個元素都只有 1 個字，8 個字全部被跳過。
+         改成：自己有 1 個字以上，且（自己 ≥2 字，或所在的那一段文字 ≥2 字）就檢查。
+         打字機效果、每字一色、逐字動畫這類拆字寫法都涵蓋，單獨的小符號仍然略過。 */
+      +'function ownText(el){var t="";for(var i=0;i<el.childNodes.length;i++){var n=el.childNodes[i];'
+        +'if(n.nodeType===3)t+=n.nodeValue}t=t.replace(/\\s+/g,"");if(!t.length)return false;if(t.length>=2)return true;'
+        +'var p=el.parentElement;return !!(p&&(p.textContent||"").replace(/\\s+/g,"").length>=2)}'
       /* 註：曾經改成「掃描期間先斷開 observer、掃完再接回」，想省掉
          sweep 寫 el.style 再觸發自己一輪的成本。實測三種樣本後還原——
          getComputedStyle 次數兩版完全相同，observer 觸發次數反而多 3 次。
@@ -5342,6 +5712,7 @@ hlStampAssets();
     var o={tone:(document.querySelector('input[name=toneOpt]:checked')||{}).value||'standard'};
     document.querySelectorAll('#impOpts [data-opt]').forEach(function(c){o[c.dataset.opt]=c.checked});
     o.v=2;   /* 2026-09-18：semantic 改預設開；舊紀錄（沒有 v）裡的 semantic:false 是舊預設，不沿用 */
+    o.icon=true;   /* 2026-09-21：icon 一律替換 */
     var lm=(document.querySelector('input[name=layoutOpt]:checked')||{}).value||'auto';
     if(lm!=='auto')o.layoutMode=lm;   /* auto 就不傳，讓引擎自己判定 */
     var _swEl=document.getElementById('shellOptWrap');
@@ -5411,6 +5782,9 @@ hlStampAssets();
            鐵律要守的是「原頁的 script 不被動到」，不是「總段數不變」——
            把注入的那幾段排除掉再比，否則永遠報紅字。 */
         var nScripts=(H.match(/<script\b[\s\S]*?<\/script>/gi)||[]).filter(function(x){return x.indexOf('data-hl-rt')<0});
+        /* tailwind.config 的 colors 是刻意換色的設定檔，不算「動到程式」：比對時兩邊都排除它 */
+        var _isTw=function(x){return /tailwind\.config\s*=/.test(x)};
+        oScripts=oScripts.filter(function(x){return !_isTw(x)});nScripts=nScripts.filter(function(x){return !_isTw(x)});
         chk('功能：原頁 script 原封不動（'+nScripts.length+'/'+oScripts.length+' 段）',oScripts.length===nScripts.length&&oScripts.join('')===nScripts.join(''));
         var oEv=(lastRawMarkup.match(/\son[a-z]+\s*=/gi)||[]).length,nEv=(H.match(/\son[a-z]+\s*=/gi)||[]).length;
         chk('功能：事件屬性不變（'+nEv+'/'+oEv+'）',oEv===nEv);
@@ -5588,16 +5962,20 @@ hlStampAssets();
         }
         if(o.semantic!==false){
           var hdIdx=(typeof g.hd==='number')?g.hd:1,hdDark=[1,4,7].indexOf(hdIdx)>-1;
-          notes.unshift('目前採用組合：主題 '+(th.n||th.p||'?')+'｜Header：'+(HD_N[hdIdx]||'?')+'｜Footer：'+(FT_N[(typeof g.ft==='number')?g.ft:2]||'?')+'｜橫幅：'+((typeof g.hero==='number'&&g.hero>=0)?(HERO_N[g.hero]||'?'):'未採用')+'｜功能選單：'+(FM_N[(typeof g.fm==='number')?g.fm:1]||'?')+'——若與你的選擇不符，表示採用設定曾被「預設」或重整覆蓋，請回視覺套版頁重新勾選');
+          notes.unshift('目前採用組合：主題 '+(th.n||th.p||'?')+'｜Header：'+(g.hd===null?'不套用':(HD_N[hdIdx]||'?'))+'｜Footer：'+(g.ft===null?'不套用':(FT_N[(typeof g.ft==='number')?g.ft:2]||'?'))+'｜橫幅：'+((typeof g.hero==='number'&&g.hero>=0)?(HERO_N[g.hero]||'?'):'未採用')+'｜功能選單：'+(FM_N[(typeof g.fm==='number')?g.fm:1]||'?')+'——若與你的選擇不符，表示採用設定曾被「預設」或重整覆蓋，請回視覺套版頁重新勾選');
           var hdEl=d.querySelector('[data-hl-hd],header,nav,[class*=navbar],[class*=topbar]');
-          if(!hdEl)chk('Header 版型：偵測與補上皆失敗',false);
+          if(g.hd===null)notes.push('Header：不套用（自訂規範樣式取消，原本的頁首保持原樣）');
+          else if(!hdEl)chk('Header 版型：偵測與補上皆失敗',false);
           else if(occludedBy(hdEl))chk('Header 版型底色被內層元素背景遮蓋，畫面看不到',false);
           else chk('Header 版型（'+(HD_N[hdIdx]||(hdDark?'深色':'淺色'))+'）'+(hdEl.hasAttribute('data-hl-inserted')?'（原頁無 header，已自動補上）':'')+'渲染生效',
             hdDark?(cs(hdEl).backgroundImage.indexOf('linear-gradient')>-1||isDarkBg(cs(hdEl).backgroundColor))
                   :cs(hdEl).backgroundColor==='rgb(255, 255, 255)');
           var ftIdx=(typeof g.ft==='number')?g.ft:2;
           var ftEl=d.querySelector('[data-hl-ft],footer,[class*="site-footer"],[class*="page-footer"]');
-          if(!ftEl)chk('Footer 版型：偵測與補上皆失敗',false);
+          if(g.ft===null)notes.push('Footer：不套用（自訂規範樣式取消，原本的頁尾保持原樣）');
+          /* 應用型版面（側欄＋工作區）依規則不補頁尾（套用端 !APPSHELL 才補），稽核不可反過來判失敗（2026-09-24） */
+          else if(!ftEl&&res&&res.appShell)notes.push('Footer：應用型版面（側欄＋工作區）依規則不補頁尾');
+          else if(!ftEl)chk('Footer 版型：偵測與補上皆失敗',false);
           else if(occludedBy(ftEl))chk('Footer 版型底色被內層元素背景遮蓋，畫面看不到',false);
           else chk('Footer 版型（'+(FT_N[ftIdx]||'?')+'）'+(ftEl.hasAttribute('data-hl-inserted')?'（原頁無 footer，已自動補上）':'')+'渲染生效',
             /* 期望值一律取自實際套上去的那一份 FT_STYLE（LAYOUT_APPLIED.FS），
@@ -5769,7 +6147,7 @@ hlStampAssets();
            原本只做 querySelectorAll(sel).length，所以「按鈕無邊線×9」其實只是說
            這頁有 9 個按鈕，9 個到底套上幾個完全沒驗證。
            每條規則都要驗證實際渲染值，並把沒套到的元素與實際值列出來，比對才算完整。
-           規範值來源：STYLEGUIDE 2.4（radius.xs 12px 卡片/面板、radius.md 100px 按鈕/chip/輸入框）
+           規範值來源：基本規範 2.4（radius.xs 12px 卡片/面板、radius.md 14px 按鈕/輸入框、chip 全圓）
            與 style.css .tbl（th 12px 20px）。 */
         function noBd(c){return parseFloat(c.borderTopWidth)===0||c.borderTopStyle==='none'}
         function hasBg(c){return c.backgroundImage!=='none'||!/rgba\(\d+, \d+, \d+, 0\)/.test(c.backgroundColor)}
@@ -5989,10 +6367,16 @@ hlStampAssets();
                   }
                 }catch(e){}
               }
-              if(heroLike)chk('歡迎橫幅（'+(HERON[heroI]||'?')+'）：頁面有疑似橫幅區塊（'
+              /* 【稽核不可自己另取期望值】(2026-09-24，記憶：precision-matching-seven-stage)
+                 「依視覺特徵」是稽核自己的判斷，引擎依「寧可漏抓，絕不誤加」只認命名與 h1，
+                 用它報紅字等於逼引擎放寬、重蹈 Hero 事故。改成待確認並說明；
+                 依引擎自己的命名規則卻沒標到，才是真的漏套，維持錯誤。 */
+              if(heroLike&&byVisual)chk('歡迎橫幅（'+(HERON[heroI]||'?')+'）：頁面有疑似橫幅區塊（'
+                +heroLike.tagName.toLowerCase()+(heroLike.className?'.'+String(heroLike.className).split(' ')[0]:'')
+                +'，看起來像主視覺，但命名與標題都不符合橫幅判定），依「寧可漏抓，絕不誤加」不自動套用橫幅版型，只換配色',false,true);
+              else if(heroLike)chk('歡迎橫幅（'+(HERON[heroI]||'?')+'）：頁面有疑似橫幅區塊（'
                 +heroLike.tagName.toLowerCase()
-                +(byVisual?'，依視覺特徵判定：上半部／接近滿版／含主視覺圖':'，依 class 命名判定')
-                +'）卻未被結構偵測標記，版型未套用',false);
+                +'，依 class 命名判定）卻未被結構偵測標記，版型未套用',false);
               else chk('歡迎橫幅（'+(HERON[heroI]||'?')+'）：頁面沒有橫幅區塊（視覺特徵與命名皆未命中），此版型無從比對',false,true);
             }
           }
@@ -6092,6 +6476,18 @@ hlStampAssets();
               if(r.width<=0||r.height<=0)return;
               area+=r.width*r.height;
             });
+            /* 【偽元素上的對比色也是落點】(2026-09-24)：h2 短底線畫在 [data-hl-h2acc]::after（注入 CSS），
+               上面只掃元素本身，永遠量不到，_km-combo／user-index_v6／v6-real 明明有底線也被報「完全沒有落點」。 */
+            Array.prototype.forEach.call(d.querySelectorAll('[data-hl-h2acc],[data-hl-heroshape]'),function(el){
+              ['::before','::after'].forEach(function(ps){
+                var q=d.defaultView.getComputedStyle(el,ps);
+                if(!q||!q.content||q.content==='none')return;
+                if(hitsIn((q.backgroundColor||'')+' '+(q.backgroundImage||''))){
+                  spots++;if(eg.length<3)eg.push(el.tagName.toLowerCase()+ps+'（裝飾）');
+                  var w=parseFloat(q.width)||0,h=parseFloat(q.height)||0;if(/rgb/.test(q.backgroundColor)&&!/, 0\)$/.test(q.backgroundColor))area+=w*h;
+                }
+              });
+            });
           }catch(e){}
           var vw=Math.max(d.documentElement.scrollWidth,1),vh=Math.max(d.documentElement.scrollHeight,1);
           var pct=Math.round(area/(vw*vh)*1000)/10;
@@ -6099,11 +6495,19 @@ hlStampAssets();
             /* 有 hero／banner 這類大面積區塊卻一個落點都沒有＝套用真的漏了，算錯誤；
                app shell 這種沒有橫幅區塊的版面本來就沒地方放對比色，硬判錯誤只是製造
                永遠修不掉的紅字，改成待確認並說明原因。 */
+            /* 2026-09-18 使用者指定：橫幅不再疊對比色大圓形，對比色只由「橫幅按鈕」與「內文 h2 短底線」承載。
+               所以判斷「套用漏了」的依據是：頁面有這兩種承載者、卻沒有套上對比色。
+               原本只看有沒有橫幅區塊，橫幅裡沒有按鈕、內文沒有 h2 的頁面（樣本 12 份）也被報成紅字「套用漏了」，
+               那是永遠修不掉的誤報，還會卡住匯出。 */
             var hasBand=!!d.querySelector('[data-hl-hero],[class*=hero],[class*=banner]');
+            var carrier=d.querySelector('[data-hl-herocta],[data-hl-h2acc]');
+            var bandBtn=(function(){var b=d.querySelector('[data-hl-hero],[class*=hero],[class*=banner]');return !!(b&&b.querySelector('a[class*=btn],button,a[class*=button],[class*=cta] a,[class*=cta] button'))})();
+            var missed=!!carrier||bandBtn;
             chk('對比色 '+cc+'：頁面完全沒有落點'
-              +(hasBand?'（頁面有橫幅區塊卻未套上對比色，套用漏了）'
-                       :'（此頁沒有橫幅類大面積區塊可承載對比色，需人工決定要放在哪裡）'),
-              false,!hasBand);
+              +(missed?'（頁面有橫幅按鈕或內文標題可以承載對比色，卻沒有套上，套用漏了）'
+                      :(hasBand?'（依規則對比色只放在橫幅按鈕與內文 h2 底線，此頁橫幅沒有按鈕、內文也沒有 h2，需人工決定要放在哪裡）'
+                               :'（此頁沒有橫幅按鈕或內文 h2 可承載對比色，需人工決定要放在哪裡）')),
+              false,!missed);
           }else{
             /* 門檻依規範「對比色要做到約 10% 面積」；未達標不報綠，但也不當成錯誤擋住匯出，
                因為原檔版面可容納的對比色面積本來就有上限——標成待確認讓人看得到真實數字。 */
@@ -6198,7 +6602,7 @@ hlStampAssets();
             if(r.height<=0)return null;
             return r.height>=40;
           }});
-          SPEC.push({id:'功能選單色塊單色白底',sel:'[data-hl-fm="tile"],[data-hl-fm="icon"]',want:'白底＋陰影（STYLEGUIDE 3.12）',fn:function(c,el){
+          SPEC.push({id:'功能選單色塊單色白底',sel:'[data-hl-fm="tile"],[data-hl-fm="icon"]',want:'白底＋陰影（基本規範 3.12）',fn:function(c,el){
             var fmI=(typeof g.fm==='number')?g.fm:1;
             if(fmI!==0)return null;
             return c.backgroundColor==='rgb(255, 255, 255)';
@@ -6248,8 +6652,8 @@ hlStampAssets();
              全部 soft:true——驗到不符只列進「已比對但未強制改寫」的說明，
              不會變成紅字、不會擋匯出、也不會動到任何一個像素。
              先拿到真實數據，再決定哪幾條值得升級成 rewrite。 */
-          var SPACE_TOKENS=[0,6,8,10,12,14,15,16,17,24,32,48,64,96];   /* STYLEGUIDE 2.3 */
-          var FS_TOKENS=[13,14,15,16,18,20,24,32,40,56];               /* STYLEGUIDE 2.2 */
+          var SPACE_TOKENS=[0,6,8,10,12,14,15,16,17,24,32,48,64,96];   /* 基本規範 2.3 */
+          var FS_TOKENS=[13,14,15,16,18,20,24,32,40,56];               /* 基本規範 2.2 */
           function inTok(n,list,tol){
             if(isNaN(n))return true;
             for(var i=0;i<list.length;i++)if(Math.abs(n-list[i])<=(tol||0.6))return true;
@@ -6440,13 +6844,14 @@ hlStampAssets();
             return inTok(n,SPACE_TOKENS);
           }});
 
-          /* 3.11 Logo 高度：頁首 40px／頁尾 44px */
-          SPEC.push({id:'Logo 高度（頁首 40／頁尾 44）',soft:true,
-            sel:'[data-hl-hd] img,[data-hl-ft] img',want:'頁首 40px／頁尾 44px（±2）',fn:function(c,el){
+          /* 3.11 Logo 高度：頁首 28px／頁尾 31px */
+          SPEC.push({id:'Logo 高度（頁首 28／頁尾 31）',soft:true,
+            sel:'[data-hl-hd] img,[data-hl-ft] img',want:'頁首 28px（≤640px 為 22px）／頁尾 31px（±2）',fn:function(c,el){
             var alt=el.getAttribute('alt')||'',src=el.getAttribute('src')||'';
             if(!/翰林|logo/i.test(alt+' '+src))return null;      /* 只驗 Logo，不驗內容圖 */
             if(!visible(el))return null;
-            var want=(el.closest&&el.closest('[data-hl-ft]'))?44:40;
+            var _vw=(el.ownerDocument&&el.ownerDocument.defaultView&&el.ownerDocument.defaultView.innerWidth)||1280;
+            var want=(el.closest&&el.closest('[data-hl-ft]'))?31:(_vw<=640?22:28);
             return Math.abs(el.getBoundingClientRect().height-want)<=2;
           }});
           /* ══ 條文覆蓋帳 ══════════════════════════════════════
@@ -6500,7 +6905,7 @@ hlStampAssets();
               {s:'3.10',c:'auto',a:'rewrite', t:'裝飾性圖示須 aria-hidden'},
               {s:'3.10',c:'auto',a:'rewrite', t:'圖示已上色（非預設黑）'},
               {s:'3.11',c:'auto',a:'rewrite', t:'翰林 Logo 已替換'},
-              {s:'3.11',c:'auto',a:'report', t:'Logo 高度：頁首 40px／頁尾 44px'},
+              {s:'3.11',c:'auto',a:'report', t:'Logo 高度：頁首 28px／頁尾 31px'},
               {s:'3.12',c:'auto',a:'rewrite', t:'功能選單色塊單色白底，不隨主題輪替'},
               {s:'3.12',c:'auto',a:'rewrite', t:'功能選單變體對應（色塊版／純 icon 版）'},
               {s:'3.12',c:'auto',a:'rewrite', t:'橫向選項卡變體對應'},
@@ -6753,7 +7158,20 @@ hlStampAssets();
                  先前只讀 backgroundColor，遇到 .hero{background:var(--gradient-brand)}
                  會一路找到白色而誤報「白字配白底 1.00:1」。 */
               var bi=st.backgroundImage||'';
-              if(bi&&bi!=='none')return null;
+              if(bi&&bi!=='none'){
+                /* 【只有半透明色點的漸層要疊到底色上判斷】(2026-09-24，與執行期守門同一套)
+                   淺色光暈做的橫幅（粉紅、薄荷 rgba .3 疊白底）原本一律「不可判定」，
+                   白字 1.1:1 在報告上完全看不到。只補這一類；含不透明色點的漸層
+                   （深藍→淺灰這種跨度大的）維持不判定，避免報告被灌水、匯出閘門卡住使用者。 */
+                var stops=[],mm,re2=/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/g;
+                while((mm=re2.exec(bi)))stops.push({r:+mm[1],g:+mm[2],b:+mm[3],a:mm[4]===undefined?1:parseFloat(mm[4])});
+                if(!stops.length||stops.some(function(x){return x.a>=0.95}))return null;
+                var own=rgbOf(st.backgroundColor),base=(own&&own.a>=0.9)?[own]:null;
+                if(!base){var up=bgOf(n.parentElement);if(!up)return null;base=Array.isArray(up)?up:[up]}
+                var list=base.slice();
+                base.forEach(function(b){stops.forEach(function(x){list.push({r:Math.round(x.r*x.a+b.r*(1-x.a)),g:Math.round(x.g*x.a+b.g*(1-x.a)),b:Math.round(x.b*x.a+b.b*(1-x.a)),a:1})})});
+                return list;
+              }
               var c=rgbOf(st.backgroundColor);
               if(c&&c.a>=0.9)return c;
               n=n.parentElement;
@@ -6764,11 +7182,14 @@ hlStampAssets();
           try{
             Array.prototype.forEach.call(d.querySelectorAll('body *'),function(el){
               /* 只驗「自己直接擁有文字」的元素，容器的字是子層的，算它頭上會失真 */
-              var has=false;
+              var own='';
               for(var i=0;i<el.childNodes.length;i++){
                 var n2=el.childNodes[i];
-                if(n2.nodeType===3&&(n2.nodeValue||'').trim().length>1){has=true;break}
+                if(n2.nodeType===3)own+=(n2.nodeValue||'');
               }
+              own=own.replace(/\s+/g,'');
+              /* 逐字拆開的標題（每字一個元素）也要驗，與執行期守門同一條件（2026-09-24） */
+              var has=own.length>=2||(own.length===1&&el.parentElement&&(el.parentElement.textContent||'').replace(/\s+/g,'').length>=2);
               if(!has)return;
               var c=cs(el);
               if(c.display==='none'||c.visibility==='hidden'||parseFloat(c.opacity)===0)return;
@@ -6777,7 +7198,7 @@ hlStampAssets();
               var bg=bgOf(el);
               if(!bg)return;                 /* 底色不可判定（漸層／背景圖），不判定也不灌水 */
               checked++;
-              var ratio=cr(fg,bg);
+              var ratio=Array.isArray(bg)?Math.min.apply(null,bg.map(function(b){return cr(fg,b)})):cr(fg,bg);
               if(ratio<3&&bad.length<6){
                 bad.push(el.tagName.toLowerCase()
                   +(el.className&&typeof el.className==='string'?('.'+el.className.trim().split(/\s+/)[0]):'')
@@ -6840,6 +7261,10 @@ hlStampAssets();
             cmp.forEach(function(x){
               if(x[1]===-2){oks.push('版型比對：原頁沒有「'+x[0]+'」，已依採用版型補上');}
               else if(x[1]===-1){notes.push('版型比對：頁面沒有「'+x[0]+'」區塊，無從比對');}
+              else if(x[1]===0&&((x[0]==='頁尾'&&(g.ft===null||(res&&res.appShell)))||(x[0]==='版頭'&&g.hd===null))){
+                /* 使用者取消了這一組、或應用型版面依規則不補頁尾：本來就不該動，相同是對的（2026-09-24） */
+                notes.push('版型比對：「'+x[0]+'」'+((x[0]==='頁尾'&&g.ft!==null)?'應用型版面依規則不套':'你選擇不套用')+'，與原檔相同是正確的');
+              }
               else if(x[1]===0){
                 /* 引擎有寫入樣式、但結果與原檔相同 → 原檔本來就長那樣，不是沒套上 */
                 if(x[3])notes.push('版型比對：「'+x[0]+'」樣式已寫入，呈現與原檔相同（原檔本來就符合此版型）');
@@ -6973,6 +7398,7 @@ hlStampAssets();
     try{lastCfgSig=localStorage.getItem('hanlin-brand-theme')||''}catch(e){lastCfgSig=null}
     var res=brandifyHtml(lastRawMarkup,o);
     lastBranded=res.html;
+    try{window.__hlLastRes={swallowed:res.swallowed,shell:res.shell,structRan:res.structRan,appShell:res.appShell,checklist:res.checklist}}catch(e){}   /* 診斷用：最近一次套用的摘要 */
     /* 監測：把「這次實際讀到的設定」與「橫幅有沒有被改寫」回報出去。
        這兩件事是先前事故的核心——使用者沒勾選卻被套用預設版型而毀掉首屏。 */
     try{
@@ -7128,7 +7554,11 @@ hlStampAssets();
         +au.notes.map(function(x){return '<span style="display:block;color:#626A78;white-space:normal;word-break:break-word;margin-top:2px">◽ '+x+'</span>'}).join('');
       /* 收合狀態也要看得到檢查結果，否則得先點開才知道有沒有問題 */
       var sum2=document.getElementById('impReportSum');
-      if(sum2)sum2.innerHTML=sumBase+' · 檢查 '+(au.probs.length?('<span style="color:#B3261E">⚠️ '+au.probs.length+' 項待確認</span>'):'✅ 全部通過');
+      /* 引擎內部被吞掉的例外要浮到摘要列：先前只藏在展開的明細裡，畫面卻寫「全部通過」，
+         實測（2026-09-21 AI審題大師）頁首頁尾整段沒套，摘要仍是綠勾。 */
+      var _sw=(res&&res.swallowed&&res.swallowed.length)||0;
+      if(sum2)sum2.innerHTML=sumBase+' · 檢查 '+(au.probs.length?('<span style="color:#B3261E">⚠️ '+au.probs.length+' 項待確認</span>'):'✅ 全部通過')
+        +(_sw?('　<span style="color:#B3261E">❌ 引擎中斷 '+_sw+' 次（部分規則沒套上）</span>'):'');
     });
     document.getElementById('impReportBox').style.display='block';
     var sum=document.getElementById('impReportSum');

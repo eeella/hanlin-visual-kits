@@ -1,7 +1,7 @@
 /* ============================================================
    翰林相信學習 — 元件樣式
    本檔不得出現任何色碼或一次性尺寸，數值一律引用 tokens.css。
-   對應規範：STYLEGUIDE.md §3
+   對應規範：基本規範 skill.md §3
    ============================================================ */
 
 /* ── 基礎 ─────────────────────────────────────────────── */
@@ -91,12 +91,12 @@ img { max-width: 100%; height: auto; }
    inline SVG 內嵌，墨色綁定 --logo-ink。
    標誌已含品牌字樣，旁邊不得再重複品牌文字。 */
 .logo { display: block; }
-.logo svg { display: block; height: 40px; width: auto; }
+.logo svg { display: block; height: 28px; width: auto; }
 .logo svg path { fill: var(--logo-ink); }
-.site-footer .logo svg { height: 44px; }
+.site-footer .logo svg { height: 31px; }
 
 @media (width <= 640px) {
-  .logo svg { height: 32px; }
+  .logo svg { height: 22px; }
 }
 
 /* ── 頁首 ─────────────────────────────────────────────── */
@@ -319,7 +319,7 @@ img { max-width: 100%; height: auto; }
   background: var(--color-page-bg-subtle);
   position: relative; overflow: hidden;
 }
-/* 封面用裝飾色畫形狀（STYLEGUIDE §2.3：裝飾色只能用於 Hero 與插圖形狀）——三張卡輪替主色淡底／裝飾黃／裝飾暖橘 */
+/* 封面用裝飾色畫形狀（基本規範 §2.1：裝飾色只能用於 Hero 與插圖形狀）——三張卡輪替主色淡底／裝飾黃／裝飾暖橘 */
 .card__media::before { content: ""; position: absolute; right: -28px; top: -28px; width: 120px; height: 120px; border-radius: 50%; background: var(--color-decor-sun); opacity: .9; }
 .card__media::after  { content: ""; position: absolute; left: 24px; bottom: -40px; width: 96px; height: 96px; border-radius: 24px; background: var(--color-decor-warm); opacity: .85; transform: rotate(12deg); }
 .card:nth-child(3n+2) .card__media::before { background: var(--color-decor-warm); }
@@ -390,6 +390,15 @@ img { max-width: 100%; height: auto; }
 .prose > * + * { margin-top: var(--space-9); }   /* 統一控制，不得逐一設定 margin */
 .prose p { font-size: var(--font-size-base); }
 .prose .lead { font-size: var(--font-size-3xl); line-height: var(--font-line-height-loose); }
+
+/* 淺底上的正文（2026-09-24）：text.primary 在 page.bg.subtle 上只有 4.29:1，未達 AA 4.5:1。
+   淺色區塊、空狀態、表頭、斑馬紋列上的次要文字改用 --color-text-on-subtle（tokens.css 推導值）。
+   在容器上重算一次：自訂屬性裡的 var() 在宣告處就定值，色版若掛在 body／main 上改 text.primary，
+   只在 :root 算的話會停在翰林原色。 */
+.section--subtle, .empty-state, .table { --color-text-on-subtle: color-mix(in srgb, var(--color-text-primary) 88%, var(--color-surface-base)); }
+.section--subtle > .container > p,
+.section--subtle > .container > .prose p,
+.empty-state p { color: var(--color-text-on-subtle); }
 .prose small { font-size: var(--font-size-md); }
 .prose strong { font-weight: var(--font-weight-bold); color: var(--color-text-secondary); }
 
@@ -551,7 +560,7 @@ img { max-width: 100%; height: auto; }
 
 /* Alert：資訊／成功／警告／危險，一律圖示＋文字 */
 .alert { display: flex; align-items: flex-start; gap: var(--space-4); padding: var(--space-6) var(--space-9); border-radius: var(--radius-md); font-size: var(--font-size-lg); line-height: 1.6; background: #E6EEF9; color: var(--color-text-secondary); border: 1px solid transparent; }
-.alert__icon { flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; background: var(--color-action-bg); font-family: Georgia, serif; }
+.alert__icon { flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; background: var(--color-action-bg); }
 .alert--success { background: #E8F3EC; } .alert--success .alert__icon { background: var(--color-success); }
 .alert--warning { background: #FBF0E2; } .alert--warning .alert__icon { background: var(--color-warning, #8F4B00); }
 .alert--danger  { background: var(--color-danger-bg); } .alert--danger .alert__icon { background: var(--color-danger); }
@@ -565,8 +574,13 @@ img { max-width: 100%; height: auto; }
 .resource-card > * { min-width: 0; }
 .resource-card__meta > span:not(.badge) { font-size: var(--font-size-xs); padding: 2px 10px; border-radius: var(--radius-pill); background: #E6EEF9; color: var(--color-action-bg); }
 .resource-card__go { color: var(--color-action-bg); font-size: 22px; line-height: 1; }
+/* 手機欄寬只剩約 180px，單行省略連一般長度的標題都讀不完：改成最多兩行，第二行才省略 */
+@media (width <= 640px) {
+  .resource-card { padding: var(--space-6) var(--space-7); gap: var(--space-4); }
+  .resource-card__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; line-height: 1.45; }
+}
 
-/* ══ 對比色（裝飾黃／暖橘）的沿用：只用在 Hero 與裝飾形狀、標題底線，不承載文字（STYLEGUIDE §2.3）══ */
+/* ══ 對比色（裝飾黃／暖橘）的沿用：只用在 Hero 與裝飾形狀、標題底線，不承載文字（基本規範 §2.1）══ */
 .hero { position: relative; overflow: hidden; }
 .hero .container { position: relative; z-index: 1; }
 .hero-art { position: absolute; right: 4%; top: 50%; transform: translateY(-50%); width: 360px; height: 260px; pointer-events: none; }
@@ -575,26 +589,24 @@ img { max-width: 100%; height: auto; }
 .hero-art .a2 { right: 20px; top: 0; width: 170px; height: 130px; background: var(--color-decor-sun); }
 .hero-art .a3 { right: 0; bottom: 0; width: 150px; height: 110px; background: var(--color-decor-warm); }
 .hero-art .a4 { left: 60px; bottom: 10px; width: 110px; height: 110px; border-radius: 50%; background: var(--color-hero-dot, var(--color-action-bg)); }
-.eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); letter-spacing: .14em; color: var(--color-text-primary); text-transform: uppercase; }
-.eyebrow::before { content: ""; width: 28px; height: 4px; border-radius: 2px; background: var(--color-decor-sun); }
 mark.hl { background: linear-gradient(transparent 68%, var(--color-decor-sun) 68%); color: inherit; padding: 0 2px; }
 h2.accent { position: relative; padding-bottom: var(--space-4); }
 h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 48px; height: 5px; border-radius: 3px; background: var(--color-decor-sun); }
-@media (max-width: 900px) { .hero-art { display: none; } }
+@media (width <= 860px) { .hero-art { display: none; } }   /* 對齊 §2.5 斷點 860px（原 900px 不在規範斷點內） */
 
 /* ══ 表格 Table（含 RWD）══
-   規範 §27.10：一律放在可橫向捲動容器內；第一欄保持可見；optional 欄在手機隱藏；長字串 overflow-wrap:anywhere。
+   規範 §3.15：一律放在可橫向捲動容器內；第一欄保持可見；optional 欄在手機隱藏；長字串 overflow-wrap:anywhere。
    640px 以下：.table--stack 把每列轉成直式小表，欄名來自 data-label；860px 以下先隱藏 optional 欄。 */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius-xs); background: var(--color-surface-muted); box-shadow: var(--shadow-2); }
 .table { width: 100%; border-collapse: collapse; font-size: var(--font-size-lg); color: var(--color-text-secondary); }
 .table th, .table td { padding: var(--space-6) var(--space-9); text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
-.table thead th { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-primary); background: var(--color-page-bg-subtle); white-space: nowrap; position: sticky; top: 0; }
+.table thead th { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text-on-subtle); background: var(--color-page-bg-subtle); white-space: nowrap; position: sticky; top: 0; }
 .table tbody tr:nth-child(even) td { background-color: #FAFBFD; }   /* 斑馬紋分隔列，不畫線 */
 .table tbody tr:hover td { background-color: var(--color-page-bg-subtle); }
 .table th:first-child, .table td:first-child { position: sticky; left: 0; background: inherit; background-color: var(--color-surface-muted); }
 .table thead th:first-child { background-color: var(--color-page-bg-subtle); }
 .table .num { text-align: right; font-variant-numeric: tabular-nums; }
-.table [data-priority="optional"] { color: var(--color-text-primary); }
+.table [data-priority="optional"] { color: var(--color-text-on-subtle); }
 @media (width <= 860px) {
   .table [data-priority="optional"] { display: none; }              /* 手機隱藏 optional 欄，資料仍可由明細查看 */
 }
@@ -676,10 +688,8 @@ h2.accent::after { content: ""; position: absolute; left: 0; bottom: 0; width: 4
      hero 用深色大塊（30% 裡最重的一筆），hero 的主要 CTA 用對比色（10%，全頁只有這一顆），
      次要鈕在深底上改成半透明白，不畫邊線；焦點框在深底上改用 hero 字色，才看得見。 */
 .hero { background: var(--color-hero-bg, var(--color-page-bg-subtle)); }
-.hero h1 { color: var(--color-hero-fg, var(--color-text-secondary)); }
-.hero .prose p, .hero .lead { color: var(--color-hero-fg-muted, var(--color-text-primary)); }
-.hero .eyebrow { color: var(--color-hero-fg-muted, var(--color-text-primary)); }
-.hero .eyebrow::before { background: var(--color-cta-bg, var(--color-decor-sun)); }  /* 眉標短線跟 CTA 同色：hero 底若跟裝飾黃同色（芥黃、公務金黃）才不會消失 */
+.hero h1 { color: var(--color-hero-fg, var(--color-text-secondary)); word-break: keep-all; text-wrap: balance; }   /* 中文詞不從中間斷（避免「測／驗」），只在標點處換行 */
+.hero .prose p, .hero .lead { color: var(--color-hero-fg-muted, var(--color-text-on-subtle)); }
 .hero .btn:not(.btn--secondary):not(.btn--ghost):not(.btn--text) {
   background: var(--color-cta-bg, var(--color-action-bg));
   color: var(--color-cta-fg, var(--color-action-fg));

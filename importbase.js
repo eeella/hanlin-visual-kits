@@ -21,19 +21,41 @@
      不碰 a[href]（那是連結，不是資源，改了會動到使用者的內容）。 */
   var ASSET_RE = /<(link|script|img|source|video|audio|iframe|embed|object)\b[^>]*?\s(href|src|data)\s*=\s*("([^"]*)"|'([^']*)'|([^\s">]+))/gi;
 
+  /* 只在「真正的 HTML 標籤」上掃描與改寫：<script>／<style> 的內容與 HTML 註解一律跳過。
+     【實測 2026-09-30 素材示意總覽.html】inline JS 裡有
+       '<img src="assets/img/real/' + encodeURIComponent(cr.shot) + '" …>'
+     這種組字串，被當成 img 標籤改寫、空白編成 %20，JS 直接語法錯誤（Unexpected token '%'），整頁程式停擺。
+     <script src="…"> 的開頭標籤本身仍要處理（那是真的會發出請求的資源），只跳過它的內容。 */
+  var SKIP_RE = /(<script\b[^>]*>)([\s\S]*?)(<\/script\s*>)|<style\b[^>]*>[\s\S]*?<\/style\s*>|<!--[\s\S]*?-->/gi;
+  function eachOutside(html, fn){
+    var out='', last=0, m;
+    SKIP_RE.lastIndex=0;
+    while((m=SKIP_RE.exec(html))){
+      out += fn(html.slice(last, m.index));
+      if(m[1]!==undefined) out += fn(m[1]) + m[2] + m[3];   /* script：開頭標籤要處理，內容不碰 */
+      else out += m[0];                                       /* style、註解：整段不碰 */
+      last = SKIP_RE.lastIndex;
+    }
+    return out + fn(html.slice(last));
+  }
+
   function isAbsolute(u){
     return !u || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:|blob:|about:|javascript:)/i.test(u);
   }
 
   function scanAssets(html){
-    var out=[], m;
-    ASSET_RE.lastIndex=0;
-    while((m=ASSET_RE.exec(html))){
-      var url=(m[4]!==undefined?m[4]:(m[5]!==undefined?m[5]:m[6]))||'';
-      if(isAbsolute(url))continue;
-      /* 根路徑 /x.css 也算相對於網域，一樣會打到平台 */
-      out.push({tag:m[1].toLowerCase(), attr:m[2].toLowerCase(), url:url});
-    }
+    var out=[];
+    eachOutside(html, function(part){
+      var m;
+      ASSET_RE.lastIndex=0;
+      while((m=ASSET_RE.exec(part))){
+        var url=(m[4]!==undefined?m[4]:(m[5]!==undefined?m[5]:m[6]))||'';
+        if(isAbsolute(url))continue;
+        /* 根路徑 /x.css 也算相對於網域，一樣會打到平台 */
+        out.push({tag:m[1].toLowerCase(), attr:m[2].toLowerCase(), url:url});
+      }
+      return part;
+    });
     return out;
   }
 
@@ -51,6 +73,9 @@
     try{ return new URL(DEAD_BASE, location.href).href; }catch(e){ return DEAD_BASE; }
   }
   function rewriteAssets(html, prefix){
+    return eachOutside(html, function(part){ return rewriteTags(part, prefix); });
+  }
+  function rewriteTags(html, prefix){
     ASSET_RE.lastIndex=0;
     return html.replace(ASSET_RE, function(whole, tag, attr, q, dq, sq, bare){
       var url = (dq!==undefined?dq:(sq!==undefined?sq:bare))||'';

@@ -10,12 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260930g">
+<link rel="stylesheet" href="style.css?v=20261005b">
 <script src="defaults.js?v=792634ded4c0"></script>
 <script src="kits.js?v=bd42b56bca0b"></script>
 <!-- 封包下載用；存在專案裡不走 CDN，斷網也能產出 -->
 <script src="jszip.min.js"></script>
-<script src="skillpack.js?v=20260930a"></script>
+<script src="skillpack.js?v=20261005d"></script>
 <style>
 /* ===== 套版詳細專用 =====
    這一頁不自己定義任何顏色常數：畫面上看到的每一個色、圓角、陰影、邊線
@@ -258,6 +258,13 @@ main .opt-dot.on{border-color:#0072B5}
 
 /* 頁首：這一組是什麼 */
 .k-head{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+/* 左右說明（2026-10-01 試行，先只開漫畫貼紙風）：左邊色版說明、右邊套版範本＋「開啟完整範本」，
+   範本與按鈕上移到第一屏；下方原本的「套版範本」區不再重複出現 */
+.k-head.k-split{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:40px;align-items:start}   /* 左四右六（使用者指定 2026-10-01） */
+.k-head.k-split .k-demo .demo-foot{padding:12px 16px}
+.k-head.k-split .k-demo .demo-open{padding:11px 22px;font-size:14.5px}
+#demo.k-moved{display:none !important}
+@media(max-width:900px){.k-head.k-split{grid-template-columns:minmax(0,1fr);gap:24px}}
 .k-title{font-size:32px;font-weight:700;color:var(--gray-1);letter-spacing:.04em;margin-bottom:4px}
 .k-en{font-size:13px;color:var(--gray-2);letter-spacing:.1em;font-weight:400}
 .k-desc{font-size:14.5px;color:var(--gray-1);line-height:1.95;margin-top:12px}
@@ -412,7 +419,7 @@ main .opt-dot.on{border-color:#0072B5}
 .demo-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:12px 16px;border-bottom:1px solid #EDF0F4;background:#F7F9FB}
 .demo-bar span{font-size:13.5px;font-weight:500;color:var(--gray-1)}
-.demo-shot{display:block;position:relative;height:560px;overflow:hidden;text-decoration:none}
+.demo-shot{display:block;position:relative;height:560px;overflow:hidden;text-decoration:none;cursor:default}   /* 縮圖只看不能點：只留下方按鈕（使用者指定 2026-10-01） */
 /* iframe 用實際寬度 1280 再等比縮，縮圖才會跟真的開起來一模一樣 */
 .demo-shot iframe{width:1280px;height:1720px;border:0;transform-origin:0 0;
   pointer-events:none;display:block}
@@ -422,7 +429,7 @@ main .opt-dot.on{border-color:#0072B5}
 .demo-open{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:14px;background:var(--brand);color:#fff;
   font-size:15px;font-weight:600;white-space:nowrap;text-decoration:none;transition:background .2s}
 .demo-open .material-symbols-rounded{font-size:19px}
-.demo-open:hover,.demo-shot:hover ~ .demo-foot .demo-open{background:var(--brand-dark);color:#fff}
+.demo-open:hover{background:var(--brand-dark);color:#fff}
 .demo-open:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
 
 /* 字體排版：三行範例照這一組的字體、字重與字級實際排出來 */
@@ -451,6 +458,96 @@ main .opt-dot.on{border-color:#0072B5}
 
 /* 區塊標題與分類頁籤屬於平台框架，維持翰林色（style.css 已固定，這裡不覆寫）。
    套版的顏色只出現在區塊裡面的示範內容。 */
+
+/* ── 自訂規範樣式：對照模式（2026-10-05 使用者指定）──────────────────────
+   使用者回報「詳細跟對照擠在同一頁很擠」→ 改成主題自訂器的版面：
+   左邊窄欄＝分組的樣式縮圖（點了就換），右邊＝放大的範例網站，點選的那一塊捲到眼前並短暫上色。
+   縮圖與範例網站都是直接複製下面的示範（同一份 DOM），點縮圖＝替使用者點原本卡片的標題列，
+   採用邏輯、存檔、下載、套入匯入頁全部沿用原本那一套，這裡不另外寫採用規則。
+   原本的完整說明保留在「詳細清單」，頁首上方切換。≤1180px 自動用詳細清單。 */
+#czWrap,#czModeBar{display:none}
+@media (min-width:1181px){
+  main.wrap.cz-on>section.sec,main.wrap.cz-on>.cat-next{display:none!important}   /* 「下一步」卡片與底部流程條重複，對照模式不放 */
+  body.cz-active .tab-bar .nav-chips{display:none}   /* 這些捷徑連到詳細清單的區塊；對照模式左欄已經分組 */
+  main.wrap.cz-on>#czWrap{display:grid;grid-template-columns:360px minmax(0,1fr);gap:28px;position:sticky;top:var(--lp-top,190px);
+    height:calc(100vh - var(--lp-top,190px) - 92px);min-height:420px}
+  body.cz-cat #czModeBar{display:flex}
+}
+#czModeBar{align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+#czModeBar .cz-seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#EEF2F7}
+#czModeBar .cz-seg button{border:0;background:transparent;color:#56697E;font:inherit;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;min-height:36px}
+#czModeBar .cz-seg button[aria-pressed="true"]{background:var(--brand);color:#fff}
+#czModeBar .cz-hint{font-size:13px;color:#56697E}
+.cz-panel{overflow-y:auto;overscroll-behavior:contain;padding:2px 10px 24px 2px;display:flex;flex-direction:column;gap:26px;min-height:0}
+.cz-grp-h{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
+.cz-grp-h h3{margin:0;font-size:16px;font-weight:700;color:var(--gray-1,#1E3D60)}
+.cz-grp-h .cz-cur{font-size:13px;color:#56697E;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.cz-grp-h .cz-more{margin-left:auto;font-size:13px;color:var(--brand);background:none;border:0;padding:4px 0;cursor:pointer;white-space:nowrap;font-family:inherit}
+.cz-opts{display:flex;flex-direction:column;gap:10px}
+.cz-opts.cz-row{flex-direction:row;flex-wrap:wrap}
+.cz-opt{display:block;width:100%;text-align:left;border:0;padding:10px;border-radius:12px;background:#fff;cursor:pointer;font:inherit;color:var(--gray-1,#1E3D60);
+  box-shadow:0 1px 2px rgba(30,61,96,.05),0 2px 8px rgba(30,61,96,.05);position:relative}
+.cz-opt:hover{background:#F4F7FB}
+.cz-opt[aria-pressed="true"]{background:#E6EEF9}
+.cz-opt:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.cz-opt .cz-nm{display:flex;align-items:center;gap:8px;font-size:13.5px;margin-top:8px}
+.cz-opt .cz-ck{width:20px;height:20px;border-radius:50%;background:#EEF2F7;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.cz-opt[aria-pressed="true"] .cz-ck{background:var(--brand);color:#fff}
+.cz-opt .cz-ck .material-symbols-rounded{font-size:15px;opacity:0}
+.cz-opt[aria-pressed="true"] .cz-ck .material-symbols-rounded{opacity:1}
+.cz-opt[aria-pressed="true"] .cz-nm{color:var(--brand);font-weight:700}
+.cz-opt.cz-none .cz-nm{margin-top:0}
+.cz-opts.cz-row .cz-opt{width:calc(50% - 5px)}
+.cz-opt .cz-logo{height:44px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px}
+.cz-opt .cz-logo img{max-height:36px;max-width:100%}
+.cz-thumb{position:relative;overflow:hidden;border-radius:8px;background:var(--page,#F4F7FB)}
+.cz-thumb-in{width:760px;transform-origin:0 0;position:absolute;left:0;top:0}
+.cz-thumb *{pointer-events:none}
+.cz-sw{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#fff;box-shadow:0 1px 2px rgba(30,61,96,.05),0 2px 8px rgba(30,61,96,.05)}
+.cz-sw .cz-swbtn{display:flex;align-items:center;gap:10px;border:0;background:none;padding:4px 0;font:inherit;font-size:13.5px;color:var(--gray-1,#1E3D60);cursor:pointer;text-align:left;flex:1;min-width:0;min-height:36px}
+.cz-sw .cz-swbtn:focus-visible{outline:3px solid var(--brand);outline-offset:2px;border-radius:6px}
+.cz-sw .cz-tr{width:38px;height:22px;border-radius:999px;background:#BECAD7;position:relative;flex:none;transition:background .2s}
+.cz-sw .cz-tr::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.cz-sw .cz-swbtn[aria-checked="true"] .cz-tr{background:var(--brand)}
+.cz-sw .cz-swbtn[aria-checked="true"] .cz-tr::after{transform:translateX(16px)}
+.cz-sw .bg-tog{margin-left:0}
+.cz-sw.cz-off .bg-tog{visibility:hidden}
+#livePrev{display:flex;flex-direction:column;min-height:0}
+#livePrev .lp-head{display:flex;align-items:center;gap:10px;padding:0 2px 12px;flex-wrap:wrap}
+#livePrev .lp-title{font-size:16px;font-weight:700;color:var(--gray-1,#1E3D60)}
+#livePrev .lp-now{font-size:13px;color:#56697E;margin-left:auto;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#livePrev .lp-now b{color:var(--brand,#064EA4);font-weight:700}
+#livePrev .lp-view{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;border-radius:14px;background:#fff;
+  box-shadow:0 1px 2px rgba(30,61,96,.06),0 6px 22px rgba(30,61,96,.10);overscroll-behavior:contain}
+#livePrev .lp-sizer{position:relative;overflow:hidden}
+#livePrev .lp-canvas{width:1000px;transform-origin:0 0;position:absolute;left:0;top:0;background:var(--page,#F4F7FB)}
+#livePrev .lp-canvas *{pointer-events:none}
+#livePrev .lp-part{position:relative}
+#livePrev .lp-empty{margin:0;padding:60px 40px;text-align:center;font-size:22px;color:#56697E}
+#livePrev .lp-part>.pick-body{padding:28px 40px}
+#livePrev .lp-part[data-lp="hd"]>.pick-body,#livePrev .lp-part[data-lp="hero"]>.pick-body{padding:0;background:none}
+/* 對照預覽：頁首／橫幅直接填滿，不要圓角（2026-10-05 使用者指定） */
+#livePrev .lp-part[data-lp="hd"] .pick-body>*,#livePrev .lp-part[data-lp="hero"] .pick-body>*{border-radius:0 !important}
+#livePrev .lp-part[data-lp="ft"]>.pick-body{margin-top:12px;padding:24px 40px;background:none}
+#livePrev .lp-sub{display:flex;flex-direction:column;gap:22px}
+#livePrev .lp-sub>.pick-body{padding:0;background:none}
+#livePrev .lp-part::after{content:"";position:absolute;inset:0;background:var(--brand,#064EA4);opacity:0;transition:opacity .9s ease;pointer-events:none}
+#livePrev .lp-part.lp-hit::after{opacity:.12;transition:none}
+@media (prefers-reduced-motion:reduce){#livePrev .lp-part::after,.cz-sw .cz-tr,.cz-sw .cz-tr::after{transition:none}}
+
+/* ── 基本控制項：沒底色／有底色 切換（2026-10-05 使用者指定）──
+   原本每個控制項並排「淺色底／深色底」兩張，改成同一個區塊只放一張，
+   標題列直接切換；預設沒底色，選「有底色」才把品牌深色底加進去。只是檢視切換，不影響採用與存檔。 */
+.bg-tog{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#EEF2F7;margin-left:6px;flex:none}
+.bg-tog button{border:0;background:transparent;color:#56697E;font:inherit;font-size:12.5px;line-height:1;padding:6px 12px;border-radius:999px;cursor:pointer;min-height:28px}
+.bg-tog button[aria-pressed="true"]{background:var(--brand);color:#fff}
+.bg-tog button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.duo.duo-one{grid-template-columns:1fr}
+.duo.duo-one>.duo-card{display:none}
+.duo.duo-one>.duo-card.is-show{display:block}
+.duo.duo-one>.duo-card .duo-tag{display:none}
+.duo.duo-one>.duo-card .duo-tag+span{margin-left:0}
+.duo.duo-one>.duo-card.light{background:transparent;border:0;box-shadow:none;padding:0}
 </style>
 </head>
 <body class="tpl">
@@ -479,7 +576,7 @@ main .opt-dot.on{border-color:#0072B5}
   <div class="nav-chips">
     <!-- <div class="nav-group" data-cat="brand"><a href="#principles">設計方針</a></div> -->
     <div class="nav-group" data-cat="identity"><a href="#logo">Logo 組合</a><a href="#header">Header 版型</a><a href="#login">登入系統</a><a href="#footer">Footer 版型</a></div>
-    <div class="nav-group" data-cat="comps"><a href="#hero">Hero Banner</a><a href="#controls">基本控制項</a><a href="#table">表格 Table</a><a href="#project">專案清單</a><a href="#bookmark">書籤收藏</a><a href="#popup">彈出視窗</a><a href="#toast" hidden data-closed="1">系統 Toast</a><a href="#feature">功能選單</a><a href="#brandcomps">品牌元件</a><a href="#adopt">採用設定</a></div>
+    <div class="nav-group" data-cat="comps"><a href="#hero">Hero Banner</a><a href="#controls">基本控制項</a><a href="#table">表格 Table</a><a href="#project">專案清單</a><a href="#bookmark">書籤收藏</a><a href="#popup">彈出視窗</a><a href="#toast" hidden data-closed="1">系統 Toast</a><a href="#feature">功能選單</a><a href="#brandcomps">品牌元件</a><a href="#adopt" hidden data-closed="1">採用設定</a></div>
     <div class="nav-group" data-cat="layout"><a href="#colorsys">色彩系統</a><a href="#typo">字體排版</a><a href="#kitshape">形狀數值</a><a href="#rwd">RWD 斷點</a><a href="#type">文字級距</a><a href="#shape">形狀與間距</a></div>
   </div>
 </div>
@@ -524,9 +621,9 @@ main .opt-dot.on{border-color:#0072B5}
   <section class="sec" data-cat="start" id="demo">
     <div class="sec-head"><h2>套版範本</h2></div>
     <div class="demo-wrap">
-      <a class="demo-shot" id="demoLink" target="_blank" rel="noopener" aria-label="開啟完整範本（另開新分頁）" tabindex="-1">
+      <div class="demo-shot" id="demoLink" aria-hidden="true">
         <iframe id="demoFrame" title="套版範本預覽" loading="lazy" tabindex="-1"></iframe>
-      </a>
+      </div>
       <div class="demo-foot"><a class="demo-open" id="demoOpen" target="_blank" rel="noopener"><span class="material-symbols-rounded" aria-hidden="true">open_in_new</span>開啟完整範本</a></div>
     </div>
   </section>
@@ -580,7 +677,7 @@ main .opt-dot.on{border-color:#0072B5}
         <div class="demo-bar light">
           <img class="demo-logo" src="logo-text.svg" alt="翰林">
           <nav><a href="#header">品牌故事</a><a href="#header">產品服務</a><a href="#header">最新消息</a></nav>
-          <span class="member-pill"><span class="material-symbols-rounded" style="font-size:17px">account_circle</span>翰林會員</span>
+          <span class="member-pill" role="button" aria-label="翰林會員" title="翰林會員"><span class="material-symbols-rounded" style="font-size:24px">account_circle</span></span>
         </div>
       </div>
     </div>
@@ -591,7 +688,7 @@ main .opt-dot.on{border-color:#0072B5}
         <div class="demo-bar dark">
           <img class="demo-logo" src="logo-text.svg" alt="翰林">
           <nav><a href="#header">品牌故事</a><a href="#header">產品服務</a><a href="#header">最新消息</a></nav>
-          <span class="member-pill"><span class="material-symbols-rounded" style="font-size:17px">account_circle</span>翰林會員</span>
+          <span class="member-pill" role="button" aria-label="翰林會員" title="翰林會員"><span class="material-symbols-rounded" style="font-size:24px">account_circle</span></span>
         </div>
       </div>
     </div>
@@ -773,7 +870,8 @@ main .opt-dot.on{border-color:#0072B5}
     <div class="sec-head"><h2>Hero Banner</h2></div>
     <p class="sec-desc">「歡迎回來」兩種版型，點選採用其一（存進 theme，首頁即套用）。</p>
     <div class="grid-2">
-      <div class="pick-box" data-group="hero" style="margin-bottom:0">
+      <!-- 2026-10-05 使用者指定：AI 漸層版與探究科學報（EXPO）二擇一，保留 EXPO；AI 漸層版關閉（DOM 保留，索引不變）。舊存檔選到它會改成 EXPO（見 buildState） -->
+      <div class="pick-box" data-group="hero" style="margin-bottom:0" hidden data-closed="1">
         <div class="pick-head"><span class="pick-state"></span>AI 漸層版<span class="adopt-tag">採用中</span><span class="pick-note">品牌漸層+AI 晶片+吉祥物</span></div>
         <div class="pick-body">
           <div class="hero-ai">
@@ -796,7 +894,7 @@ main .opt-dot.on{border-color:#0072B5}
     </div>
     <!-- 2026-09-17 從 Header 版型搬來：它是整塊主視覺，不是導覽列 -->
     <div class="pick-box" data-group="hero" style="margin-bottom:0">
-      <div class="pick-head"><span class="pick-state"></span>探究科學報（EXPO）<span class="adopt-tag">採用中</span><span class="pick-note">滿版亮色 · 置中大標 · 專題／長文</span></div>
+      <div class="pick-head"><span class="pick-state"></span>文字版<span class="adopt-tag">採用中</span><span class="pick-note">滿版亮色 · 置中大標 · 專題／長文</span></div>
       <div class="pick-body">
         <div class="hero-expo">
           <span class="eb">翰林 EXPO ・ 探究科學報</span>
@@ -1298,7 +1396,9 @@ main .opt-dot.on{border-color:#0072B5}
 
 
   <!-- 採用設定（原本在色彩系統節內，依使用者指定移到品牌識別） -->
-  <section class="sec" data-cat="comps" id="adopt"><!-- 2026-09-17 從版面規範搬到介面套用：這是唯一真的會進 SKILL.md 的選項 -->
+  <section class="sec" data-cat="comps" id="adopt" hidden data-closed="1"><!-- 2026-09-17 從版面規範搬到介面套用：這是唯一真的會進 SKILL.md 的選項 -->
+  <!-- 2026-10-05 使用者指定：「採用設定直接是預設，不用再出現」→ 整區隱藏；淡色圖示方塊固定採用，灰階與中間色固定關閉（buildState FIXED_CTL）。
+       DOM 保留：theme-row／contrast-row 仍由 apply() 重繪，色版切換路徑不受影響。 -->
     <div class="sec-head"><h2>採用設定</h2></div>
     <p class="sub-desc">整份規範的採用設定（行內強調的用法、中間色、灰階、淡色圖示方塊）：切換色版會跟著主色連動，要不要納入規範由你勾選。</p>
 
@@ -1327,7 +1427,7 @@ main .opt-dot.on{border-color:#0072B5}
       <span><b class="pv-warm" style="font-size:16px">92</b><span style="color:var(--gray-2)"> /100</span></span>
     </div>
 
-    <div class="pick-box adopted" data-multi="1" data-key="midcolor" style="margin-bottom:0;margin-top:30px">
+    <div class="pick-box" data-multi="1" data-key="midcolor" style="margin-bottom:0;margin-top:30px">
       <div class="pick-head"><span class="pick-state"></span>中間色 / 輔助色<span class="adopt-tag">採用中</span></div>
       <div class="pick-body">
     <p class="sub-desc">柔色底+深色圖示，用於產品模組、KPI 卡、快捷入口的區隔；切換主題時對比色會連動。</p>
@@ -1340,7 +1440,7 @@ main .opt-dot.on{border-color:#0072B5}
       </div>
     </div>
 
-    <div class="pick-box adopted" data-multi="1" data-key="gray" style="margin-bottom:0;margin-top:30px">
+    <div class="pick-box" data-multi="1" data-key="gray" style="margin-bottom:0;margin-top:30px">
       <div class="pick-head"><span class="pick-state"></span>灰階 Gray（中性輔助色）<span class="adopt-tag">採用中</span></div>
       <div class="pick-body">
     <p class="sub-desc">次要文字、圖示、分隔線與底色一律用這三階灰，不要隨手用淺灰帶過。</p>
@@ -1604,6 +1704,8 @@ main .opt-dot.on{border-color:#0072B5}
        讓人知道自己在哪一組，但不再重複介紹一次顏色。 */
     var intro=document.getElementById('kIntro');
     if(intro)intro.style.display=(cat==='start')?'':'none';
+    var kd=document.getElementById('kDemo');if(kd)kd.style.display=(cat==='start')?'':'none';   /* 右欄範本跟著說明一起顯示／隱藏 */
+    window.__HL_curCat=cat;if(window.__HL_lpCat)window.__HL_lpCat(cat);   /* 自訂規範樣式的右欄對照預覽（2026-10-05） */
     window.scrollTo({top:0});
   }
   tabs.forEach(function(t){t.addEventListener('click',function(){setCat(t.dataset.cat)})});
@@ -2394,6 +2496,9 @@ main .opt-dot.on{border-color:#0072B5}
 
   /* ===== 確認採用：存 theme 到 localStorage，套入匯入頁 / 匯出 ===== */
   function buildState(){
+    /* 歡迎橫幅的 AI 漸層版已關閉（2026-10-05 保留 EXPO）：舊存檔還選著它就改成 EXPO，畫面上也同步 */
+    (function(){var hb=document.querySelectorAll('.pick-box[data-group="hero"]');
+      if(hb[0]&&hb[2]&&hb[0].hidden&&hb[0].classList.contains('adopted')){hb[0].classList.remove('adopted');hb[2].classList.add('adopted')}})();
     function adoptedIdx(g){
       var boxes=[].slice.call(document.querySelectorAll('.pick-box[data-group="'+g+'"]'));
       return boxes.findIndex(function(b){return b.classList.contains('adopted')});
@@ -2411,6 +2516,11 @@ main .opt-dot.on{border-color:#0072B5}
     OPTIONAL_GROUPS.forEach(function(g){use[g]=adoptedIdx(g)>=0});
     var controls={};
     document.querySelectorAll('.pick-box[data-key]').forEach(function(b){controls[b.dataset.key]=b.classList.contains('adopted')});
+    /* 畫面上不出現、固定的元件設定（2026-10-05 使用者指定）：舊存檔或匯入的值一律不再生效
+       - 淡色圖示方塊、選取狀態、頁籤、設計方針、RWD 斷點、文字級距、形狀與間距：預設採用
+       - 灰階、中間色：關閉（不寫進規範，匯入頁也不套） */
+    var FIXED_CTL={softtile:true,seg:true,tabs:true,principles:true,rwd:true,type:true,shape:true,gray:false,midcolor:false};
+    Object.keys(FIXED_CTL).forEach(function(k){controls[k]=FIXED_CTL[k]});
     var li=onIdx('.logo-sel'),di=onIdx('.logo-inv');
     var logoIdx=li>=0?li:(di>=0?di:2);
     var memberBox=document.querySelector('[data-toggle="member-wrap"]');
@@ -2442,7 +2552,7 @@ main .opt-dot.on{border-color:#0072B5}
   /* 即時採用狀態列：勾選當下就顯示「實際存進去的組合」 */
   var HD_NS=['品牌官網（淺色）','品牌官網（深色）','教師平台','國小／兒童','國中／高中學術','命題大師','行動大師','影音派','AI 數位導覽員'];
   var FT_NS=['完整頁尾','導覽頁尾','精簡頁尾（深色置中）'];
-  var HERO_NS=['AI 漸層版','純圖片版','探究科學報（EXPO）'];
+  var HERO_NS=['AI 漸層版','純圖片版','文字版'];
   var FM_NS=['色塊版','純 icon 版'];
   var TBL_NS=['斑馬紋','全框線','主色表頭','深色表頭'];
   var adoptBar=document.createElement('div');
@@ -2590,6 +2700,7 @@ main .opt-dot.on{border-color:#0072B5}
      直接呼叫會 ReferenceError（實測就是這樣失敗的）。掛到 window 共用，
      不要在另一邊複製第二份存檔邏輯——採用設定只能有一個真相源。 */
   window.HL_saveTheme=saveTheme;
+  window.HL_buildState=buildState;   /* 右欄對照預覽讀同一份採用設定（不寫入，只讀） */
   function downloadKitZip(btn){window.HL_downloadKitZip(btn,saveTheme())}
   document.getElementById('exportSkillMd').addEventListener('click',function(){
     var pk=window.HL_buildSkillPack(saveTheme());
@@ -2887,6 +2998,20 @@ main .opt-dot.on{border-color:#0072B5}
       return '<tr><th>'+esc(r[0])+'</th><td>'+esc(r[1])+'</td></tr>'}).join('');
   })();
 
+  /* ── 左右說明：範本搬到頁首右欄（試行組別；確認後把整個 SPLIT_KITS 判斷拿掉＝全部套用）── */
+  (function(){
+    var SPLIT_KITS=['istockapp'];
+    if(SPLIT_KITS.indexOf(k.id)<0)return;
+    var head=document.querySelector('.pagehead .k-head'),wrap=document.querySelector('#demo .demo-wrap');
+    if(!head||!wrap)return;
+    var col=document.createElement('div');col.className='k-demo';col.id='kDemo';
+    col.appendChild(wrap);head.appendChild(col);head.classList.add('k-split');
+    document.getElementById('demo').classList.add('k-moved');
+    /* 左欄說明遇到句點就換行，一句一行（使用者指定 2026-10-01）。用文字節點＋<br> 組，不走 innerHTML */
+    var kd=document.getElementById('kDesc');
+    if(kd){var parts=(kd.textContent||'').split(/(?<=。)/).map(function(x){return x.trim()}).filter(Boolean);
+      kd.textContent='';parts.forEach(function(p,i){if(i)kd.appendChild(document.createElement('br'));kd.appendChild(document.createTextNode(p))});}
+  })();
   /* ── 套版範本：同一組色版畫出來的一整頁，縮圖點下去開新分頁 ── */
   (function(){
     var fr=document.getElementById('demoFrame');
@@ -2911,6 +3036,21 @@ main .opt-dot.on{border-color:#0072B5}
       var h=d&&d.querySelector('.hero');
       if(!h){if(n<40)setTimeout(function(){measure(n+1)},100);return}
       try{d.documentElement.style.overflow='hidden';d.body.style.overflow='hidden'}catch(e){}   /* 縮圖裡不要出現捲軸 */
+      /* 高度再少五分之一（使用者指定 2026-10-01：寬度不變、只改高度）。
+         直接切會切到按鈕與裝飾圖形，所以改成只在縮圖裡把主視覺上下留白各縮一半差額，內容完整保留；
+         「開啟完整範本」看到的頁面不受影響。留白最少保留 24px。 */
+      /* 範本頁會觸發不只一次 load，只能縮一次，否則會一路縮下去（實測縮成七成） */
+      if(!h.hasAttribute('data-hl-thumb'))try{
+        h.setAttribute('data-hl-thumb','1');
+        var r0=h.getBoundingClientRect(),cs=d.defaultView.getComputedStyle(h);
+        var target=r0.bottom*0.9,cut=r0.bottom*0.1,pt=parseFloat(cs.paddingTop)||0,pb=parseFloat(cs.paddingBottom)||0;
+        var npt=Math.max(24,pt-cut/2),npb=Math.max(24,pb-cut/2);
+        function setPad(){h.style.setProperty('padding-top',npt+'px','important');h.style.setProperty('padding-bottom',npb+'px','important')}
+        setPad();
+        /* 主視覺高度不只由留白決定（內容換行、最小高度），量一次再依誤差補正，讓總高剛好是原本的九成（使用者 2026-10-01：再高一點點，原本八成） */
+        var err=target-h.getBoundingClientRect().bottom;
+        if(Math.abs(err)>2){npt=Math.max(24,npt+err/2);npb=Math.max(24,npb+err/2);setPad()}
+      }catch(e){}
       var r=h.getBoundingClientRect(),top=(d.documentElement.scrollTop||0);
       heroH=Math.min(1720,Math.ceil(r.bottom+top));
       fit();
@@ -2971,6 +3111,283 @@ main .opt-dot.on{border-color:#0072B5}
     if(b)b.textContent=k.avoid||'—';
   })();
 
+})();
+</script>
+<script>
+/* ── 自訂規範樣式：對照模式（2026-10-05）──
+   預覽依據＝HL_buildState()（下載範例檔、套入匯入頁存的同一份），沒勾不出現。
+   左欄縮圖只是「替使用者點原本卡片」的捷徑：點縮圖＝點原本的 .pick-head／.logo-sel，
+   採用、取消、存檔全部走原本程式，這裡只讀不寫。 */
+(function(){
+  var main=document.querySelector('main.wrap');if(!main)return;
+  function ST(){try{return window.HL_buildState?window.HL_buildState():null}catch(e){return null}}
+  function grpBoxes(g){return [].slice.call(document.querySelectorAll('.pick-box[data-group="'+g+'"]'))}
+  function grpBox(g,st){
+    if(!st||!st.groups||(st.use&&st.use[g]===false))return null;
+    var i=st.groups[g];if(typeof i!=='number'||i<0)return null;
+    return grpBoxes(g)[i]||null;
+  }
+  function isHidden(b){return !!(b.hidden||b.closest('[hidden]'))}
+  var HIDDEN_ON=[];
+  function ctlBoxes(scope,st){
+    if(!st||!st.controls)return [];
+    return [].slice.call(document.querySelectorAll(scope+' .pick-box[data-key]')).filter(function(b){
+      if(st.controls[b.dataset.key]!==true)return false;
+      if(isHidden(b)){HIDDEN_ON.push(b.dataset.key);return false}
+      return true;
+    });
+  }
+  function name(box){
+    var h=box&&box.querySelector('.pick-head');if(!h)return '';
+    var c=h.cloneNode(true);[].forEach.call(c.querySelectorAll('.adopt-tag,.pick-note,.pick-state,.bg-tog,.icon-flag'),function(x){x.remove()});
+    return (c.textContent||'').replace(/\s+/g,' ').trim();
+  }
+  function cloneBody(box){
+    var b=box.querySelector(':scope > .pick-body'),c;
+    if(b)c=b.cloneNode(true);
+    else{   /* 有些卡片（表格樣式）內容直接放在卡片裡，沒有 .pick-body 外層 */
+      c=document.createElement('div');c.className='pick-body';
+      [].forEach.call(box.children,function(x){if(!x.classList.contains('pick-head'))c.appendChild(x.cloneNode(true))});
+    }
+    [].forEach.call(c.querySelectorAll('[id]'),function(x){x.removeAttribute('id')});
+    [].forEach.call(c.querySelectorAll('.hl-drawer'),function(x){x.remove()});
+    [].forEach.call(c.querySelectorAll('a,button,input,select,textarea,[tabindex]'),function(x){x.setAttribute('tabindex','-1')});
+    return c;
+  }
+
+  /* ===== 右邊：範例網站（只放勾選中的） ===== */
+  var PARTS=[
+    {k:'hd',label:'頁首',pick:function(st){var b=grpBox('hd',st);return b?[b]:[]},
+     after:function(part,st){if(!st.memberEntry)[].forEach.call(part.querySelectorAll('.member-pill,.avatar'),function(x){x.remove()})}},
+    {k:'hero',label:'歡迎橫幅',pick:function(st){var b=grpBox('hero',st);return b?[b]:[]}},
+    {k:'fm',label:'功能選單',pick:function(st){var b=grpBox('fm',st);return b?[b]:[]}},
+    {k:'opt',label:'橫向選項卡',pick:function(st){var b=grpBox('opt',st);return b?[b]:[]}},
+    {k:'controls',label:'基本控制項',pick:function(st){var list=ctlBoxes('#controls',st),ic=grpBox('icon',st);if(ic)list.push(ic);return list}},
+    {k:'table',label:'表格',pick:function(st){
+      if(!grpBox('tblsty',st))return [];
+      return [].slice.call(document.querySelectorAll('#table .pick-box:not([data-group]):not([hidden])')).slice(0,1)},
+     after:function(part,st){
+      var a=grpBox('tblsty',st),t0=a&&a.querySelector('table.tbl'),VAR=['striped','bordered','head-primary','head-dark'];
+      [].forEach.call(part.querySelectorAll('table.tbl'),function(t){
+        VAR.forEach(function(v){t.classList.remove(v)});
+        if(t0)[].forEach.call(t0.classList,function(c){if(VAR.indexOf(c)>=0)t.classList.add(c)});
+      });
+     },nameBox:function(st){return grpBox('tblsty',st)}},
+    {k:'ft',label:'頁尾',pick:function(st){var b=grpBox('ft',st);return b?[b]:[]}}
+  ];
+
+  /* ===== 左邊：分組的樣式選項 ===== */
+  var GROUPS={
+    identity:[
+      {t:'Logo',type:'logo',k:'hd',sec:'logo'},
+      {t:'頁首 Header',type:'group',g:'hd',k:'hd',sec:'header'},
+      {t:'會員入口',type:'member',k:'hd',sec:'login'},
+      {t:'頁尾 Footer',type:'group',g:'ft',k:'ft',sec:'footer'}
+    ],
+    comps:[
+      {t:'歡迎橫幅 Hero',type:'group',g:'hero',k:'hero',sec:'hero'},
+      {t:'功能選單',type:'group',g:'fm',k:'fm',sec:'feature'},
+      {t:'橫向選項卡',type:'group',g:'opt',k:'opt',sec:'feature'},
+      {t:'基本控制項',type:'switches',scope:'#controls',k:'controls',sec:'controls'},
+      {t:'圖示 Icon',type:'group',g:'icon',k:'controls',sec:'controls'},
+      {t:'表格樣式',type:'group',g:'tblsty',k:'table',sec:'table'}
+    ]
+  };
+
+  var wrap=document.createElement('div');wrap.id='czWrap';
+  wrap.innerHTML='<div class="cz-panel" role="region" aria-label="選擇樣式"></div>'+
+    '<aside id="livePrev" aria-label="對照預覽"><div class="lp-head"><span class="lp-title">對照預覽</span><span class="lp-now" aria-live="polite"></span></div>'+
+    '<div class="lp-view" tabindex="0" aria-label="範例網站預覽，可上下捲動"><div class="lp-sizer"><div class="lp-canvas" inert></div></div></div></aside>';
+  main.appendChild(wrap);
+  var panel=wrap.querySelector('.cz-panel'),aside=wrap.querySelector('#livePrev');
+  var view=aside.querySelector('.lp-view'),sizer=aside.querySelector('.lp-sizer'),canvas=aside.querySelector('.lp-canvas'),now=aside.querySelector('.lp-now');
+
+  /* 頁首上方的模式切換 */
+  var bar=document.createElement('div');bar.id='czModeBar';
+  bar.innerHTML='<span class="cz-seg" role="group" aria-label="顯示方式"><button type="button" data-m="cz">對照模式</button><button type="button" data-m="list">詳細清單</button></span>'+
+    '<span class="cz-hint">對照模式：左邊點樣式，右邊範例網站立即換；詳細清單：完整規範說明</span>';
+  var pin=document.querySelector('.pagehead .pin');if(pin)pin.appendChild(bar);
+  var MODE='cz';try{if(localStorage.getItem('hlcz-mode')==='list')MODE='list'}catch(e){}
+  var curCat=null,BUILT=[];
+
+  function fit(){
+    var w=view.clientWidth;if(!w)return;
+    var sc=w/1000;canvas.style.transform='scale('+sc+')';
+    sizer.style.height=Math.ceil(canvas.offsetHeight*sc)+'px';
+  }
+  function kid(b){if(!b)return '';if(b.dataset.key)return b.dataset.key;var g=b.dataset.group;return g?g+':'+grpBoxes(g).indexOf(b):''}
+  function build(){
+    var st=ST(),frag=document.createDocumentFragment();
+    HIDDEN_ON=[];BUILT=[];
+    if(st)PARTS.forEach(function(p){
+      var boxes=p.pick(st);
+      if(!boxes.length)return;   /* 沒勾選＝不出現 */
+      var part=document.createElement('div');part.className='lp-part';part.setAttribute('data-lp',p.k);
+      if(boxes.length===1){var c=cloneBody(boxes[0]);if(c)part.appendChild(c)}
+      else{
+        var w=document.createElement('div');w.className='pick-body';
+        var sub=document.createElement('div');sub.className='lp-sub';w.appendChild(sub);
+        boxes.forEach(function(b){var c=cloneBody(b);if(c)sub.appendChild(c)});
+        part.appendChild(w);
+      }
+      if(p.after)p.after(part,st);
+      var nb=p.nameBox?[p.nameBox(st)]:boxes;
+      BUILT.push({k:p.k,keys:(p.nameBox?nb:boxes).map(kid),names:nb.filter(Boolean).map(name)});
+      frag.appendChild(part);
+    });
+    if(!BUILT.length){var em=document.createElement('p');em.className='lp-empty';em.textContent='還沒有勾選任何樣式。左邊點選後，會在這裡組成範例網站。';frag.appendChild(em)}
+    canvas.textContent='';canvas.appendChild(frag);
+    fit();
+  }
+  function show(k,flash){
+    var el=canvas.querySelector('.lp-part[data-lp="'+k+'"]');if(!el)return false;
+    var sc=view.clientWidth/1000;
+    view.scrollTo({top:Math.max(0,el.offsetTop*sc-12),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    if(flash){el.classList.add('lp-hit');setTimeout(function(){el.classList.remove('lp-hit')},60)}
+    return true;
+  }
+  function setNow(label,detail){
+    now.textContent='';var b=document.createElement('b');b.textContent=label;now.appendChild(b);
+    if(detail)now.appendChild(document.createTextNode('　'+detail));
+  }
+
+  /* 縮圖：等比縮到選項卡寬度 */
+  function fitThumbs(){
+    [].forEach.call(panel.querySelectorAll('.cz-thumb'),function(t){
+      var inn=t.firstElementChild,w=t.clientWidth;if(!w||!inn)return;
+      var sc=w/760;inn.style.transform='scale('+sc+')';
+      t.style.height=Math.min(220,Math.ceil(inn.offsetHeight*sc))+'px';
+    });
+  }
+  function optBtn(pressed){var b=document.createElement('button');b.type='button';b.className='cz-opt';b.setAttribute('aria-pressed',String(!!pressed));return b}
+  function ckName(text){var d=document.createElement('span');d.className='cz-nm';d.innerHTML='<span class="cz-ck"><span class="material-symbols-rounded">check</span></span>';d.appendChild(document.createTextNode(text));return d}
+  function afterPick(G,detail){
+    setTimeout(function(){
+      renderPanel();build();
+      var hit=show(G.k,true);
+      setNow(G.t,hit?detail:'沒勾選，不放進預覽');
+    },40);
+  }
+  function renderPanel(){
+    var list=GROUPS[curCat]||[],keepTop=panel.scrollTop,st=ST()||{};
+    panel.textContent='';
+    list.forEach(function(G){
+      var sec=document.createElement('section');sec.className='cz-grp';
+      var h=document.createElement('div');h.className='cz-grp-h';
+      var h3=document.createElement('h3');h3.textContent=G.t;h.appendChild(h3);
+      var cur=document.createElement('span');cur.className='cz-cur';h.appendChild(cur);
+      var more=document.createElement('button');more.type='button';more.className='cz-more';more.textContent='看說明';
+      more.addEventListener('click',function(){setMode('list');var t=document.getElementById(G.sec);if(t)setTimeout(function(){t.scrollIntoView({block:'start'});scrollBy(0,-(parseFloat(getComputedStyle(wrap).getPropertyValue('--lp-top'))||190))},30)});
+      h.appendChild(more);sec.appendChild(h);
+      var opts=document.createElement('div');opts.className='cz-opts';sec.appendChild(opts);
+
+      if(G.type==='logo'){
+        opts.classList.add('cz-row');
+        [].forEach.call(document.querySelectorAll('.logo-sel'),function(ls,i){
+          var on=ls.classList.contains('on'),b=optBtn(on),img=ls.querySelector('img');
+          var lg=document.createElement('span');lg.className='cz-logo';if(img){var im=img.cloneNode();im.removeAttribute('style');lg.appendChild(im)}
+          b.appendChild(lg);var cap=(ls.parentElement.querySelector('.logo-caption')||{}).textContent||('Logo '+(i+1));b.appendChild(ckName(cap));
+          if(on)cur.textContent=cap;
+          b.addEventListener('click',function(){if(!ls.classList.contains('on'))ls.click();afterPick(G,cap)});
+          opts.appendChild(b);
+        });
+      }
+      else if(G.type==='group'){
+        var boxes=grpBoxes(G.g),onBox=null;
+        boxes.forEach(function(box){
+          if(isHidden(box))return;
+          var on=box.classList.contains('adopted');if(on)onBox=box;
+          var b=optBtn(on),th=document.createElement('div');th.className='cz-thumb';
+          var inn=document.createElement('div');inn.className='cz-thumb-in';var c=cloneBody(box);if(c)inn.appendChild(c);th.appendChild(inn);
+          b.appendChild(th);var nm=name(box);b.appendChild(ckName(nm));b.setAttribute('aria-label',G.t+'：'+nm);
+          b.addEventListener('click',function(){if(!box.classList.contains('adopted'))box.querySelector('.pick-head').click();afterPick(G,nm)});
+          opts.appendChild(b);
+        });
+        /* 每一組都可以不套（原本「再點一次已採用的樣式＝取消」，這裡改成明確的選項，不怕誤點） */
+        var nb=optBtn(!onBox);nb.classList.add('cz-none');nb.appendChild(ckName('不套用（保留原頁面）'));
+        nb.addEventListener('click',function(){var a=boxes.filter(function(x){return x.classList.contains('adopted')})[0];if(a)a.querySelector('.pick-head').click();afterPick(G,'')});
+        opts.appendChild(nb);
+        cur.textContent=onBox?name(onBox):'不套用';
+      }
+      else if(G.type==='member'){
+        var mb=document.querySelector('[data-toggle="member-wrap"]');if(!mb)return;
+        opts.appendChild(swRow('在頁首顯示「登入／翰林會員」',mb.classList.contains('adopted'),function(){mb.querySelector('.pick-head').click();afterPick(G,'')}));
+        cur.textContent=mb.classList.contains('adopted')?'顯示':'不顯示';
+      }
+      else if(G.type==='switches'){
+        var n=0,tot=0;
+        [].forEach.call(document.querySelectorAll(G.scope+' .pick-box[data-key]'),function(box){
+          if(isHidden(box))return;tot++;
+          var on=box.classList.contains('adopted');if(on)n++;
+          var nm=name(box),row=swRow(nm,on,function(){box.querySelector('.pick-head').click();afterPick(G,nm)});
+          var tog=box.querySelector('.pick-head .bg-tog');
+          if(tog){   /* 沒底色／有底色：沿用原本卡片上的切換（同一個狀態），右邊範例跟著換 */
+            var t2=tog.cloneNode(true);
+            t2.addEventListener('click',function(e){var bb=e.target.closest('button');if(!bb)return;tog.querySelector('button[data-bg="'+bb.getAttribute('data-bg')+'"]').click();afterPick(G,nm)});
+            row.appendChild(t2);
+          }
+          if(!on)row.classList.add('cz-off');
+          opts.appendChild(row);
+        });
+        cur.textContent='已勾 '+n+'／'+tot;
+      }
+      panel.appendChild(sec);
+    });
+    panel.scrollTop=keepTop;
+    requestAnimationFrame(fitThumbs);
+  }
+  function swRow(text,on,fn){
+    var row=document.createElement('div');row.className='cz-sw';
+    var b=document.createElement('button');b.type='button';b.className='cz-swbtn';b.setAttribute('role','switch');b.setAttribute('aria-checked',String(!!on));
+    b.innerHTML='<span class="cz-tr" aria-hidden="true"></span>';b.appendChild(document.createTextNode(text));
+    b.addEventListener('click',fn);row.appendChild(b);return row;
+  }
+  function measureTop(){
+    var t=0;['.topbar','.sticky-head','.tab-bar','.kit-tabs'].forEach(function(s){var e=document.querySelector(s);if(!e||e.offsetParent===null)return;var cs=getComputedStyle(e);if(cs.position!=='sticky')return;var v=(parseFloat(cs.top)||0)+e.offsetHeight;if(v>t)t=v});
+    wrap.style.setProperty('--lp-top',Math.round((t||170)+16)+'px');
+  }
+  function wide(){return matchMedia('(min-width:1181px)').matches}
+  function apply(){
+    var isCz=(curCat==='identity'||curCat==='comps');
+    document.body.classList.toggle('cz-cat',isCz);
+    var on=isCz&&MODE==='cz'&&wide();
+    main.classList.toggle('cz-on',on);document.body.classList.toggle('cz-active',on);
+    [].forEach.call(bar.querySelectorAll('button[data-m]'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-m')===MODE))});
+    if(!on)return;
+    measureTop();renderPanel();build();
+    var first=curCat==='identity'?'hd':'hero';show(first,false);setNow(curCat==='identity'?'頁首':'歡迎橫幅','');
+  }
+  function setMode(m){MODE=m;try{localStorage.setItem('hlcz-mode',m)}catch(e){}apply();window.scrollTo({top:0})}
+  bar.addEventListener('click',function(e){var b=e.target.closest('button[data-m]');if(b)setMode(b.getAttribute('data-m'))});
+  window.__HL_lpCat=function(cat){curCat=cat;apply()};
+  window.HL_lpAudit=function(){build();return {state:ST(),built:BUILT.slice(),hiddenOn:HIDDEN_ON.slice()}};
+  window.addEventListener('resize',function(){if(main.classList.contains('cz-on')!==(wide()&&MODE==='cz'&&(curCat==='identity'||curCat==='comps')))apply();else if(main.classList.contains('cz-on')){measureTop();fit();fitThumbs()}});
+  if(window.ResizeObserver){new ResizeObserver(function(){if(main.classList.contains('cz-on'))fit()}).observe(canvas)}
+  canvas.addEventListener('load',function(){fit()},true);
+  panel.addEventListener('load',function(){fitThumbs()},true);
+
+  /* 基本控制項（詳細清單）：每一張卡片的標題列放「沒底色｜有底色」切換，同一區塊只顯示一種 */
+  [].forEach.call(document.querySelectorAll('#controls .pick-box[data-key]'),function(box){
+    var duo=box.querySelector(':scope > .pick-body > .duo'),head=box.querySelector(':scope > .pick-head');
+    if(!duo||!head)return;
+    var light=duo.querySelector(':scope > .duo-card.light'),dark=duo.querySelector(':scope > .duo-card.dark');
+    if(!light||!dark)return;
+    duo.classList.add('duo-one');
+    var tog=document.createElement('span');tog.className='bg-tog';tog.setAttribute('role','group');tog.setAttribute('aria-label','底色');
+    tog.innerHTML='<button type="button" data-bg="0" aria-pressed="true">沒底色</button><button type="button" data-bg="1" aria-pressed="false">有底色</button>';
+    var tag=head.querySelector('.adopt-tag');head.insertBefore(tog,tag?tag.nextSibling:null);
+    function set(on){
+      light.classList.toggle('is-show',!on);dark.classList.toggle('is-show',on);
+      [].forEach.call(tog.querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',String((b.getAttribute('data-bg')==='1')===on))});
+    }
+    set(false);
+    tog.addEventListener('click',function(e){
+      e.stopPropagation();   /* 不要觸發標題列的「採用／取消採用」 */
+      var b=e.target.closest('button');if(!b)return;
+      set(b.getAttribute('data-bg')==='1');
+    });
+  });
+  if(window.__HL_curCat)window.__HL_lpCat(window.__HL_curCat);
 })();
 </script>
 </body>

@@ -8,9 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20260930g">
+<link rel="stylesheet" href="style.css?v=20261005b">
 <script src="defaults.js?v=792634ded4c0"></script>
-<script src="importbase.js?v=1"></script>
+<script src="importbase.js?v=20260930a"></script>
+<script src="folderbundle.js?v=20260930a"></script>
 <!-- 「調整樣式」要導到套版詳細，得先知道採用中的是哪一組；HL_adoptedKitId() 讀 HL_KITS -->
 <script src="kits.js?v=bd42b56bca0b"></script>
 <style>
@@ -27,6 +28,10 @@
 .step-head .en{font-size:11.5px;color:#626A78;letter-spacing:.25em;font-weight:400}
 .dropzone{border:2px dashed var(--blue-200);border-radius:12px;background:var(--blue-50);padding:38px 20px;text-align:center;color:var(--brand-dark);font-size:14px;cursor:pointer;transition:.15s}
 .dropzone:hover,.dropzone.over{background:var(--blue-100);border-color:var(--brand)}
+/* 整頁可拖放（2026-10-01）：拖檔案或資料夾進到頁面任何地方都會出現這層提示，放開就匯入 */
+.drop-veil{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(6,78,164,.10);pointer-events:none}
+.drop-veil.on{display:flex}
+.drop-veil span{display:inline-flex;align-items:center;gap:10px;padding:18px 28px;border-radius:16px;background:#fff;color:var(--brand-dark);font-size:17px;font-weight:700;box-shadow:0 10px 30px rgba(30,61,96,.18)}
 .dropzone .material-symbols-rounded{font-size:38px;color:var(--brand);display:block;margin:0 auto 8px}
 .dropzone span{display:block;font-size:12.5px;color:var(--gray-2);margin-top:4px}
 .src-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
@@ -116,6 +121,11 @@
 .src-warn.danger{background:#F8EDE0;color:#5C5248}
 .src-warn.danger .material-symbols-rounded{color:#B45309}
 .src-warn.danger b{color:#8A4508}
+.folder-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 4px;font-size:13px;color:#5C6A78}
+.folder-pick{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 0;padding:12px 16px;border-radius:12px;background:#F1F4F8;font-size:13.5px}
+.folder-pick select{font:inherit;padding:8px 12px;border-radius:10px;border:0;background:#fff;max-width:100%}
+.asset-note{margin:10px 0 0}
+.asset-note ul{margin:4px 0 0;padding-left:18px}
 .src-warn code{font-family:Consolas,Menlo,monospace;font-size:12px;
   background:rgba(0,0,0,.06);border-radius:4px;padding:1px 5px}
 </style>
@@ -152,7 +162,8 @@
       <span id="tabPreview" class="disabled">對照預覽</span>
     </div>
     <span id="nextActions" style="margin-left:auto;display:inline-flex;visibility:hidden;gap:10px;flex-wrap:wrap">
-      <button class="btn soft" id="importConfirm" style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">tune</span>調整樣式</button>
+      <!-- 2026-10-01 使用者指定移除右上角「調整樣式」：不顯示，但元素保留——底部流程條「下一步：挑視覺套版」是呼叫它的 click()，刪掉會斷 -->
+      <button class="btn soft" id="importConfirm" hidden style="display:none;font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">tune</span>調整樣式</button>
       <button class="btn primary" id="dlBranded" hidden style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">download</span>下載成果</button><!-- 動作改由流程條觸發，元素留著給既有 handler -->
     </span>
   </div>
@@ -160,6 +171,8 @@
   <!-- 對照預覽 -->
   <div class="imp-step" id="stepPreview" style="display:none">
     <div class="step-head">對照預覽<span class="pick-note" id="previewSource" style="margin-left:auto"></span></div>
+    <!-- 外部檔案提示（2026-09-30）：資料夾匯入時說明合併了什麼；單一檔案引用了沒上傳的檔案時列出來，不再只是一片空白 -->
+    <div class="src-warn asset-note" id="assetNote" hidden></div>
     <div id="impOpts" style="display:none;align-items:center;gap:20px;flex-wrap:wrap;font-size:13px;margin:0 0 12px;background:#fff;border:1px solid #EDF0F4;border-radius:12px;padding:12px 18px">
       <!-- 版面型態：自動判定猜不中時，使用者可以直接指定。
            應用型版面（側欄＋工作區）套版時不補歡迎橫幅、不動佈局結構，
@@ -203,7 +216,7 @@
       <div class="cmp-cell"><b>原始樣式</b><iframe id="frameRaw" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
       <div class="cmp-cell after"><div class="cmp-head"><b class="after">套上品牌規範後（配色 / 字體 / Logo）</b><button class="btn cmp-open" id="openFullBranded" type="button"><span class="material-symbols-rounded" style="font-size:18px">open_in_new</span>開新分頁看完整</button></div><iframe id="frameBranded" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
     </div>
-    <p class="same-note" id="notStyledNote" style="display:none"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> <b>還沒挑視覺套版，所以左右兩邊一樣。</b><span id="notStyledText">按右上角「調整樣式」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。</span>
+    <p class="same-note" id="notStyledNote" style="display:none"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> <b>還沒挑視覺套版，所以左右兩邊一樣。</b><span id="notStyledText">按底部的「下一步：挑視覺套版」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。</span>
       <!-- 2026-09-16 UX 審核：已經採用過某一組的人不用再繞去挑一次，直接在這裡按一下就套上 -->
       <button type="button" class="btn soft" id="useAdoptedKit" style="display:none;margin-left:10px;font-size:12.5px;padding:6px 14px;vertical-align:middle"><span class="material-symbols-rounded" style="font-size:16px">check</span><span id="useAdoptedKitName">用採用中的這一組套上</span></button></p>
     <p class="same-note" id="sameNote"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> 此檔案沒有偵測到可替換的色碼或 Logo，左右畫面差異不明顯。</p>
@@ -214,7 +227,7 @@
         <button class="btn soft" style="font-size:13.5px;padding:9px 18px">次要按鈕</button>
         <span class="tagx blue">科目</span><span class="tagx green">已派發</span><span class="tagx yellow">批改中</span>
         <span class="pv-new"><i></i>NEW 公告</span>
-        <span class="member-pill"><span class="material-symbols-rounded" style="font-size:17px">account_circle</span>翰林會員</span>
+        <span class="member-pill" role="button" aria-label="翰林會員" title="翰林會員"><span class="material-symbols-rounded" style="font-size:24px">account_circle</span></span>
       </div>
     </div>
   </div>
@@ -245,11 +258,24 @@
     </div>
     <div class="dropzone" id="dropZone">
       <span class="material-symbols-rounded">upload_file</span>
-      拖曳檔案到這裡，或點擊選擇
+      拖曳檔案或整個資料夾到這裡，或點擊選擇檔案
       <span>支援 JSON（完整還原選取）/ HTML / CSS / JS · JSX（自動重新上色、換字體與 Logo）</span>
     </div>
     <input type="file" id="importFile" accept=".json,.html,.htm,.css,.txt,.js,.jsx,.mjs,.ts,.tsx,application/json,text/html,text/css,text/plain,text/javascript" style="display:none">
-    <div class="src-row">
+    <!-- 資料夾匯入（2026-09-30）：樣式、資料、圖片拆成多個檔案的專案，只上傳 HTML 會缺內容；選整個資料夾，這裡合併成單一檔案再套版 -->
+    <!-- 2026-10-01 使用者指定拿掉：整頁可拖放資料夾，這顆按鈕不需要。元素保留（程式有引用），只是不顯示 -->
+    <div class="folder-row" style="display:none">
+      <button class="btn soft" id="importFolderBtn" type="button" style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">folder_open</span>選擇整個資料夾</button>
+      <span>網頁拆成多個檔案（樣式、資料、圖片分開放）時用這個，也可以把資料夾直接拖進上面的框</span>
+    </div>
+    <input type="file" id="importFolder" webkitdirectory directory multiple style="display:none">
+    <div class="folder-pick" id="folderPick" role="group" aria-label="選擇要匯入的頁面">
+      <span>資料夾裡有多個頁面，要匯入哪一個？</span>
+      <select id="folderPickSel"></select>
+      <button class="btn primary" id="folderPickGo" type="button" style="font-size:13.5px;padding:9px 18px">匯入這一頁</button>
+    </div>
+    <!-- 2026-10-01 使用者指定拿掉「讀取上次儲存」。元素保留（程式有引用），只是不顯示 -->
+    <div class="src-row" style="display:none">
       <button class="btn soft" id="importSaved" style="font-size:13.5px;padding:9px 18px"><span class="material-symbols-rounded" style="font-size:17px">history</span>讀取上次儲存</button>
       <span class="info" id="importSavedInfo"></span>
     </div>
@@ -599,7 +625,14 @@ hlStampAssets();
       var sorted=Object.keys(count).sort(function(a,b){return count[b]-count[a]});
       p=sorted[0]||null;
     }
-    if(!p)throw new Error('檔案裡找不到可辨識的品牌色（CSS 變數或色碼）');
+    /* 已在套版詳細選好色版時，套版用的是那一組，檔案自己的品牌色只是參考：找不到也照常匯入
+       （2026-10-01 實測：Bootstrap／Tailwind 頁面顏色全靠 class，檔案裡沒有色碼，原本直接被拒收）。
+       沒選色版時仍需要從檔案取色，維持原本的提示。 */
+    if(!p){
+      var _picked=false;try{_picked=!!(window.HL_adoptedKitId&&window.HL_adoptedKitId())}catch(e){}
+      if(!_picked)throw new Error('檔案裡找不到可辨識的品牌色（CSS 變數或色碼）。請先到「視覺風格」選一組色版再匯入');
+      p='#064EA4';   /* 佔位：keepPickedTheme 會換成使用者選的色版 */
+    }
     return {
       theme:{n:'匯入樣式',p:p,s:s||mixB(p,.35),i:acc||mixW(p,.35),c:c||'#FF9A3C'},
       contrast:'auto'
@@ -945,6 +978,13 @@ hlStampAssets();
            文字色也不改寫（沿用頁面映射後的字色）。有照片才走照片＋暗角。 */
         /* 字色一定要依頁面底色決定：原檔常是「深底白字」，底色一吃 body 變淺，白字就整段消失
            （2026-09-21 自檢：hanlin-cloud、expo 三份樣本 hero 白字疊在白底上）。 */
+        /* 2026-10-01 使用者同意試行（推翻 09-18「吃 body」）：色版有指定主視覺色時，用它當主視覺底，
+           跟套版詳細的範本頁同一份分配（HL_heroSpec），匯入結果才看得出是這一組。單色、不用漸層（§6.1）。
+           字色依對比在白與墨色之間挑高的那個。 */
+        if(_hs&&_hs.hero){
+          var _hb=normHex(_hs.hero),_ink=to2.ink||SG.ink;
+          return {bg:_hb,fg:(sgCR('#FFFFFF',_hb)>=sgCR(_ink,_hb)?'#fff':_ink),photo:true,cta:_hs.btn||to2.c};
+        }
         return {bg:'transparent',fg:(isDark2?'#fff':(to2.ink||SG.ink)),photo:true,cta:(_hs&&_hs.btn)||to2.c};
       }
       return null;
@@ -957,7 +997,11 @@ hlStampAssets();
        使用者正是靠這個面板診斷版面問題的。 */
     var STRUCT_RAN=false;
     /* 頁首／頁尾判定帳：報告要明講「補上新的」還是「沿用原本的哪一個」，猜錯時使用者才知道去切「頁首／頁尾」選項 */
-    var SHELL_MODE=(opts&&/^(add|keep|auto|replace)$/.test(opts.shellMode||''))?opts.shellMode:'replace';
+    /* 【頁首頁尾：有就改色、沒有才補】(使用者指定 2026-10-01：「匯入的檔案有沒有這兩個，沒有才需要給他上，有就改色」)
+       預設改成 auto（沿用原本的＋缺的才補）。原本預設 replace 會把原檔的頁首頁尾藏起來、另做一個新的——
+       22 份頁尾、18 份頁首都被這樣處理，甚至原檔的 header 判成主視覺而保留時，畫面上就出現兩個頁首。
+       replace 仍可在 ?adv=1 的進階選項明確選用（shellExplicit），否則舊紀錄裡存的 replace（當時是預設值）一律不採用。 */
+    var SHELL_MODE=(opts&&/^(add|keep|auto|replace)$/.test(opts.shellMode||'')&&(opts.shellMode!=='replace'||opts.shellExplicit===true))?opts.shellMode:'auto';
     var SHELL_ORIG={hd:null,ft:null};   /* 套用版型模式：原本的頁首／頁尾（導覽連結要搬進新殼，然後收起來） */
     var SHELL_INFO={hd:'',ft:''};
   /* 【選項卡列不是頁首】(2026-08-31)
@@ -1257,6 +1301,32 @@ hlStampAssets();
       return v.soft?ROLE_SOFT[v.role]:ROLE_COLOR[v.role];
     }
 
+    /* controls.gray 取消＝灰階不再保留原色，改用「這一組色版的色調」（2026-10-05 使用者指定：
+         「灰階和中間色改成關掉，以那組色版風格去執行它們中間適合的色調」）。
+       做法：明暗照原本的灰（亮度不變，層次不會亂），色調換成這一組的墨色（ink）——
+       在墨色與白（或黑）之間找出同亮度的那一點，就是「中間適合的色調」。
+       跟色版自己的中性色（ink／mu／ln／bg）亮度很接近（差 <0.03）時直接用色版的值。
+       不可「挑亮度最近的中性色」：色版常缺 ln／bg（漫畫貼紙風只有 ink、mu），淺灰底會被換成深灰，版面直接壞掉（實測）。
+       純白與近白（亮度 >0.96）維持原樣；色版沒給墨色就不動。
+       原本取消只作用在 domMap 的帶色灰，純灰（色差 <6）在更前面就被略過，等於沒有作用。 */
+    function hexLum(hx){return lum(parseInt(hx.slice(1,3),16),parseInt(hx.slice(3,5),16),parseInt(hx.slice(5,7),16))}
+    function grayMap(r,g,b){
+      if(CTLON('gray')||!to||!to.ink||!/^#[0-9a-fA-F]{6}$/.test(to.ink))return null;
+      var L=lum(r,g,b);if(L>0.96)return null;
+      var near=null,nd=0.03;
+      [to.ink,to.mu,to.ln,to.bg].forEach(function(hx){
+        if(!hx||!/^#[0-9a-fA-F]{6}$/.test(hx))return;
+        var d=Math.abs(hexLum(hx)-L);if(d<nd){nd=d;near=hx.toUpperCase()}
+      });
+      if(near)return near;
+      var ink=to.ink.toUpperCase(),Li=hexLum(ink),lo=0,hi=1,mid,c=ink;
+      if(L<=Li)return ink;   /* 比墨色還深（純黑字、黑色陰影）→ 用這一組最深的墨色 */
+      for(var k=0;k<16;k++){   /* 在墨色與白之間找同亮度的那一點 */
+        mid=(lo+hi)/2;c=mixW(ink,mid);
+        if(hexLum(c)<L)lo=mid;else hi=mid;
+      }
+      return c;
+    }
     function domMap(r,g,b){
       if(domHue===null)return null;
       var mx=Math.max(r,g,b),mn=Math.min(r,g,b);if(mx-mn<6)return null;
@@ -1952,15 +2022,17 @@ hlStampAssets();
            改成實心藥丸：版頭深色＝白底深字，版頭淺色＝深品牌色底白字，
            兩種都穩定在 6:1 以上。 */
         var mSolidDark=(HS.fg==='#fff');
-        var mfg=(mSolidDark?B.s:'#fff');
-        var mbg=(mSolidDark?'#FFFFFF':B.s);
+        var mfg=(mSolidDark?'#fff':HS.fg);   /* 無底色：深色版頭純白 icon，淺色版頭跟版頭前景色 */
+        var mbg=(mSolidDark?'#FFFFFF':B.s);   /* 只剩 icon，不再有底色 */
         var wrap=mk('span','position:relative;display:inline-flex;align-items:center');
         wrap.setAttribute('data-hl-member','1');
         /* 規則歸屬追蹤：這裡在 header 組裝階段，imp() 尚未進入作用域，
            直接寫 data-hl-rule 讓稽核報告看得到「系統登入對接」確實執行過。 */
         wrap.setAttribute('data-hl-rule','member=系統登入對接'+(MEMBER_EXPLICIT?'（使用者設定）':'（版型預設）'));
-        var mbtn=mk('span','display:inline-flex;align-items:center;gap:6px;border-radius:100px;padding:6px 16px;font-size:16px;cursor:pointer;background:'+mbg+';color:'+mfg,
-          icon('account_circle',17,mfg)+'翰林會員');
+        var mbtn=mk('span','display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;padding:0;cursor:pointer;background:transparent;color:'+mfg,
+          icon('account_circle',24,mfg));
+        mbtn.setAttribute('aria-label','翰林會員');
+        mbtn.setAttribute('title','翰林會員');
         mbtn.setAttribute('data-hl-member-btn','1');
         mbtn.setAttribute('role','button');
         mbtn.setAttribute('tabindex','0');
@@ -2163,6 +2235,8 @@ hlStampAssets();
               if(!isrc)return;
               var meta=(im.getAttribute('class')||'')+' '+(im.getAttribute('alt')||'')+' '+isrc;
               if(/logo|icon|mark|avatar|badge|sprite/i.test(meta))return;
+              /* 引擎自己放的翰林 Logo 不是主視覺照片（2026-10-01：被平鋪成整片背景） */
+              if(isrc===LOGO_DATA||im.getAttribute('alt')==='翰林'||im.hasAttribute('data-hl-logo')||im.hasAttribute('data-hl-logo-added')||im.getAttribute('data-hl-origin')==='system')return;
               heroPhoto=isrc;
             });
           }catch(e){SWALLOW(e)}
@@ -2187,6 +2261,9 @@ hlStampAssets();
               }
             }
             if(!heroHasVisual&&HERO_SRC_STYLED)heroHasVisual=true;   /* 原始 CSS 規則判定，見外層 */
+            /* 沒有大標的不是橫幅，是剛好叫 hero 的內容區（任務中心 .degree-hero 包住整頁的分頁＋科目卡）。
+               塗主視覺色會整頁變色（實測 69% 薰衣草），維持原底色（2026-10-01） */
+            if(!heroHasVisual&&!he.querySelector('h1,h2'))heroHasVisual=true;
             /* 標記給注入 CSS：有自己視覺設計的橫幅，底色與字色一律不動（2026-09-21 自檢：原本深底白字的橫幅被 transparent 蓋掉變白字白底） */
             if(heroHasVisual)he.setAttribute('data-hl-heroown','1');
           }catch(e){SWALLOW(e)}
@@ -2669,7 +2746,7 @@ hlStampAssets();
         if(vm0){if(vm0.toUpperCase()!==h)toneMap[h]=vm0;return vm0}
         var dm0=domMap(r,g,b);
         if(dm0){if(dm0.toUpperCase()!==h)toneMap[h]=dm0;return dm0}
-        if(isGrayish(r,g,b))return mt;
+        if(isGrayish(r,g,b)){var gm0=grayMap(r,g,b);if(gm0){if(gm0!==h)toneMap[h]=gm0;return gm0}return mt}
         var dest=toneFor(r,g,b,to);
         if(dest.toUpperCase()!==h)toneMap[h]=dest;
         return dest;
@@ -2686,7 +2763,7 @@ hlStampAssets();
         /* hsl 本來就直接給了飽和度,用它判斷比轉成 rgb 再看色差準得多：
            hsl(340,60%,97%) 轉出來是 rgb(252,243,246),色差只有 9 會被當灰保留,
            但它其實是明確的淡粉色,不映射就會留著原站的色相。 */
-        if(!dmh&&s1<0.15&&isGrayish(r,g,b))return mt;
+        if(!dmh&&s1<0.15&&isGrayish(r,g,b)){var gmh=grayMap(r,g,b);if(!gmh)return mt;dmh=gmh}
         var dest=dmh||toneFor(r,g,b,to);
         if(aa!==undefined){
           var r2=parseInt(dest.slice(1,3),16),g2=parseInt(dest.slice(3,5),16),b2=parseInt(dest.slice(5,7),16);
@@ -2698,7 +2775,7 @@ hlStampAssets();
       seg=seg.replace(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*([\d.]+)\s*)?\)/g,function(mt,r,g,b,a){
         r=+r;g=+g;b=+b;
         var dmr=domMap(r,g,b);
-        if(!dmr&&isGrayish(r,g,b))return mt;
+        if(!dmr&&isGrayish(r,g,b)){var gmr=grayMap(r,g,b);if(!gmr)return mt;dmr=gmr}
         var dest=dmr||toneFor(r,g,b,to);
         toneMap['rgb('+r+','+g+','+b+')']=dest;
         if(a!==undefined){
@@ -3109,6 +3186,20 @@ hlStampAssets();
           })();
           function inSB(el){return !!(SBEL&&el&&SBEL.contains(el))}
           var hdEl=doc.querySelector('header,nav,[class*=navbar],[class*=topbar]');
+          /* 【自訂元件頁首】(使用者回報 2026-10-01，任務中心 index.html)
+             頁首寫成 <wm-navbar>、<app-header> 這種自訂元件，內容由它自己的程式在執行期畫出來。
+             原本認不得：querySelector 只命中主視覺裡的 nav.dg-tabs（選項卡，被排除）→ 全域掃描抓到內容區的 .degree-wrap 當頁首，
+             在裡面塞 Logo、在中間插一條新頁首，主視覺再把那張 Logo 當照片平鋪 → 整頁巨大的「翰林」、科目卡消失。
+             這裡先認自訂元件：名稱帶 nav／navbar／header／topbar／appbar 的。它只套配色，不替換、不塞 Logo（見下方兩處 HD_CUSTOM）。 */
+          var HD_CUSTOM=null;
+          (function(){
+            var all=doc.body?doc.body.querySelectorAll('*'):[];
+            for(var _ci=0;_ci<all.length&&_ci<80;_ci++){
+              var _t=all[_ci].tagName.toLowerCase();
+              if(_t.indexOf('-')>0&&/(^|-)(nav|navbar|navigation|header|topbar|top-bar|appbar|app-bar|masthead)(-|$)/.test(_t)&&!inSB(all[_ci])){HD_CUSTOM=all[_ci];break}
+            }
+          })();
+          if(HD_CUSTOM)hdEl=HD_CUSTOM;
           if(inSB(hdEl))hdEl=null;
           if(hdEl&&isTabStrip(hdEl))hdEl=null;   /* nav.tabs／role=tablist 不當頁首 */
           /* 【<header class="hero"> 是主視覺，不是頁首】(使用者回報 2026-09-18，Hanlin EXPO.html)
@@ -3156,7 +3247,11 @@ hlStampAssets();
             }
           }
           /* 找到的 header 改造成採用版型：沒有 logo 就前置翰林 logo */
-          if(hdEl&&ON('logo')&&!hdEl.querySelector('img,svg')){
+          /* 自訂元件頁首此時還是空的（內容執行期才畫），塞進去的 Logo 會被它自己的程式蓋掉，不塞 */
+          /* 【原檔既有的頁首不塞 Logo】(使用者 2026-10-01：「怎會在他既有的版面擠上 logo？」「有就改色」)
+             只有引擎自己新建的頁首（data-hl-inserted）才放翰林 Logo。原檔已有的頁首橫條沒有 Logo 就維持沒有，
+             原本有 Logo 的照舊換成翰林 Logo（那是替換，不是新增）。 */
+          if(hdEl&&ON('logo')&&!hdEl.querySelector('img,svg')&&hdEl!==HD_CUSTOM&&hdEl.hasAttribute('data-hl-inserted')){
             var hlg2=markSystem(doc.createElement('img'));hlg2.src=LOGO_DATA;hlg2.alt='翰林';
             hlg2.setAttribute('data-hl-logo-added','1');   /* 執行期要量它有沒有自成一行 */
             /* 同上：flex 版頭若是 flex-end 對齊，Logo 會掉到底部與標題錯開一整層
@@ -3179,7 +3274,8 @@ hlStampAssets();
           /* 手動模式：一律補上 → 原本認到的頁首留在原地不動、另外補一個；只用原本的 → 缺了也不補 */
           function _tagOf(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
           if(SHELL_MODE==='add'){if(hdEl)SHELL_INFO.hdKept=_tagOf(hdEl);hdEl=null}
-          if(SHELL_MODE==='replace'&&hdEl&&HD_ON){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
+          /* 自訂元件頁首不替換：它的導覽是執行期才畫的，換掉就沒有導覽了 */
+          if(SHELL_MODE==='replace'&&hdEl&&HD_ON&&hdEl!==HD_CUSTOM){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
           if(hdEl)SHELL_INFO.hd='沿用原本的 '+_tagOf(hdEl)+'，套上採用的版型';
           /* 原檔沒有 header 就補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL） */
           if((ADD_COMPONENTS||ADD_SHELL)&&!hdEl&&SHELL_MODE!=='keep'&&HD_ON){
@@ -3307,7 +3403,10 @@ hlStampAssets();
           /* ── AI 生成頁面手法：單字母方塊當 logo mark ──
              側欄／header 的品牌區常寫成 <div class="hmark">H</div> 這種字母方塊，
              既不是 img 也不是 svg，logo 規則會整個漏掉。 */
-          if(ON('logo')&&SBEL){
+          /* 2026-10-01 使用者指定停用：「怎會在他既有的版面擠上 logo？」
+             側欄原本的字母圖示（Q、H）被換成比它大很多的翰林 Logo，壓在旁邊的標題文字上（實測 s21、edcafe）。
+             原檔既有的版面不塞 Logo；側欄品牌區維持原樣，只跟著換色。 */
+          if(false&&ON('logo')&&SBEL){
             var sbBrand=SBEL.querySelector('[class*=brand],[class*=logo],[class*=mark],[class*=title]');
             if(sbBrand&&!sbBrand.querySelector('img,svg')){
               var mk=null,kids=sbBrand.querySelectorAll('div,span,b,i');
@@ -3339,6 +3438,19 @@ hlStampAssets();
           if(hdEl&&HD_ON)hdEl.setAttribute('data-hl-hd','1');
           if(!HD_ON)SHELL_INFO.hd='不套用（你在自訂規範樣式取消了頁首，原本的頁首保持原樣，只跟著全頁換配色）';
           var ftEl=doc.querySelector('footer,[class*="footer"]');
+          /* 頁面可能有好幾個 <footer>：課文段落、文章、卡片各自的註腳（實測 baihuawen 有 3 個高度 0 的 footer.para-art 在文章裡）。
+             第一個不一定是頁尾，改成：先排除巢在別的候選裡的（.footer-cols 之類）與文章／主內容／側欄裡的，
+             剩下的取「文件裡最後一個」——真正的頁尾在最下面（2026-10-01）。 */
+          try{
+            var _fc=Array.prototype.slice.call(doc.querySelectorAll('footer,[class*="footer"]'));
+            var _top=_fc.filter(function(e){
+              for(var p=e.parentElement;p&&p!==doc.body;p=p.parentElement){
+                if(_fc.indexOf(p)>-1)return false;                         /* 巢在另一個頁尾候選裡 */
+                if(/^(ARTICLE|ASIDE|MAIN|SECTION|BLOCKQUOTE|FIGURE|LI)$/.test(p.tagName))return false;   /* 內容區裡的註腳 */
+              }
+              return true});
+            if(_top.length)ftEl=_top[_top.length-1];
+          }catch(e){SWALLOW(e)}
           if(!ftEl){
             var alls=doc.body.querySelectorAll('div,section,td,table');
             for(var yj=alls.length-1;yj>=0;yj--){
@@ -3406,6 +3518,11 @@ hlStampAssets();
             if(SHELL_MODE==='replace'&&SHELL_ORIG.ft&&SHELL_ORIG.ft.parentNode&&SHELL_ORIG.ft.parentNode!==doc.body){SHELL_ORIG.ft.parentNode.insertBefore(ftEl,SHELL_ORIG.ft.nextSibling)}
             else doc.body.appendChild(ftEl);
           }
+          /* 匯入的若是套過版的成品，檔案裡留著上次的 data-hl-hd／data-hl-ft 標記（可能標在別的元素上），先清掉，只留這次判定的 */
+          try{
+            Array.prototype.forEach.call(doc.querySelectorAll('[data-hl-hd]'),function(e){if(e!==hdEl)e.removeAttribute('data-hl-hd')});
+            Array.prototype.forEach.call(doc.querySelectorAll('[data-hl-ft]'),function(e){if(e!==ftEl)e.removeAttribute('data-hl-ft')});
+          }catch(e){SWALLOW(e)}
           if(ftEl&&FT_ON)ftEl.setAttribute('data-hl-ft','1');
           if(!FT_ON)SHELL_INFO.ft='不套用（你在自訂規範樣式取消了頁尾，原本的頁尾保持原樣，只跟著全頁換配色）';
           var heroEl=doc.querySelector('[class*=hero],[class*=banner],[class*=jumbotron],[class*=masthead],[class*=showcase]');
@@ -3439,7 +3556,11 @@ hlStampAssets();
                版頭裡本來就有 h1 的頁面，再補一個內容一樣的橫幅，畫面上就是
                「從地圖看歷史」上下各一次，看起來像殘留物。重複就不補。 */
             var _dupInHd=!!(hdEl&&htxt&&(hdEl.textContent||'').indexOf(htxt)>-1);
-            if(htxt&&!_dupInHd){
+            /* 內容裡的 h1 還在，橫幅又用同一句當大標，一樣是同一句出現兩次（使用者回報 2026-10-01：
+               素材示意總覽上方多一塊「各素材示意總覽」橫幅，下面原本的標題還在）。只有頁面沒有可見 h1、
+               標題取自 <title> 時才補。 */
+            var _dupInBody=!!(h1e&&!(hdEl&&hdEl.contains(h1e)));
+            if(htxt&&!_dupInHd&&!_dupInBody){
               heroEl=markSystem(doc.createElement('section'));
               heroEl.setAttribute('data-hl-inserted','1');
               var hh=markSystem(doc.createElement('h2'));hh.textContent=htxt;
@@ -4366,6 +4487,26 @@ hlStampAssets();
       /* 各組規範文件定的版面色（lay：nav／footer／hero／cta），首頁卡片與基本範本都照它畫；有就用，沒有退回輔色 */
       var LAY=(to.lay&&typeof to.lay==='object')?to.lay:{};
       var NAV_BG=LAY.nav||(DARKP||S),NAV_FG=LAY.navFg||'#fff',FT_BG=LAY.footer||(isDarkPage?mixB(S,.45):S);
+      /* 【頁首用色版自己的特色色】(使用者指定 2026-10-01：「多巴胺潮風就要多巴胺潮風薰衣草紫色調，每個色版都一樣，怎會是黑色」)
+         規範文件的頁首色（lay.nav）多半是近黑：多巴胺潮風 #171315、墨綠聖誕 #111111，套出來每組頁首都像黑的。
+         改成跟首頁卡片縮圖、範本頁同一份分配（HL_heroSpec.hero：覆寫 > 輔色 s > 主色 p），例如多巴胺潮風＝薰衣草紫。
+         字色在白與深色之間挑對比高的，且一律用純白 #fff——引擎用「字色是不是 #fff」判斷頁首深淺來決定 Logo 要不要反白，
+         先前 navFg 是米白 #FBF5E9，被判成淺底，深色 Logo 疊在深色頁首上看不見。 */
+      var FT_FG='#fff';
+      try{
+        var _nk=null,_nks=window.HL_KITS||[];
+        for(var _ni=0;_ni<_nks.length;_ni++){if(_nks[_ni].n===to.n){_nk=_nks[_ni];break}}
+        if(_nk&&window.HL_heroSpec){
+          var _sig=normHex(window.HL_heroSpec(_nk).hero);
+          if(_sig){
+            NAV_BG=_sig;NAV_FG=(sgCR('#FFFFFF',_sig)>=sgCR('#16202B',_sig))?'#fff':'#16202B';
+            /* 頁尾同一個道理（使用者 2026-10-01：頁尾顏色也沒變）：規範的 lay.footer 多半近黑，改用色版特色色，字色依對比挑 */
+            /* 深色頁（原稿本身是深底）的頁尾維持原本的深色體系，不換成特色色：
+               全面實測 15 組×34 頁時，換成淺色特色色會讓這類頁面的頁尾 Logo 退步（21→1.1） */
+            if(!isDarkPage){FT_BG=_sig;FT_FG=NAV_FG}
+          }
+        }
+      }catch(e){SWALLOW(e)}
       /* Logo 高度一律照基本規範 §3.11：頁首 28px（640px 以下 22px）、頁尾 31px（使用者指定 2026-09-29，原本各版型 26～34px 不一） */
       var HD_STYLE=[
         /* 0 品牌官網（淺色）：白底細陰影、留白大 */
@@ -4396,6 +4537,15 @@ hlStampAssets();
         +'[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{height:'+HS.logo+' !important;width:auto !important}'
         +'@media(max-width:640px){[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{height:22px !important}}'
         +'[data-hl-inserted]{display:flex !important;align-items:center !important;gap:12px !important;font-family:inherit}';
+      /* 淺色頁首：Logo 一律取消反白。匯入的若是「已經套過版的成品」，檔案裡會留著上次寫死的 invert，
+         以前頁首固定深色剛好吻合；頁首改用色版特色色（可能是淺色）後就變成白 Logo 疊淺底（全面實測 6 組色版對比 1.4～2.5） */
+      if(!hdDark)layoutCss+='html body [data-hl-hd] img[data-hl-logo],html body [data-hl-hd] img[alt="翰林"]{filter:none !important}';
+      /* 沿用原本頁首／頁尾（auto 模式，2026-10-01）之後，原檔的樣式會留著：
+         ① 匯入的若是套過版的成品，裡面有上次寫死的 [data-hl-hd]{background:…!important}，特異度相同、位置在後就蓋掉這次的頁首色
+            （實測 baihuawen：頁首被蓋成黑色、Logo 沒反白）→ 這裡再寫一份 html body 開頭的高特異度版本。
+         ② 頁首是 <table> 時，Logo 所在的儲存格常自己有淺色底（實測 s8：深色頁首裡一格淺底，白 Logo 疊在上面）→ 儲存格底色清掉。 */
+      layoutCss+='html body [data-hl-hd]{background:'+HS.bg+' !important;color:'+HS.fg+' !important}'
+        +'html body table[data-hl-hd] td,html body table[data-hl-hd] th,html body tr[data-hl-hd] td,html body tbody[data-hl-hd] td{background:transparent !important}';
       if(hdDark){
         layoutCss+='[data-hl-hd] img[data-hl-logo],[data-hl-hd] img[alt="翰林"]{filter:brightness(0) invert(1)}'
           +'[data-hl-hd] *:not([data-hl-k=checkmark]):not(img):not(svg):not(path):not([class*=tag]):not([class*=badge]):not([class*=chip]):not([class*=pill]):not([class*=coin]):not([class*=count]):not([class*=avatar]):not([data-hl-member-menu]):not([data-hl-member-menu] *):not(button):not(button *):not([class*=btn]):not([class*=btn] *):not([class*=cta]):not([class*=cta] *):not([data-hl-member-btn]):not([data-hl-member-btn] *){color:'+HS.fg+' !important}'
@@ -4489,10 +4639,13 @@ hlStampAssets();
       var FT_STYLE=[
         {bg:SG.subtle,fg:'#62778F',extra:'padding:24px 32px !important;text-align:left !important;border-top:none !important'},
         {bg:mixW(P,.92),fg:S,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'},
-        {bg:FT_BG,fg:'#fff',extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
+        {bg:FT_BG,fg:FT_FG,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
       ];
       var FS=FT_STYLE[ftIdx]||FT_STYLE[2];
       if(LAYOUT_APPLIED)LAYOUT_APPLIED.FS=FS;
+      /* 頁尾也是（理由同頁首）：高特異度版本，並在頁尾是淺色時取消 Logo 反白（原檔頁尾的 Logo 多半帶著白色反白） */
+      layoutCss+='html body [data-hl-ft]{background:'+FS.bg+' !important;color:'+FS.fg+' !important}'
+        +(FS.fg!=='#fff'?'html body [data-hl-ft] img[data-hl-logo],html body [data-hl-ft] img[alt="翰林"],html body [data-hl-ft] img[data-hl-ftlogo]{filter:none !important;opacity:1 !important}':'');
       layoutCss+='[data-hl-ft]{background:'+FS.bg+' !important;color:'+FS.fg+' !important;'+FS.extra+'}'
         +'[data-hl-ft] a{color:'+FS.fg+' !important}'
         +'[data-hl-ft] *:not([data-hl-k=checkmark]):not(img):not(svg):not(path){color:'+FS.fg+' !important}'
@@ -4580,7 +4733,7 @@ hlStampAssets();
         layoutCss+='[data-hl-hero]:not([data-hl-heroown]) h1,[data-hl-hero]:not([data-hl-heroown]) h2,[data-hl-hero]:not([data-hl-heroown]) p{color:'+HERO_BASE.fg+' !important}';
       }
       if(ftIdx===2){
-        layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:'+FT_BG+' !important;color:#fff !important;text-align:center}'
+        layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:'+FT_BG+' !important;color:'+FT_FG+' !important;text-align:center}'
           +'footer a,[data-hl-ft] a{color:#fff !important}';
       }else{
         layoutCss+='footer,[class*="site-footer"],[class*="page-footer"],[data-hl-ft]{background:#F4F7FB !important;color:#62778F !important}'
@@ -4642,6 +4795,18 @@ hlStampAssets();
 
       +'[class*=secondary],[class*=outline],[class*=ghost],[class*=btn-text],[class*=btn-link],[class*=cancel],[class*=btn-default],[class*=btn-light]{background:'+SOFT+' !important;color:'+PTXT_SOFT+' !important}'
       +'[class*=danger],[class*=delete],[class*=remove],[class*=destructive]{background:#B3261E !important;color:#fff !important}'
+      /* 選項卡不是動作按鈕（使用者回報 2026-10-01，任務中心 國小／國中／高中）：
+         上面那條把所有 <button> 塗成主色，選項卡三個都變深底白字，看不出選了哪一個。
+         這裡依 ARIA 狀態還原「選中＝主色、未選中＝透明底」。程式執行期才畫出來的選項卡也吃得到（樣式表規則，不靠逐一標記）。 */
+      /* 只作用在「引擎沒處理過」的選項卡（沒有 data-hl-s＝程式執行期才畫出來的）：寫死的選項卡已由逐元素套色處理，維持原樣不動 */
+      +'html body [role=tab]:not([data-hl-s]):not([aria-selected=true]):not(.is-active):not(.active){background:transparent !important;color:'+(to.mu||'#56697E')+' !important;box-shadow:none !important}'
+      +(function(){
+        /* 選中態用色版強調色（HL_heroSpec 的 btn，沒有就用對比色），字色依對比挑白或墨色（使用者 2026-10-01：讓色版特色看得出來） */
+        var acc=ACT,accFg='#fff';
+        try{var _ks=window.HL_KITS||[];for(var _i=0;_i<_ks.length;_i++){if(_ks[_i].n===to.n&&window.HL_heroSpec){acc=normHex(window.HL_heroSpec(_ks[_i]).btn||to.c||ACT);break}}}catch(e){}
+        var _ink=to.ink||SG.ink;accFg=(sgCR('#FFFFFF',acc)>=sgCR(_ink,acc))?'#fff':_ink;
+        return 'html body [role=tab]:not([data-hl-s])[aria-selected=true],html body [role=tab]:not([data-hl-s]).is-active,html body [role=tab]:not([data-hl-s]).active{background:'+acc+' !important;color:'+accFg+' !important}';
+      })()
       /* 輸入框：無邊線、淺灰底、圓角 10 */
       +'input[type=text],input[type=search],input[type=email],input[type=password],input[type=number],input[type=tel],input[type=url],input:not([type]),textarea{background:'+GRAYBG+' !important;border:none !important;border-radius:12px !important;padding:10px 14px !important;font-size:16px !important;font-family:inherit !important;color:'+INK+' !important;outline-color:'+to.p+' !important}'
       /* 下拉：柔色底＋品牌色字、無外框 */
@@ -4837,7 +5002,7 @@ hlStampAssets();
          而且勾選方塊少了它就會被 [data-hl-hd] *{color} 之類的通則切斷。 */
       var KEEP=[];
       var s=String(cssText||'').replace(
-        /:not\(\s*(?:\[data-hl-(?:k|check-for|cardbtn|heroown)[^\]]*\]\s*)+\)/g,   /* cardbtn：可點的卡片不是按鈕；heroown：橫幅自帶視覺（2026-09-21） */
+        /:not\(\s*(?:\[data-hl-(?:k|check-for|cardbtn|heroown|s(?=[\]=]))[^\]]*\]\s*)+\)/g,   /* cardbtn：可點的卡片不是按鈕；heroown：橫幅自帶視覺（2026-09-21）；s：寫死元素已逐一套色，執行期規則要避開它（2026-10-01） */
         function(m){KEEP.push(m);return '\u0001'+(KEEP.length-1)+'\u0001'});
       s=stripPseudo(stripPseudo(s,'not'),'has');
       /* ③ 模糊比對：先對映，再刪掉對映不到的整個子句 */
@@ -4954,6 +5119,22 @@ hlStampAssets();
            畫面落回樣式表——「勾了純圖片版卻拿到漸層」正是從這裡穿透的。 */
         /* 鐵律①：未主動勾選就不傳 HERO_BASE，inline 層的守門會整段跳過，橫幅保持原樣 */
         if(!_SHAPE_ONLY)applyLayoutInline(doc2,LAYOUT_APPLIED.hdIdx,LAYOUT_APPLIED.ftIdx,LAYOUT_APPLIED.heroIdx,LAYOUT_APPLIED.HS,LAYOUT_APPLIED.FS,((VS._dflt&&VS._dflt.hero)?null:heroBaseOf(LAYOUT_APPLIED.heroIdx,to,isDarkPage)),isDarkPage,IS_APPSHELL);
+        /* 頁尾底色若是淺色（色版特色色偏亮），引擎補的頁尾 Logo 不可再反白，否則白字疊淺底 */
+        try{
+          var _fs=LAYOUT_APPLIED&&LAYOUT_APPLIED.FS;
+          if(_fs&&_fs.fg!=='#fff')Array.prototype.forEach.call(doc2.querySelectorAll('[data-hl-ftlogo]'),function(im){
+            im.style.setProperty('filter','none','important');im.style.setProperty('opacity','1','important')});
+        }catch(e){SWALLOW(e)}
+        /* 頁首／頁尾色最後一道（沿用原本頁首頁尾的 auto 模式，2026-10-01）：
+           原檔頁首的原色會被逐元素換色規則（html body [data-hl-s=N]）再寫一次，位置在前面的版型規則之後，
+           例如午夜金融藍的 s 是純黑，原頁首的 var(--brand-deep) 被換成黑色而蓋掉頁首色（實測 baihuawen）。
+           這裡在整份輸出最後補一條 (0,2,2) 的規則，頁首頁尾色一定贏。 */
+        try{
+          var _L=LAYOUT_APPLIED,_fz='';
+          if(_L&&_L.HS&&HD_ON)_fz+='html body [data-hl-hd][data-hl-hd]{background:'+_L.HS.bg+' !important;color:'+_L.HS.fg+' !important}';
+          if(_L&&_L.FS&&FT_ON)_fz+='html body [data-hl-ft][data-hl-ft]{background:'+_L.FS.bg+' !important;color:'+_L.FS.fg+' !important}';
+          if(_fz){var _fst=doc2.createElement('style');_fst.setAttribute('data-hl-added','1');_fst.id='hl-shell-final';_fst.textContent=_fz;(doc2.head||doc2.documentElement).appendChild(_fst)}
+        }catch(e){SWALLOW(e)}
         try{mobileHeaderOnly(doc2)}catch(e){SWALLOW(e)}
         html='<!DOCTYPE html>'+doc2.documentElement.outerHTML;
       }catch(e){SWALLOW(e)}
@@ -5716,8 +5897,9 @@ hlStampAssets();
     var lm=(document.querySelector('input[name=layoutOpt]:checked')||{}).value||'auto';
     if(lm!=='auto')o.layoutMode=lm;   /* auto 就不傳，讓引擎自己判定 */
     var _swEl=document.getElementById('shellOptWrap');
-    var sm=(_swEl&&!_swEl.hidden)?((document.querySelector('input[name=shellOpt]:checked')||{}).value||'replace'):'replace';
-    o.shellMode=sm;    /* 頁首／頁尾：replace＝套用版型（預設）、auto＝沿用＋補缺、add＝一律補上、keep＝只用原本的 */
+    var sm=(_swEl&&!_swEl.hidden)?((document.querySelector('input[name=shellOpt]:checked')||{}).value||'auto'):'auto';
+    o.shellMode=sm;    /* 頁首／頁尾：auto＝沿用＋補缺（預設，2026-10-01）、replace＝套用版型、add＝一律補上、keep＝只用原本的 */
+    if(sm==='replace')o.shellExplicit=true;   /* 只有進階選項明確選的 replace 才算數 */
     return o;
   }
   /* 套用檢查：把套用結果實際渲染在隱藏 iframe，用 computedStyle 逐項驗證「真的生效」，不是只看規則有沒有寫入 */
@@ -7582,7 +7764,7 @@ hlStampAssets();
       document.querySelectorAll('input[name=toneOpt]').forEach(function(r){
         r.checked=(r.value===tone);          /* 兩個方向都寫，不是只寫其中一邊 */
       });
-      var sm=(o&&/^(add|keep|auto|replace)$/.test(o.shellMode||''))?o.shellMode:'replace';
+      var sm=(o&&/^(add|keep|auto|replace)$/.test(o.shellMode||'')&&(o.shellMode!=='replace'||o.shellExplicit===true))?o.shellMode:'auto';
       document.querySelectorAll('input[name=shellOpt]').forEach(function(r){r.checked=(r.value===sm)});
       document.querySelectorAll('#impOpts [data-opt]').forEach(function(c){
         var v=o?o[c.dataset.opt]:undefined;
@@ -7661,6 +7843,7 @@ hlStampAssets();
     });
     document.getElementById('previewSource').textContent='來源：'+src
       +(st.groups?' · 完整設定（含版型與元件選取）':' · 從內容解析出的品牌色');
+    updateAssetNote(rawMarkup);
     var cmp=document.getElementById('cmpGrid');
     var sample=document.getElementById('compSample');
     var note=document.getElementById('sameNote');
@@ -7688,9 +7871,9 @@ hlStampAssets();
           btn.style.display=nm?'inline-flex':'none';
           if(nm){
             document.getElementById('useAdoptedKitName').textContent='用「'+nm+'」套上';
-            if(txt)txt.textContent='你目前採用的是「'+nm+'」，按右邊直接套上；想換別組就按右上角「調整樣式」。';
+            if(txt)txt.textContent='你目前採用的是「'+nm+'」，按右邊直接套上；想換別組就點上方步驟的「挑風格」。';
           }else if(txt){
-            txt.textContent='按右上角「調整樣式」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。';
+            txt.textContent='按底部的「下一步：挑視覺套版」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。';
           }
         })();
       }
@@ -7770,7 +7953,7 @@ hlStampAssets();
     if(sub){
       var nm='';
       try{ nm=((JSON.parse(localStorage.getItem('hanlin-brand-theme')||'{}').theme)||{}).n||'' }catch(e){}
-      sub.textContent=(isStyled()&&nm)?('目前選用：'+nm):'按「調整樣式」挑一組';
+      sub.textContent=(isStyled()&&nm)?('目前選用：'+nm):'按「下一步：挑視覺套版」挑一組';
     }
     /* 流程條（2026-09-16 動線整理）：全站四步的第 3／4 步，主鈕依實際資料切換 */
     if(window.HL_flowDock){
@@ -7807,10 +7990,98 @@ hlStampAssets();
   dropZone.addEventListener('click',function(){fileInput.click()});
   dropZone.addEventListener('dragover',function(e){e.preventDefault();dropZone.classList.add('over')});
   dropZone.addEventListener('dragleave',function(){dropZone.classList.remove('over')});
-  dropZone.addEventListener('drop',function(e){
-    e.preventDefault();dropZone.classList.remove('over');
-    if(e.dataTransfer.files[0])readFile(e.dataTransfer.files[0]);
+  /* 拖放：整個匯入頁都接受（使用者回報 2026-10-01：拉資料夾沒反應）。
+     原本只有「匯入來源」分頁裡的虛線框能放，匯入過一次後畫面停在「對照預覽」，那個框看不到；
+     拖到別處放開，瀏覽器會直接打開資料夾，看起來就像拖放壞了。 */
+  var veil=document.createElement('div');veil.className='drop-veil';veil.setAttribute('aria-hidden','true');
+  veil.innerHTML='<span><span class="material-symbols-rounded">upload_file</span>放開就匯入（檔案或整個資料夾）</span>';
+  document.body.appendChild(veil);
+  var dragDepth=0;
+  function hasFiles(e){var t=e.dataTransfer&&e.dataTransfer.types;return !!t&&[].indexOf.call(t,'Files')>-1}
+  document.addEventListener('dragenter',function(e){if(!hasFiles(e))return;dragDepth++;veil.classList.add('on')});
+  document.addEventListener('dragleave',function(e){if(!hasFiles(e))return;dragDepth=Math.max(0,dragDepth-1);if(!dragDepth)veil.classList.remove('on')});
+  document.addEventListener('dragover',function(e){if(!hasFiles(e))return;e.preventDefault();e.dataTransfer.dropEffect='copy'});
+  document.addEventListener('drop',function(e){
+    if(!hasFiles(e))return;
+    e.preventDefault();dragDepth=0;veil.classList.remove('on');dropZone.classList.remove('over');
+    handleDrop(e.dataTransfer);
   });
+  function handleDrop(dt){
+    /* webkitGetAsEntry 只能在 drop 當下同步呼叫，之後就讀不到了，所以先全部取出 */
+    var items=dt.items?[].slice.call(dt.items):[],entries=items.map(function(it){return it.webkitGetAsEntry&&it.webkitGetAsEntry()}).filter(Boolean);
+    var hasDir=entries.some(function(en){return en.isDirectory});
+    if(hasDir&&window.HL_filesFromDrop){
+      setTab('source');
+      HL_filesFromDrop(entries.map(function(en){return {webkitGetAsEntry:function(){return en}}})).then(startFolder);
+      return;
+    }
+    if(dt.files&&dt.files[0])readFile(dt.files[0]);
+  }
+  /* ===== 來源：整個資料夾（多檔案的網頁專案）===== */
+  var folderInput=document.getElementById('importFolder'),folderFiles=null,folderReport=null;
+  document.getElementById('importFolderBtn').addEventListener('click',function(){folderInput.click()});
+  folderInput.addEventListener('change',function(){
+    if(folderInput.files.length&&window.HL_filesFromInput)startFolder(HL_filesFromInput(folderInput.files));
+    folderInput.value='';
+  });
+  function startFolder(files){
+    folderFiles=files;
+    var list=window.HL_htmlCandidates?HL_htmlCandidates(files):[];
+    var pick=document.getElementById('folderPick'),sel=document.getElementById('folderPickSel');
+    if(!list.length){alert('這個資料夾裡找不到 HTML 檔案。');return}
+    /* 有 index.html 就直接匯入它，不再讓使用者挑（使用者指定 2026-10-01）；取最淺層那一個 */
+    var idx=list.filter(function(p){return /(^|\/)index\.html?$/i.test(p)}).sort(function(a,b){return a.split('/').length-b.split('/').length})[0];
+    if(idx){pick.style.display='none';bundleAndImport(idx);return}
+    if(list.length===1){pick.style.display='none';bundleAndImport(list[0]);return}
+    /* 多個頁面：讓使用者挑。路徑顯示去掉最外層資料夾名 */
+    sel.innerHTML=list.map(function(p){var shown=p.replace(/^[^/]+\//,'');return '<option value="'+p.replace(/"/g,'&quot;')+'">'+shown.replace(/[<>&]/g,'')+'</option>'}).join('');
+    pick.style.display='flex';sel.focus();
+  }
+  document.getElementById('folderPickGo').addEventListener('click',function(){
+    var p=document.getElementById('folderPickSel').value;
+    document.getElementById('folderPick').style.display='none';
+    if(p)bundleAndImport(p);
+  });
+  function bundleAndImport(mainPath){
+    if(!window.HL_bundleFolder||!folderFiles)return;
+    var btn=document.getElementById('importFolderBtn');btn.disabled=true;
+    HL_bundleFolder(folderFiles,mainPath).then(function(res){
+      folderReport=res.report;
+      importMarkup(res.html,'資料夾 '+mainPath.replace(/^[^/]+\//,''),res.name);
+    }).catch(function(e){alert('資料夾匯入失敗：'+(e&&e.message||e))}).then(function(){btn.disabled=false});
+  }
+  /* 讀進來的文字（單一檔案或資料夾合併後）一律走這裡 */
+  function importMarkup(txt,label,name){
+    lastName=name;
+    var st=parseImport(txt);
+    var mk=('__markup' in st)?st.__markup:(isJsonText(txt)?null:txt);
+    delete st.__markup;
+    clearPrevious();
+    showPreview(keepPickedTheme(st),label,mk);
+  }
+  /* 預覽上方的外部檔案提示 */
+  function updateAssetNote(raw){
+    var box=document.getElementById('assetNote');if(!box)return;
+    var esc=function(x){return String(x).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]})};
+    var rp=folderReport;folderReport=null;
+    if(rp){
+      var got=[];if(rp.css)got.push('樣式 '+rp.css);if(rp.js)got.push('程式 '+rp.js);if(rp.img)got.push('圖片 '+rp.img);if(rp.font)got.push('字型 '+rp.font);
+      if(rp.dynamic)got.push('程式產生的圖片 '+rp.dynamic);
+      var h='<span class="material-symbols-rounded">folder_zip</span><span class="src-warn-t"><b>已從資料夾合併成單一檔案</b>：'+(got.join('、')||'沒有外部檔案')
+        +'（共 '+Math.round(rp.bytes/1024)+' KB）。';
+      if(rp.missing.length)h+='<br>資料夾裡找不到 '+rp.missing.length+' 個被引用的檔案，這部分不會顯示：<ul>'+rp.missing.slice(0,8).map(function(m){return '<li><code>'+esc(m)+'</code></li>'}).join('')+(rp.missing.length>8?'<li>…</li>':'')+'</ul>';
+      if(rp.skipped.length)h+='<br>另有 '+rp.skipped.length+' 張圖片超過容量上限沒有放進來。';
+      box.className='src-warn asset-note'+(rp.missing.length?' danger':'');box.innerHTML=h+'</span>';box.hidden=false;return;
+    }
+    var r=(raw&&window.HL_rebaseHtml)?HL_rebaseHtml(raw,null):null;
+    if(!r||!r.count){box.hidden=true;return}
+    var seen={},items=r.assets.filter(function(a){if(seen[a.url])return false;seen[a.url]=1;return true});
+    box.className='src-warn asset-note danger';
+    box.innerHTML='<span class="material-symbols-rounded">warning</span><span class="src-warn-t"><b>這份頁面引用了 '+items.length+' 個沒有一起上傳的檔案</b>，靠它們產生的內容與樣式不會顯示：<ul>'
+      +items.slice(0,8).map(function(a){return '<li><code>'+esc(a.url)+'</code></li>'}).join('')+(items.length>8?'<li>…</li>':'')
+      +'</ul>請把<b>整個專案資料夾</b>直接拖進匯入頁，一起匯入。</span>';
+    box.hidden=false;
+  }
   fileInput.addEventListener('change',function(){
     if(fileInput.files[0])readFile(fileInput.files[0]);
   });

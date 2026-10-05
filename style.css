@@ -211,7 +211,7 @@ p.sub-desc{font-size:13.5px;color:var(--gray-2);margin-bottom:16px}
 .demo-bar nav{display:flex;gap:18px;margin-left:auto;color:var(--gray-1)}
 .demo-bar.dark nav,.demo-bar.black nav{color:rgba(255,255,255,.9)}
 .demo-bar nav a{text-decoration:none;color:inherit;font-size:13.5px}
-.member-pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-50);color:var(--brand);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:400}
+.member-pill{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:transparent;color:var(--brand);border-radius:50%;padding:0;font-size:13px;font-weight:400}
 /* 2026-09-16 UX 審核：Header 範例在手機版逐字直排。真實 header 在窄幅會收成漢堡選單，
    範例照同樣邏輯，並顯示一顆選單圖示表示「這裡會收合」。
    2026-09-29 使用者指定（基本規範 §3.13）：行動裝置頁首只留 Logo（靠左）＋漢堡（靠右），會員、搜尋、按鈕也收起來。
@@ -221,7 +221,8 @@ p.sub-desc{font-size:13.5px;color:var(--gray-2);margin-bottom:16px}
   .demo-bar>*:not(img):not(.hl-burger){display:none !important}
   .demo-bar::after{content:"menu";font-family:"Material Symbols Rounded";font-size:22px;line-height:1;margin-left:auto;opacity:.85}
 }
-.demo-bar.dark .member-pill{background:rgba(255,255,255,.15);color:#fff}
+.demo-bar.dark .member-pill,.demo-bar.black .member-pill{background:transparent;color:#fff}
+.demo-bar .member-pill .material-symbols-rounded{color:inherit}   /* .demo-bar span 會把內層 icon 染灰，這裡讓它吃 pill 的顏色（深色頁首＝白） */
 .demo-logo{height:28px;width:auto}   /* 基本規範 §3.11：頁首 Logo 28px，640px 以下 22px */
 @media(max-width:640px){.demo-logo{height:22px}}
 .demo-bar.dark .demo-logo,.demo-bar.black .demo-logo{filter:brightness(0) invert(1)}
@@ -641,7 +642,7 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 .pj-tabs span:hover:not(.on){background:var(--blue-50);color:var(--brand)}
 .bm-side li:hover:not(.on){background:#F4F6F9}
 .pg a:hover:not(.on){background:var(--blue-50);color:var(--brand)}
-.kid-pill:hover,.member-pill:hover{filter:brightness(.95)}
+.kid-pill:hover{filter:brightness(.95)}
 .sel-demo .material-symbols-rounded{transition:transform .2s}
 .sel-demo.open .material-symbols-rounded{transform:rotate(180deg)}
 .icon-grid .ic{transition:transform .15s}

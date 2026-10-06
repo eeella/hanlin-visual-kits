@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261005b">
+<link rel="stylesheet" href="style.css?v=20261005c">
 <script src="defaults.js?v=792634ded4c0"></script>
 <script src="importbase.js?v=20260930a"></script>
 <script src="folderbundle.js?v=20260930a"></script>
@@ -170,6 +170,16 @@
 
   <!-- 對照預覽 -->
   <div class="imp-step" id="stepPreview" style="display:none">
+    <!-- 還沒挑視覺套版時，右邊其實是原檔、頭尾配色都沒套。這行提示原本放在兩個預覽框「下面」（約 1131px），
+         一般視窗要往下捲才看得到，使用者會以為是頭尾沒出現（使用者回報 2026-10-06）。
+         改放在「對照預覽」整區的最上方（標題之上）、字放大、旁邊直接給按鈕，並且 sticky 釘在畫面上方：
+         往下捲看預覽時它也一直在，不可能看不到（使用者 2026-10-06：「把這一塊往上提，這樣使用者才能看到」）。 -->
+    <div id="notStyledNote" style="display:none;position:sticky;top:70px;z-index:30;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 14px;padding:16px 20px;border-radius:12px;background:#F8EBD9;color:#8A5A0B;font-size:15px;line-height:1.7;box-shadow:0 6px 18px rgba(30,61,96,.14)">
+      <span class="material-symbols-rounded" style="font-size:22px">info</span>
+      <span style="flex:1 1 320px"><b style="font-weight:700">還沒挑視覺套版，所以右邊沒有套上任何東西（頁首、頁尾、配色、Logo 都還沒套）。</b><span id="notStyledText">先挑一組視覺套版，回來後右邊才會套上那一組。</span></span>
+      <button type="button" class="btn soft" id="useAdoptedKit" style="display:none;font-size:14px;padding:8px 16px"><span class="material-symbols-rounded" style="font-size:18px">check</span><span id="useAdoptedKitName">用採用中的這一組套上</span></button>
+      <button type="button" class="btn" id="goPickKit" style="font-size:14px;padding:8px 16px;background:var(--brand);color:#fff"><span class="material-symbols-rounded" style="font-size:18px">tune</span>去挑視覺套版</button>
+    </div>
     <div class="step-head">對照預覽<span class="pick-note" id="previewSource" style="margin-left:auto"></span></div>
     <!-- 外部檔案提示（2026-09-30）：資料夾匯入時說明合併了什麼；單一檔案引用了沒上傳的檔案時列出來，不再只是一片空白 -->
     <div class="src-warn asset-note" id="assetNote" hidden></div>
@@ -182,13 +192,13 @@
         <label style="cursor:pointer" title="一般的文件流頁面：行銷頁、官網、文章頁"><input type="radio" name="layoutOpt" value="page"> 一般頁面</label>
         <label style="cursor:pointer" title="側欄＋主工作區的應用型版面：後台、編輯器、工具頁。套版時不補歡迎橫幅、不動佈局"><input type="radio" name="layoutOpt" value="appshell"> 應用型版面</label>
       </span>
-      <!-- 頁首／頁尾：自動判定猜錯（例如 <header class="hero"> 其實是主視覺）時，使用者可直接指定 -->
-      <!-- 使用者沒有「判定模式」的概念（2026-09-18）：一律套用公司版型，這組選項只給稽核用，網址帶 ?adv=1 才顯示 -->
-      <span id="shellOptWrap" hidden style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">頁首／頁尾</b>
-        <label style="cursor:pointer" title="用採用的版型重做頁首／頁尾：原本的導覽連結搬進新頁首，原本的頁首／頁尾收起來"><input type="radio" name="shellOpt" value="replace" checked> 套用版型</label>
-        <label style="cursor:pointer" title="沿用頁面原本的頁首／頁尾、只換配色與 Logo；沒有才補一個"><input type="radio" name="shellOpt" value="auto"> 沿用＋補缺</label>
-        <label style="cursor:pointer" title="不管判定結果，一律在最前面補頁首、最後面補頁尾（原本的保留）"><input type="radio" name="shellOpt" value="add"> 一律補上</label>
-        <label style="cursor:pointer" title="只沿用頁面原本的頁首／頁尾套配色，缺了也不補"><input type="radio" name="shellOpt" value="keep"> 只用原本的</label>
+      <!-- 頁首／頁尾（2026-10-06 使用者定案：放到看得到的地方）。
+           自動＝原頁的頂部／底部有「網站身分」（品牌標誌、導覽、版權）就沿用換色，沒有（只是標題或操作列）就補翰林的。
+           使用者上傳什麼無法預期，自動判錯時自己切這三個。 -->
+      <span id="shellOptWrap" style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">頁首／頁尾</b>
+        <label style="cursor:pointer" title="原頁的頂部／底部有網站身分（品牌標誌、導覽連結、版權）就沿用並換色；只是標題、資料列或操作列就另外補翰林的"><input type="radio" name="shellOpt" value="auto" checked> 自動</label>
+        <label style="cursor:pointer" title="只沿用頁面原本的頁首／頁尾套配色與品牌色，沒有也不補"><input type="radio" name="shellOpt" value="keep"> 沿用原本的，不補</label>
+        <label style="cursor:pointer" title="不管原頁有沒有，一律在最前面補翰林頁首、最後面補翰林頁尾（原本的保留）"><input type="radio" name="shellOpt" value="add"> 一律補翰林的</label>
       </span>
       <span style="display:inline-flex;gap:10px;align-items:center"><b style="font-weight:500">主色強度</b>
         <label style="cursor:pointer"><input type="radio" name="toneOpt" value="standard" checked> 標準</label>
@@ -216,9 +226,6 @@
       <div class="cmp-cell"><b>原始樣式</b><iframe id="frameRaw" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
       <div class="cmp-cell after"><div class="cmp-head"><b class="after">套上品牌規範後（配色 / 字體 / Logo）</b><button class="btn cmp-open" id="openFullBranded" type="button"><span class="material-symbols-rounded" style="font-size:18px">open_in_new</span>開新分頁看完整</button></div><iframe id="frameBranded" sandbox="allow-same-origin allow-scripts allow-popups"></iframe></div>
     </div>
-    <p class="same-note" id="notStyledNote" style="display:none"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> <b>還沒挑視覺套版，所以左右兩邊一樣。</b><span id="notStyledText">按底部的「下一步：挑視覺套版」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。</span>
-      <!-- 2026-09-16 UX 審核：已經採用過某一組的人不用再繞去挑一次，直接在這裡按一下就套上 -->
-      <button type="button" class="btn soft" id="useAdoptedKit" style="display:none;margin-left:10px;font-size:12.5px;padding:6px 14px;vertical-align:middle"><span class="material-symbols-rounded" style="font-size:16px">check</span><span id="useAdoptedKitName">用採用中的這一組套上</span></button></p>
     <p class="same-note" id="sameNote"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:-3px">info</span> 此檔案沒有偵測到可替換的色碼或 Logo，左右畫面差異不明顯。</p>
     <div id="compSample" style="display:none">
       <b style="display:block;font-size:13px;font-weight:500;color:var(--gray-1);margin-bottom:8px">規範元件示例（已套用匯入主題）</b>
@@ -586,6 +593,10 @@ hlStampAssets();
     function m(v){return Math.round(v*(1-w))}
     return '#'+[m(r),m(g),m(b)].map(function(v){return v.toString(16).padStart(2,'0')}).join('').toUpperCase();
   }
+  /* 頁首／頁尾比旁邊深一階（使用者 2026-10-06：多巴胺潮風的頁首、橫幅、頁尾、原頁操作列全是同一個紫色，
+     頭尾融進旁邊看不出來。只加深同色系一點點，不變黑——多巴胺潮風頁首要保持薰衣草紫色調，見 2026-10-01 的指定）。
+     不是 #rrggbb 就原樣回傳，不亂猜。 */
+  function deepen(c){return (typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c))?mixB(c,.18):c}
   function lum(r,g,b){return (0.2126*r+0.7152*g+0.0722*b)/255}
 
   /* ===== 匯入解析：JSON 完整還原；HTML / CSS 抓 CSS 變數或最常用色碼 ===== */
@@ -3273,6 +3284,26 @@ hlStampAssets();
           }
           /* 手動模式：一律補上 → 原本認到的頁首留在原地不動、另外補一個；只用原本的 → 缺了也不補 */
           function _tagOf(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
+          /* 【頁首／頁尾只問一個問題：原頁的頂部／底部有沒有「網站身分」？】(使用者 2026-10-06 定案)
+             有 → 沿用，只換色，不補；沒有（只是標題／資料列／操作列）→ 保留為內容，另外補翰林的。
+             「網站身分」的正面證據（任一項就算有）：
+               ① 品牌標誌：圖片／svg／class 或 id 帶 logo，或文字有「翰林／hanlin」
+               ② 導覽：連結、按鈕、輸入元件、role=tab／menuitem、onclick、2 個以上圖示
+                  （頁尾只認連結：頁尾裡的按鈕多半是操作列，不是網站頁尾）
+               ③ 頁尾另外認：版權字樣（©／copyright／版權／All rights）
+             使用者上傳什麼無法預期，只看正面證據、不看 class 名稱猜；自動判錯時，
+             由匯入頁的「頁首／頁尾」三選一（自動／沿用原本的不補／一律補翰林的）讓使用者自己切。
+             案例：匯率拉桿＝標題＋數字＋出處、沒有任何身分 → 補；課文隨身聽＝標題＋「H 翰林」標誌 → 沿用。 */
+          function _hasSiteIdentity(el,isFooter){
+            var tx=el.textContent||'';
+            if(el.querySelector('img,svg,picture,[class*=logo],[class*=Logo],[id*=logo]')||/翰林|hanlin/i.test(tx))return true;
+            if(isFooter)return /©|copyright|版權|all rights/i.test(tx)||!!el.querySelector('a[href]');
+            if(el.querySelector('a,button,[role=button],[role=tab],[role=menuitem],[onclick],input,select,textarea'))return true;
+            return el.querySelectorAll('.material-icons,.material-icons-outlined,.material-symbols-rounded,.material-symbols-outlined,[class*="fa-"],[class*="bi-"],[data-lucide]').length>=2}
+          if(hdEl&&SHELL_MODE==='auto'&&!APPSHELL&&hdEl!==HD_CUSTOM&&!/^nav$/i.test(hdEl.tagName)&&!inSB(hdEl)&&!hdEl.hasAttribute('data-hl-inserted')&&!_hasSiteIdentity(hdEl,false)){
+            SHELL_INFO.hdSkipped='原本的 '+hdEl.tagName.toLowerCase()+(hdEl.className&&typeof hdEl.className==='string'?'.'+hdEl.className.split(' ')[0]:'')+' 只是標題／資料列（沒有品牌標誌或導覽），不是網站頁首，保留為內容';
+            hdEl=null;
+          }
           if(SHELL_MODE==='add'){if(hdEl)SHELL_INFO.hdKept=_tagOf(hdEl);hdEl=null}
           /* 自訂元件頁首不替換：它的導覽是執行期才畫的，換掉就沒有導覽了 */
           if(SHELL_MODE==='replace'&&hdEl&&HD_ON&&hdEl!==HD_CUSTOM){SHELL_ORIG.hd=hdEl;SHELL_INFO.hdReplaced=_tagOf(hdEl);hdEl=null}
@@ -3463,12 +3494,18 @@ hlStampAssets();
           }
           if(!ftEl&&APPSHELL){ftEl=null}
           function _tagOf2(el){return el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.split(' ')[0]:'')}
+          /* 頁尾同上一條規則（_hasSiteIdentity）：只有操作按鈕的控制列不是網站頁尾 */
+          if(ftEl&&SHELL_MODE==='auto'&&!APPSHELL&&!inSB(ftEl)&&!ftEl.hasAttribute('data-hl-inserted')&&!_hasSiteIdentity(ftEl,true)){
+            SHELL_INFO.ftSkipped='原本的 '+ftEl.tagName.toLowerCase()+(ftEl.className&&typeof ftEl.className==='string'?'.'+ftEl.className.split(' ')[0]:'')+' 只是操作／控制列（沒有品牌標誌、版權字樣或連結），不是網站頁尾，保留為內容';
+            ftEl=null;
+          }
+
           if(SHELL_MODE==='add'){if(ftEl)SHELL_INFO.ftKept=_tagOf2(ftEl);ftEl=null}
           if(SHELL_MODE==='replace'&&ftEl&&FT_ON){SHELL_ORIG.ft=ftEl;SHELL_INFO.ftReplaced=_tagOf2(ftEl);ftEl=null}
           if(ftEl)SHELL_INFO.ft='沿用原本的 '+_tagOf2(ftEl)+'，套上採用的版型';
           if(!ftEl&&!APPSHELL&&(ADD_COMPONENTS||ADD_SHELL)&&SHELL_MODE!=='keep'&&FT_ON){
             SHELL_INFO.ft=SHELL_INFO.ftReplaced?('套用版型重做（原本的 '+SHELL_INFO.ftReplaced+' 收起，版權文字保留）')
-              :('補上新的'+(SHELL_INFO.ftKept?'（原本的保留，你選了「一律補上」）':'（頁面沒有頁尾）'));
+              :('補上新的'+(SHELL_INFO.ftKept?'（原本的保留，你選了「一律補上」）':(SHELL_INFO.ftSkipped?('（'+SHELL_INFO.ftSkipped+'）'):'（頁面沒有頁尾）')));
             /* 頁面沒有 footer：補一個照版型長好的（使用者指定 2026-09-03，見 ADD_SHELL）。
                原本是 createElement('div') 且完全不寫結構樣式，實測結果是
                寬 120px／高 24px／padding 0 的一行字貼在內容下緣 —— 版型的
@@ -4512,11 +4549,11 @@ hlStampAssets();
         /* 0 品牌官網（淺色）：白底細陰影、留白大 */
         {bg:'#fff',fg:'#62778F',extra:'padding:17px 32px !important;box-shadow:0 1px 8px rgba(30,40,60,.08) !important;border-bottom:none !important',logo:'28px',weight:'400',ls:'.02em'},
         /* 1 品牌官網（深色）：品牌漸層沉浸 */
-        {bg:NAV_BG,fg:NAV_FG,extra:'padding:17px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'400',ls:'.02em'},
+        {bg:deepen(NAV_BG),fg:NAV_FG,extra:'padding:17px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'400',ls:'.02em'},
         /* 2 教師平台：白底＋底部品牌色線、緊湊 */
         {bg:'#fff',fg:'#62778F',extra:'padding:12px 32px !important;border-bottom:2px solid '+P+' !important;box-shadow:none !important',logo:'28px',weight:'500',ls:'0'},
-        /* 3 國小／兒童：主色柔底、圓潤大字 */
-        {bg:'linear-gradient(120deg,'+(to.i||P)+' 0%,'+P+' 100%)',fg:'#fff',extra:'padding:24px 32px !important;border-radius:0 0 20px 22px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'700',ls:'.04em'},
+        /* 3 國小／兒童：主色單色底、圓潤大字（2026-10-05 使用者指定：頁首一律單色，不要漸層） */
+        {bg:deepen(P),fg:'#fff',extra:'padding:24px 32px !important;border-radius:0 0 20px 22px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'700',ls:'.04em'},
         /* 4 國中／高中 學術：深色實色、寬字距細字 */
         {bg:mixB(S,.25),fg:'#fff',extra:'padding:16px 32px !important;box-shadow:none !important;border-bottom:none !important',logo:'28px',weight:'300',ls:'.14em'},
         /* 5 命題大師：白底＋左側品牌色粗邊、重字 */
@@ -4525,8 +4562,8 @@ hlStampAssets();
         {bg:mixW(P,.9),fg:S,extra:'margin:10px !important;padding:14px 24px !important;border-radius:12px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'28px',weight:'500',ls:'.02em'},
         /* 7 影音派：深黑底白字（影音沉浸） */
         {bg:'#1B1D21',fg:'#fff',extra:'padding:14px 32px !important;box-shadow:none !important;border-bottom:1px solid rgba(255,255,255,.12) !important',logo:'28px',weight:'500',ls:'.02em'},
-        /* 8 AI 數位導覽員：主色→冰藍漸層、圓角 */
-        {bg:'linear-gradient(120deg,'+P+' 0%,'+I+' 100%)',fg:'#fff',extra:'padding:16px 32px !important;border-radius:0 0 20px 18px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'28px',weight:'600',ls:'.03em'}
+        /* 8 AI 數位導覽員：主色單色底、圓角（2026-10-05 使用者指定：不要漸層） */
+        {bg:deepen(P),fg:'#fff',extra:'padding:16px 32px !important;border-radius:0 0 20px 18px !important;box-shadow:rgba(30,61,96,.03) 0 5px 15px !important;border-bottom:none !important',logo:'28px',weight:'600',ls:'.03em'}
       ];
       var HS=HD_STYLE[hdIdx]||HD_STYLE[1];
       LAYOUT_APPLIED={hdIdx:hdIdx,ftIdx:ftIdx,HS:HS};
@@ -4639,7 +4676,7 @@ hlStampAssets();
       var FT_STYLE=[
         {bg:SG.subtle,fg:'#62778F',extra:'padding:24px 32px !important;text-align:left !important;border-top:none !important'},
         {bg:mixW(P,.92),fg:S,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'},
-        {bg:FT_BG,fg:FT_FG,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
+        {bg:deepen(FT_BG),fg:FT_FG,extra:'padding:24px 32px !important;text-align:center !important;border-top:none !important'}
       ];
       var FS=FT_STYLE[ftIdx]||FT_STYLE[2];
       if(LAYOUT_APPLIED)LAYOUT_APPLIED.FS=FS;
@@ -5070,6 +5107,14 @@ hlStampAssets();
       }).join(';');
       return kept?wrap(sel+'{'+kept+'}'):(mediaPrefix||'');
     });
+    /* 【補了頁首／頁尾後，頁面一定要能捲到最下面】(使用者回報 2026-10-06，匯率拉桿_demo.html)
+       整屏固定的工具頁（body{overflow:hidden}＋.app{height:100%}）原本剛好一屏。
+       我們補上翰林頁首、頁尾後內容超過一屏，body 卻被原檔鎖成不能捲，
+       底下的操作列和新頁尾被切掉、滑不到。只要引擎補了元件（data-hl-inserted）就解鎖垂直捲動；
+       沒補任何東西的頁面完全不受影響，原檔的內層捲動容器不動。
+       注意：這條必須放在兩道「注入 CSS 不得帶版面屬性」的過濾器之後（layoutCss 那道、inject 選擇器轉換那道），
+       overflow 屬於版面屬性，放在前面會整條被濾掉（實測兩次都是這樣失效）。 */
+    inject+='html:has([data-hl-inserted]),html:has([data-hl-inserted]) body{overflow-y:auto !important}';
     /* 版型再用 inline style 寫一次（最高優先權，確保原站樣式蓋不掉） */
     /* 【色版的形狀特徵不掛在「語意樣式層」底下】(使用者回報 2026-09-15：套漫畫風，按鈕的粗邊與實心投影不見了)
        那個開關預設關閉，但粗邊／大圓角／實心投影是使用者主動選的色版本身的識別，
@@ -5669,15 +5714,25 @@ hlStampAssets();
         +'var m=99;for(var i=0;i<bg.length;i++)m=Math.min(m,cr(fg,bg[i]));return m}'
       +'function pickOn(bg){if(typeof bg[0]==="number")return cr(INK,bg)>=cr(WHITE,bg)?"#1E3D60":"#FFFFFF";'
         +'return worst(INK,bg)>=worst(WHITE,bg)?"#1E3D60":"#FFFFFF"}'
+      /* 【一般文字要達 AA】(2026-10-05 使用者要求：對比不足要修)
+         先前全頁只救 <3:1（看不見），3.2～4.4 的字一律放行；user-cloudec 套版後
+         有 35 處落在 3.2～3.5（原檔 0 處）。改成：一般文字 4.5、大字（≥24px，或 ≥18.66px 且粗體）3.0、
+         圖示 3.0。修法是「把原本的字色往墨色／白色推，推到剛好達標就停」，
+         保留原本的色相，不是一律改成墨色或白色（那會把頁面洗平）。
+         兩端都推不到時才退回墨色／白色。仍然只寫 color 一個屬性。 */
+      +'function mixc(a,b,t){return [Math.round(a[0]+(b[0]-a[0])*t),Math.round(a[1]+(b[1]-a[1])*t),Math.round(a[2]+(b[2]-a[2])*t)]}'
+      +'function nudge(fg,bg,min){var tg=(worst(INK,bg)>=worst(WHITE,bg))?INK:WHITE;if(worst(tg,bg)<min+0.01)return tg;'
+        +'var lo=0,hi=1;for(var i=0;i<12;i++){var mid=(lo+hi)/2;if(worst(mixc(fg,tg,mid),bg)>=min+0.05)hi=mid;else lo=mid}return mixc(fg,tg,hi)}'
       +'function fix(el,min){try{var cs=getComputedStyle(el);'
         +'if(cs.display==="none"||cs.visibility==="hidden")return;'
         +'var fg=rgb(cs.color),bg=bgOf(el);if(!fg||!bg)return;'
+        +'if(min<0){var fs=parseFloat(cs.fontSize)||16,fw=parseInt(cs.fontWeight,10)||400;min=(fs>=24||(fs>=18.66&&fw>=700))?3.0:4.5}'
         +'var r=worst(fg,bg);if(r===null||r>=min)return;'
         /* 標記守門自己的寫入：這是全系統唯一被允許寫 element.style 的地方，
            必須能和「我們亂寫的樣式」區分開，否則測試無法判斷是救援還是污染，
            也看不出守門到底救了幾個元素。 */
         +'try{el.setAttribute("data-hl-cgfix","1")}catch(e){}'
-        +'el.style.setProperty("color",pickOn(bg),"important")}catch(e){}}'
+        +'var nc=nudge(fg,bg,min);el.style.setProperty("color","rgb("+nc[0]+","+nc[1]+","+nc[2]+")","important")}catch(e){}}'
       /* ══ 這是全系統唯一還在寫 element.style 的地方，是刻意的 ══════════
          已實作並實測過「改成置底樣式表」的版本：給元素一個純識別用的 data-hl-cg，
          規則寫進執行期 <style>，並把特異度墊到 (3,1,2)（三個永不存在的 id 排除項）。
@@ -5711,7 +5766,7 @@ hlStampAssets();
         +'for(var i=0;i<all.length;i++){var e=all[i];'
           +'var isIc=/material-symbols|material-icons/.test(String(e.className||""));'
           +'if(!isIc&&!ownText(e))continue;'
-          +'fix(e,isIc?3.0:3.0)}'
+          +'fix(e,isIc?3.0:-1)}'
         /* checkbox／radio 排除：它們的 color 與可讀性無關（多半視覺隱藏，
            真正看得見的是緊鄰的打勾方塊），寫進去只會在勾選組件上留下
            不該有的 element.style，違反成對綁定的保護契約。 */
@@ -7664,10 +7719,10 @@ hlStampAssets();
                 false);
         }
         if(ran){
-          var sh=res.shell||{},smLab={add:'　← 你選了「一律補上」',keep:'　← 你選了「只用原本的」',auto:'　← 你選了「沿用＋補缺」'}[res.shellMode]||'';
-          add('頁首',(sh.hd||(res.shellMode==='keep'?'頁面沒有頁首（你選了只用原本的，所以不補）':'未處理'))+smLab, !sh.hd);
-          add('頁尾',(sh.ft||(isShell?'app shell 不補頁尾':(res.shellMode==='keep'?'頁面沒有頁尾（你選了只用原本的，所以不補）':'未處理')))+smLab, !sh.ft&&!isShell);
-          if(/[?&]adv=1/.test(location.search))add('想改？','「頁首／頁尾」選項：套用版型（重做）／沿用＋補缺／一律補上／只用原本的，切了右邊立刻重套',false);
+          var sh=res.shell||{},smLab={add:'　← 你選了「一律補翰林的」',keep:'　← 你選了「沿用原本的，不補」',auto:'　← 自動'}[res.shellMode]||'';
+          add('頁首',(sh.hd||(res.shellMode==='keep'?'頁面沒有頁首（你選了沿用原本的，所以不補）':'未處理'))+smLab, !sh.hd);
+          add('頁尾',(sh.ft||(isShell?'app shell 不補頁尾':(res.shellMode==='keep'?'頁面沒有頁尾（你選了沿用原本的，所以不補）':'未處理')))+smLab, !sh.ft&&!isShell);
+          if(/[?&]adv=1/.test(location.search))add('想改？','上方「頁首／頁尾」選項：自動／沿用原本的，不補／一律補翰林的，切了右邊立刻重套',false);
         }
         add('補歡迎橫幅',
             !ran?'不補（本次沒做結構判定）'
@@ -7861,7 +7916,7 @@ hlStampAssets();
         document.getElementById('impOpts').style.display='none';
         document.getElementById('impReportBox').style.display='none';
         note.style.display='none';
-        notStyled.style.display='block';
+        notStyled.style.display='flex';
         /* 已採用某一組（例如剛從套版詳細回來、或上一輪挑過）：給一顆「直接套上」 */
         (function(){
           var btn=document.getElementById('useAdoptedKit'),txt=document.getElementById('notStyledText');
@@ -7871,9 +7926,9 @@ hlStampAssets();
           btn.style.display=nm?'inline-flex':'none';
           if(nm){
             document.getElementById('useAdoptedKitName').textContent='用「'+nm+'」套上';
-            if(txt)txt.textContent='你目前採用的是「'+nm+'」，按右邊直接套上；想換別組就點上方步驟的「挑風格」。';
+            if(txt)txt.textContent='你目前採用的是「'+nm+'」，按右邊「用「'+nm+'」套上」直接套；想換別組按「去挑視覺套版」。';
           }else if(txt){
-            txt.textContent='按底部的「下一步：挑視覺套版」挑一組，回來後右邊才會套上那一組的配色、字體與 Logo。';
+            txt.textContent='按右邊「去挑視覺套版」挑一組，回來後右邊才會套上那一組的頁首、頁尾、配色、字體與 Logo。';
           }
         })();
       }
@@ -8191,6 +8246,7 @@ hlStampAssets();
   /* 下載套用後的頁面：設定都調完之後在這裡收尾。
      不掛匯出閘門——先前那道閘門會在逐項比對沒全過時把按鈕鎖住，
      已依使用者指定移除，這裡不再加回來。比對結果仍在下方報告裡看得到。 */
+  document.getElementById('goPickKit').addEventListener('click',function(){document.getElementById('importConfirm').click()});
   document.getElementById('useAdoptedKit').addEventListener('click',function(){
     if(!pendingState||!lastRawMarkup)return;
     if(window.HL_trace)window.HL_trace('按下「用採用中的這一組套上」');

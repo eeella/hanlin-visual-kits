@@ -228,7 +228,7 @@ p.sub-desc{font-size:13.5px;color:var(--gray-2);margin-bottom:16px}
 .demo-bar.dark .demo-logo,.demo-bar.black .demo-logo{filter:brightness(0) invert(1)}
 .demo-search{flex:1;display:flex;align-items:center;gap:8px;background:#EFF2F5;border-radius:14px;padding:8px 14px;color:var(--gray-2);font-size:13px}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:400;flex:none}
-.kid-bar{border-radius:14px;background:linear-gradient(90deg,var(--blue-300),var(--blue-400));color:#fff;display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:15px;font-weight:400}
+.kid-bar{border-radius:14px;background:var(--brand);color:#fff;display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:15px;font-weight:400}
 .kid-bar .kid-ic{width:38px;height:38px;border-radius:14px;background:#fff;color:var(--brand);display:flex;align-items:center;justify-content:center}
 .kid-bar .grow{margin-left:auto;display:flex;gap:10px}
 .kid-pill{display:inline-flex;align-items:center;gap:5px;background:#fff;color:var(--brand);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:400}
@@ -245,7 +245,7 @@ p.sub-desc{font-size:13.5px;color:var(--gray-2);margin-bottom:16px}
 .chip.on{background:var(--brand);color:#fff;font-weight:400}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#35C46B;display:inline-block}
 .mascot{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--brand)}
-.ai-bar{border-radius:14px;background:var(--grad-deep);color:#fff;display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:14.5px;font-weight:400}
+.ai-bar{border-radius:14px;background:var(--brand);color:#fff;display:flex;align-items:center;gap:12px;padding:13px 20px;font-size:14.5px;font-weight:400}
 .ft-links{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:12px;border-top:1px solid var(--gray-3);padding-top:20px}
 .ft-links a{color:var(--brand);font-size:13.5px;font-weight:400;text-decoration:none}
 .ft-copy{font-size:13px;color:var(--gray-1);margin-bottom:8px}
